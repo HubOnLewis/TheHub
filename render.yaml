@@ -63,7 +63,8 @@ services:
 
 
   # ── Web (Static site) ──────────────────────────────────────────
-  - type: static
+  - type: web
+    env: static
     name: mtte-core-web
     rootDir: .
 
