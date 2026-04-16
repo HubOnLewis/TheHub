@@ -1,0 +1,87 @@
+# render.yaml
+# Render deployment config for MTTE Core.
+# ─────────────────────────────────────────────────────────────────
+# Two services:
+#   mtte-core-api  — Node.js web service (Express + MongoDB)
+#   mtte-core-web  — Static site (React/Vite)
+#
+# env vars marked sync: false MUST be set manually in the Render
+# dashboard under each service's Environment tab. Never put secrets
+# in this file.
+#
+# After first deploy:
+#   1. Set all sync: false vars in the dashboard
+#   2. Manually deploy both services
+#   3. Set API CLIENT_URL to the exact web service URL
+#   4. Set web VITE_API_URL to the exact API service URL + /api
+#      e.g. https://mtte-core-api.onrender.com/api
+#   5. Trigger a redeploy of the web service after setting VITE_API_URL
+# ─────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── API (Node web service) ─────────────────────────────────────
+  - type: web
+    name: mtte-core-api
+    env: node
+    region: oregon
+    plan: free
+
+    # Run from repo root so workspace paths resolve correctly
+    rootDir: .
+
+    # Build: compile shared first (API imports it at runtime), then compile API
+    buildCommand: npm install && npm run build --workspace=packages/shared && npm run build --workspace=packages/api
+
+    # Start: call node directly — npm start includes --env-file which crashes
+    # when .env doesn't exist (Render injects env vars into process.env directly)
+    startCommand: node packages/api/dist/server.js
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # MongoDB Atlas connection string — set in Render dashboard
+      - key: MONGODB_URI
+        sync: false
+
+      - key: DB_NAME
+        value: mtte_core
+
+      # Must be ≥ 32 chars — generate with: openssl rand -hex 32
+      - key: JWT_SECRET
+        sync: false
+
+      # Set to the exact Render static site URL for this web service
+      # e.g. https://mtte-core-web.onrender.com
+      - key: CLIENT_URL
+        sync: false
+
+      # Comma-separated super-admin emails
+      - key: SUPER_ADMIN_EMAILS
+        sync: false
+
+
+  # ── Web (Static site) ──────────────────────────────────────────
+  - type: static
+    name: mtte-core-web
+    rootDir: .
+
+    # VITE_API_URL must be set in the Render dashboard BEFORE building.
+    # Vite bakes env vars into the bundle at build time — a redeploy is
+    # required if the API URL ever changes.
+    buildCommand: npm install && npm run build --workspace=packages/web
+
+    staticPublishPath: packages/web/dist
+
+    envVars:
+      # Set to the full API base URL including /api path segment
+      # e.g. https://mtte-core-api.onrender.com/api
+      - key: VITE_API_URL
+        sync: false
+
+    # Client-side routing — serve index.html for all paths
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

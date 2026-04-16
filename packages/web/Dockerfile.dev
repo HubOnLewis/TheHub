@@ -1,0 +1,23 @@
+# packages/web/Dockerfile.dev
+FROM node:20-alpine
+WORKDIR /app
+
+COPY package.json ./
+COPY packages/shared/package.json  ./packages/shared/
+COPY packages/api/package.json     ./packages/api/
+COPY packages/web/package.json     ./packages/web/
+
+RUN npm install
+
+# Copy shared source (volume-mounted at runtime, but Vite alias needs it at build time)
+COPY packages/shared/src ./packages/shared/src
+
+# Copy vite config and index.html
+COPY tsconfig.base.json             ./
+COPY packages/web/tsconfig.json    ./packages/web/
+COPY packages/web/vite.config.ts   ./packages/web/
+COPY packages/web/index.html       ./packages/web/
+
+# Web src is volume-mounted at runtime via docker-compose
+EXPOSE 5173
+CMD ["npm", "run", "dev", "--workspace=packages/web"]

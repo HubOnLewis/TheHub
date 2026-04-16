@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+
+# Environment — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Source data — contains real CRM exports, must not be committed
+voze data/
+voze_data/
+
+# Build artifacts and temp output
+mnt/
+
+# OS artefacts
+.DS_Store
+*.log

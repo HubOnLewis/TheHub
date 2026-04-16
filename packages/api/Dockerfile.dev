@@ -1,0 +1,22 @@
+# packages/api/Dockerfile.dev
+FROM node:20-alpine
+WORKDIR /app
+
+# Copy workspace manifest + all package.json files first for layer caching
+COPY package.json ./
+COPY packages/shared/package.json  ./packages/shared/
+COPY packages/api/package.json     ./packages/api/
+COPY packages/web/package.json     ./packages/web/
+
+# Install all workspace deps in one shot
+RUN npm install
+
+# Copy shared source (volume-mounted at runtime too, but needed at build time for tsc paths)
+COPY packages/shared/src ./packages/shared/src
+
+# Copy tsconfigs
+COPY tsconfig.base.json             ./
+COPY packages/api/tsconfig.json    ./packages/api/
+
+# API src is volume-mounted at runtime via docker-compose
+# CMD falls through to docker-compose command override

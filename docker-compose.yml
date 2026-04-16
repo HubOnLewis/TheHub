@@ -1,0 +1,80 @@
+# docker-compose.yml
+# Runs the full MTTE CORE stack locally:
+#   - MongoDB with persistent volume
+#   - API (packages/api) with hot reload via tsx watch
+#   - Web (packages/web) Vite dev server
+#
+# Usage:
+#   docker-compose up           # start all services
+#   docker-compose up mongodb   # MongoDB only (run API/web natively)
+#   docker-compose down -v      # stop and wipe volumes
+
+version: '3.9'
+
+services:
+
+  # ── MongoDB ──────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7.0
+    container_name: mtte-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mtte
+      MONGO_INITDB_ROOT_PASSWORD: mtte_local
+      MONGO_INITDB_DATABASE: mtte_core
+    volumes:
+      - mongodb_data:/data/db
+      - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/init.js:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── API ──────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: packages/api/Dockerfile.dev
+    container_name: mtte-api
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      MONGODB_URI: mongodb://mtte:mtte_local@mongodb:27017/mtte_core?authSource=admin
+      DB_NAME: mtte_core
+      JWT_SECRET: ${JWT_SECRET:-local_dev_secret_change_in_production_minimum_32_chars}
+      CLIENT_URL: http://localhost:5173
+      SUPER_ADMIN_EMAILS: mike@wki.com
+    volumes:
+      - ./packages/api/src:/app/packages/api/src:ro
+      - ./packages/shared/src:/app/packages/shared/src:ro
+    command: npm run dev --workspace=packages/api
+
+  # ── Web ──────────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: packages/web/Dockerfile.dev
+    container_name: mtte-web
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3001/api
+    volumes:
+      - ./packages/web/src:/app/packages/web/src:ro
+      - ./packages/shared/src:/app/packages/shared/src:ro
+
+volumes:
+  mongodb_data:
+    name: mtte_mongodb_data
