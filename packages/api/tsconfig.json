@@ -1,10 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "paths": {
-      "@mtte-core/shared": ["../shared/dist/index.js"]
-    }
+    "outDir": "dist"
   },
   "include": ["src"]
 }

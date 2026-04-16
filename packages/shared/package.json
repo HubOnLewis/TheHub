@@ -6,9 +6,13 @@
     "build": "tsc"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "dependencies": {
     "zod": "^3.22.4"
   }
