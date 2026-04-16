@@ -159,6 +159,19 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
 
     return { staleTotal, pendingApprovalStale, unassigned };
   }
+
+  /** Returns all deals for a given company name (tenant-scoped). */
+  async listByCompanyName(
+    db: Db,
+    ctx: TenantContext,
+    companyName: string,
+  ): Promise<Array<DealDoc & { _id: string }>> {
+    const docs = await this.col(db)
+      .find(this.scope(ctx, { company: companyName } as never))
+      .sort({ createdAt: -1 })
+      .toArray();
+    return docs.map(d => this.serialize(d as DealDoc & { _id: ObjectId }));
+  }
 }
 
 export const DealRepository = new DealRepositoryClass();

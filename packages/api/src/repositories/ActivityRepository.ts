@@ -23,6 +23,12 @@ export interface ActivityDoc extends Document {
   tags:              Record<string, boolean>;
   importMeta?:       Record<string, unknown>;
   updatedAt:         Date;
+  // ── Manually-entered interaction fields (all optional, backward-compatible) ──
+  title?:         string;
+  outcome?:       string;
+  followUpAt?:    Date;
+  followUpNote?:  string;
+  relatedDealId?: string;
 }
 
 export interface ActivityFilter {

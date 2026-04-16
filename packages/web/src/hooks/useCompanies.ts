@@ -1,5 +1,5 @@
 // packages/web/src/hooks/useCompanies.ts
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client.js';
 
 export interface CompanyAddress {
@@ -37,6 +37,30 @@ export interface Activity {
   milesFromCompany?: number;
   body:             string;
   tags:             Record<string, boolean>;
+  // Interaction (manually-entered) fields
+  title?:         string;
+  outcome?:       string;
+  followUpAt?:    string;
+  followUpNote?:  string;
+  relatedDealId?: string;
+}
+
+export interface CompanySummary {
+  dealCount:         number;
+  openPipelineTotal: number;
+  wonTotal:          number;
+  nextFollowUp:      { date: string; note?: string } | null;
+}
+
+export interface CreateInteractionPayload {
+  activityType:   string;
+  body:           string;
+  title?:         string;
+  contactNameRaw?: string;
+  outcome?:       string;
+  followUpAt?:    string;
+  followUpNote?:  string;
+  relatedDealId?: string;
 }
 
 interface CompaniesQuery {
@@ -76,6 +100,27 @@ export function useCompanyActivities(companyId: string, params: ActivitiesQuery 
     queryFn:   () => client.get(`/companies/${companyId}/activities`, { params }).then(r => r.data),
     staleTime: 60_000,
     enabled:   !!companyId,
+  });
+}
+
+export function useCompanySummary(companyId: string) {
+  return useQuery({
+    queryKey:  ['companies', companyId, 'summary'],
+    queryFn:   () => client.get(`/companies/${companyId}/summary`).then(r => r.data as CompanySummary),
+    staleTime: 120_000,
+    enabled:   !!companyId,
+  });
+}
+
+export function useCreateActivity(companyId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateInteractionPayload) =>
+      client.post(`/companies/${companyId}/activities`, payload).then(r => r.data),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['companies', companyId, 'activities'] });
+      void qc.invalidateQueries({ queryKey: ['companies', companyId, 'summary'] });
+    },
   });
 }
 

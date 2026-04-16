@@ -101,3 +101,16 @@ export const CreateActivitySchema = z.object({
   importMeta:       z.record(z.unknown()).optional(),
 });
 export type CreateActivityPayload = z.infer<typeof CreateActivitySchema>;
+
+// ── Manual interaction (POST /api/companies/:id/activities) ───────
+export const CreateInteractionSchema = z.object({
+  activityType:   z.string().min(1, 'Activity type required'),
+  body:           z.string().min(1, 'Notes required'),
+  title:          z.string().optional(),
+  contactNameRaw: z.string().optional(),
+  outcome:        z.string().optional(),
+  followUpAt:     z.string().datetime({ offset: true }).optional().or(z.literal('')),
+  followUpNote:   z.string().optional(),
+  relatedDealId:  z.string().optional(),
+});
+export type CreateInteractionPayload = z.infer<typeof CreateInteractionSchema>;

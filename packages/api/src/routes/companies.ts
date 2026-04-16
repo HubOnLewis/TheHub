@@ -1,10 +1,13 @@
 // packages/api/src/routes/companies.ts
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
+import { validate } from '../middleware/validate.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { companyService } from '../services/CompanyService.js';
 import { activityService } from '../services/ActivityService.js';
+import { DealRepository } from '../repositories/DealRepository.js';
 import { getDB } from '../config/db.js';
+import { CreateInteractionSchema } from '@mtte-core/shared';
 
 const router = Router();
 router.use(requireAuth, resolveTenant);
@@ -66,6 +69,56 @@ router.get('/:id/activities', async (req, res, next) => {
       { page: +page, limit: Math.min(+limit, 100), sort: 'createdAt', order: 'desc' },
     );
     res.json(result);
+  } catch (err) { next(err); }
+});
+
+// ── POST /api/companies/:id/activities ───────────────────────────
+router.post('/:id/activities', validate(CreateInteractionSchema), async (req, res, next) => {
+  try {
+    const activity = await activityService.create(getDB(), req.tenant, {
+      companyId:      req.params['id']!,
+      activityType:   req.body.activityType,
+      body:           req.body.body,
+      title:          req.body.title,
+      contactNameRaw: req.body.contactNameRaw,
+      outcome:        req.body.outcome,
+      followUpAt:     req.body.followUpAt || undefined,
+      followUpNote:   req.body.followUpNote,
+      relatedDealId:  req.body.relatedDealId,
+    });
+    res.status(201).json(activity);
+  } catch (err) { next(err); }
+});
+
+// ── GET /api/companies/:id/summary ───────────────────────────────
+router.get('/:id/summary', async (req, res, next) => {
+  try {
+    const company = await companyService.getById(getDB(), req.tenant, req.params['id']!);
+    const deals = await DealRepository.listByCompanyName(getDB(), req.tenant, company.name);
+
+    const openStatuses = new Set(['Draft', 'Pending Approval', 'Approved', 'Won', 'In Build']);
+    let openPipelineTotal = 0;
+    let wonTotal = 0;
+    for (const d of deals) {
+      if (openStatuses.has(d.status)) openPipelineTotal += d.amount ?? 0;
+      if (d.status === 'Won' || d.status === 'Delivered') wonTotal += d.amount ?? 0;
+    }
+
+    // Next follow-up: the nearest future followUpAt across all activities for this company
+    const activitiesResult = await activityService.listForCompany(
+      getDB(), req.tenant, req.params['id']!, { page: 1, limit: 200, sort: 'followUpAt', order: 'asc' },
+    );
+    const now = new Date();
+    const nextFollowUp = (activitiesResult.data as Array<{ followUpAt?: Date | string; followUpNote?: string }>)
+      .filter(a => a.followUpAt && new Date(a.followUpAt) >= now)
+      .sort((a, b) => new Date(a.followUpAt!).getTime() - new Date(b.followUpAt!).getTime())[0];
+
+    res.json({
+      dealCount:          deals.length,
+      openPipelineTotal,
+      wonTotal,
+      nextFollowUp:       nextFollowUp ? { date: nextFollowUp.followUpAt, note: nextFollowUp.followUpNote } : null,
+    });
   } catch (err) { next(err); }
 });
 
