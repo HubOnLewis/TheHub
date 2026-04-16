@@ -158,6 +158,8 @@ async function main() {
     skip_empty_lines:   true,
     trim:               true,
     relax_column_count: true,
+    relax_quotes:       true,
+    quote:              '"',
   });
 
   console.log(`[import-activities] Parsed ${rows.length} rows`);
