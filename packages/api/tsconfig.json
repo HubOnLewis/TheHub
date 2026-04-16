@@ -2,9 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "rootDir": "src",
     "paths": {
-      "@mtte-core/shared": ["../shared/src/index.ts"]
+      "@mtte-core/shared": ["../shared/dist/index.js"]
     }
   },
   "include": ["src"]
