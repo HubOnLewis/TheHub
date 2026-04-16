@@ -31,7 +31,7 @@ services:
     rootDir: .
 
     # Build: compile shared first (API imports it at runtime), then compile API
-    buildCommand: npm install && npm run build --workspace=packages/shared && npm run build --workspace=packages/api
+    buildCommand: npm install --include=dev && npm run build --workspace=packages/shared && npm run build --workspace=packages/api
 
     # Start: call node directly — npm start includes --env-file which crashes
     # when .env doesn't exist (Render injects env vars into process.env directly)
@@ -71,7 +71,7 @@ services:
     # VITE_API_URL must be set in the Render dashboard BEFORE building.
     # Vite bakes env vars into the bundle at build time — a redeploy is
     # required if the API URL ever changes.
-    buildCommand: npm install && npm run build --workspace=packages/web
+    buildCommand: npm install --include=dev && npm run build --workspace=packages/web
 
     staticPublishPath: packages/web/dist
 
