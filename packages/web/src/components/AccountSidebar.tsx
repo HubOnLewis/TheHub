@@ -58,7 +58,7 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
                   <SnapRow label="Open Follow-ups" value={String(summary.engagementState.openFollowUps)} />
                   <SnapRow label="Overdue Follow-ups" value={String(summary.engagementState.overdueFollowUps)} />
                   {summary.engagementState.isStale && (
-                    <div style={{ fontSize: 11, color: 'var(--red)', fontWeight: 700 }}>Stale activity (>{14} days)</div>
+                    <div style={{ fontSize: 11, color: 'var(--red)', fontWeight: 700 }}>Stale activity ({'>'}{14} days)</div>
                   )}
                 </>
               )}

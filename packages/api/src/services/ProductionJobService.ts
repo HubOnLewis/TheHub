@@ -28,7 +28,8 @@ export class ProductionJobService {
     if (!build) return { hasImpact: false, reasons: [] as string[] };
     if (changeOrders.data.some(c => c.status === 'pending_approval')) reasons.push('Pending changes may affect current build');
     if (job?.buildVersionId && build.activeVersionId && job.buildVersionId !== build.activeVersionId) reasons.push('Spec version mismatch with production job');
-    if (job?.createdAt && changeOrders.data.some(c => c.status === 'approved' && new Date(c.updatedAt).getTime() > new Date(job.createdAt).getTime())) {
+    const createdAt = job?.createdAt;
+    if (createdAt && changeOrders.data.some(c => c.status === 'approved' && new Date(c.updatedAt).getTime() > new Date(createdAt).getTime())) {
       reasons.push('Change order approved after production start');
     }
     return { hasImpact: reasons.length > 0, reasons };
