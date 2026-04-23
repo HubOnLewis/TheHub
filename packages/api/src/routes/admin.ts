@@ -5,6 +5,7 @@ import { validate } from '../middleware/validate.js';
 import { adminService } from '../services/AdminService.js';
 import { getDB } from '../config/db.js';
 import { CreateUserSchema } from '@mtte-core/shared';
+import { identityIntegrityService } from '../services/IdentityIntegrityService.js';
 
 const router = Router();
 router.use(requireAuth, requireRole('super_admin', 'admin'));
@@ -37,6 +38,12 @@ router.get('/stats', async (_req, res, next) => {
 router.get('/sync-status', async (_req, res, next) => {
   try {
     res.json(await adminService.syncStatus(getDB()));
+  } catch (err) { next(err); }
+});
+
+router.get('/integrity-report', async (_req, res, next) => {
+  try {
+    res.json(await identityIntegrityService.integrityReport(getDB()));
   } catch (err) { next(err); }
 });
 

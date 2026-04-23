@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useProductionJobs, useProductionJob, useProductionMutations } from '../hooks/useProduction.js';
+import { useCloseoutChecklist, useDeliveryMutations } from '../hooks/useDelivery.js';
 import { EmptyState, Modal, Spinner } from '../components/ui/index.js';
 
 export default function Production() {
@@ -8,7 +9,9 @@ export default function Production() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data, isLoading } = useProductionJobs({ status: (status || undefined) as any, q: q || undefined, limit: 200 });
   const { data: selected } = useProductionJob(selectedId);
+  const { data: closeout } = useCloseoutChecklist(selectedId);
   const mutations = useProductionMutations();
+  const delivery = useDeliveryMutations();
   const rows = data?.data ?? [];
   const grouped = useMemo(() => ({
     ready: rows.filter((r: any) => r.status === 'ready'),
@@ -46,6 +49,10 @@ export default function Production() {
                         <div style={{ fontWeight: 700 }}>{j.build?.name ?? 'Build'} · {j.unit?.year ?? ''} {j.unit?.make ?? ''} {j.unit?.model ?? ''}</div>
                         <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>job {j.jobNumber ?? j._id.slice(0, 8)} · team {j.assignedTeam ?? 'unassigned'}</div>
                         <div style={{ fontSize: 12 }}>status {j.status} · frozen version {j.buildVersionId}</div>
+                        <div style={{ fontSize: 12 }}>
+                          progress {(j.productionProgressSummary?.percentComplete ?? 0)}% · blocked {j.productionProgressSummary?.blockedTasks ?? 0} · in-progress {j.productionProgressSummary?.inProgressTasks ?? 0}
+                        </div>
+                        {j.delivery && <div style={{ fontSize: 12 }}>delivery {j.delivery.status} · readiness {j.delivery.deliveryReadiness?.readinessLevel}</div>}
                         {j.productionImpact?.hasImpact && <div style={{ fontSize: 12, color: 'var(--red)' }}>{j.productionImpact.reasons.join(' · ')}</div>}
                       </div>
                       <div style={{ display: 'flex', gap: 6 }}>
@@ -83,6 +90,80 @@ export default function Production() {
                     </tbody>
                   </table>
                 )}
+              </div>
+              <div className="card" style={{ padding: 12, marginTop: 10 }}>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>Task Board</div>
+                <div style={{ fontSize: 12, marginBottom: 8 }}>
+                  Progress {(selected.productionProgressSummary?.percentComplete ?? 0)}% · risk {selected.productionProgressSummary?.progressRiskLevel} · blocked {selected.productionProgressSummary?.blockedTasks ?? 0}
+                </div>
+                {!!selected.productionProgressSummary?.progressRiskReasons?.length && (
+                  <ul style={{ margin: '0 0 8px 16px', fontSize: 12 }}>
+                    {(selected.productionProgressSummary.progressRiskReasons ?? []).slice(0, 3).map((r: string, i: number) => <li key={i}>{r}</li>)}
+                  </ul>
+                )}
+                {(selected.tasks ?? []).length === 0 ? <div className="text-muted">No tasks</div> : (
+                  <div style={{ display: 'grid', gap: 6 }}>
+                    {(selected.tasks as any[]).map(t => (
+                      <div key={t._id} style={{ border: '1px solid var(--border)', borderRadius: 6, padding: '8px 10px', display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                        <div>
+                          <div style={{ fontSize: 12, fontWeight: 700 }}>{t.sequence ? `${t.sequence}. ` : ''}{t.title}</div>
+                          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{t.category} · {t.status}</div>
+                          {t.blockedReason && <div style={{ fontSize: 12, color: 'var(--red)' }}>Blocked: {t.blockedReason}</div>}
+                        </div>
+                        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                          {t.status !== 'in_progress' && t.status !== 'completed' && (
+                            <button className="btn btn-secondary" onClick={() => mutations.updateTask.mutate({ id: t._id, payload: { status: 'in_progress' } })}>Start</button>
+                          )}
+                          {t.status !== 'completed' && (
+                            <button className="btn btn-secondary" onClick={() => mutations.updateTask.mutate({ id: t._id, payload: { status: 'completed' } })}>Complete</button>
+                          )}
+                          {t.status !== 'blocked' && (
+                            <button className="btn btn-ghost" onClick={() => {
+                              const reason = prompt('Blocked reason');
+                              if (!reason) return;
+                              mutations.updateTask.mutate({ id: t._id, payload: { status: 'blocked', blockedReason: reason } });
+                            }}>Block</button>
+                          )}
+                          {t.status === 'blocked' && (
+                            <button className="btn btn-ghost" onClick={() => mutations.updateTask.mutate({ id: t._id, payload: { status: 'ready', blockedReason: null } })}>Unblock</button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div className="card" style={{ padding: 12, marginTop: 10 }}>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>Delivery Readiness + Closeout</div>
+                <div style={{ fontSize: 12, marginBottom: 6 }}>
+                  readiness {selected.delivery?.deliveryReadiness?.readinessLevel ?? 'not_ready'} · {selected.delivery?.deliveryReadiness?.isReady ? 'ready' : 'not ready'}
+                </div>
+                {!!selected.delivery?.deliveryReadiness?.reasons?.length && (
+                  <ul style={{ margin: '0 0 8px 16px', fontSize: 12 }}>
+                    {selected.delivery.deliveryReadiness.reasons.slice(0, 3).map((r: string, i: number) => <li key={i}>{r}</li>)}
+                  </ul>
+                )}
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
+                  {!selected.delivery && <button className="btn btn-secondary" onClick={() => delivery.create.mutate({ productionJobId: selected._id, buildId: selected.buildId, unitId: selected.unitId, dealId: selected.dealId, status: 'pending' })}>Create Delivery Record</button>}
+                  {selected.delivery?.status === 'pending' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'ready_for_delivery' } })}>Mark Ready</button>}
+                  {selected.delivery?.status === 'ready_for_delivery' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'scheduled', scheduledDeliveryDate: new Date(Date.now() + 86400000).toISOString() } })}>Schedule Delivery</button>}
+                  {selected.delivery?.status === 'scheduled' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'delivered', actualDeliveryDate: new Date().toISOString() } })}>Mark Delivered</button>}
+                  {selected.delivery?.status === 'delivered' && <button className="btn btn-ghost" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'closed' } })}>Close Out</button>}
+                </div>
+                <div style={{ fontSize: 12, marginBottom: 6 }}>
+                  checklist: inspection {closeout?.finalInspectionComplete ? 'yes' : 'no'} · docs {closeout?.customerFacingDocsComplete ? 'yes' : 'no'} · photos {closeout?.photosComplete ? 'yes' : 'no'} · punch resolved {closeout?.punchItemsResolved ? 'yes' : 'no'}
+                </div>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                  <button className="btn btn-secondary" onClick={() => delivery.updateCloseout.mutate({ productionJobId: selected._id, payload: { finalInspectionComplete: !(closeout?.finalInspectionComplete ?? false) } })}>Toggle Inspection</button>
+                  <button className="btn btn-secondary" onClick={() => delivery.updateCloseout.mutate({ productionJobId: selected._id, payload: { customerFacingDocsComplete: !(closeout?.customerFacingDocsComplete ?? false) } })}>Toggle Docs</button>
+                  <button className="btn btn-secondary" onClick={() => delivery.updateCloseout.mutate({ productionJobId: selected._id, payload: { photosComplete: !(closeout?.photosComplete ?? false) } })}>Toggle Photos</button>
+                  <button className="btn btn-ghost" onClick={() => {
+                    const title = prompt('Punch item title');
+                    if (!title) return;
+                    const items = [...(closeout?.punchItems ?? []), { id: `p_${Date.now()}`, title, status: 'open' }];
+                    delivery.updateCloseout.mutate({ productionJobId: selected._id, payload: { punchItems: items } });
+                  }}>Add Punch Item</button>
+                </div>
               </div>
             </div>
           )}

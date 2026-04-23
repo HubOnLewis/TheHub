@@ -7,6 +7,11 @@ import { BuildRepository } from '../repositories/BuildRepository.js';
 import { ChangeOrderRepository } from '../repositories/ChangeOrderRepository.js';
 import { BuildVersionRepository } from '../repositories/BuildVersionRepository.js';
 import { UnitRepository } from '../repositories/UnitRepository.js';
+import { ProductionTaskRepository } from '../repositories/ProductionTaskRepository.js';
+import { productionProgressService } from './ProductionProgressService.js';
+import { productionTaskService } from './ProductionTaskService.js';
+import { deliveryService } from './DeliveryService.js';
+import { identityIntegrityService } from './IdentityIntegrityService.js';
 
 const UPDATABLE_BY_SHOP = new Set(['service', 'parts', 'management', 'admin', 'super_admin']);
 
@@ -54,7 +59,14 @@ export class ProductionJobService {
       build: buildById.get(job.buildId),
       productionImpact: await this.impactForBuild(db, ctx, job.buildId, { createdAt: job.createdAt, buildVersionId: job.buildVersionId }),
     })));
-    return { ...out, data: withImpact };
+    const tasks = await ProductionTaskRepository.listByProductionJobIds(db, ctx, withImpact.map(j => j._id));
+    const withProgress = withImpact.map(job => ({
+      ...job,
+      productionProgressSummary: productionProgressService.evaluate(job as any, tasks.filter(t => t.productionJobId === job._id) as any),
+    }));
+    const deliveryRows = await deliveryService.list(db, ctx, {}, { page: 1, limit: 5000, sort: 'updatedAt', order: 'desc' });
+    const deliveryByJob = new Map((deliveryRows.data as Array<any>).map(d => [d.productionJobId, d]));
+    return { ...out, data: withProgress.map(j => ({ ...j, delivery: deliveryByJob.get(j._id) })) };
   }
 
   async getById(db: Db, ctx: TenantContext, id: string) {
@@ -67,20 +79,27 @@ export class ProductionJobService {
     ]);
     if (!build) throw new NotFoundError('Build');
     if (!unit) throw new NotFoundError('Unit');
+    await productionTaskService.ensureGeneratedDefaults(db, ctx, id);
+    const tasks = await ProductionTaskRepository.listTasks(db, ctx, { productionJobId: id }, { page: 1, limit: 500, sort: 'sequence', order: 'asc' });
+    const progress = productionProgressService.evaluate(job as any, tasks.data as any);
     return {
       ...job,
       build,
       unit,
       frozenVersion: version,
+      tasks: tasks.data,
+      productionProgressSummary: progress,
       productionImpact: await this.impactForBuild(db, ctx, job.buildId, { createdAt: job.createdAt, buildVersionId: job.buildVersionId }),
+      delivery: await deliveryService.list(db, ctx, { productionJobId: id }, { page: 1, limit: 1, sort: 'updatedAt', order: 'desc' }).then(x => x.data[0] ?? null),
     };
   }
 
   async create(db: Db, ctx: TenantContext, payload: CreateProductionJobPayload) {
-    const build = await BuildRepository.findById(db, ctx, payload.buildId);
-    if (!build) throw new NotFoundError('Build');
-    const unit = await UnitRepository.findById(db, ctx, payload.unitId);
-    if (!unit) throw new NotFoundError('Unit');
+    const { build, unit } = await identityIntegrityService.validateProductionChain(db, ctx, {
+      buildId: payload.buildId,
+      unitId: payload.unitId,
+      dealId: payload.dealId,
+    });
     if (!['approved', 'in_production', 'completed'].includes(build.status)) {
       throw new ValidationError('Production job requires an approved build');
     }
@@ -103,6 +122,7 @@ export class ProductionJobService {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+    await productionTaskService.ensureGeneratedDefaults(db, ctx, created._id);
     return created;
   }
 
@@ -129,6 +149,10 @@ export class ProductionJobService {
   async counts(db: Db, ctx: TenantContext) {
     const rows = await this.list(db, ctx, {}, { page: 1, limit: 5000, sort: 'updatedAt', order: 'desc' });
     const jobs = rows.data as Array<any>;
+    const activeJobs = jobs.filter(j => ['ready', 'in_progress', 'paused'].includes(j.status));
+    const blockedJobs = activeJobs.filter(j => j.productionProgressSummary?.blockedTasks > 0);
+    const jobsWithNoStartedTasks = jobs.filter(j => (j.productionProgressSummary?.jobsWithNoStartedTasks ?? 0) > 0);
+    const jobsNearCompletion = jobs.filter(j => (j.productionProgressSummary?.jobsNearCompletion ?? 0) > 0);
     return {
       queued: jobs.filter(j => j.status === 'queued').length,
       ready: jobs.filter(j => j.status === 'ready').length,
@@ -136,6 +160,12 @@ export class ProductionJobService {
       paused: jobs.filter(j => j.status === 'paused').length,
       completed: jobs.filter(j => j.status === 'completed').length,
       jobsWithChangeConflicts: jobs.filter(j => j.productionImpact?.hasImpact).length,
+      shopExecutionCounts: {
+        activeJobs: activeJobs.length,
+        blockedJobs: blockedJobs.length,
+        jobsWithNoStartedTasks: jobsWithNoStartedTasks.length,
+        jobsNearCompletion: jobsNearCompletion.length,
+      },
     };
   }
 }

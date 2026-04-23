@@ -17,6 +17,7 @@ import AccountCoverage from './pages/AccountCoverage.js';
 import AccountExpansion from './pages/AccountExpansion.js';
 import Builds from './pages/Builds.js';
 import Production from './pages/Production.js';
+import Delivery from './pages/Delivery.js';
 
 function Shell() {
   const { user, logout } = useAppStore();
@@ -36,6 +37,7 @@ function Shell() {
             { to: '/units',     label: 'Units' },
             { to: '/builds',    label: 'Builds' },
             { to: '/production',    label: 'Production' },
+            { to: '/delivery',    label: 'Delivery' },
             { to: '/companies', label: 'Companies' },
             { to: '/my-work', label: 'My Work' },
             { to: '/pipeline-pressure', label: 'Pipeline Pressure' },
@@ -77,6 +79,7 @@ function Shell() {
             <Route path="/units"           element={<Units />} />
             <Route path="/builds"          element={<Builds />} />
             <Route path="/production"          element={<Production />} />
+            <Route path="/delivery"          element={<Delivery />} />
             <Route path="/admin"           element={<Admin />} />
             <Route path="/companies"       element={<Companies />} />
             <Route path="/companies/:id"   element={<CompanyDetail />} />

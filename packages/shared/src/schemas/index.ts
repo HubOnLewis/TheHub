@@ -3,7 +3,8 @@ import { z } from 'zod';
 import {
   ENTITIES, LOCATIONS, ROLES, LEAD_STATUSES, DEAL_STATUSES, UNIT_STATUSES, ACTIVITY_TYPES,
   INTERACTION_TYPES, INTERACTION_DIRECTIONS, INTERACTION_STATUS, INTERACTION_OUTCOMES,
-  ACCOUNT_PLAN_STATUSES, BUILD_STATUSES, BUILD_SPEC_ITEM_CATEGORIES, BUILD_COST_SOURCES, BUILD_PRICING_SOURCES, CHANGE_ORDER_STATUSES, PRODUCTION_JOB_STATUSES,
+  ACCOUNT_PLAN_STATUSES, BUILD_STATUSES, BUILD_SPEC_ITEM_CATEGORIES, BUILD_COST_SOURCES, BUILD_PRICING_SOURCES, CHANGE_ORDER_STATUSES,   PRODUCTION_JOB_STATUSES, PRODUCTION_TASK_CATEGORIES, PRODUCTION_TASK_STATUSES, DELIVERY_RECORD_STATUSES,
+  DELIVERY_PACKET_STATUSES, POST_DELIVERY_FOLLOW_UP_STATUSES, POST_DELIVERY_FOLLOW_UP_TYPES,
 } from '../constants/index.js';
 
 // ── Pagination ────────────────────────────────────────────────────
@@ -31,6 +32,7 @@ export type CreateLeadPayload = z.infer<typeof CreateLeadSchema>;
 // ── Deal ──────────────────────────────────────────────────────────
 export const CreateDealSchema = z.object({
   title:      z.string().min(1, 'Deal title required'),
+  companyId:  z.string().min(1).optional(),
   company:    z.string().min(1, 'Company required'),
   contact:    z.string().min(1, 'Contact required'),
   amount:     z.number().min(0).default(0),
@@ -172,6 +174,131 @@ export const PatchProductionJobSchema = z.object({
   notes: z.string().optional().nullable(),
 });
 export type PatchProductionJobPayload = z.infer<typeof PatchProductionJobSchema>;
+
+export const CreateProductionTaskSchema = z.object({
+  productionJobId: z.string().min(1),
+  buildId: z.string().min(1),
+  unitId: z.string().min(1),
+  category: z.enum(PRODUCTION_TASK_CATEGORIES),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  status: z.enum(PRODUCTION_TASK_STATUSES).default('not_started'),
+  sequence: z.number().int().min(1).optional(),
+  assignedUserId: z.string().optional(),
+  assignedUserName: z.string().optional(),
+  assignedTeam: z.string().optional(),
+  blockedReason: z.string().optional(),
+  notes: z.string().optional(),
+});
+export type CreateProductionTaskPayload = z.infer<typeof CreateProductionTaskSchema>;
+
+export const PatchProductionTaskSchema = z.object({
+  title: z.string().min(1).optional(),
+  description: z.string().optional().nullable(),
+  status: z.enum(PRODUCTION_TASK_STATUSES).optional(),
+  sequence: z.number().int().min(1).optional().nullable(),
+  assignedUserId: z.string().optional().nullable(),
+  assignedUserName: z.string().optional().nullable(),
+  assignedTeam: z.string().optional().nullable(),
+  blockedReason: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+export type PatchProductionTaskPayload = z.infer<typeof PatchProductionTaskSchema>;
+
+export const DeliveryPunchItemSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(1),
+  status: z.enum(['open', 'resolved']),
+  notes: z.string().optional(),
+});
+
+export const CreateDeliveryRecordSchema = z.object({
+  productionJobId: z.string().min(1),
+  buildId: z.string().min(1),
+  unitId: z.string().min(1),
+  dealId: z.string().optional(),
+  companyId: z.string().optional(),
+  status: z.enum(DELIVERY_RECORD_STATUSES).default('pending'),
+  scheduledDeliveryDate: z.string().datetime({ offset: true }).optional(),
+  actualDeliveryDate: z.string().datetime({ offset: true }).optional(),
+  deliveryContactName: z.string().optional(),
+  deliveryNotes: z.string().optional(),
+});
+export type CreateDeliveryRecordPayload = z.infer<typeof CreateDeliveryRecordSchema>;
+
+export const PatchDeliveryRecordSchema = z.object({
+  status: z.enum(DELIVERY_RECORD_STATUSES).optional(),
+  scheduledDeliveryDate: z.string().datetime({ offset: true }).optional().nullable(),
+  actualDeliveryDate: z.string().datetime({ offset: true }).optional().nullable(),
+  deliveryContactName: z.string().optional().nullable(),
+  deliveryNotes: z.string().optional().nullable(),
+});
+export type PatchDeliveryRecordPayload = z.infer<typeof PatchDeliveryRecordSchema>;
+
+export const CreateCloseoutChecklistSchema = z.object({
+  productionJobId: z.string().min(1),
+  deliveryRecordId: z.string().optional(),
+  finalInspectionComplete: z.boolean().default(false),
+  customerFacingDocsComplete: z.boolean().default(false),
+  photosComplete: z.boolean().default(false),
+  punchItemsResolved: z.boolean().default(false),
+  notes: z.string().optional(),
+  punchItems: z.array(DeliveryPunchItemSchema).default([]),
+});
+export type CreateCloseoutChecklistPayload = z.infer<typeof CreateCloseoutChecklistSchema>;
+
+export const PatchCloseoutChecklistSchema = z.object({
+  finalInspectionComplete: z.boolean().optional(),
+  customerFacingDocsComplete: z.boolean().optional(),
+  photosComplete: z.boolean().optional(),
+  punchItemsResolved: z.boolean().optional(),
+  notes: z.string().optional().nullable(),
+  punchItems: z.array(DeliveryPunchItemSchema).optional(),
+});
+export type PatchCloseoutChecklistPayload = z.infer<typeof PatchCloseoutChecklistSchema>;
+
+export const CreateDeliveryPacketSchema = z.object({
+  deliveredVersionId: z.string().min(1).optional(),
+  summary: z.string().optional(),
+  deliveryNotes: z.string().optional(),
+  includesPhotos: z.boolean().default(false),
+  includesFinalSpecSummary: z.boolean().default(false),
+  includesCustomerDocs: z.boolean().default(false),
+  includesKeyContacts: z.boolean().default(false),
+});
+export type CreateDeliveryPacketPayload = z.infer<typeof CreateDeliveryPacketSchema>;
+
+export const PatchDeliveryPacketSchema = z.object({
+  status: z.enum(DELIVERY_PACKET_STATUSES).optional(),
+  deliveredVersionId: z.string().min(1).optional().nullable(),
+  summary: z.string().optional().nullable(),
+  deliveryNotes: z.string().optional().nullable(),
+  includesPhotos: z.boolean().optional(),
+  includesFinalSpecSummary: z.boolean().optional(),
+  includesCustomerDocs: z.boolean().optional(),
+  includesKeyContacts: z.boolean().optional(),
+});
+export type PatchDeliveryPacketPayload = z.infer<typeof PatchDeliveryPacketSchema>;
+
+export const CreatePostDeliveryFollowUpSchema = z.object({
+  followUpType: z.enum(POST_DELIVERY_FOLLOW_UP_TYPES).default('check_in'),
+  status: z.enum(POST_DELIVERY_FOLLOW_UP_STATUSES).default('pending'),
+  dueAt: z.string().datetime({ offset: true }).optional(),
+  ownerUserId: z.string().optional(),
+  ownerName: z.string().optional(),
+  notes: z.string().optional(),
+});
+export type CreatePostDeliveryFollowUpPayload = z.infer<typeof CreatePostDeliveryFollowUpSchema>;
+
+export const PatchPostDeliveryFollowUpSchema = z.object({
+  status: z.enum(POST_DELIVERY_FOLLOW_UP_STATUSES).optional(),
+  dueAt: z.string().datetime({ offset: true }).optional().nullable(),
+  completedAt: z.string().datetime({ offset: true }).optional().nullable(),
+  ownerUserId: z.string().optional().nullable(),
+  ownerName: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+export type PatchPostDeliveryFollowUpPayload = z.infer<typeof PatchPostDeliveryFollowUpSchema>;
 
 // ── User ──────────────────────────────────────────────────────────
 export const CreateUserSchema = z.object({

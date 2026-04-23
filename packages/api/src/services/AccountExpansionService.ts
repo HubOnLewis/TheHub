@@ -2,6 +2,7 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { accountPenetrationService, type AccountCoverageRow, type AccountPenetrationState } from './AccountPenetrationService.js';
 import { AccountPlanRepository } from '../repositories/AccountPlanRepository.js';
+import { deliveryService } from './DeliveryService.js';
 
 export interface AccountExpansionState {
   expansionReadiness: 'low' | 'medium' | 'high';
@@ -45,6 +46,7 @@ function computeExpansion(
   if (hasOpenPipeline && penetration.stalledDeals > 0) blockers.push('Open pipeline already needs recovery before expansion');
   if (penetration.activeDeals > 0 && (penetration.stalledDeals > 0 || penetration.criticalDeals > 0)) {
     blockers.push('Production backlog affecting account delivery confidence');
+    blockers.push('Shop execution risk may affect account confidence');
   }
 
   if (hasRecentActivity && !hasOpenPipeline) opportunitySignals.push('Recent account activity but no open deals');
@@ -174,10 +176,31 @@ export class AccountExpansionService {
     const coverage = await accountPenetrationService.byCompanyId(db, ctx, companyId);
     if (!coverage) return null;
     const plan = await AccountPlanRepository.findByCompanyId(db, ctx, companyId);
-    return this.toExpansionRow(coverage, plan ?? undefined, {
+    const handoff = await deliveryService.companyHandoffContext(db, ctx, companyId);
+    const mergedCoverage: AccountCoverageRow = {
+      ...coverage,
+      accountCoverageWarnings: Array.from(new Set([
+        ...coverage.accountCoverageWarnings,
+        ...handoff.customerHandoffWarnings,
+      ])),
+    };
+    let row = this.toExpansionRow(mergedCoverage, plan ?? undefined, {
       repeatedUnits: coverage.accountPenetrationState.openDeals >= 2,
       similarBuildsNoStandard: coverage.accountPenetrationState.openDeals >= 2 && coverage.accountPenetrationState.uniqueContacts90d >= 2,
     });
+    if (handoff.recentDeliveryExpansionSignal) {
+      row = {
+        ...row,
+        accountExpansionState: {
+          ...row.accountExpansionState,
+          opportunitySignals: Array.from(new Set([
+            ...row.accountExpansionState.opportunitySignals,
+            'Recent delivery may create expansion or service opportunity',
+          ])),
+        },
+      };
+    }
+    return row;
   }
 
   async expansionCounts(db: Db, ctx: TenantContext) {

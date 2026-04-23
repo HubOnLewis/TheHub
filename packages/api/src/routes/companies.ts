@@ -11,6 +11,7 @@ import { DealRepository } from '../repositories/DealRepository.js';
 import { buildService } from '../services/BuildService.js';
 import { unitService } from '../services/UnitService.js';
 import { getDB } from '../config/db.js';
+import { deliveryService } from '../services/DeliveryService.js';
 
 const router = Router();
 router.use(requireAuth, resolveTenant);
@@ -149,7 +150,7 @@ router.get('/:id/account-plan', async (req, res, next) => {
 router.get('/:id/summary', async (req, res, next) => {
   try {
     const company = await companyService.getById(getDB(), req.tenant, req.params['id']!);
-    const deals     = await DealRepository.listByCompanyName(getDB(), req.tenant, company.name);
+    const deals     = await DealRepository.listByCompanyId(getDB(), req.tenant, company._id);
 
     const openStatuses = new Set(['Draft', 'Pending Approval', 'Approved', 'Won', 'In Build']);
     let openPipelineTotal = 0;
@@ -172,6 +173,9 @@ router.get('/:id/summary', async (req, res, next) => {
       getDB(), req.tenant, req.params['id']!,
     );
     const accountPlan = await accountPlanService.getByCompanyId(
+      getDB(), req.tenant, req.params['id']!,
+    );
+    const customerDeliveryContext = await deliveryService.companyHandoffContext(
       getDB(), req.tenant, req.params['id']!,
     );
     const now   = new Date();
@@ -205,6 +209,7 @@ router.get('/:id/summary', async (req, res, next) => {
         reviewedAt: accountPlan.reviewedAt,
         reviewedByName: accountPlan.reviewedByName,
       } : null,
+      customerDeliveryContext,
     });
   } catch (err) { next(err); }
 });

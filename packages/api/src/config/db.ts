@@ -37,6 +37,10 @@ export async function connectDB(): Promise<Db> {
     { name: 'interactions_build_created' },
   );
   void database.collection('interactions').createIndex(
+    { tenantId: 1, relatedDealId: 1, createdAt: -1 },
+    { name: 'interactions_relatedDeal_created' },
+  );
+  void database.collection('interactions').createIndex(
     { tenantId: 1, summary: 'text', body: 'text' },
     {
       name: 'interactions_tenant_summary_body_text',
@@ -51,6 +55,10 @@ export async function connectDB(): Promise<Db> {
   void database.collection('weekly_cadence_reviews').createIndex(
     { tenantId: 1, reviewedByUserId: 1, reviewedAt: -1 },
     { name: 'weekly_cadence_reviewer_time' },
+  );
+  void database.collection('deals').createIndex(
+    { tenantId: 1, companyId: 1, status: 1 },
+    { name: 'deals_tenant_companyId_status' },
   );
   void database.collection('deals').createIndex(
     { tenantId: 1, company: 1, status: 1 },
@@ -99,6 +107,54 @@ export async function connectDB(): Promise<Db> {
   void database.collection('production_jobs').createIndex(
     { tenantId: 1, buildId: 1, unitId: 1 },
     { name: 'production_jobs_tenant_build_unit' },
+  );
+  void database.collection('production_jobs').createIndex(
+    { tenantId: 1, dealId: 1, status: 1 },
+    { name: 'production_jobs_tenant_deal_status' },
+  );
+  void database.collection('production_tasks').createIndex(
+    { tenantId: 1, productionJobId: 1, sequence: 1 },
+    { name: 'production_tasks_tenant_job_sequence' },
+  );
+  void database.collection('production_tasks').createIndex(
+    { tenantId: 1, status: 1, updatedAt: -1 },
+    { name: 'production_tasks_tenant_status_updated' },
+  );
+  void database.collection('delivery_records').createIndex(
+    { tenantId: 1, status: 1, updatedAt: -1 },
+    { name: 'delivery_records_tenant_status_updated' },
+  );
+  void database.collection('delivery_records').createIndex(
+    { tenantId: 1, productionJobId: 1 },
+    { name: 'delivery_records_tenant_job' },
+  );
+  void database.collection('delivery_records').createIndex(
+    { tenantId: 1, buildId: 1, unitId: 1, companyId: 1 },
+    { name: 'delivery_records_tenant_build_unit_company' },
+  );
+  void database.collection('delivery_records').createIndex(
+    { tenantId: 1, companyId: 1, updatedAt: -1 },
+    { name: 'delivery_records_tenant_company_updated' },
+  );
+  void database.collection('delivery_packets').createIndex(
+    { tenantId: 1, deliveryRecordId: 1 },
+    { name: 'delivery_packets_tenant_delivery', unique: true },
+  );
+  void database.collection('delivery_packets').createIndex(
+    { tenantId: 1, status: 1, updatedAt: -1 },
+    { name: 'delivery_packets_tenant_status_updated' },
+  );
+  void database.collection('post_delivery_follow_ups').createIndex(
+    { tenantId: 1, deliveryRecordId: 1, status: 1, dueAt: 1 },
+    { name: 'post_delivery_followups_tenant_delivery_status_due' },
+  );
+  void database.collection('post_delivery_follow_ups').createIndex(
+    { tenantId: 1, companyId: 1, status: 1 },
+    { name: 'post_delivery_followups_tenant_company_status' },
+  );
+  void database.collection('closeout_checklists').createIndex(
+    { tenantId: 1, productionJobId: 1 },
+    { name: 'closeout_checklists_tenant_job', unique: true },
   );
   void database.collection('account_plans').createIndex(
     { tenantId: 1, companyId: 1 },

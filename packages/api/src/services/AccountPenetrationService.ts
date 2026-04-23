@@ -6,6 +6,7 @@ import { dealService } from './DealService.js';
 type CompanyRow = { _id: string; name: string };
 type EnrichedDeal = {
   _id: string;
+  companyId?: string;
   company: string;
   status: string;
   ownerUserId?: string;
@@ -238,7 +239,8 @@ export class AccountPenetrationService {
     const deals = await dealService.listAllActiveEnriched(db, ctx) as EnrichedDeal[];
     const dealsByCompany = new Map<string, EnrichedDeal[]>();
     for (const d of deals) {
-      const key = (d.company ?? '').toLowerCase();
+      const key = d.companyId ?? '';
+      if (!key) continue;
       const arr = dealsByCompany.get(key) ?? [];
       arr.push(d);
       dealsByCompany.set(key, arr);
@@ -246,7 +248,7 @@ export class AccountPenetrationService {
 
     let rows: AccountCoverageRow[] = companies.map(c => {
       const i = iMap.get(c._id);
-      const d = dealsByCompany.get(c.name.toLowerCase()) ?? [];
+      const d = dealsByCompany.get(c._id) ?? [];
       const openDeals = d.length;
       const activeDeals = d.filter(x => ['Pending Approval', 'Approved', 'Won', 'In Build'].includes(x.status)).length;
       const stalledDeals = d.filter(x => x.dealExecutionState?.isStalled).length;

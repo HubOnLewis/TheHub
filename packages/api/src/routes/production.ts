@@ -2,9 +2,10 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
-import { CreateProductionJobSchema, PatchProductionJobSchema } from '@mtte-core/shared';
+import { CreateProductionJobSchema, PatchProductionJobSchema, CreateProductionTaskSchema, PatchProductionTaskSchema } from '@mtte-core/shared';
 import { getDB } from '../config/db.js';
 import { productionJobService } from '../services/ProductionJobService.js';
+import { productionTaskService } from '../services/ProductionTaskService.js';
 
 const router = Router();
 router.use(requireAuth, resolveTenant);
@@ -37,6 +38,30 @@ router.post('/', validate(CreateProductionJobSchema), async (req, res, next) => 
 router.patch('/:id', validate(PatchProductionJobSchema), async (req, res, next) => {
   try {
     res.json(await productionJobService.update(getDB(), req.tenant, req.params['id']!, req.body));
+  } catch (err) { next(err); }
+});
+
+router.get('/:id/tasks', async (req, res, next) => {
+  try {
+    res.json(await productionTaskService.listByProductionJobId(getDB(), req.tenant, req.params['id']!));
+  } catch (err) { next(err); }
+});
+
+router.post('/:id/tasks/generate-default', async (req, res, next) => {
+  try {
+    res.status(201).json(await productionTaskService.ensureGeneratedDefaults(getDB(), req.tenant, req.params['id']!));
+  } catch (err) { next(err); }
+});
+
+router.post('/tasks', validate(CreateProductionTaskSchema), async (req, res, next) => {
+  try {
+    res.status(201).json(await productionTaskService.create(getDB(), req.tenant, req.body));
+  } catch (err) { next(err); }
+});
+
+router.patch('/tasks/:taskId', validate(PatchProductionTaskSchema), async (req, res, next) => {
+  try {
+    res.json(await productionTaskService.update(getDB(), req.tenant, req.params['taskId']!, req.body));
   } catch (err) { next(err); }
 });
 

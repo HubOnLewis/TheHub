@@ -1,8 +1,6 @@
 import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { BuildRepository } from '../repositories/BuildRepository.js';
-import { UnitRepository } from '../repositories/UnitRepository.js';
-import { DealRepository } from '../repositories/DealRepository.js';
 import { NotFoundError, ValidationError } from '../errors/index.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
 import type { CreateBuildPayload, PatchBuildPayload } from '@mtte-core/shared';
@@ -10,6 +8,7 @@ import { buildMarginService } from './BuildMarginService.js';
 import { buildChangeService } from './BuildChangeService.js';
 import { ChangeOrderRepository } from '../repositories/ChangeOrderRepository.js';
 import { ProductionJobRepository } from '../repositories/ProductionJobRepository.js';
+import { identityIntegrityService } from './IdentityIntegrityService.js';
 
 function withSpecIds(items: Array<any>) {
   return (items ?? []).map(i => ({ id: i.id ?? `spec_${Math.random().toString(36).slice(2, 10)}`, ...i }));
@@ -106,12 +105,10 @@ export class BuildService {
   }
 
   async create(db: Db, ctx: TenantContext, payload: CreateBuildPayload) {
-    const unit = await UnitRepository.findById(db, ctx, payload.unitId);
-    if (!unit) throw new NotFoundError('Unit');
-    if (payload.dealId) {
-      const deal = await DealRepository.findById(db, ctx, payload.dealId);
-      if (!deal) throw new NotFoundError('Deal');
-    }
+    const { unit } = await identityIntegrityService.validateBuildChain(db, ctx, {
+      unitId: payload.unitId,
+      dealId: payload.dealId,
+    });
     const created = await BuildRepository.insertOne(db, ctx, {
       tenantId: unit.tenantId,
       unitId: payload.unitId,

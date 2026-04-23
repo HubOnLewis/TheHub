@@ -22,6 +22,7 @@ import accountExpansionRoutes from './routes/accountExpansion.js';
 import accountPlanRoutes from './routes/accountPlans.js';
 import buildRoutes from './routes/builds.js';
 import productionRoutes from './routes/production.js';
+import deliveryRoutes from './routes/delivery.js';
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use('/api/account-expansion', accountExpansionRoutes);
 app.use('/api/account-plans', accountPlanRoutes);
 app.use('/api/builds', buildRoutes);
 app.use('/api/production', productionRoutes);
+app.use('/api/delivery', deliveryRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────
 app.use(errorHandler);

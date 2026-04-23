@@ -105,6 +105,22 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
                   </ul>
                 </div>
               )}
+              {!!summary.customerDeliveryContext && (
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Customer Delivery</div>
+                  <SnapRow label="Pending post-delivery follow-ups" value={String(summary.customerDeliveryContext.pendingPostDeliveryFollowUps.length)} />
+                  {summary.customerDeliveryContext.recentDeliveredUnits.slice(0, 3).map(u => (
+                    <div key={u.deliveryRecordId} style={{ fontSize: 11, marginTop: 6, color: 'var(--text-secondary)' }}>
+                      {u.unitSummary} · packet {u.packetStatus} · {u.deliveryHandoffState?.readinessLevel ?? '—'}
+                    </div>
+                  ))}
+                  {!!summary.customerDeliveryContext.customerHandoffWarnings?.length && (
+                    <ul style={{ margin: '8px 0 0 16px', padding: 0, fontSize: 11, color: 'var(--red)' }}>
+                      {summary.customerDeliveryContext.customerHandoffWarnings.slice(0, 4).map((w, i) => <li key={i}>{w}</li>)}
+                    </ul>
+                  )}
+                </div>
+              )}
               {!!summary.accountPenetrationState?.penetrationReasons?.length && (
                 <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
                   <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Penetration Reasons</div>

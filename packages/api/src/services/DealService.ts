@@ -8,6 +8,13 @@ import { InteractionRepository } from '../repositories/InteractionRepository.js'
 import { BuildRepository } from '../repositories/BuildRepository.js';
 import { ChangeOrderRepository } from '../repositories/ChangeOrderRepository.js';
 import { ProductionJobRepository } from '../repositories/ProductionJobRepository.js';
+import { ProductionTaskRepository } from '../repositories/ProductionTaskRepository.js';
+import { productionProgressService } from './ProductionProgressService.js';
+import { DeliveryRecordRepository } from '../repositories/DeliveryRecordRepository.js';
+import { DeliveryPacketRepository } from '../repositories/DeliveryPacketRepository.js';
+import { PostDeliveryFollowUpRepository } from '../repositories/PostDeliveryFollowUpRepository.js';
+import { CloseoutChecklistRepository } from '../repositories/CloseoutChecklistRepository.js';
+import { identityIntegrityService } from './IdentityIntegrityService.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
 import type { CreateDealPayload, DealStatus, UnitStatus } from '@mtte-core/shared';
 import { buildTenantId } from '@mtte-core/shared';
@@ -78,6 +85,21 @@ const DEAL_TO_UNIT_STATUS: Partial<Record<DealStatus, UnitStatus>> = {
   'Delivered': 'delivered',
 };
 
+function closeoutHandoffComplete(co: {
+  finalInspectionComplete?: boolean;
+  customerFacingDocsComplete?: boolean;
+  photosComplete?: boolean;
+  punchItemsResolved?: boolean;
+} | null | undefined): boolean {
+  if (!co) return false;
+  return !!(
+    co.finalInspectionComplete &&
+    co.customerFacingDocsComplete &&
+    co.photosComplete &&
+    co.punchItemsResolved
+  );
+}
+
 export class DealService {
   private enrichDeal(
     deal: DealDoc & { _id: string },
@@ -85,6 +107,18 @@ export class DealService {
     builds: Array<{ _id: string; dealId?: string; unitId: string; status: string; specItems: Array<unknown> }>,
     changeOrders: Array<{ buildId: string; status: string; costDelta?: number; sellDelta?: number; marginDelta?: number }>,
     productionJobs: Array<{ buildId: string; status: string; createdAt: Date | string; actualStartDate?: string }>,
+    productionTasks: Array<{ productionJobId: string; status: string; startedAt?: string; completedAt?: string; category: string }>,
+    deliveryRecords: Array<{ _id: string; productionJobId: string; status: string; actualDeliveryDate?: string }>,
+    deliveryHandoffMaps?: {
+      packetByDeliveryId: Map<string, { status: string }>;
+      followUpsByDeliveryId: Map<string, Array<{ status: string; dueAt?: Date | string; followUpType?: string }>>;
+      closeoutByJobId: Map<string, {
+        finalInspectionComplete?: boolean;
+        customerFacingDocsComplete?: boolean;
+        photosComplete?: boolean;
+        punchItemsResolved?: boolean;
+      } | null>;
+    },
   ) {
     const linked = interactions.filter(i => i.relatedDealId === deal._id);
     const linkedBuilds = builds.filter(b => b.dealId === deal._id || (deal.unitIds ?? []).includes(b.unitId) || deal.unitId === b.unitId);
@@ -100,6 +134,33 @@ export class DealService {
     const linkedBuildIds = new Set(linkedBuilds.map(b => b._id));
     const linkedChangeOrders = changeOrders.filter(c => linkedBuildIds.has(c.buildId));
     const linkedProductionJobs = productionJobs.filter(j => linkedBuildIds.has(j.buildId));
+    const linkedProgress = linkedProductionJobs.map(j => productionProgressService.evaluate(j as any, productionTasks.filter(t => t.productionJobId === (j as any)._id) as any));
+    const linkedDeliveries = deliveryRecords.filter(d => linkedProductionJobs.some(j => (j as any)._id === d.productionJobId));
+    const now = Date.now();
+    if (deliveryHandoffMaps) {
+      for (const d of linkedDeliveries) {
+        if (d.status !== 'delivered' && d.status !== 'closed') continue;
+        const packet = deliveryHandoffMaps.packetByDeliveryId.get(d._id);
+        const co = deliveryHandoffMaps.closeoutByJobId.get(d.productionJobId) ?? null;
+        if (!packet) pipelineWarnings.push('Delivered unit missing customer handoff packet');
+        else if (packet.status !== 'issued' || !closeoutHandoffComplete(co)) {
+          pipelineWarnings.push('Delivery complete but handoff not fully issued');
+        }
+        const fus = deliveryHandoffMaps.followUpsByDeliveryId.get(d._id) ?? [];
+        const overdueFu = fus.some(f =>
+          (f.status === 'pending' || f.status === 'scheduled') &&
+          f.dueAt &&
+          new Date(f.dueAt).getTime() < now,
+        );
+        if (overdueFu) pipelineWarnings.push('Post-delivery follow-up is overdue');
+        const checkIn = fus.find(f => f.followUpType === 'check_in');
+        if (checkIn && (checkIn.status === 'pending' || checkIn.status === 'scheduled') && !overdueFu) {
+          const deliveredAt = d.actualDeliveryDate ? new Date(d.actualDeliveryDate).getTime() : 0;
+          const staleFollowUp = deliveredAt > 0 && now - deliveredAt > 10 * 86400000;
+          if (staleFollowUp) pipelineWarnings.push('Delivered unit has no completed post-delivery follow-up');
+        }
+      }
+    }
     const execution = dealPressureService.evaluate(deal, linked);
     const pipelineWarnings = dealPressureService.buildWarnings(deal, linked, execution, linkedBuilds);
     if (dealBuildFinancialSummary.hasIncompleteBuildCosting) pipelineWarnings.push('Active deal has incomplete build costing');
@@ -114,6 +175,17 @@ export class DealService {
     if (linkedProductionJobs.some(j => j.status === 'paused')) pipelineWarnings.push('Production paused');
     if (linkedProductionJobs.some(j => (j.status === 'queued' || j.status === 'ready') && (Date.now() - new Date(j.createdAt).getTime()) > 7 * 24 * 60 * 60 * 1000)) {
       pipelineWarnings.push('Build delayed in production');
+    }
+    if (linkedProgress.some(p => p.blockedTasks > 0)) pipelineWarnings.push('Production job has blocked execution tasks');
+    if (linkedProgress.some(p => p.progressRiskLevel === 'high' || p.progressRiskLevel === 'critical')) pipelineWarnings.push('Approved build is in shop but progress is stalled');
+    if (linkedProductionJobs.some(j => j.status === 'completed') && linkedDeliveries.every(d => d.status !== 'scheduled' && d.status !== 'delivered' && d.status !== 'closed')) {
+      pipelineWarnings.push('Production complete but delivery not scheduled');
+    }
+    if (linkedDeliveries.some(d => d.status === 'ready_for_delivery') && linkedProductionJobs.some(j => j.status !== 'completed')) {
+      pipelineWarnings.push('Ready for delivery but closeout items incomplete');
+    }
+    if (linkedDeliveries.some(d => d.status === 'delivered') && linkedDeliveries.some(d => d.status !== 'closed')) {
+      pipelineWarnings.push('Delivered unit not fully closed out');
     }
     const forecastState = forecastConfidenceService.evaluate(deal, execution, pipelineWarnings, linked, linkedBuilds);
     // Forecast hygiene overlays
@@ -146,6 +218,9 @@ export class DealService {
         totalJobs: linkedProductionJobs.length,
         pausedJobs: linkedProductionJobs.filter(j => j.status === 'paused').length,
         inProgressJobs: linkedProductionJobs.filter(j => j.status === 'in_progress').length,
+        blockedJobs: linkedProgress.filter(p => p.blockedTasks > 0).length,
+        deliveryScheduled: linkedDeliveries.filter(d => d.status === 'scheduled').length,
+        delivered: linkedDeliveries.filter(d => d.status === 'delivered' || d.status === 'closed').length,
       },
       daysInStage,
       lastStageChangeAt: stageMovedAt,
@@ -177,9 +252,27 @@ export class DealService {
     const builds = Array.from(new Map([...dealBuilds, ...unitBuilds].map(b => [b._id, b])).values());
     const changeOrders = await ChangeOrderRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
     const productionJobs = await ProductionJobRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
+    const productionTasks = await ProductionTaskRepository.listByProductionJobIds(db, ctx, productionJobs.map(j => j._id));
+    const deliveryRecords = await DeliveryRecordRepository.listByProductionJobIds(db, ctx, productionJobs.map(j => j._id));
+    const drIds = deliveryRecords.map(r => r._id);
+    const jobIdsFromDr = deliveryRecords.map(r => r.productionJobId);
+    const [deliveryPackets, postDeliveryFollowUps, closeoutsForDeals] = await Promise.all([
+      DeliveryPacketRepository.listByDeliveryRecordIds(db, ctx, drIds),
+      PostDeliveryFollowUpRepository.listByDeliveryRecordIds(db, ctx, drIds),
+      CloseoutChecklistRepository.listByProductionJobIds(db, ctx, jobIdsFromDr),
+    ]);
+    const packetByDeliveryId = new Map(deliveryPackets.map(p => [p.deliveryRecordId, p]));
+    const followUpsByDeliveryId = new Map<string, Array<{ status: string; dueAt?: Date | string; followUpType?: string }>>();
+    for (const f of postDeliveryFollowUps) {
+      const arr = followUpsByDeliveryId.get(f.deliveryRecordId) ?? [];
+      arr.push({ status: f.status, dueAt: f.dueAt, followUpType: f.followUpType });
+      followUpsByDeliveryId.set(f.deliveryRecordId, arr);
+    }
+    const closeoutByJobId = new Map(closeoutsForDeals.map(c => [c.productionJobId, c]));
+    const deliveryHandoffMaps = { packetByDeliveryId, followUpsByDeliveryId, closeoutByJobId };
     return {
       ...result,
-      data: result.data.map(d => this.enrichDeal(d, linked, builds, changeOrders as any, productionJobs as any)),
+      data: result.data.map(d => this.enrichDeal(d, linked, builds, changeOrders as any, productionJobs as any, productionTasks as any, deliveryRecords as any, deliveryHandoffMaps)),
     };
   }
 
@@ -289,7 +382,28 @@ export class DealService {
     const builds = Array.from(new Map([...dealBuilds, ...unitBuilds].map(b => [b._id, b])).values());
     const changeOrders = await ChangeOrderRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
     const productionJobs = await ProductionJobRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
-    return this.enrichDeal(deal, linked, builds as any, changeOrders as any, productionJobs as any);
+    const productionTasks = await ProductionTaskRepository.listByProductionJobIds(db, ctx, productionJobs.map(j => j._id));
+    const deliveryRecords = await DeliveryRecordRepository.listByProductionJobIds(db, ctx, productionJobs.map(j => j._id));
+    const drIds = deliveryRecords.map(r => r._id);
+    const jobIdsFromDr = deliveryRecords.map(r => r.productionJobId);
+    const [deliveryPackets, postDeliveryFollowUps, closeoutsForDeals] = await Promise.all([
+      DeliveryPacketRepository.listByDeliveryRecordIds(db, ctx, drIds),
+      PostDeliveryFollowUpRepository.listByDeliveryRecordIds(db, ctx, drIds),
+      CloseoutChecklistRepository.listByProductionJobIds(db, ctx, jobIdsFromDr),
+    ]);
+    const packetByDeliveryId = new Map(deliveryPackets.map(p => [p.deliveryRecordId, p]));
+    const followUpsByDeliveryId = new Map<string, Array<{ status: string; dueAt?: Date | string; followUpType?: string }>>();
+    for (const f of postDeliveryFollowUps) {
+      const arr = followUpsByDeliveryId.get(f.deliveryRecordId) ?? [];
+      arr.push({ status: f.status, dueAt: f.dueAt, followUpType: f.followUpType });
+      followUpsByDeliveryId.set(f.deliveryRecordId, arr);
+    }
+    const closeoutByJobId = new Map(closeoutsForDeals.map(c => [c.productionJobId, c]));
+    return this.enrichDeal(deal, linked, builds as any, changeOrders as any, productionJobs as any, productionTasks as any, deliveryRecords as any, {
+      packetByDeliveryId,
+      followUpsByDeliveryId,
+      closeoutByJobId,
+    });
   }
 
   async listInteractionsForDeal(db: Db, ctx: TenantContext, id: string) {
@@ -316,8 +430,14 @@ export class DealService {
       }
     }
 
+    const company = await identityIntegrityService.resolveCanonicalCompany(db, { ...ctx, tenantId }, {
+      companyId: (payload as any).companyId,
+      companyName: payload.company,
+    });
     const deal = await DealRepository.insertOne(db, { ...ctx, tenantId }, {
       ...payload,
+      companyId: company._id,
+      company: company.name,
       unitIds: Array.from(new Set([...(payload.unitIds ?? []), ...(payload.unitId ? [payload.unitId] : [])])),
       primaryUnitId: payload.primaryUnitId ?? payload.unitId,
       assignedTo,
@@ -339,6 +459,14 @@ export class DealService {
   }
 
   async update(db: Db, ctx: TenantContext, id: string, payload: Partial<CreateDealPayload>) {
+    if ((payload as any).companyId || payload.company) {
+      const company = await identityIntegrityService.resolveCanonicalCompany(db, ctx, {
+        companyId: (payload as any).companyId,
+        companyName: payload.company ?? before.company,
+      });
+      (payload as any).companyId = company._id;
+      payload.company = company.name;
+    }
     const before = await DealRepository.findById(db, ctx, id);
     if (!before) throw new NotFoundError('Deal');
 

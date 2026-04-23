@@ -12,6 +12,7 @@ import { accountPenetrationService } from '../services/AccountPenetrationService
 import { accountExpansionService } from '../services/AccountExpansionService.js';
 import { buildService } from '../services/BuildService.js';
 import { productionJobService } from '../services/ProductionJobService.js';
+import { deliveryService } from '../services/DeliveryService.js';
 
 const router = Router();
 
@@ -23,7 +24,7 @@ router.get('/stats', async (req, res, next) => {
     const db  = getDB();
     const ctx = req.tenant;
 
-    const [leadsByStatus, dealsByStatus, leadCounts, dealCounts, followUpOverdueOpen, dueTodayActions, staleCompanies, noActivityCompanies, forecast, scorecards, accountCoverageCounts, expansionCounts, ownerExpansionSummary, buildEconomicsCounts, productionCounts] = await Promise.all([
+    const [leadsByStatus, dealsByStatus, leadCounts, dealCounts, followUpOverdueOpen, dueTodayActions, staleCompanies, noActivityCompanies, forecast, scorecards, accountCoverageCounts, expansionCounts, ownerExpansionSummary, buildEconomicsCounts, productionCounts, deliveryCounts, deliveryHandoffCounts] = await Promise.all([
       LeadRepository.statusCounts(db, ctx),
       DealRepository.statusCounts(db, ctx),
       LeadRepository.dashboardCounts(db, ctx),
@@ -39,6 +40,8 @@ router.get('/stats', async (req, res, next) => {
       accountExpansionService.ownerExpansionSummary(db, ctx),
       buildService.economicsCounts(db, ctx),
       productionJobService.counts(db, ctx),
+      deliveryService.counts(db, ctx),
+      deliveryService.handoffCounts(db, ctx),
     ]);
     const rows = forecast.rows as Array<{ dealExecutionState?: { pressureLevel?: string; isStalled?: boolean; daysSinceLastInteraction?: number; overdueFollowUps?: number } }>;
     const dealPressureCounts = {
@@ -101,6 +104,14 @@ router.get('/stats', async (req, res, next) => {
         buildsWithUnapprovedChanges: buildEconomicsCounts.buildsWithUnapprovedChanges ?? 0,
       },
       productionCounts,
+      deliveryCounts,
+      deliveryHandoffCounts,
+      shopExecutionCounts: productionCounts.shopExecutionCounts ?? {
+        activeJobs: 0,
+        blockedJobs: 0,
+        jobsWithNoStartedTasks: 0,
+        jobsNearCompletion: 0,
+      },
       staleLeads: {
         total:        leadCounts.staleTotal,
         newUntouched: leadCounts.newUntouched,

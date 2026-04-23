@@ -7,6 +7,7 @@ import type { DealStatus } from '@mtte-core/shared';
 
 export interface DealDoc extends Document {
   tenantId:   string;
+  companyId?: string;
   title:      string;
   company:    string;
   contact:    string;
@@ -46,6 +47,7 @@ export interface DealFilter {
   activeOnly?: boolean;
   search?:     string;
   company?:    string;
+  companyId?:  string;
   ownerUserId?: string;
   stage?: DealStatus;
 }
@@ -73,6 +75,7 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
       query['status'] = { $nin: ['Delivered', 'Lost'] };
     }
     if (filter.company) query['company'] = filter.company;
+    if (filter.companyId) query['companyId'] = filter.companyId;
     if (filter.ownerUserId) query['ownerUserId'] = filter.ownerUserId;
 
     // Assignment: '__unassigned__' sentinel matches missing/null/empty
@@ -193,6 +196,18 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
   ): Promise<Array<DealDoc & { _id: string }>> {
     const docs = await this.col(db)
       .find(this.scope(ctx, { company: companyName } as never))
+      .sort({ createdAt: -1 })
+      .toArray();
+    return docs.map(d => this.serialize(d as DealDoc & { _id: ObjectId }));
+  }
+
+  async listByCompanyId(
+    db: Db,
+    ctx: TenantContext,
+    companyId: string,
+  ): Promise<Array<DealDoc & { _id: string }>> {
+    const docs = await this.col(db)
+      .find(this.scope(ctx, { companyId } as never))
       .sort({ createdAt: -1 })
       .toArray();
     return docs.map(d => this.serialize(d as DealDoc & { _id: ObjectId }));

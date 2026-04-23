@@ -100,6 +100,28 @@ interface DashboardStats {
     completed: number;
     jobsWithChangeConflicts: number;
   };
+  shopExecutionCounts?: {
+    activeJobs: number;
+    blockedJobs: number;
+    jobsWithNoStartedTasks: number;
+    jobsNearCompletion: number;
+  };
+  deliveryCounts?: {
+    pending: number;
+    readyForDelivery: number;
+    scheduled: number;
+    delivered: number;
+    closed: number;
+    notReadyWithCompletedProduction: number;
+  };
+  deliveryHandoffCounts?: {
+    packetsDraft: number;
+    packetsReady: number;
+    packetsIssued: number;
+    deliveredWithoutIssuedPacket: number;
+    pendingPostDeliveryFollowUps: number;
+    overduePostDeliveryFollowUps: number;
+  };
 }
 
 /** Ordered deal stages for pipeline display */
@@ -311,6 +333,39 @@ export default function Dashboard() {
             )}
             {typeof stats.productionCounts?.jobsWithChangeConflicts === 'number' && (
               <SignalCard label="Production Change Conflicts" value={stats.productionCounts.jobsWithChangeConflicts} urgent />
+            )}
+            {typeof stats.shopExecutionCounts?.activeJobs === 'number' && (
+              <SignalCard label="Shop Active Jobs" value={stats.shopExecutionCounts.activeJobs} />
+            )}
+            {typeof stats.shopExecutionCounts?.blockedJobs === 'number' && (
+              <SignalCard label="Shop Blocked Jobs" value={stats.shopExecutionCounts.blockedJobs} urgent />
+            )}
+            {typeof stats.shopExecutionCounts?.jobsWithNoStartedTasks === 'number' && (
+              <SignalCard label="Jobs With No Started Tasks" value={stats.shopExecutionCounts.jobsWithNoStartedTasks} urgent />
+            )}
+            {typeof stats.shopExecutionCounts?.jobsNearCompletion === 'number' && (
+              <SignalCard label="Jobs Near Completion" value={stats.shopExecutionCounts.jobsNearCompletion} />
+            )}
+            {typeof stats.deliveryCounts?.readyForDelivery === 'number' && (
+              <SignalCard label="Ready For Delivery" value={stats.deliveryCounts.readyForDelivery} />
+            )}
+            {typeof stats.deliveryCounts?.scheduled === 'number' && (
+              <SignalCard label="Delivery Scheduled" value={stats.deliveryCounts.scheduled} />
+            )}
+            {typeof stats.deliveryCounts?.notReadyWithCompletedProduction === 'number' && (
+              <SignalCard label="Completed But Not Delivery-Ready" value={stats.deliveryCounts.notReadyWithCompletedProduction} urgent />
+            )}
+            {typeof stats.deliveryHandoffCounts?.deliveredWithoutIssuedPacket === 'number' && (
+              <SignalCard label="Delivered — Packet Not Issued" value={stats.deliveryHandoffCounts.deliveredWithoutIssuedPacket} urgent />
+            )}
+            {typeof stats.deliveryHandoffCounts?.overduePostDeliveryFollowUps === 'number' && (
+              <SignalCard label="Overdue Post-Delivery Follow-ups" value={stats.deliveryHandoffCounts.overduePostDeliveryFollowUps} urgent />
+            )}
+            {typeof stats.deliveryHandoffCounts?.pendingPostDeliveryFollowUps === 'number' && (
+              <SignalCard label="Pending Post-Delivery Follow-ups" value={stats.deliveryHandoffCounts.pendingPostDeliveryFollowUps} />
+            )}
+            {typeof stats.deliveryHandoffCounts?.packetsIssued === 'number' && (
+              <SignalCard label="Packets Issued" value={stats.deliveryHandoffCounts.packetsIssued} />
             )}
           </div>
           {stats.forecastAmounts && (

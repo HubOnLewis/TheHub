@@ -63,6 +63,26 @@ export const BUILD_COST_SOURCES = ['manual', 'standard', 'substituted'] as const
 export const BUILD_PRICING_SOURCES = ['manual', 'template', 'quoted'] as const;
 export const CHANGE_ORDER_STATUSES = ['draft', 'pending_approval', 'approved', 'rejected'] as const;
 export const PRODUCTION_JOB_STATUSES = ['queued', 'ready', 'in_progress', 'paused', 'completed'] as const;
+export const PRODUCTION_TASK_CATEGORIES = [
+  'body',
+  'hydraulics',
+  'electrical',
+  'lighting',
+  'fabrication',
+  'paint',
+  'install',
+  'inspection',
+  'final',
+] as const;
+export const PRODUCTION_TASK_STATUSES = ['not_started', 'ready', 'in_progress', 'blocked', 'completed'] as const;
+export const DELIVERY_RECORD_STATUSES = ['pending', 'ready_for_delivery', 'scheduled', 'delivered', 'closed'] as const;
+
+/** Customer delivery packet lifecycle — handoff control, not document generation */
+export const DELIVERY_PACKET_STATUSES = ['draft', 'ready', 'issued'] as const;
+
+export const POST_DELIVERY_FOLLOW_UP_STATUSES = ['pending', 'scheduled', 'completed', 'skipped'] as const;
+
+export const POST_DELIVERY_FOLLOW_UP_TYPES = ['check_in', 'issue_review', 'service_intro', 'warranty_intro'] as const;
 
 export const ACTIVITY_TYPES = [
   'call_out',
@@ -117,6 +137,12 @@ export type BuildCostSource = typeof BUILD_COST_SOURCES[number];
 export type BuildPricingSource = typeof BUILD_PRICING_SOURCES[number];
 export type ChangeOrderStatus = typeof CHANGE_ORDER_STATUSES[number];
 export type ProductionJobStatus = typeof PRODUCTION_JOB_STATUSES[number];
+export type ProductionTaskCategory = typeof PRODUCTION_TASK_CATEGORIES[number];
+export type ProductionTaskStatus = typeof PRODUCTION_TASK_STATUSES[number];
+export type DeliveryRecordStatus = typeof DELIVERY_RECORD_STATUSES[number];
+export type DeliveryPacketStatus = typeof DELIVERY_PACKET_STATUSES[number];
+export type PostDeliveryFollowUpStatus = typeof POST_DELIVERY_FOLLOW_UP_STATUSES[number];
+export type PostDeliveryFollowUpType = typeof POST_DELIVERY_FOLLOW_UP_TYPES[number];
 export type ActivityType = typeof ACTIVITY_TYPES[number];
 export type InteractionType   = typeof INTERACTION_TYPES[number];
 export type InteractionDirection = typeof INTERACTION_DIRECTIONS[number];

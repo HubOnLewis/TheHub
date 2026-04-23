@@ -7,10 +7,8 @@ import {
   type InteractionAttachment,
 } from '../repositories/InteractionRepository.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
-import { DealRepository } from '../repositories/DealRepository.js';
-import { UnitRepository } from '../repositories/UnitRepository.js';
-import { BuildRepository } from '../repositories/BuildRepository.js';
 import { UserRepository } from '../repositories/UserRepository.js';
+import { identityIntegrityService } from './IdentityIntegrityService.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
 import type { CreateInteractionRequestPayload, PatchInteractionRequestPayload } from '@mtte-core/shared';
 import { NotFoundError, ForbiddenError, ValidationError } from '../errors/index.js';
@@ -129,19 +127,12 @@ export class InteractionService {
 
     const company = await CompanyRepository.findById(db, ctx, body.companyId);
     if (!company) throw new NotFoundError('Company');
-
-    if (body.relatedDealId) {
-      const deal = await DealRepository.findById(db, ctx, body.relatedDealId);
-      if (!deal) throw new NotFoundError('Deal');
-    }
-    if (body.unitId) {
-      const unit = await UnitRepository.findById(db, ctx, body.unitId);
-      if (!unit) throw new NotFoundError('Unit');
-    }
-    if (body.buildId) {
-      const build = await BuildRepository.findById(db, ctx, body.buildId);
-      if (!build) throw new NotFoundError('Build');
-    }
+    await identityIntegrityService.validateInteractionContext(db, ctx, {
+      companyId: body.companyId,
+      relatedDealId: body.relatedDealId,
+      unitId: body.unitId,
+      buildId: body.buildId,
+    });
     if (body.ownerUserId && body.ownerUserId !== ctx.userId && !isAdminish(ctx.userRole)) {
       throw new ForbiddenError('Only admin/super_admin can assign a different owner');
     }
@@ -199,18 +190,12 @@ export class InteractionService {
     if (!row) throw new NotFoundError('Interaction');
     this.assertCanEdit(ctx, row);
 
-    if (body.relatedDealId) {
-      const deal = await DealRepository.findById(db, ctx, body.relatedDealId);
-      if (!deal) throw new NotFoundError('Deal');
-    }
-    if (body.unitId) {
-      const unit = await UnitRepository.findById(db, ctx, body.unitId);
-      if (!unit) throw new NotFoundError('Unit');
-    }
-    if (body.buildId) {
-      const build = await BuildRepository.findById(db, ctx, body.buildId);
-      if (!build) throw new NotFoundError('Build');
-    }
+    await identityIntegrityService.validateInteractionContext(db, ctx, {
+      companyId: row.companyId,
+      relatedDealId: body.relatedDealId ?? row.relatedDealId,
+      unitId: body.unitId ?? row.unitId,
+      buildId: body.buildId ?? row.buildId,
+    });
 
     const patch: Partial<InteractionDoc> = {
       lastEditedAt:       new Date(),

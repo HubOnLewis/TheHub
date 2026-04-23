@@ -86,6 +86,27 @@ export interface CompanySummary {
     reviewedAt?: string;
     reviewedByName?: string;
   } | null;
+  customerDeliveryContext?: {
+    recentDeliveredUnits: Array<{
+      deliveryRecordId: string;
+      status: string;
+      unitSummary: string;
+      buildName: string;
+      deliveredVersionId?: string;
+      packetStatus: string;
+      deliveryHandoffState?: { readinessLevel: string; isCustomerReady: boolean };
+    }>;
+    pendingPostDeliveryFollowUps: Array<{
+      _id: string;
+      deliveryRecordId: string;
+      followUpType: string;
+      status: string;
+      dueAt?: string;
+      ownerName?: string;
+    }>;
+    customerHandoffWarnings: string[];
+    recentDeliveryExpansionSignal?: boolean;
+  };
 }
 
 interface CompaniesQuery {

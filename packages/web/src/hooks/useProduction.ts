@@ -26,6 +26,15 @@ export function useProductionJob(id: string | null) {
   });
 }
 
+export function useProductionTasks(productionJobId: string | null) {
+  return useQuery({
+    queryKey: ['production', productionJobId, 'tasks'],
+    queryFn: () => client.get(`/production/${productionJobId}/tasks`).then(r => r.data),
+    enabled: !!productionJobId,
+    staleTime: 30_000,
+  });
+}
+
 export function useProductionMutations() {
   const qc = useQueryClient();
   const invalidate = () => {
@@ -42,5 +51,17 @@ export function useProductionMutations() {
     mutationFn: ({ id, payload }: { id: string; payload: Record<string, unknown> }) => client.patch(`/production/${id}`, payload).then(r => r.data),
     onSuccess: invalidate,
   });
-  return { create, update };
+  const createTask = useMutation({
+    mutationFn: (payload: Record<string, unknown>) => client.post('/production/tasks', payload).then(r => r.data),
+    onSuccess: invalidate,
+  });
+  const updateTask = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: Record<string, unknown> }) => client.patch(`/production/tasks/${id}`, payload).then(r => r.data),
+    onSuccess: invalidate,
+  });
+  const generateDefaultTasks = useMutation({
+    mutationFn: (jobId: string) => client.post(`/production/${jobId}/tasks/generate-default`).then(r => r.data),
+    onSuccess: invalidate,
+  });
+  return { create, update, createTask, updateTask, generateDefaultTasks };
 }
