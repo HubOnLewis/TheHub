@@ -190,7 +190,9 @@ export default function Delivery() {
                   {followUps.length === 0 ? <li>None</li> : followUps.map(f => (
                     <li key={String(f._id)} style={{ marginBottom: 6 }}>
                       {String(f.followUpType)} · {String(f.status)}
-                      {f.dueAt && <span> · due {new Date(String(f.dueAt)).toLocaleString()}</span>}
+                      {typeof f.dueAt === 'string' && f.dueAt ? (
+                        <span> · due {new Date(f.dueAt).toLocaleString()}</span>
+                      ) : null}
                       <div style={{ marginTop: 4, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                         <button
                           type="button"
