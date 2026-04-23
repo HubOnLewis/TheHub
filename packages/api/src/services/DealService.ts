@@ -137,6 +137,8 @@ export class DealService {
     const linkedProgress = linkedProductionJobs.map(j => productionProgressService.evaluate(j as any, productionTasks.filter(t => t.productionJobId === (j as any)._id) as any));
     const linkedDeliveries = deliveryRecords.filter(d => linkedProductionJobs.some(j => (j as any)._id === d.productionJobId));
     const now = Date.now();
+    const execution = dealPressureService.evaluate(deal, linked);
+    const pipelineWarnings = dealPressureService.buildWarnings(deal, linked, execution, linkedBuilds);
     if (deliveryHandoffMaps) {
       for (const d of linkedDeliveries) {
         if (d.status !== 'delivered' && d.status !== 'closed') continue;
@@ -161,8 +163,6 @@ export class DealService {
         }
       }
     }
-    const execution = dealPressureService.evaluate(deal, linked);
-    const pipelineWarnings = dealPressureService.buildWarnings(deal, linked, execution, linkedBuilds);
     if (dealBuildFinancialSummary.hasIncompleteBuildCosting) pipelineWarnings.push('Active deal has incomplete build costing');
     if (buildSummaries.some(s => s.marginRiskLevel === 'high' || s.marginRiskLevel === 'critical')) pipelineWarnings.push('Build margin risk is high');
     if (deal.status === 'Pending Approval' && dealBuildFinancialSummary.hasIncompleteBuildCosting) pipelineWarnings.push('Quoted build economics are not trusted');
@@ -459,6 +459,9 @@ export class DealService {
   }
 
   async update(db: Db, ctx: TenantContext, id: string, payload: Partial<CreateDealPayload>) {
+    const before = await DealRepository.findById(db, ctx, id);
+    if (!before) throw new NotFoundError('Deal');
+
     if ((payload as any).companyId || payload.company) {
       const company = await identityIntegrityService.resolveCanonicalCompany(db, ctx, {
         companyId: (payload as any).companyId,
@@ -467,8 +470,6 @@ export class DealService {
       (payload as any).companyId = company._id;
       payload.company = company.name;
     }
-    const before = await DealRepository.findById(db, ctx, id);
-    if (!before) throw new NotFoundError('Deal');
 
     if (payload.atRisk !== undefined) {
       const isOwner = before.ownerUserId === ctx.userId;
