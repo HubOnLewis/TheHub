@@ -1,11 +1,13 @@
 // packages/web/src/pages/Dashboard.tsx
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import client from '../api/client.js';
-import { KPICard, Spinner, EmptyState } from '../components/ui/index.js';
+import { KPICard, EmptyState } from '../components/ui/index.js';
+import { MetricHeroCard } from '../components/ui/MetricHeroCard.js';
+import { DashboardSkeleton } from '../components/ui/Skeleton.js';
 import { formatCurrency } from '@mtte-core/shared';
 import { useAppStore } from '../store/index.js';
 
-/** Roles that can access the dashboard */
 const DASHBOARD_ROLES = ['super_admin', 'admin', 'management'] as const;
 
 interface DashboardStats {
@@ -15,7 +17,6 @@ interface DashboardStats {
   staleDeals:    { total: number; pendingApproval: number };
   unassignedLeads: number;
   unassignedDeals: number;
-  /** Open interactions with followUpAt in the past */
   followUpOverdueOpen?: number;
   overdueActions?: number;
   dueTodayActions?: number;
@@ -124,36 +125,145 @@ interface DashboardStats {
   };
 }
 
-/** Ordered deal stages for pipeline display */
 const DEAL_STAGE_ORDER = ['Draft', 'Pending Approval', 'Approved', 'Won', 'In Build', 'Delivered', 'Lost'];
 
-function SignalCard({
-  label,
-  value,
-  urgent,
-  sub,
+type BoardItem = { key: string; label: string; value: number; sub?: string };
+
+function pushIfPositive(arr: BoardItem[], key: string, label: string, value: number | undefined, sub?: string) {
+  if (typeof value !== 'number' || value <= 0) return;
+  arr.push({ key, label, value, sub });
+}
+
+function buildAttentionBoard(s: DashboardStats): {
+  critical: BoardItem[];
+  warning: BoardItem[];
+  operational: BoardItem[];
+  secondary: BoardItem[];
+} {
+  const critical: BoardItem[] = [];
+  const warning: BoardItem[] = [];
+  const operational: BoardItem[] = [];
+  const secondary: BoardItem[] = [];
+
+  pushIfPositive(critical, 'nu', 'New leads untouched', s.staleLeads?.newUntouched, '>1d no touch');
+  pushIfPositive(critical, 'pa', 'Deals pending approval', s.staleDeals?.pendingApproval, '>2d waiting');
+  const unassigned = (s.unassignedLeads ?? 0) + (s.unassignedDeals ?? 0);
+  pushIfPositive(critical, 'un', 'Unassigned leads + deals', unassigned, `${s.unassignedLeads ?? 0}L / ${s.unassignedDeals ?? 0}D`);
+  pushIfPositive(critical, 'fo', 'Overdue open follow-ups', s.followUpOverdueOpen, 'open + past due');
+  pushIfPositive(critical, 'dt', 'Actions due today', s.dueTodayActions, 'follow-up workload');
+  pushIfPositive(critical, 'sc', 'Stale companies', s.staleCompanies, '>14d no interaction');
+  pushIfPositive(critical, 'cd', 'Critical deals', s.criticalDeals, 'execution');
+  pushIfPositive(critical, 'df', 'Deals w/ overdue follow-ups', s.dealsWithOverdueFollowUps);
+  pushIfPositive(critical, 'mr', 'Deals needing mgmt review', s.dealsNeedingManagementReview);
+  pushIfPositive(critical, 'lc', 'Low-confidence late stage', s.lowConfidenceLateStageDeals);
+  pushIfPositive(critical, 'cc', 'Critical coverage risk accounts', s.accountCoverageCounts?.criticalCoverageRisk);
+  pushIfPositive(critical, 'sd', 'Single-contact dependency', s.accountCoverageCounts?.singleContactDependencyAccounts);
+  pushIfPositive(critical, 'ao', 'Active accounts without owner', s.accountCoverageCounts?.activeAccountsWithoutOwner);
+  pushIfPositive(critical, 'up', 'Urgent expansion planning', s.accountExpansionCounts?.urgentPlanningPriority);
+  pushIfPositive(critical, 'hr', 'High-readiness, no plan', s.accountExpansionCounts?.highReadinessWithoutPlan);
+  pushIfPositive(critical, 'cm', 'Critical margin risk builds', s.buildEconomicsCounts?.criticalMarginRiskBuilds);
+  pushIfPositive(critical, 'ic', 'Builds incomplete costing', s.buildEconomicsCounts?.buildsWithIncompleteCosting);
+  pushIfPositive(critical, 'co', 'Change orders pending approval', s.changeOrderCounts?.pendingApproval);
+  pushIfPositive(critical, 'bu', 'Builds w/ unapproved changes', s.changeOrderCounts?.buildsWithUnapprovedChanges);
+  pushIfPositive(critical, 'pp', 'Production paused', s.productionCounts?.paused);
+  pushIfPositive(critical, 'jc', 'Production change conflicts', s.productionCounts?.jobsWithChangeConflicts);
+  pushIfPositive(critical, 'bj', 'Shop blocked jobs', s.shopExecutionCounts?.blockedJobs);
+  pushIfPositive(critical, 'ns', 'Jobs with no started tasks', s.shopExecutionCounts?.jobsWithNoStartedTasks);
+  pushIfPositive(critical, 'nr', 'Completed prod, not delivery-ready', s.deliveryCounts?.notReadyWithCompletedProduction);
+  pushIfPositive(critical, 'dp', 'Delivered — packet not issued', s.deliveryHandoffCounts?.deliveredWithoutIssuedPacket);
+  pushIfPositive(critical, 'op', 'Overdue post-delivery follow-ups', s.deliveryHandoffCounts?.overduePostDeliveryFollowUps);
+
+  pushIfPositive(warning, 'sl', 'Stale leads (total)', s.staleLeads?.total, 'past threshold');
+  pushIfPositive(warning, 'st', 'Stalled deals', s.stalledDeals, 'stage / interaction');
+  pushIfPositive(warning, 'sd2', 'Stale deals (total)', s.staleDeals?.total, 'past threshold');
+  pushIfPositive(warning, 'hp', 'High-pressure deals', s.highPressureDeals);
+  pushIfPositive(warning, 'na', 'No-activity companies', s.noActivityCompanies);
+  pushIfPositive(warning, 'ws', 'Whitespace signal accounts', s.accountCoverageCounts?.accountsWithWhitespaceSignals);
+  pushIfPositive(warning, 'hm', 'High margin risk builds', s.buildEconomicsCounts?.highMarginRiskBuilds);
+  pushIfPositive(warning, 'ip', 'Builds incomplete pricing', s.buildEconomicsCounts?.buildsWithIncompletePricing);
+  pushIfPositive(warning, 'sub', 'Builds with substitutions', s.buildEconomicsCounts?.buildsWithSubstitutions);
+  pushIfPositive(warning, 'oa', 'Overdue actions (all)', s.overdueActions);
+  pushIfPositive(warning, 'hcr', 'High coverage risk accounts', s.accountCoverageCounts?.highCoverageRisk);
+  pushIfPositive(warning, 'hpp', 'High expansion planning priority', s.accountExpansionCounts?.highPlanningPriority);
+
+  pushIfPositive(operational, 'pq', 'Production queued', s.productionCounts?.queued);
+  pushIfPositive(operational, 'pr', 'Production ready', s.productionCounts?.ready);
+  pushIfPositive(operational, 'pi', 'Production in progress', s.productionCounts?.inProgress);
+  pushIfPositive(operational, 'pc', 'Production completed', s.productionCounts?.completed);
+  pushIfPositive(operational, 'aj', 'Shop active jobs', s.shopExecutionCounts?.activeJobs);
+  pushIfPositive(operational, 'jn', 'Jobs near completion', s.shopExecutionCounts?.jobsNearCompletion);
+  pushIfPositive(operational, 'dpn', 'Delivery pending', s.deliveryCounts?.pending);
+  pushIfPositive(operational, 'dr', 'Ready for delivery', s.deliveryCounts?.readyForDelivery);
+  pushIfPositive(operational, 'ds', 'Delivery scheduled', s.deliveryCounts?.scheduled);
+  pushIfPositive(operational, 'dd', 'Delivered', s.deliveryCounts?.delivered);
+  pushIfPositive(operational, 'dc', 'Delivery closed', s.deliveryCounts?.closed);
+  pushIfPositive(operational, 'pkd', 'Packets — draft', s.deliveryHandoffCounts?.packetsDraft);
+  pushIfPositive(operational, 'pkr', 'Packets — ready', s.deliveryHandoffCounts?.packetsReady);
+  pushIfPositive(operational, 'pki', 'Packets — issued', s.deliveryHandoffCounts?.packetsIssued);
+  pushIfPositive(operational, 'pf', 'Pending post-delivery follow-ups', s.deliveryHandoffCounts?.pendingPostDeliveryFollowUps);
+
+  if (s.forecastCounts) {
+    pushIfPositive(secondary, 'fc', 'Forecast — commit deals', s.forecastCounts.commit);
+    pushIfPositive(secondary, 'fb', 'Forecast — best case', s.forecastCounts.best_case);
+    pushIfPositive(secondary, 'fp', 'Forecast — pipeline', s.forecastCounts.pipeline);
+    pushIfPositive(secondary, 'fx', 'Forecast — excluded', s.forecastCounts.excluded);
+  }
+  if (s.dealPressureCounts) {
+    pushIfPositive(secondary, 'dpm', 'Pressure — medium', s.dealPressureCounts.medium);
+    pushIfPositive(secondary, 'dpl', 'Pressure — low', s.dealPressureCounts.low);
+  }
+  pushIfPositive(secondary, 'lp', 'Low penetration accounts', s.accountCoverageCounts?.lowPenetration);
+  pushIfPositive(secondary, 'mp', 'Medium penetration accounts', s.accountCoverageCounts?.mediumPenetration);
+  pushIfPositive(secondary, 'hq', 'High penetration accounts', s.accountCoverageCounts?.highPenetration);
+  pushIfPositive(secondary, 'qb', 'Quoted builds', s.buildEconomicsCounts?.quotedBuilds);
+  pushIfPositive(secondary, 'ab', 'Approved builds', s.buildEconomicsCounts?.approvedBuilds);
+
+  return { critical, warning, operational, secondary };
+}
+
+function AttentionBand({
+  variant,
+  title,
+  items,
 }: {
-  label:   string;
-  value:   number;
-  urgent?: boolean;
-  sub?:    string;
+  variant: 'critical' | 'warning' | 'info';
+  title: string;
+  items: BoardItem[];
 }) {
-  const color = urgent && value > 0 ? 'var(--red)' : value > 0 ? '#d97706' : 'var(--text-light)';
+  const band = variant === 'critical' ? 'attention-band--critical' : variant === 'warning' ? 'attention-band--warning' : 'attention-band--info';
+  const metric = variant === 'critical' ? 'attention-metric--critical' : variant === 'warning' ? 'attention-metric--warning' : 'attention-metric--info';
   return (
-    <div className="card" style={{ padding: '12px 16px', minWidth: 130 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-secondary)', marginBottom: 4 }}>
-        {label}
+    <section className={`attention-band ${band}`}>
+      <div className="attention-band__header">{title}</div>
+      <div className="attention-band__body">
+        {items.length === 0 ? (
+          <div style={{ gridColumn: '1 / -1', padding: '8px 4px 12px', fontSize: 13, color: 'var(--text-secondary)' }}>
+            Nothing flagged here — good momentum.
+          </div>
+        ) : (
+          items.map(it => (
+            <div key={it.key} className={`attention-metric ${metric}`}>
+              <div className="attention-metric__label">{it.label}</div>
+              <div className="attention-metric__value">{it.value}</div>
+              {it.sub && <div className="attention-metric__sub">{it.sub}</div>}
+            </div>
+          ))
+        )}
       </div>
-      <div style={{ fontFamily: 'var(--font-cond)', fontSize: 28, fontWeight: 800, color }}>
-        {value}
-      </div>
-      {sub && <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>{sub}</div>}
-    </div>
+    </section>
   );
 }
 
+const Ico = {
+  pipeline: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>,
+  deals: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>,
+  units: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><circle cx="12" cy="12" r="3" /><path d="M12 2v2m0 16v2M4.93 4.93h.01M19.07 19.07h.01M2 12h2m16 0h2M4.93 19.07h.01M19.07 4.93h.01" /></svg>,
+  risk: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75"><path d="M12 9v4M12 17h.01M10.3 3h3.4L22 18H2L10.3 3z" /></svg>,
+};
+
 export default function Dashboard() {
   const { user } = useAppStore();
+  const [moreOpen, setMoreOpen] = useState(false);
 
   const canAccess = DASHBOARD_ROLES.includes(user?.role as never);
 
@@ -168,20 +278,37 @@ export default function Dashboard() {
     queryKey: ['units', 'summary'],
     queryFn:  () => client.get<Array<{ _id: string; count: number; totalMsrp: number }>>('/units/summary').then(r => r.data),
     staleTime: 30_000,
+    enabled:   canAccess,
   });
 
   const activePipeline = (stats?.dealsByStatus ?? [])
-    .filter(s => !['Lost', 'Delivered'].includes(s._id))
-    .reduce((n, s) => n + s.totalAmount, 0);
+    .filter(x => !['Lost', 'Delivered'].includes(x._id))
+    .reduce((n, x) => n + x.totalAmount, 0);
 
-  const totalLeads = (stats?.leadsByStatus ?? []).reduce((n, s) => n + s.count, 0);
-  const totalDeals = (stats?.dealsByStatus ?? []).reduce((n, s) => n + s.count, 0);
-  const totalUnits = (unitSummary as Array<{ _id: string; count: number; totalMsrp: number }>).reduce((n, s) => n + s.count, 0);
-  const availUnits = (unitSummary as Array<{ _id: string; count: number; totalMsrp: number }>).find(s => s._id === 'prospect')?.count ?? 0;
+  const openDealsCount = useMemo(
+    () => (stats?.dealsByStatus ?? [])
+      .filter(x => !['Lost', 'Delivered'].includes(x._id))
+      .reduce((n, x) => n + x.count, 0),
+    [stats?.dealsByStatus],
+  );
+
+  const unitsInShop = useMemo(() => {
+    if (!stats) return 0;
+    const shop = stats.shopExecutionCounts?.activeJobs;
+    if (typeof shop === 'number' && shop > 0) return shop;
+    return (stats.productionCounts?.inProgress ?? 0) + (stats.productionCounts?.ready ?? 0);
+  }, [stats]);
+
+  const revenueAtRisk = stats?.excludedAmount ?? stats?.forecastAmounts?.excluded ?? 0;
+
+  const availUnits = (unitSummary as Array<{ _id: string; count: number }>).find(x => x._id === 'prospect')?.count ?? 0;
+  const totalUnits = (unitSummary as Array<{ _id: string; count: number }>).reduce((n, x) => n + x.count, 0);
 
   const orderedDeals = DEAL_STAGE_ORDER
-    .map(stage => stats?.dealsByStatus.find(s => s._id === stage))
-    .filter((s): s is NonNullable<typeof s> => !!s);
+    .map(stage => stats?.dealsByStatus.find(x => x._id === stage))
+    .filter((x): x is NonNullable<typeof x> => !!x);
+
+  const board = useMemo(() => (stats ? buildAttentionBoard(stats) : null), [stats]);
 
   if (!canAccess) {
     return (
@@ -192,246 +319,157 @@ export default function Dashboard() {
   }
 
   if (isLoading) {
-    return (
-      <div style={{ padding: 60, display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center' }}>
-        <Spinner /> <span className="text-muted">Loading…</span>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   return (
-    <div>
+    <div className="dashboard-page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Dashboard</h1>
-          <div className="page-subtitle">Welcome back, {user?.name}</div>
+          <h1 className="page-title">Command center</h1>
+          <div className="page-subtitle">
+            What matters right now — pipeline health, execution risk, and operational flow. Welcome back, {user?.name}.
+          </div>
         </div>
       </div>
 
-      {/* ── Top KPIs ──────────────────────────────────────────────── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 20 }}>
-        <KPICard label="Active Leads"    value={totalLeads}                    colorVar="--status-new" />
-        <KPICard label="Open Deals"      value={totalDeals}                    colorVar="--red" />
-        <KPICard label="Pipeline"        value={formatCurrency(activePipeline)} colorVar="--status-approved" />
-        <KPICard label="Units Available" value={availUnits}                    colorVar="--status-inbuild" sub={`${totalUnits} total`} />
+      <div className="metric-hero-grid">
+        <MetricHeroCard
+          label="Pipeline value"
+          value={formatCurrency(activePipeline)}
+          sub="Open deal stages (excl. won/delivered/lost)"
+          icon={Ico.pipeline}
+          accent="success"
+        />
+        <MetricHeroCard
+          label="Open deals"
+          value={openDealsCount}
+          sub="Active opportunities in pipeline"
+          icon={Ico.deals}
+          accent="info"
+        />
+        <MetricHeroCard
+          label="Units in motion"
+          value={unitsInShop}
+          sub="Shop active jobs, or in-progress + ready"
+          icon={Ico.units}
+          accent="info"
+        />
+        <MetricHeroCard
+          label="Revenue at risk"
+          value={formatCurrency(revenueAtRisk)}
+          sub="Excluded from forecast"
+          icon={Ico.risk}
+          accent={revenueAtRisk > 0 ? 'danger' : 'success'}
+        />
       </div>
+      {canAccess && (
+        <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: -10, marginBottom: 26, maxWidth: 720 }}>
+          <strong style={{ color: 'var(--text-primary)' }}>{availUnits}</strong> prospect units available ·{' '}
+          <strong style={{ color: 'var(--text-primary)' }}>{totalUnits}</strong> units on file
+        </p>
+      )}
 
-      {/* ── Needs Attention ───────────────────────────────────────── */}
-      {stats && (
+      {stats && board && (
         <>
-          <div style={{ marginBottom: 8, fontFamily: 'var(--font-cond)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-secondary)' }}>
-            Needs Attention
+          <div style={{ marginBottom: 14, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+            <h2 style={{ fontFamily: 'var(--font-cond)', fontSize: 18, fontWeight: 800, letterSpacing: '0.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+              Needs attention
+            </h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, marginBottom: 24, maxWidth: 900 }}>
-            <SignalCard
-              label="New — Untouched"
-              value={stats.staleLeads.newUntouched}
-              urgent
-              sub="> 1 day, no touch"
-            />
-            <SignalCard
-              label="Stale Leads"
-              value={stats.staleLeads.total}
-              sub="past threshold"
-            />
-            <SignalCard
-              label="Pending Approval"
-              value={stats.staleDeals.pendingApproval}
-              urgent
-              sub="> 2 days waiting"
-            />
-            <SignalCard
-              label="Stalled Deals"
-              value={stats.staleDeals.total}
-              sub="past threshold"
-            />
-            <SignalCard
-              label="Unassigned"
-              value={stats.unassignedLeads + stats.unassignedDeals}
-              urgent
-              sub={`${stats.unassignedLeads}L / ${stats.unassignedDeals}D`}
-            />
-            {typeof stats.followUpOverdueOpen === 'number' && (
-              <SignalCard
-                label="Overdue follow-ups"
-                value={stats.followUpOverdueOpen}
-                urgent
-                sub="open + past due"
-              />
-            )}
-            {typeof stats.dueTodayActions === 'number' && (
-              <SignalCard label="Due Today Actions" value={stats.dueTodayActions} urgent sub="follow-up workload" />
-            )}
-            {typeof stats.staleCompanies === 'number' && (
-              <SignalCard label="Stale Companies" value={stats.staleCompanies} urgent sub=">14 days no interaction" />
-            )}
-            {typeof stats.noActivityCompanies === 'number' && (
-              <SignalCard label="No Activity Companies" value={stats.noActivityCompanies} sub="never engaged" />
-            )}
-            {typeof stats.criticalDeals === 'number' && (
-              <SignalCard label="Critical Deals" value={stats.criticalDeals} urgent sub="execution critical" />
-            )}
-            {typeof stats.highPressureDeals === 'number' && (
-              <SignalCard label="High Pressure Deals" value={stats.highPressureDeals} urgent sub="management attention" />
-            )}
-            {typeof stats.stalledDeals === 'number' && (
-              <SignalCard label="Stalled Deals" value={stats.stalledDeals} urgent sub="stage/interaction stall" />
-            )}
-            {typeof stats.dealsWithOverdueFollowUps === 'number' && (
-              <SignalCard label="Deals w/ Overdue Follow-ups" value={stats.dealsWithOverdueFollowUps} urgent />
-            )}
-            {typeof stats.dealsNeedingManagementReview === 'number' && (
-              <SignalCard label="Needs Mgmt Review" value={stats.dealsNeedingManagementReview} urgent />
-            )}
-            {typeof stats.lowConfidenceLateStageDeals === 'number' && (
-              <SignalCard label="Low-Conf Late Stage" value={stats.lowConfidenceLateStageDeals} urgent />
-            )}
-            {typeof stats.accountCoverageCounts?.criticalCoverageRisk === 'number' && (
-              <SignalCard label="Critical Coverage Risk Accounts" value={stats.accountCoverageCounts.criticalCoverageRisk} urgent />
-            )}
-            {typeof stats.accountCoverageCounts?.accountsWithWhitespaceSignals === 'number' && (
-              <SignalCard label="Whitespace Accounts" value={stats.accountCoverageCounts.accountsWithWhitespaceSignals} />
-            )}
-            {typeof stats.accountCoverageCounts?.singleContactDependencyAccounts === 'number' && (
-              <SignalCard label="Single-Contact Dependency" value={stats.accountCoverageCounts.singleContactDependencyAccounts} urgent />
-            )}
-            {typeof stats.accountCoverageCounts?.activeAccountsWithoutOwner === 'number' && (
-              <SignalCard label="Active Accounts No Owner" value={stats.accountCoverageCounts.activeAccountsWithoutOwner} urgent />
-            )}
-            {typeof stats.accountExpansionCounts?.urgentPlanningPriority === 'number' && (
-              <SignalCard label="Urgent Expansion Planning" value={stats.accountExpansionCounts.urgentPlanningPriority} urgent />
-            )}
-            {typeof stats.accountExpansionCounts?.highReadinessWithoutPlan === 'number' && (
-              <SignalCard label="High-Readiness No Plan" value={stats.accountExpansionCounts.highReadinessWithoutPlan} urgent />
-            )}
-            {typeof stats.buildEconomicsCounts?.criticalMarginRiskBuilds === 'number' && (
-              <SignalCard label="Critical Margin Risk Builds" value={stats.buildEconomicsCounts.criticalMarginRiskBuilds} urgent />
-            )}
-            {typeof stats.buildEconomicsCounts?.highMarginRiskBuilds === 'number' && (
-              <SignalCard label="High Margin Risk Builds" value={stats.buildEconomicsCounts.highMarginRiskBuilds} urgent />
-            )}
-            {typeof stats.buildEconomicsCounts?.buildsWithIncompleteCosting === 'number' && (
-              <SignalCard label="Builds Incomplete Costing" value={stats.buildEconomicsCounts.buildsWithIncompleteCosting} urgent />
-            )}
-            {typeof stats.buildEconomicsCounts?.buildsWithSubstitutions === 'number' && (
-              <SignalCard label="Builds With Substitutions" value={stats.buildEconomicsCounts.buildsWithSubstitutions} />
-            )}
-            {typeof stats.changeOrderCounts?.pendingApproval === 'number' && (
-              <SignalCard label="Change Orders Pending Approval" value={stats.changeOrderCounts.pendingApproval} urgent />
-            )}
-            {typeof stats.changeOrderCounts?.buildsWithUnapprovedChanges === 'number' && (
-              <SignalCard label="Builds With Unapproved Changes" value={stats.changeOrderCounts.buildsWithUnapprovedChanges} urgent />
-            )}
-            {typeof stats.productionCounts?.ready === 'number' && (
-              <SignalCard label="Production Ready" value={stats.productionCounts.ready} />
-            )}
-            {typeof stats.productionCounts?.inProgress === 'number' && (
-              <SignalCard label="Production In Progress" value={stats.productionCounts.inProgress} />
-            )}
-            {typeof stats.productionCounts?.paused === 'number' && (
-              <SignalCard label="Production Paused" value={stats.productionCounts.paused} urgent />
-            )}
-            {typeof stats.productionCounts?.jobsWithChangeConflicts === 'number' && (
-              <SignalCard label="Production Change Conflicts" value={stats.productionCounts.jobsWithChangeConflicts} urgent />
-            )}
-            {typeof stats.shopExecutionCounts?.activeJobs === 'number' && (
-              <SignalCard label="Shop Active Jobs" value={stats.shopExecutionCounts.activeJobs} />
-            )}
-            {typeof stats.shopExecutionCounts?.blockedJobs === 'number' && (
-              <SignalCard label="Shop Blocked Jobs" value={stats.shopExecutionCounts.blockedJobs} urgent />
-            )}
-            {typeof stats.shopExecutionCounts?.jobsWithNoStartedTasks === 'number' && (
-              <SignalCard label="Jobs With No Started Tasks" value={stats.shopExecutionCounts.jobsWithNoStartedTasks} urgent />
-            )}
-            {typeof stats.shopExecutionCounts?.jobsNearCompletion === 'number' && (
-              <SignalCard label="Jobs Near Completion" value={stats.shopExecutionCounts.jobsNearCompletion} />
-            )}
-            {typeof stats.deliveryCounts?.readyForDelivery === 'number' && (
-              <SignalCard label="Ready For Delivery" value={stats.deliveryCounts.readyForDelivery} />
-            )}
-            {typeof stats.deliveryCounts?.scheduled === 'number' && (
-              <SignalCard label="Delivery Scheduled" value={stats.deliveryCounts.scheduled} />
-            )}
-            {typeof stats.deliveryCounts?.notReadyWithCompletedProduction === 'number' && (
-              <SignalCard label="Completed But Not Delivery-Ready" value={stats.deliveryCounts.notReadyWithCompletedProduction} urgent />
-            )}
-            {typeof stats.deliveryHandoffCounts?.deliveredWithoutIssuedPacket === 'number' && (
-              <SignalCard label="Delivered — Packet Not Issued" value={stats.deliveryHandoffCounts.deliveredWithoutIssuedPacket} urgent />
-            )}
-            {typeof stats.deliveryHandoffCounts?.overduePostDeliveryFollowUps === 'number' && (
-              <SignalCard label="Overdue Post-Delivery Follow-ups" value={stats.deliveryHandoffCounts.overduePostDeliveryFollowUps} urgent />
-            )}
-            {typeof stats.deliveryHandoffCounts?.pendingPostDeliveryFollowUps === 'number' && (
-              <SignalCard label="Pending Post-Delivery Follow-ups" value={stats.deliveryHandoffCounts.pendingPostDeliveryFollowUps} />
-            )}
-            {typeof stats.deliveryHandoffCounts?.packetsIssued === 'number' && (
-              <SignalCard label="Packets Issued" value={stats.deliveryHandoffCounts.packetsIssued} />
-            )}
+          <div className="attention-stack">
+            <AttentionBand variant="critical" title="Critical — act today" items={board.critical} />
+            <AttentionBand variant="warning" title="Warning — review this week" items={board.warning} />
+            <AttentionBand variant="info" title="Operational signals" items={board.operational} />
           </div>
-          {stats.forecastAmounts && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10, marginBottom: 20, maxWidth: 780 }}>
-              <KPICard label="Commit Amount" value={formatCurrency(stats.forecastAmounts.commit ?? 0)} colorVar="--status-won" />
-              <KPICard label="Best Case Amount" value={formatCurrency(stats.forecastAmounts.best_case ?? 0)} colorVar="--status-approved" />
-              <KPICard label="Excluded Amount" value={formatCurrency(stats.forecastAmounts.excluded ?? 0)} colorVar="--status-lost" />
-            </div>
-          )}
-          {!!stats.ownerBreakdown?.length && (
-            <div className="card" style={{ marginBottom: 20 }}>
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>
-                Owner Breakdown
-              </div>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Owner</th>
-                    <th>Open Deals</th>
-                    <th>Critical</th>
-                    <th>Overdue Follow-ups</th>
-                    <th>Commit</th>
-                    <th>Best Case</th>
-                    <th>Excluded</th>
-                    <th>Needs Review</th>
-                    <th>Low Penetration</th>
-                    <th>Critical Coverage Risk</th>
-                    <th>Urgent Planning</th>
-                    <th>No Plan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stats.ownerBreakdown.map(r => (
-                    <tr key={r.ownerUserId}>
-                      <td>{r.ownerName ?? r.ownerUserId}</td>
-                      <td>{r.openDeals}</td>
-                      <td>{r.criticalDeals}</td>
-                      <td>{r.overdueFollowUps}</td>
-                      <td>{formatCurrency(r.commitAmount)}</td>
-                      <td>{formatCurrency(r.bestCaseAmount)}</td>
-                      <td>{formatCurrency(r.excludedAmount)}</td>
-                      <td>{r.dealsNeedingManagementReview}</td>
-                      <td>{r.ownerCoverageSummary?.lowPenetrationAccounts ?? 0}</td>
-                      <td>{r.ownerCoverageSummary?.criticalCoverageRiskAccounts ?? 0}</td>
-                      <td>{r.ownerExpansionSummary?.urgentPlanningAccounts ?? 0}</td>
-                      <td>{r.ownerExpansionSummary?.accountsWithoutPlan ?? 0}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+
+          {board.secondary.length > 0 && (
+            <div style={{ marginBottom: 24 }}>
+              <button type="button" className="expand-toggle" onClick={() => setMoreOpen(o => !o)}>
+                {moreOpen ? '▼ Hide secondary metrics' : '▸ Show secondary metrics'} ({board.secondary.length})
+              </button>
+              {moreOpen && (
+                <div className="attention-band attention-band--info" style={{ marginTop: 12 }}>
+                  <div className="attention-band__body">
+                    {board.secondary.map(it => (
+                      <div key={it.key} className="attention-metric attention-metric--info">
+                        <div className="attention-metric__label">{it.label}</div>
+                        <div className="attention-metric__value">{it.value}</div>
+                        {it.sub && <div className="attention-metric__sub">{it.sub}</div>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* ── Lead Funnel + Deal Pipeline ───────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+          {stats.forecastAmounts && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 28 }}>
+              <KPICard label="Commit amount" value={formatCurrency(stats.forecastAmounts.commit ?? 0)} colorVar="--green" />
+              <KPICard label="Best case" value={formatCurrency(stats.forecastAmounts.best_case ?? 0)} colorVar="--blue" />
+              <KPICard label="Excluded" value={formatCurrency(stats.forecastAmounts.excluded ?? 0)} colorVar="--amber" />
+            </div>
+          )}
+
+          {!!stats.ownerBreakdown?.length && (
+            <div className="card" style={{ marginBottom: 28, overflow: 'hidden' }}>
+              <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 17, fontWeight: 800 }}>
+                Owner breakdown
+              </div>
+              <div style={{ overflowX: 'auto' }}>
+                <table className="data-table">
+                  <thead>
+                    <tr>
+                      <th>Owner</th>
+                      <th>Open</th>
+                      <th>Critical</th>
+                      <th>Overdue F/U</th>
+                      <th>Commit</th>
+                      <th>Best case</th>
+                      <th>Excluded</th>
+                      <th>Review</th>
+                      <th>Low pen.</th>
+                      <th>Crit. cov.</th>
+                      <th>Urgent plan</th>
+                      <th>No plan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stats.ownerBreakdown.map(r => (
+                      <tr key={r.ownerUserId}>
+                        <td className="table-company">{r.ownerName ?? r.ownerUserId}</td>
+                        <td className="table-num">{r.openDeals}</td>
+                        <td className="table-num">{r.criticalDeals}</td>
+                        <td className="table-num">{r.overdueFollowUps}</td>
+                        <td className="table-num">{formatCurrency(r.commitAmount)}</td>
+                        <td className="table-num">{formatCurrency(r.bestCaseAmount)}</td>
+                        <td className="table-num">{formatCurrency(r.excludedAmount)}</td>
+                        <td className="table-num">{r.dealsNeedingManagementReview}</td>
+                        <td className="table-num">{r.ownerCoverageSummary?.lowPenetrationAccounts ?? 0}</td>
+                        <td className="table-num">{r.ownerCoverageSummary?.criticalCoverageRiskAccounts ?? 0}</td>
+                        <td className="table-num">{r.ownerExpansionSummary?.urgentPlanningAccounts ?? 0}</td>
+                        <td className="table-num">{r.ownerExpansionSummary?.accountsWithoutPlan ?? 0}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 22 }}>
             <div className="card">
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>
-                Lead Funnel
+              <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 17, fontWeight: 800 }}>
+                Lead funnel
               </div>
               <table className="data-table">
                 <thead><tr><th>Status</th><th>Count</th></tr></thead>
                 <tbody>
-                  {stats.leadsByStatus.sort((a, b) => b.count - a.count).map(row => (
+                  {stats.leadsByStatus.slice().sort((a, b) => b.count - a.count).map(row => (
                     <tr key={row._id}>
                       <td><span className={`badge badge-${row._id.toLowerCase().replace(/\s+/g, '')}`}>{row._id}</span></td>
-                      <td style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, fontSize: 18 }}>{row.count}</td>
+                      <td className="table-num" style={{ fontSize: 20 }}>{row.count}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -439,8 +477,8 @@ export default function Dashboard() {
             </div>
 
             <div className="card">
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>
-                Deal Pipeline
+              <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 17, fontWeight: 800 }}>
+                Deal pipeline
               </div>
               <table className="data-table">
                 <thead><tr><th>Stage</th><th>Deals</th><th>Value</th></tr></thead>
@@ -448,8 +486,8 @@ export default function Dashboard() {
                   {orderedDeals.map(row => (
                     <tr key={row._id}>
                       <td><span className={`badge badge-${row._id.toLowerCase().replace(/\s+/g, '')}`}>{row._id}</span></td>
-                      <td style={{ fontFamily: 'var(--font-cond)', fontWeight: 700 }}>{row.count}</td>
-                      <td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td>
+                      <td className="table-num">{row.count}</td>
+                      <td className="table-num" style={{ color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -461,4 +499,3 @@ export default function Dashboard() {
     </div>
   );
 }
-

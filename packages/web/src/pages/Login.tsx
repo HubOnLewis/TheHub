@@ -29,13 +29,21 @@ export default function Login() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#1a1d23', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ background: '#fff', borderRadius: 10, padding: '40px 36px', width: 380, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div
+        className="card"
+        style={{
+          padding: '40px 36px',
+          width: 'min(400px, 100%)',
+          boxShadow: 'var(--shadow-lg)',
+          background: 'linear-gradient(165deg, var(--surface) 0%, var(--surface-2) 100%)',
+        }}
+      >
         <div style={{ marginBottom: 28 }}>
-          <h1 style={{ fontFamily: 'var(--font-cond)', fontSize: 28, fontWeight: 800, color: 'var(--red)', letterSpacing: '1px' }}>
+          <h1 style={{ fontFamily: 'var(--font-cond)', fontSize: 28, fontWeight: 800, color: 'var(--red)', letterSpacing: '2px' }}>
             MTTE CORE
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>Sign in to continue</p>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 6 }}>Sign in to continue</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -64,7 +72,17 @@ export default function Login() {
           </div>
 
           {error && (
-            <div style={{ background: '#fee2e2', color: '#b91c1c', padding: '8px 12px', borderRadius: 4, fontSize: 13, marginBottom: 16 }}>
+            <div
+              style={{
+                background: 'var(--red-muted)',
+                color: 'var(--red)',
+                border: '1px solid rgba(225, 29, 72, 0.35)',
+                padding: '10px 14px',
+                borderRadius: 8,
+                fontSize: 13,
+                marginBottom: 16,
+              }}
+            >
               {error}
             </div>
           )}

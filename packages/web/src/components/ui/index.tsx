@@ -1,6 +1,10 @@
 // packages/web/src/components/ui/index.tsx
 import React from 'react';
 
+export { StatusBadge } from './StatusBadge.js';
+export { MetricHeroCard } from './MetricHeroCard.js';
+export { SkeletonBlock, DashboardSkeleton, TableSkeleton } from './Skeleton.js';
+
 // ── Modal ─────────────────────────────────────────────────────────
 interface ModalProps {
   title:    string;
@@ -64,16 +68,16 @@ export function EmptyState({ message, sub }: { message: string; sub?: string }) 
 }
 
 // ── KPICard ───────────────────────────────────────────────────────
-export function KPICard({ label, value, colorVar = '--red', sub }: { label: string; value: string | number; colorVar?: string; sub?: string }) {
+export function KPICard({ label, value, colorVar = '--red', sub, className = '' }: { label: string; value: string | number; colorVar?: string; sub?: string; className?: string }) {
   return (
-    <div className="card" style={{ padding: '14px 18px', minWidth: 140 }}>
-      <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-secondary)', marginBottom: 4 }}>
+    <div className={`card card-kpi ${className}`.trim()} style={{ padding: '18px 20px', minWidth: 140 }}>
+      <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: 6 }}>
         {label}
       </div>
-      <div style={{ fontFamily: 'var(--font-cond)', fontSize: 32, fontWeight: 800, color: `var(${colorVar})` }}>
+      <div style={{ fontFamily: 'var(--font-cond)', fontSize: 28, fontWeight: 800, color: `var(${colorVar})`, letterSpacing: '-0.02em' }}>
         {value}
       </div>
-      {sub && <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>{sub}</div>}
+      {sub && <div style={{ fontSize: 12, color: 'var(--text-light)', marginTop: 6 }}>{sub}</div>}
     </div>
   );
 }

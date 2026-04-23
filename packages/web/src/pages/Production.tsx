@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useProductionJobs, useProductionJob, useProductionMutations } from '../hooks/useProduction.js';
 import { useCloseoutChecklist, useDeliveryMutations } from '../hooks/useDelivery.js';
-import { EmptyState, Modal, Spinner } from '../components/ui/index.js';
+import { EmptyState, Modal, Spinner, StatusBadge, TableSkeleton } from '../components/ui/index.js';
 
 export default function Production() {
   const [status, setStatus] = useState('');
@@ -20,7 +20,7 @@ export default function Production() {
     completed: rows.filter((r: any) => r.status === 'completed'),
   }), [rows]);
 
-  if (isLoading) return <div style={{ padding: 50, display: 'flex', justifyContent: 'center', gap: 8 }}><Spinner /><span>Loading…</span></div>;
+  if (isLoading) return <div className="card" style={{ padding: 24 }}><TableSkeleton rows={6} /></div>;
 
   return (
     <div>
@@ -30,32 +30,41 @@ export default function Production() {
           <div className="page-subtitle">Frozen shop jobs from approved build versions</div>
         </div>
       </div>
-      <div className="card" style={{ marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div className="card" style={{ marginBottom: 16, padding: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <select className="form-select" value={status} onChange={e => setStatus(e.target.value)}>
           <option value="">All statuses</option><option value="queued">queued</option><option value="ready">ready</option><option value="in_progress">in_progress</option><option value="paused">paused</option><option value="completed">completed</option>
         </select>
         <input className="form-input" placeholder="Search team/notes/job#" value={q} onChange={e => setQ(e.target.value)} />
       </div>
       {rows.length === 0 ? <EmptyState message="No production jobs" sub="Create jobs from approved builds." /> : (
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div style={{ display: 'grid', gap: 18 }}>
           {Object.entries(grouped).map(([k, list]) => (
             <section key={k}>
-              <div style={{ fontWeight: 800, marginBottom: 6, fontFamily: 'var(--font-cond)' }}>{k} · {(list as any[]).length}</div>
-              <div className="card" style={{ padding: 0 }}>
-                {(list as any[]).length === 0 ? <div style={{ padding: 10, fontSize: 12 }}>None</div> : (list as any[]).map(j => (
-                  <div key={j._id} style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10 }}>
-                      <div>
-                        <div style={{ fontWeight: 700 }}>{j.build?.name ?? 'Build'} · {j.unit?.year ?? ''} {j.unit?.make ?? ''} {j.unit?.model ?? ''}</div>
-                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>job {j.jobNumber ?? j._id.slice(0, 8)} · team {j.assignedTeam ?? 'unassigned'}</div>
-                        <div style={{ fontSize: 12 }}>status {j.status} · frozen version {j.buildVersionId}</div>
-                        <div style={{ fontSize: 12 }}>
+              <div className="list-section-title">{k.replace(/_/g, ' ')} · {(list as any[]).length}</div>
+              <div className="card list-card">
+                {(list as any[]).length === 0 ? <div style={{ padding: 16, fontSize: 13, color: 'var(--text-secondary)' }}>None</div> : (list as any[]).map(j => (
+                  <div key={j._id} className="list-row">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                      <div style={{ flex: '1 1 260px' }}>
+                        <div className="list-row__title" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                          {j.build?.name ?? 'Build'} · {j.unit?.year ?? ''} {j.unit?.make ?? ''} {j.unit?.model ?? ''}
+                          <StatusBadge domain="production" value={String(j.status ?? '')}>{String(j.status ?? '').replace(/_/g, ' ')}</StatusBadge>
+                        </div>
+                        <div className="list-row__meta">job {j.jobNumber ?? j._id.slice(0, 8)} · team {j.assignedTeam ?? 'unassigned'}</div>
+                        <div className="list-row__meta">frozen version {j.buildVersionId}</div>
+                        <div className="list-row__meta">
                           progress {(j.productionProgressSummary?.percentComplete ?? 0)}% · blocked {j.productionProgressSummary?.blockedTasks ?? 0} · in-progress {j.productionProgressSummary?.inProgressTasks ?? 0}
                         </div>
-                        {j.delivery && <div style={{ fontSize: 12 }}>delivery {j.delivery.status} · readiness {j.delivery.deliveryReadiness?.readinessLevel}</div>}
-                        {j.productionImpact?.hasImpact && <div style={{ fontSize: 12, color: 'var(--red)' }}>{j.productionImpact.reasons.join(' · ')}</div>}
+                        {j.delivery && (
+                          <div className="list-row__meta" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+                            <span>Delivery</span>
+                            <StatusBadge domain="delivery" value={String(j.delivery.status ?? '')}>{String(j.delivery.status ?? '').replace(/_/g, ' ')}</StatusBadge>
+                            <span style={{ color: 'var(--text-light)', fontSize: 11 }}>readiness {j.delivery.deliveryReadiness?.readinessLevel ?? '—'}</span>
+                          </div>
+                        )}
+                        {j.productionImpact?.hasImpact && <div className="list-row__meta" style={{ color: 'var(--red)', marginTop: 6 }}>{j.productionImpact.reasons.join(' · ')}</div>}
                       </div>
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div className="list-row__actions">
                         <button className="btn btn-secondary" onClick={() => setSelectedId(j._id)}>Shop View</button>
                         {j.status !== 'completed' && <button className="btn btn-secondary" onClick={() => mutations.update.mutate({ id: j._id, payload: { status: j.status === 'queued' ? 'ready' : j.status === 'ready' ? 'in_progress' : j.status === 'in_progress' ? 'completed' : 'in_progress' } })}>Advance</button>}
                         {j.status !== 'paused' && j.status !== 'completed' && <button className="btn btn-ghost" onClick={() => mutations.update.mutate({ id: j._id, payload: { status: 'paused' } })}>Pause</button>}

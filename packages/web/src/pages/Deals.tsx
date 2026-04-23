@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDeals, useDealMutations, useDealInteractions } from '../hooks/useDeals.js';
 import { useCompanySearch } from '../hooks/useCompanies.js';
 import { useCreateInteraction, type InteractionRow } from '../hooks/useInteractions.js';
-import { Modal, StatusSelect, EmptyState, Spinner, Pagination } from '../components/ui/index.js';
+import { Modal, StatusSelect, EmptyState, Pagination, StatusBadge, TableSkeleton } from '../components/ui/index.js';
 import InteractionComposer from '../components/InteractionComposer.js';
 import InteractionTimeline from '../components/InteractionTimeline.js';
 import {
@@ -212,7 +212,7 @@ export default function Deals() {
 
       <div className="card">
         {isLoading ? (
-          <div style={{ padding: 40, display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center' }}><Spinner /><span className="text-muted">Loading…</span></div>
+          <div style={{ padding: 24 }}><TableSkeleton rows={8} /></div>
         ) : deals.length === 0 ? (
           <EmptyState message="No deals found" sub="Try clearing filters or create a new deal" />
         ) : (
@@ -235,18 +235,21 @@ export default function Deals() {
                       {formatCurrency(d.amount)}
                     </td>
                     <td>
-                      <StatusSelect
-                        status={d.status}
-                        options={getValidDealOptions(d.status)}
-                        disabled={TERMINAL_DEAL_STATUSES.has(d.status)}
-                        onChange={status => {
-                          setMutErr(null);
-                          mutations.update.mutate(
-                            { id: d._id, data: { status: status as DealStatus } },
-                            { onError: e => setMutErr(extractError(e)) },
-                          );
-                        }}
-                      />
+                      <div className="status-cell">
+                        <StatusBadge domain="deal" value={d.status}>{d.status}</StatusBadge>
+                        <StatusSelect
+                          status={d.status}
+                          options={getValidDealOptions(d.status)}
+                          disabled={TERMINAL_DEAL_STATUSES.has(d.status)}
+                          onChange={status => {
+                            setMutErr(null);
+                            mutations.update.mutate(
+                              { id: d._id, data: { status: status as DealStatus } },
+                              { onError: e => setMutErr(extractError(e)) },
+                            );
+                          }}
+                        />
+                      </div>
                     </td>
                     <td>
                       {noOwner
@@ -260,20 +263,18 @@ export default function Deals() {
                     </td>
                     <td>
                       {d.dealExecutionState && (
-                        <span
-                          className="badge"
-                          style={{
-                            marginRight: 8,
-                            background:
-                              d.dealExecutionState.pressureLevel === 'critical' ? 'var(--red)' :
-                                d.dealExecutionState.pressureLevel === 'high' ? '#d97706' :
-                                  d.dealExecutionState.pressureLevel === 'medium' ? '#3b82f6' : '#10b981',
-                          }}
+                        <StatusBadge
+                          tone={
+                            d.dealExecutionState.pressureLevel === 'critical' ? 'critical' :
+                              d.dealExecutionState.pressureLevel === 'high' ? 'warning' :
+                                d.dealExecutionState.pressureLevel === 'medium' ? 'info' : 'success'
+                          }
+                          style={{ marginRight: 6 }}
                         >
                           {d.dealExecutionState.pressureLevel}
-                        </span>
+                        </StatusBadge>
                       )}
-                      {d.atRisk?.flagged && <span className="badge" style={{ background: '#7c3aed', marginRight: 8 }}>at risk</span>}
+                      {d.atRisk?.flagged && <StatusBadge tone="warning" style={{ marginRight: 8 }}>At risk</StatusBadge>}
                       <button
                         className="btn btn-ghost"
                         style={{ padding: '3px 8px', fontSize: 11 }}

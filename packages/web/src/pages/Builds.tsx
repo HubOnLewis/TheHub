@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useBuilds, useBuildMutations, useBuildVersions, useBuildChangeOrders, useBuildDiff } from '../hooks/useBuilds.js';
 import { useProductionMutations } from '../hooks/useProduction.js';
-import { EmptyState, Modal, Spinner } from '../components/ui/index.js';
+import { EmptyState, Modal, Spinner, StatusBadge } from '../components/ui/index.js';
 
 export default function Builds() {
   const [sp, setSp] = useSearchParams();
@@ -58,7 +58,7 @@ export default function Builds() {
         <button className="btn btn-primary" onClick={() => setCreating(true)}>+ Create Build</button>
       </div>
 
-      <div className="card" style={{ marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr auto auto auto', gap: 8, alignItems: 'center' }}>
+      <div className="card" style={{ marginBottom: 16, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12, alignItems: 'end' }}>
         <input className="form-input" placeholder="Unit ID" value={unitId} onChange={e => setSp(prev => { if (e.target.value) prev.set('unitId', e.target.value); else prev.delete('unitId'); return prev; })} />
         <input className="form-input" placeholder="Deal ID" value={dealId} onChange={e => setSp(prev => { if (e.target.value) prev.set('dealId', e.target.value); else prev.delete('dealId'); return prev; })} />
         <select className="form-select" value={status} onChange={e => setSp(prev => { if (e.target.value) prev.set('status', e.target.value); else prev.delete('status'); return prev; })}>
@@ -83,31 +83,36 @@ export default function Builds() {
       </div>
 
       {rows.length === 0 ? <EmptyState message="No builds found" sub="Create a build from a deal, company, or unit." /> : (
-        <div style={{ display: 'grid', gap: 12 }}>
+        <div style={{ display: 'grid', gap: 18 }}>
           {Object.entries(grouped).map(([k, list]) => (
             <section key={k}>
-              <div style={{ fontFamily: 'var(--font-cond)', fontWeight: 800, marginBottom: 6 }}>{k} · {(list as any[]).length}</div>
-              <div className="card" style={{ padding: 0 }}>
-                {(list as any[]).length === 0 ? <div style={{ padding: 10, fontSize: 12, color: 'var(--text-secondary)' }}>None</div> : (list as any[]).map(b => (
-                  <div key={b._id} style={{ padding: '10px 12px', borderBottom: '1px solid var(--border)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-                      <div>
-                        <div style={{ fontWeight: 700 }}>{b.name ?? 'Unnamed build'}</div>
-                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+              <div className="list-section-title">{k.replace(/_/g, ' ')} · {(list as any[]).length}</div>
+              <div className="card list-card">
+                {(list as any[]).length === 0 ? <div style={{ padding: 16, fontSize: 13, color: 'var(--text-secondary)' }}>None</div> : (list as any[]).map(b => (
+                  <div key={b._id} className="list-row">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                      <div style={{ flex: '1 1 240px' }}>
+                        <div className="list-row__title" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                          {b.name ?? 'Unnamed build'}
+                          <StatusBadge domain="build" value={String(b.status ?? '')}>{String(b.status ?? '')}</StatusBadge>
+                        </div>
+                        <div className="list-row__meta">
                           unit {b.unitId} · {b.dealId ? `deal ${b.dealId}` : 'no linked deal'}
                         </div>
-                        <div style={{ fontSize: 12 }}>Spec items: {(b.specItems ?? []).length} · substitutions {(b.buildBomSummary?.substitutionCount ?? 0)}</div>
-                        <div style={{ fontSize: 12 }}>
+                        <div className="list-row__meta">Spec items: {(b.specItems ?? []).length} · substitutions {(b.buildBomSummary?.substitutionCount ?? 0)}</div>
+                        <div className="list-row__meta">
                           Cost {Math.round(b.buildBomSummary?.estimatedCostTotal ?? 0).toLocaleString()} · Sell {Math.round(b.buildBomSummary?.estimatedSellTotal ?? 0).toLocaleString()} · Margin {Math.round(b.buildBomSummary?.estimatedGrossMargin ?? 0).toLocaleString()} ({(b.buildBomSummary?.estimatedGrossMarginPct ?? 0).toFixed(1)}%)
                         </div>
-                        <div style={{ fontSize: 12, color: b.buildBomSummary?.marginRiskLevel === 'critical' ? 'var(--red)' : 'var(--text-secondary)' }}>
-                          Risk: {b.buildBomSummary?.marginRiskLevel} · missing cost/sell {b.buildBomSummary?.missingCostLines ?? 0}/{b.buildBomSummary?.missingSellLines ?? 0}
+                        <div className="list-row__meta" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+                          <span style={{ color: 'var(--text-secondary)' }}>Margin risk</span>
+                          <StatusBadge domain="marginRisk" value={String(b.buildBomSummary?.marginRiskLevel ?? '—')} />
+                          <span style={{ color: 'var(--text-light)', fontSize: 11 }}>missing cost/sell {b.buildBomSummary?.missingCostLines ?? 0}/{b.buildBomSummary?.missingSellLines ?? 0}</span>
                         </div>
                         <ul style={{ margin: '4px 0 0 16px', fontSize: 12 }}>
                           {(b.buildBomSummary?.marginRiskReasons ?? []).slice(0, 2).map((r: string, i: number) => <li key={i}>{r}</li>)}
                         </ul>
                       </div>
-                      <div style={{ display: 'flex', gap: 6 }}>
+                      <div className="list-row__actions">
                         <button className="btn btn-secondary" onClick={() => mutations.update.mutate({ id: b._id, payload: { status: 'in_production' } })}>Move to Production</button>
                         <button className="btn btn-secondary" onClick={() => production.create.mutate({ buildId: b._id, unitId: b.unitId, dealId: b.dealId, assignedTeam: 'Shop Team A' })}>Handoff to Shop</button>
                         <button className="btn btn-secondary" onClick={() => { setHistoryBuildId(b._id); setFromVersionId(null); setToVersionId(null); }}>History</button>
