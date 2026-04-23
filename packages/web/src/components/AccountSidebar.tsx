@@ -9,7 +9,7 @@ interface Deal {
   _id:    string;
   title:  string;
   status: string;
-  amount: number;
+  amount?: number;
 }
 
 interface Props {
@@ -170,7 +170,7 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
                   </span>
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                  {fmt.format(deal.amount)}
+                  {fmt.format(deal.amount ?? 0)}
                 </div>
               </div>
             ))
