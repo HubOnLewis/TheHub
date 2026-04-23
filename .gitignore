@@ -16,6 +16,9 @@ voze_data/
 # Build artifacts and temp output
 mnt/
 
+# API-uploaded files (local dev)
+packages/api/uploads/
+
 # OS artefacts
 .DS_Store
 *.log

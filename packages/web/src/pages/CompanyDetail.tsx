@@ -1,59 +1,65 @@
 // packages/web/src/pages/CompanyDetail.tsx
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useCompany, useCompanySummary } from '../hooks/useCompanies.js';
 import {
-  useCompany, useCompanyActivities,
-  useCreateActivity, useCompanySummary,
-} from '../hooks/useCompanies.js';
+  useCompanyInteractions, useCreateInteraction, type InteractionRow,
+} from '../hooks/useInteractions.js';
 import { useDeals, useDealMutations } from '../hooks/useDeals.js';
+import { useAccountPlanMutations } from '../hooks/useAccountExpansion.js';
+import { useAppStore } from '../store/index.js';
 import { Modal, EmptyState, Spinner, Pagination } from '../components/ui/index.js';
-import ActivityComposer from '../components/ActivityComposer.js';
+import client from '../api/client.js';
+import InteractionComposer from '../components/InteractionComposer.js';
+import InteractionTimeline from '../components/InteractionTimeline.js';
+import InteractionDetailPanel from '../components/InteractionDetailPanel.js';
 import AccountSidebar   from '../components/AccountSidebar.js';
-import { timeAgo, CreateDealSchema, type CreateDealPayload, type ActivityType } from '@mtte-core/shared';
+import { timeAgo, CreateDealSchema, type CreateDealPayload } from '@mtte-core/shared';
 
-// ── Activity display maps ─────────────────────────────────────────
-const ACTIVITY_TYPE_LABELS: Record<ActivityType, string> = {
-  call_out:  'Call Out',  call_in:   'Call In',
-  email_out: 'Email Out', email_in:  'Email In',
-  text_out:  'Text Out',  text_in:   'Text In',
-  visit:     'Visit',     event:     'Event',
-  other:     'Note',
-};
-const ACTIVITY_TYPE_COLOR: Record<ActivityType, string> = {
-  call_out:  '#3b82f6', call_in:   '#22c55e',
-  email_out: '#8b5cf6', email_in:  '#a78bfa',
-  text_out:  '#f59e0b', text_in:   '#fbbf24',
-  visit:     'var(--red)', event:  '#06b6d4',
-  other:     'var(--text-secondary)',
-};
-const TYPE_ICON: Partial<Record<ActivityType, string>> = {
-  call_out: '📞', call_in: '📲', email_out: '✉️', email_in: '📩',
-  text_out: '💬', text_in: '💬', visit: '🏢', event: '📅', other: '📝',
-};
-
-const fmtDate = (d: string) =>
-  new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+type DealRow = { _id: string; company?: string; title: string; status: string; amount?: number };
 
 export default function CompanyDetail() {
   const { id }    = useParams<{ id: string }>();
   const navigate  = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { user }  = useAppStore();
   const [actPage, setActPage]   = useState(1);
   const [showDealModal, setShowDealModal] = useState(false);
+  const [showPlanModal, setShowPlanModal] = useState(searchParams.get('plan') === '1');
+  const [showQuickBuildModal, setShowQuickBuildModal] = useState(false);
+  const [quickBuildName, setQuickBuildName] = useState('');
+  const [quickBuildSpec, setQuickBuildSpec] = useState('');
+  const [filters, setFilters] = useState({
+    type: '',
+    status: '',
+    ownerUserId: '',
+    hasFollowUp: '',
+    q: '',
+  });
+  const selectedId = searchParams.get('interactionId');
+  const composeOpen = searchParams.get('compose') === '1';
 
   const { data: company,        isLoading: companyLoading }  = useCompany(id!);
-  const { data: activitiesData, isLoading: actLoading }      = useCompanyActivities(id!, { page: actPage, limit: 20 });
+  const { data: interactionsData, isLoading: intLoading }  = useCompanyInteractions(id!, actPage, 20, {
+    type: filters.type || undefined,
+    status: filters.status || undefined,
+    ownerUserId: filters.ownerUserId || undefined,
+    hasFollowUp: filters.hasFollowUp === '' ? undefined : filters.hasFollowUp === '1',
+    q: filters.q || undefined,
+  });
   const { data: summary,        isLoading: summaryLoading }  = useCompanySummary(id!);
-  const createActivity = useCreateActivity(id!);
+  const createInteraction = useCreateInteraction(id!);
+  const accountPlanMutations = useAccountPlanMutations(id);
 
-  const companyName = (company as any)?.name ?? '';
+  const companyName = (company as { name?: string } | undefined)?.name ?? '';
   const { data: dealsData } = useDeals({ search: companyName, limit: 50 });
-  const allDeals: any[] = (dealsData as any)?.data ?? [];
-  // Filter to exact company name match (case-insensitive)
+  const allDeals: DealRow[] = (dealsData as { data?: DealRow[] } | undefined)?.data ?? [];
   const companyDeals = allDeals.filter(
-    (d: any) => d.company?.toLowerCase() === companyName.toLowerCase(),
+    d => d.company?.toLowerCase() === companyName.toLowerCase(),
   );
+  const dealMap = new Map(companyDeals.map(d => [d._id, d.title] as [string, string]));
 
   const { create: createDeal } = useDealMutations();
   const dealForm = useForm<CreateDealPayload>({
@@ -61,9 +67,11 @@ export default function CompanyDetail() {
     defaultValues: { company: companyName, status: 'Draft', amount: 0 },
   });
 
-  const activities = (activitiesData as any)?.data  ?? [];
-  const actTotal   = (activitiesData as any)?.total ?? 0;
-  const actPages   = (activitiesData as any)?.pages ?? 1;
+  const rows   = interactionsData?.data  ?? [];
+  const intTotal = interactionsData?.total ?? 0;
+  const intPages = interactionsData?.pages ?? 1;
+
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
 
   if (companyLoading) {
     return (
@@ -76,7 +84,7 @@ export default function CompanyDetail() {
     return <EmptyState message="Company not found" sub="It may have been removed or you may not have access." />;
   }
 
-  const c = company as any;
+  const c = company as { name: string; isStub?: boolean; source: string; address?: { street?: string; city?: string; state?: string; postalCode?: string }; phone?: string; daysSinceLastContact?: number; createdAt: string };
 
   const handleNewDeal = async (data: CreateDealPayload) => {
     await createDeal.mutateAsync(data);
@@ -84,9 +92,10 @@ export default function CompanyDetail() {
     dealForm.reset({ company: companyName, status: 'Draft', amount: 0 });
   };
 
+  const defaultPlanText = (arr?: string[]) => (arr ?? []).join('\n');
+
   return (
     <div>
-      {/* ── Back nav ── */}
       <div style={{ marginBottom: 14 }}>
         <button
           className="btn btn-ghost"
@@ -97,7 +106,6 @@ export default function CompanyDetail() {
         </button>
       </div>
 
-      {/* ── Account Header ── */}
       <div className="card" style={{ padding: '18px 22px', marginBottom: 18 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
           <div>
@@ -125,62 +133,122 @@ export default function CompanyDetail() {
             )}
           </div>
 
-          {/* KPI chips */}
           <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'flex-start' }}>
             <KpiChip label="Last Contact" value={c.daysSinceLastContact != null ? `${c.daysSinceLastContact}d ago` : '—'} />
-            <KpiChip label="Activities"  value={String(actTotal)} />
-            <KpiChip label="Added"       value={timeAgo(c.createdAt)} />
+            <KpiChip label="Interactions" value={String(intTotal)} />
+            <KpiChip label="Added" value={timeAgo(c.createdAt)} />
           </div>
         </div>
       </div>
 
-      {/* ── Two-column layout ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 18, alignItems: 'start' }}>
-
-        {/* ── Left: composer + timeline ── */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
+          gap: 18,
+          alignItems: 'start',
+        }}
+      >
         <div>
-          <ActivityComposer
-            companyId={id!}
-            deals={companyDeals.map((d: any) => ({ _id: d._id, title: d.title, status: d.status }))}
-            onSubmit={async (payload) => {
-              await createActivity.mutateAsync(payload);
-            }}
-          />
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => {
+                  const p = new URLSearchParams(searchParams);
+                  p.set('compose', '1');
+                  setSearchParams(p, { replace: true });
+                }}
+              >
+                + Log interaction
+              </button>
+              <button type="button" className="btn btn-secondary" onClick={() => setShowQuickBuildModal(true)}>
+                + Create Build
+              </button>
+            </div>
+          </div>
+          {composeOpen && (
+            <>
+              <div style={{ marginBottom: 6 }}>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => {
+                    const p = new URLSearchParams(searchParams);
+                    p.delete('compose');
+                    setSearchParams(p, { replace: true });
+                  }}
+                >
+                  Close composer
+                </button>
+              </div>
+              <InteractionComposer
+                companyId={id!}
+                deals={companyDeals.map(d => ({ _id: d._id, title: d.title, status: d.status }))}
+                onSubmit={async (payload) => {
+                  const data = await createInteraction.mutateAsync(payload);
+                  return { _id: data._id };
+                }}
+                onSaved={() => {
+                  const p = new URLSearchParams(searchParams);
+                  p.delete('compose');
+                  setSearchParams(p, { replace: true });
+                }}
+              />
+            </>
+          )}
 
-          {/* Section header */}
           <div style={{ marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, fontSize: 13, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.7px' }}>
-              Activity History · {actTotal}
+              Timeline · {intTotal}
             </span>
           </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 8, marginBottom: 10 }}>
+            <select className="form-select" value={filters.type} onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}>
+              <option value="">All types</option>
+              <option value="call">call</option><option value="text">text</option><option value="email">email</option>
+              <option value="meeting">meeting</option><option value="note">note</option><option value="task">task</option><option value="visit">visit</option>
+            </select>
+            <select className="form-select" value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value }))}>
+              <option value="">All status</option><option value="open">open</option><option value="completed">completed</option>
+            </select>
+            <select className="form-select" value={filters.hasFollowUp} onChange={e => setFilters(f => ({ ...f, hasFollowUp: e.target.value }))}>
+              <option value="">Follow-up any</option><option value="1">Has follow-up</option><option value="0">No follow-up</option>
+            </select>
+            <input className="form-input" value={filters.ownerUserId} onChange={e => setFilters(f => ({ ...f, ownerUserId: e.target.value }))} placeholder="Owner user ID" />
+            <input className="form-input" value={filters.q} onChange={e => setFilters(f => ({ ...f, q: e.target.value }))} placeholder="Search summary/body" />
+          </div>
 
-          {actLoading ? (
+          {intLoading ? (
             <div style={{ padding: 32, display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center' }}>
               <Spinner /><span className="text-muted">Loading…</span>
             </div>
-          ) : activities.length === 0 ? (
-            <EmptyState message="No activities" sub="Log the first interaction above." />
           ) : (
             <>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {activities.map((a: any) => (
-                  <ActivityCard key={a._id} a={a} />
-                ))}
-              </div>
-              {actPages > 1 && (
+              <InteractionTimeline
+                rows={rows}
+                onSelect={(r: InteractionRow) => {
+                  const p = new URLSearchParams(searchParams);
+                  p.set('interactionId', r._id);
+                  setSearchParams(p, { replace: true });
+                }}
+                empty="No interactions yet. Log the first one above."
+              />
+              {intPages > 1 && (
                 <div style={{ marginTop: 14 }}>
-                  <Pagination page={actPage} pages={actPages} total={actTotal} onPage={setActPage} />
+                  <Pagination page={actPage} pages={intPages} total={intTotal} onPage={setActPage} />
                 </div>
               )}
             </>
           )}
         </div>
 
-        {/* ── Right: sidebar ── */}
         <AccountSidebar
           summary={summary}
           deals={companyDeals}
           loading={summaryLoading}
+          onEditPlan={() => setShowPlanModal(true)}
           onNewDeal={() => {
             dealForm.reset({ company: companyName, status: 'Draft', amount: 0 });
             setShowDealModal(true);
@@ -188,7 +256,92 @@ export default function CompanyDetail() {
         />
       </div>
 
-      {/* ── New Deal modal ── */}
+      {showPlanModal && (
+        <Modal title="Account Plan" onClose={() => {
+          setShowPlanModal(false);
+          const p = new URLSearchParams(searchParams);
+          p.delete('plan');
+          setSearchParams(p, { replace: true });
+        }} width={760}>
+          <AccountPlanForm
+            companyId={id!}
+            companyName={companyName}
+            ownerUserId={summary?.accountPenetrationState?.assignedOwnerUserId}
+            ownerName={summary?.accountPenetrationState?.assignedOwnerName}
+            initial={summary?.accountPlan ?? null}
+            onSave={async payload => {
+              if (summary?.accountPlan?._id) {
+                await accountPlanMutations.update.mutateAsync({ id: summary.accountPlan._id, payload });
+              } else {
+                await accountPlanMutations.create.mutateAsync({
+                  companyId: id!,
+                  companyName,
+                  ownerUserId: summary?.accountPenetrationState?.assignedOwnerUserId,
+                  ownerName: summary?.accountPenetrationState?.assignedOwnerName,
+                  status: 'draft',
+                  objectives: [],
+                  opportunities: [],
+                  risks: [],
+                  nextSteps: [],
+                  ...payload,
+                });
+              }
+              setShowPlanModal(false);
+            }}
+            defaultPlanText={defaultPlanText}
+          />
+        </Modal>
+      )}
+
+      {showQuickBuildModal && (
+        <Modal title="Quick Build Creation" onClose={() => setShowQuickBuildModal(false)} width={700}>
+          <form onSubmit={async e => {
+            e.preventDefault();
+            await client.post(`/companies/${id}/builds`, {
+              name: quickBuildName || undefined,
+              status: 'draft',
+              specItems: quickBuildSpec
+                .split('\n')
+                .map(x => x.trim())
+                .filter(Boolean)
+                .map((line: string) => {
+                  const [category, description, qty, unitCost, unitSell, partNumber, vendorName] = line.split('|');
+                  return {
+                    category: category || 'misc',
+                    description: description || line,
+                    quantity: Math.max(1, Number(qty || '1')),
+                    unitCostEstimate: unitCost ? Number(unitCost) : undefined,
+                    unitSellPrice: unitSell ? Number(unitSell) : undefined,
+                    partNumber: partNumber || undefined,
+                    vendorName: vendorName || undefined,
+                    costSource: 'manual',
+                    pricingSource: 'manual',
+                    isStandard: false,
+                  };
+                }),
+              unit: { make: 'Unknown', model: 'TBD' },
+            });
+            setShowQuickBuildModal(false);
+            setQuickBuildName('');
+            setQuickBuildSpec('');
+          }}>
+            <div className="form-grid">
+              <div className="form-group full">
+                <label className="form-label">Build Name</label>
+                <input className="form-input" value={quickBuildName} onChange={e => setQuickBuildName(e.target.value)} placeholder="Service Body Build" />
+              </div>
+              <div className="form-group full">
+                <label className="form-label">Spec Items (category|description|qty|unitCost|unitSell|partNumber|vendor)</label>
+                <textarea className="form-textarea" rows={6} value={quickBuildSpec} onChange={e => setQuickBuildSpec(e.target.value)} />
+              </div>
+            </div>
+            <div className="modal-footer" style={{ padding: '16px 0 0', borderTop: 'none' }}>
+              <button type="submit" className="btn btn-primary">Create Build</button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
       {showDealModal && (
         <Modal title="New Deal" onClose={() => setShowDealModal(false)} width={580}>
           <form onSubmit={dealForm.handleSubmit(handleNewDeal)}>
@@ -225,11 +378,116 @@ export default function CompanyDetail() {
           </form>
         </Modal>
       )}
+
+      <InteractionDetailPanel
+        id={selectedId}
+        onClose={() => {
+          const p = new URLSearchParams(searchParams);
+          p.delete('interactionId');
+          setSearchParams(p, { replace: true });
+        }}
+        currentUserId={user?.id ?? ''}
+        isAdmin={!!isAdmin}
+        companyId={id!}
+        companyName={c.name}
+        dealTitles={dealMap}
+      />
     </div>
   );
 }
 
-// ── Sub-components ─────────────────────────────────────────────────
+function AccountPlanForm({
+  companyId,
+  companyName,
+  ownerUserId,
+  ownerName,
+  initial,
+  onSave,
+  defaultPlanText,
+}: {
+  companyId: string;
+  companyName: string;
+  ownerUserId?: string;
+  ownerName?: string;
+  initial: {
+    _id: string;
+    status: 'draft' | 'active' | 'paused' | 'completed';
+    objectives: string[];
+    opportunities: string[];
+    risks: string[];
+    nextSteps: string[];
+  } | null;
+  onSave: (payload: {
+    companyId?: string;
+    companyName?: string;
+    ownerUserId?: string;
+    ownerName?: string;
+    status?: 'draft' | 'active' | 'paused' | 'completed';
+    objectives?: string[];
+    opportunities?: string[];
+    risks?: string[];
+    nextSteps?: string[];
+  }) => Promise<void>;
+  defaultPlanText: (arr?: string[]) => string;
+}) {
+  const [status, setStatus] = useState<'draft' | 'active' | 'paused' | 'completed'>(initial?.status ?? 'draft');
+  const [objectives, setObjectives] = useState(defaultPlanText(initial?.objectives));
+  const [opportunities, setOpportunities] = useState(defaultPlanText(initial?.opportunities));
+  const [risks, setRisks] = useState(defaultPlanText(initial?.risks));
+  const [nextSteps, setNextSteps] = useState(defaultPlanText(initial?.nextSteps));
+
+  const toList = (v: string) => v.split('\n').map(x => x.trim()).filter(Boolean);
+
+  return (
+    <form
+      onSubmit={async e => {
+        e.preventDefault();
+        await onSave({
+          companyId,
+          companyName,
+          ownerUserId,
+          ownerName,
+          status,
+          objectives: toList(objectives),
+          opportunities: toList(opportunities),
+          risks: toList(risks),
+          nextSteps: toList(nextSteps),
+        });
+      }}
+    >
+      <div className="form-grid">
+        <div className="form-group">
+          <label className="form-label">Status</label>
+          <select className="form-select" value={status} onChange={e => setStatus(e.target.value as any)}>
+            <option value="draft">draft</option>
+            <option value="active">active</option>
+            <option value="paused">paused</option>
+            <option value="completed">completed</option>
+          </select>
+        </div>
+        <div className="form-group full">
+          <label className="form-label">Objectives (one per line)</label>
+          <textarea className="form-textarea" rows={4} value={objectives} onChange={e => setObjectives(e.target.value)} />
+        </div>
+        <div className="form-group full">
+          <label className="form-label">Opportunities (one per line)</label>
+          <textarea className="form-textarea" rows={4} value={opportunities} onChange={e => setOpportunities(e.target.value)} />
+        </div>
+        <div className="form-group full">
+          <label className="form-label">Risks (one per line)</label>
+          <textarea className="form-textarea" rows={4} value={risks} onChange={e => setRisks(e.target.value)} />
+        </div>
+        <div className="form-group full">
+          <label className="form-label">Next Steps (one per line)</label>
+          <textarea className="form-textarea" rows={4} value={nextSteps} onChange={e => setNextSteps(e.target.value)} />
+        </div>
+      </div>
+      <div className="modal-footer" style={{ padding: '16px 0 0', borderTop: 'none' }}>
+        <button type="submit" className="btn btn-primary">{initial ? 'Update Plan' : 'Create Plan'}</button>
+      </div>
+    </form>
+  );
+}
 
 function KpiChip({ label, value }: { label: string; value: string }) {
   return (
@@ -241,68 +499,3 @@ function KpiChip({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
-
-function ActivityCard({ a }: { a: any }) {
-  const typeLabel = ACTIVITY_TYPE_LABELS[a.activityType as ActivityType] ?? a.activityTypeRaw;
-  const typeColor = ACTIVITY_TYPE_COLOR[a.activityType as ActivityType] ?? 'var(--text-secondary)';
-  const icon      = TYPE_ICON[a.activityType as ActivityType] ?? '•';
-  const tagKeys   = Object.keys(a.tags ?? {}).filter((k: string) => a.tags[k]);
-  const hasFollowUp = !!a.followUpAt;
-
-  return (
-    <div className="card" style={{ padding: '13px 16px' }}>
-      {/* Row 1: type + contact + date */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8, flexWrap: 'wrap', gap: 6 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{
-            display: 'inline-flex', alignItems: 'center', gap: 4,
-            padding: '2px 8px', borderRadius: 4, fontSize: 11, fontWeight: 700,
-            background: `${typeColor}22`, color: typeColor, whiteSpace: 'nowrap',
-          }}>
-            <span>{icon}</span>{typeLabel}
-          </span>
-          {a.contactNameRaw && (
-            <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{a.contactNameRaw}</span>
-          )}
-          {a.outcome && (
-            <span style={{ fontSize: 11, fontWeight: 600, color: '#15803d', background: '#dcfce7', padding: '1px 7px', borderRadius: 4 }}>
-              {a.outcome}
-            </span>
-          )}
-        </div>
-        <div style={{ textAlign: 'right', fontSize: 11, color: 'var(--text-secondary)' }}>
-          <div>{fmtDate(a.createdAt)}</div>
-          <div>{a.createdByName}</div>
-        </div>
-      </div>
-
-      {/* Title */}
-      {a.title && (
-        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 4, color: 'var(--text-primary)' }}>{a.title}</div>
-      )}
-
-      {/* Body */}
-      {a.body && (
-        <p style={{ margin: '0 0 8px', fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.55 }}>{a.body}</p>
-      )}
-
-      {/* Follow-up chip + tags */}
-      {(hasFollowUp || tagKeys.length > 0) && (
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-          {hasFollowUp && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600, color: '#b45309', background: '#fef3c7', padding: '2px 8px', borderRadius: 4 }}>
-              ⏰ Follow-up: {fmtDate(a.followUpAt)}
-              {a.followUpNote && ` — ${a.followUpNote}`}
-            </span>
-          )}
-          {tagKeys.map((k: string) => (
-            <span key={k} style={{ fontSize: 10, fontWeight: 600, background: 'var(--border)', color: 'var(--text-secondary)', padding: '1px 7px', borderRadius: 4 }}>
-              {k}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-

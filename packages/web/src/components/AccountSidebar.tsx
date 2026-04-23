@@ -17,6 +17,7 @@ interface Props {
   deals:    Deal[];
   loading?: boolean;
   onNewDeal?: () => void;
+  onEditPlan?: () => void;
 }
 
 const DEAL_STATUS_CSS: Record<string, string> = {
@@ -29,7 +30,7 @@ const DEAL_STATUS_CSS: Record<string, string> = {
   'Lost':             'badge-lost',
 };
 
-export default function AccountSidebar({ summary, deals, loading, onNewDeal }: Props) {
+export default function AccountSidebar({ summary, deals, loading, onNewDeal, onEditPlan }: Props) {
   return (
     <aside style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
@@ -48,14 +49,89 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal }: P
               <SnapRow label="Deals" value={String(summary.dealCount)} />
               <SnapRow label="Open Pipeline" value={fmt.format(summary.openPipelineTotal)} />
               <SnapRow label="Won / Delivered" value={fmt.format(summary.wonTotal)} />
+              {summary.engagementState && (
+                <>
+                  <SnapRow
+                    label="Days Since Interaction"
+                    value={summary.engagementState.daysSinceLastInteraction != null ? String(summary.engagementState.daysSinceLastInteraction) : '—'}
+                  />
+                  <SnapRow label="Open Follow-ups" value={String(summary.engagementState.openFollowUps)} />
+                  <SnapRow label="Overdue Follow-ups" value={String(summary.engagementState.overdueFollowUps)} />
+                  {summary.engagementState.isStale && (
+                    <div style={{ fontSize: 11, color: 'var(--red)', fontWeight: 700 }}>Stale activity (>{14} days)</div>
+                  )}
+                </>
+              )}
+              {summary.accountPenetrationState && (
+                <>
+                  <SnapRow label="Penetration" value={summary.accountPenetrationState.penetrationLevel} />
+                  <SnapRow label="Coverage Risk" value={summary.accountPenetrationState.coverageRiskLevel} />
+                  {summary.accountExpansionState && <SnapRow label="Expansion Readiness" value={summary.accountExpansionState.expansionReadiness} />}
+                  {summary.accountExpansionState && <SnapRow label="Planning Priority" value={summary.accountExpansionState.planningPriority} />}
+                  {summary.accountPlan && <SnapRow label="Plan Status" value={summary.accountPlan.status} />}
+                  <SnapRow label="Unique Contacts (30/90)" value={`${summary.accountPenetrationState.uniqueContacts30d}/${summary.accountPenetrationState.uniqueContacts90d}`} />
+                  <SnapRow label="Open/Stalled/Critical Deals" value={`${summary.accountPenetrationState.openDeals}/${summary.accountPenetrationState.stalledDeals}/${summary.accountPenetrationState.criticalDeals}`} />
+                </>
+              )}
+              {onEditPlan && (
+                <div style={{ marginTop: 8 }}>
+                  <button className="btn btn-secondary" onClick={onEditPlan}>
+                    {summary?.accountPlan ? 'Edit Account Plan' : 'Create Account Plan'}
+                  </button>
+                </div>
+              )}
+              {!!summary.accountCoverageWarnings?.length && (
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Coverage Warnings</div>
+                  <ul style={{ margin: '0 0 0 16px', padding: 0, fontSize: 12 }}>
+                    {summary.accountCoverageWarnings.slice(0, 4).map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                </div>
+              )}
+              {summary.accountPenetrationState && (
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Whitespace Signals</div>
+                  <ul style={{ margin: '0 0 0 16px', padding: 0, fontSize: 12 }}>
+                    {(summary.accountPenetrationState.whitespaceSignals ?? []).slice(0, 4).map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                </div>
+              )}
+              {!!summary.accountExpansionState && (
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Expansion Signals</div>
+                  <ul style={{ margin: '0 0 0 16px', padding: 0, fontSize: 12 }}>
+                    {(summary.accountExpansionState.opportunitySignals ?? []).slice(0, 3).map((x, i) => <li key={`o-${i}`}>{x}</li>)}
+                    {(summary.accountExpansionState.blockers ?? []).slice(0, 2).map((x, i) => <li key={`b-${i}`} style={{ color: 'var(--red)' }}>{x}</li>)}
+                  </ul>
+                </div>
+              )}
+              {!!summary.accountPenetrationState?.penetrationReasons?.length && (
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Penetration Reasons</div>
+                  <ul style={{ margin: '0 0 0 16px', padding: 0, fontSize: 12 }}>
+                    {(summary.accountPenetrationState.penetrationReasons ?? []).slice(0, 3).map((x, i) => <li key={`pr-${i}`}>{x}</li>)}
+                  </ul>
+                </div>
+              )}
+              {!!summary.accountPenetrationState?.coverageRiskReasons?.length && (
+                <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Coverage Risk Reasons</div>
+                  <ul style={{ margin: '0 0 0 16px', padding: 0, fontSize: 12 }}>
+                    {(summary.accountPenetrationState.coverageRiskReasons ?? []).slice(0, 3).map((x, i) => <li key={`cr-${i}`}>{x}</li>)}
+                  </ul>
+                </div>
+              )}
               {summary.nextFollowUp && (
                 <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)', marginTop: 2 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--red)', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 4 }}>
-                    ⏰ Next Follow-up
+                  <div style={{ fontSize: 11, fontWeight: 700, color: summary.nextFollowUp.isOverdue ? 'var(--red)' : 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: 0.4, marginBottom: 4 }}>
+                    {summary.nextFollowUp.isOverdue ? '⏰ Overdue follow-up' : '⏰ Next follow-up'}
                   </div>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{fmtDate(summary.nextFollowUp.date)}</div>
-                  {summary.nextFollowUp.note && (
-                    <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginTop: 2 }}>{summary.nextFollowUp.note}</div>
+                  {summary.nextFollowUp.summary && (
+                    <div style={{ fontSize: 12, color: 'var(--text-primary)', marginTop: 4, fontWeight: 600 }}>{summary.nextFollowUp.summary}</div>
+                  )}
+                  {summary.nextFollowUp.ownerName && (
+                    <div style={{ fontSize: 11, color: 'var(--text-secondary)', marginTop: 2 }}>Owner: {summary.nextFollowUp.ownerName}</div>
                   )}
                 </div>
               )}

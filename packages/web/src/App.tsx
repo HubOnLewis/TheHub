@@ -8,6 +8,15 @@ import Units         from './pages/Units.js';
 import Admin         from './pages/Admin.js';
 import Companies     from './pages/Companies.js';
 import CompanyDetail from './pages/CompanyDetail.js';
+import MyWork        from './pages/MyWork.js';
+import PipelinePressure from './pages/PipelinePressure.js';
+import ForecastReview from './pages/ForecastReview.js';
+import RepScorecards from './pages/RepScorecards.js';
+import WeeklyCadence from './pages/WeeklyCadence.js';
+import AccountCoverage from './pages/AccountCoverage.js';
+import AccountExpansion from './pages/AccountExpansion.js';
+import Builds from './pages/Builds.js';
+import Production from './pages/Production.js';
 
 function Shell() {
   const { user, logout } = useAppStore();
@@ -25,7 +34,16 @@ function Shell() {
             { to: '/leads',     label: 'Leads' },
             { to: '/deals',     label: 'Deals' },
             { to: '/units',     label: 'Units' },
+            { to: '/builds',    label: 'Builds' },
+            { to: '/production',    label: 'Production' },
             { to: '/companies', label: 'Companies' },
+            { to: '/my-work', label: 'My Work' },
+            { to: '/pipeline-pressure', label: 'Pipeline Pressure' },
+            { to: '/forecast-review', label: 'Forecast Review' },
+            { to: '/rep-scorecards', label: 'Rep Scorecards' },
+            { to: '/weekly-cadence', label: 'Weekly Cadence' },
+            { to: '/account-coverage', label: 'Account Coverage' },
+            { to: '/account-expansion', label: 'Account Expansion' },
           ].map(l => (
             <NavLink key={l.to} to={l.to} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
               {l.label}
@@ -57,9 +75,18 @@ function Shell() {
             <Route path="/leads"           element={<Leads />} />
             <Route path="/deals"           element={<Deals />} />
             <Route path="/units"           element={<Units />} />
+            <Route path="/builds"          element={<Builds />} />
+            <Route path="/production"          element={<Production />} />
             <Route path="/admin"           element={<Admin />} />
             <Route path="/companies"       element={<Companies />} />
             <Route path="/companies/:id"   element={<CompanyDetail />} />
+            <Route path="/my-work"        element={<MyWork />} />
+            <Route path="/pipeline-pressure" element={<PipelinePressure />} />
+            <Route path="/forecast-review" element={<ForecastReview />} />
+            <Route path="/rep-scorecards" element={<RepScorecards />} />
+            <Route path="/weekly-cadence" element={<WeeklyCadence />} />
+            <Route path="/account-coverage" element={<AccountCoverage />} />
+            <Route path="/account-expansion" element={<AccountExpansion />} />
             <Route path="*"               element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </main>

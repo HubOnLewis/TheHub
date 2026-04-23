@@ -6,9 +6,10 @@ import type { UnitStatus } from '@mtte-core/shared';
 
 export interface UnitDoc extends Document {
   tenantId:    string;
-  vin:         string;
-  stockNumber: string;
-  year:        number;
+  companyId:   string;
+  vin?:        string;
+  stockNumber?: string;
+  year?:        number;
   make:        string;
   model:       string;
   color?:      string;
@@ -18,7 +19,7 @@ export interface UnitDoc extends Document {
   entity:      string;
   location:    string;
   status:      UnitStatus;
-  dealId?:     string | null;
+  assignedDealId?: string;
   createdAt:   Date;
   updatedAt:   Date;
 }
@@ -26,6 +27,8 @@ export interface UnitDoc extends Document {
 export interface UnitFilter {
   status?: UnitStatus;
   search?: string;
+  companyId?: string;
+  assignedDealId?: string;
 }
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
@@ -39,6 +42,8 @@ class UnitRepositoryClass extends BaseRepository<UnitDoc> {
   async listUnits(db: Db, ctx: TenantContext, filter: UnitFilter, options: ListOptions) {
     const mongoFilter: Record<string, unknown> = {};
     if (filter.status) mongoFilter['status'] = filter.status;
+    if (filter.companyId) mongoFilter['companyId'] = filter.companyId;
+    if (filter.assignedDealId) mongoFilter['assignedDealId'] = filter.assignedDealId;
     if (filter.search) {
       const safe = escapeRegex(filter.search);
       mongoFilter['$or'] = [
@@ -56,6 +61,12 @@ class UnitRepositoryClass extends BaseRepository<UnitDoc> {
       { $group: { _id: '$status', count: { $sum: 1 }, totalMsrp: { $sum: '$msrp' } } },
     ];
     return this.col(db).aggregate(this.scopedAggregate(ctx, pipeline)).toArray();
+  }
+
+  async listByDealIds(db: Db, ctx: TenantContext, dealIds: string[]) {
+    if (dealIds.length === 0) return [];
+    const rows = await this.col(db).find(this.scope(ctx, { assignedDealId: { $in: dealIds } } as never)).toArray();
+    return rows.map(r => this.serialize(r as any));
   }
 }
 

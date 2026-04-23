@@ -45,7 +45,16 @@ export class AdminService {
   }
 
   async stats(db: Db) {
-    const superCtx = { tenantId: null, defaultEntity: '', defaultLocation: '', userId: '', userName: '', isCrossTenant: true, isSuperAdmin: true };
+    const superCtx = {
+      tenantId:        null,
+      defaultEntity:  '',
+      defaultLocation:  '',
+      userId:          '',
+      userRole:        'super_admin',
+      userName:        '',
+      isCrossTenant:   true,
+      isSuperAdmin:    true,
+    };
     const [leadsByTenant, dealsByTenant, leadsByStatus, dealsByStatus] = await Promise.all([
       LeadRepository.byTenantCounts(db),
       DealRepository.byTenantCounts(db),

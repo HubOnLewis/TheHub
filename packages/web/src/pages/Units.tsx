@@ -1,5 +1,6 @@
 // packages/web/src/pages/Units.tsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUnits, useUnitSummary, useUnitMutations } from '../hooks/useUnits.js';
@@ -11,14 +12,14 @@ import {
 } from '@mtte-core/shared';
 
 type Unit = {
-  _id: string; vin: string; stockNumber: string; year: number; make: string; model: string;
+  _id: string; companyId: string; vin?: string; stockNumber?: string; year?: number; make: string; model: string;
   spec: string; color: string; status: UnitStatus; entity: string; location: string;
-  msrp: number; dealId: string | null; notes: string; updatedAt: string;
+  msrp: number; assignedDealId?: string; notes: string; updatedAt: string;
 };
 
 const STATUS_COLORS: Record<string, string> = {
-  Available: '--status-new', Reserved: '--status-contacted', 'In Build': '--status-inbuild',
-  Delivered: '--red', Demo: '--status-quoted',
+  prospect: '--status-new', ordered: '--status-contacted', in_build: '--status-inbuild',
+  completed: '--status-approved', delivered: '--red',
 };
 
 export default function Units() {
@@ -51,8 +52,8 @@ export default function Units() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Units <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-secondary)' }}>/ Inventory</span></h1>
-          <div className="page-subtitle">{total} units tracked</div>
+          <h1 className="page-title">Units <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-secondary)' }}>/ Build Anchors</span></h1>
+          <div className="page-subtitle">{total} units tracked across quote-build-delivery lifecycle</div>
         </div>
         <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Add Unit</button>
       </div>
@@ -104,24 +105,25 @@ export default function Units() {
           <table className="data-table">
             <thead>
               <tr>
-                <th>VIN / Stock #</th><th>Unit</th><th>Spec</th><th>Status</th><th>Location</th><th>MSRP</th><th>Updated</th>
+                <th>VIN / Stock #</th><th>Unit</th><th>Company / Deal</th><th>Status</th><th>Location</th><th>MSRP</th><th>Updated</th><th></th>
               </tr>
             </thead>
             <tbody>
               {units.map((u: Unit) => (
                 <tr key={u._id} className={selectedId === u._id ? 'selected' : ''} onClick={() => setSelectedId(id => id === u._id ? null : u._id)}>
                   <td>
-                    <div className="table-num" style={{ fontSize: 11, letterSpacing: '0.5px' }}>{u.vin}</div>
-                    <div className="table-sub">{u.stockNumber}</div>
+                    <div className="table-num" style={{ fontSize: 11, letterSpacing: '0.5px' }}>{u.vin || 'VIN pending'}</div>
+                    <div className="table-sub">{u.stockNumber || 'No stock #'}</div>
                   </td>
                   <td>
-                    <div className="table-company">{u.year} {u.make} {u.model}</div>
+                    <div className="table-company">{u.year ? `${u.year} ` : ''}{u.make} {u.model}</div>
                     {u.color && <div className="table-sub">{u.color}</div>}
                   </td>
                   <td>
                     <div style={{ fontSize: 12, color: 'var(--text-secondary)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {u.spec || '—'}
+                      company {u.companyId}
                     </div>
+                    <div className="table-sub">{u.assignedDealId ? `deal ${u.assignedDealId}` : 'no linked deal'}</div>
                   </td>
                   <td>
                     <StatusSelect
@@ -133,6 +135,7 @@ export default function Units() {
                   <td className="text-sm text-muted">{u.location}</td>
                   <td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600 }}>{u.msrp ? formatCurrency(u.msrp) : '—'}</td>
                   <td className="text-sm text-muted">{timeAgo(u.updatedAt)}</td>
+                  <td><Link className="btn btn-ghost" to={`/builds?unitId=${encodeURIComponent(u._id)}`}>Builds</Link></td>
                 </tr>
               ))}
             </tbody>
@@ -176,6 +179,7 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
       year: new Date().getFullYear(), make: 'Kenworth',
       entity:   (defaultEntity   as never) ?? 'MTTE',
       location: (defaultLocation as never) ?? 'Wichita',
+      status: 'prospect',
     },
   });
 
@@ -183,15 +187,24 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
     <form id="unit-form" onSubmit={handleSubmit(onSubmit)}>
       <div className="form-grid">
         <div className="form-group full">
-          <label className="form-label">VIN * (17 chars)</label>
+          <label className="form-label">VIN (optional early)</label>
           <input {...register('vin')} className={`form-input${errors.vin ? ' error' : ''}`}
             placeholder="1FD6W3GT2SED12345" style={{ fontFamily: 'monospace', letterSpacing: '1px' }} />
           {errors.vin && <span className="form-error">{errors.vin.message}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Stock Number *</label>
+          <label className="form-label">Stock Number</label>
           <input {...register('stockNumber')} className={`form-input${errors.stockNumber ? ' error' : ''}`} placeholder="WKI-2025-041" />
           {errors.stockNumber && <span className="form-error">{errors.stockNumber.message}</span>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Company ID *</label>
+          <input {...register('companyId')} className={`form-input${errors.companyId ? ' error' : ''}`} placeholder="company id" />
+          {errors.companyId && <span className="form-error">{errors.companyId.message}</span>}
+        </div>
+        <div className="form-group">
+          <label className="form-label">Assigned Deal ID</label>
+          <input {...register('assignedDealId')} className="form-input" placeholder="optional deal id" />
         </div>
         <div className="form-group">
           <label className="form-label">Year *</label>
@@ -224,6 +237,12 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
         <div className="form-group">
           <label className="form-label">MSRP</label>
           <input {...register('msrp', { valueAsNumber: true })} type="number" className="form-input" placeholder="165000" />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Status</label>
+          <select {...register('status')} className="form-select">
+            {UNIT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+          </select>
         </div>
         <div className="form-group full">
           <label className="form-label">Spec / Equipment</label>

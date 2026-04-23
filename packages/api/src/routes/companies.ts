@@ -1,13 +1,16 @@
 // packages/api/src/routes/companies.ts
 import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
-import { validate } from '../middleware/validate.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { companyService } from '../services/CompanyService.js';
-import { activityService } from '../services/ActivityService.js';
+import { interactionService } from '../services/InteractionService.js';
+import { accountPenetrationService } from '../services/AccountPenetrationService.js';
+import { accountExpansionService } from '../services/AccountExpansionService.js';
+import { accountPlanService } from '../services/AccountPlanService.js';
 import { DealRepository } from '../repositories/DealRepository.js';
+import { buildService } from '../services/BuildService.js';
+import { unitService } from '../services/UnitService.js';
 import { getDB } from '../config/db.js';
-import { CreateInteractionSchema } from '@mtte-core/shared';
 
 const router = Router();
 router.use(requireAuth, resolveTenant);
@@ -51,42 +54,94 @@ router.get('/:id', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// ── GET /api/companies/:id/activities ────────────────────────────
-router.get('/:id/activities', async (req, res, next) => {
+// ── GET /api/companies/:id/interactions ─────────────────────────
+router.get('/:id/interactions', async (req, res, next) => {
   try {
     const {
       page  = '1',
       limit = '20',
+      type,
+      status,
+      ownerUserId,
+      hasFollowUp,
+      q,
     } = req.query as Record<string, string>;
 
-    // Verify company exists within this tenant before returning its activities
     await companyService.getById(getDB(), req.tenant, req.params['id']!);
 
-    const result = await activityService.listForCompany(
+    const result = await interactionService.listForCompany(
       getDB(),
       req.tenant,
       req.params['id']!,
+      {
+        type: type || undefined,
+        status: status || undefined,
+        ownerUserId: ownerUserId || undefined,
+        hasFollowUp: hasFollowUp === '1' || hasFollowUp === 'true'
+          ? true
+          : hasFollowUp === '0' || hasFollowUp === 'false'
+            ? false
+            : undefined,
+        q: q?.trim() || undefined,
+      },
       { page: +page, limit: Math.min(+limit, 100), sort: 'createdAt', order: 'desc' },
     );
     res.json(result);
   } catch (err) { next(err); }
 });
 
-// ── POST /api/companies/:id/activities ───────────────────────────
-router.post('/:id/activities', validate(CreateInteractionSchema), async (req, res, next) => {
+router.post('/:id/units', async (req, res, next) => {
   try {
-    const activity = await activityService.create(getDB(), req.tenant, {
-      companyId:      req.params['id']!,
-      activityType:   req.body.activityType,
-      body:           req.body.body,
-      title:          req.body.title,
-      contactNameRaw: req.body.contactNameRaw,
-      outcome:        req.body.outcome,
-      followUpAt:     req.body.followUpAt || undefined,
-      followUpNote:   req.body.followUpNote,
-      relatedDealId:  req.body.relatedDealId,
+    const company = await companyService.getById(getDB(), req.tenant, req.params['id']!);
+    const out = await unitService.create(getDB(), req.tenant, {
+      ...req.body,
+      companyId: company._id,
+      entity: req.body.entity ?? req.tenant.defaultEntity,
+      location: req.body.location ?? req.tenant.defaultLocation,
+      make: req.body.make ?? 'Unknown',
+      model: req.body.model ?? 'TBD',
+      status: req.body.status ?? 'prospect',
     });
-    res.status(201).json(activity);
+    res.status(201).json(out);
+  } catch (err) { next(err); }
+});
+
+router.post('/:id/builds', async (req, res, next) => {
+  try {
+    const company = await companyService.getById(getDB(), req.tenant, req.params['id']!);
+    let unitId = req.body.unitId as string | undefined;
+    if (!unitId) {
+      const unit = await unitService.create(getDB(), req.tenant, {
+        companyId: company._id,
+        make: req.body.unit?.make ?? 'Unknown',
+        model: req.body.unit?.model ?? 'TBD',
+        year: req.body.unit?.year,
+        stockNumber: req.body.unit?.stockNumber,
+        vin: req.body.unit?.vin ?? '',
+        status: 'prospect',
+        entity: req.tenant.defaultEntity as any,
+        location: req.tenant.defaultLocation as any,
+      } as any);
+      unitId = unit._id;
+    }
+    const out = await buildService.create(getDB(), req.tenant, {
+      unitId,
+      dealId: req.body.dealId,
+      name: req.body.name,
+      status: req.body.status ?? 'draft',
+      estimatedPrice: req.body.estimatedPrice,
+      actualPrice: req.body.actualPrice,
+      specItems: req.body.specItems ?? [],
+    });
+    res.status(201).json(out);
+  } catch (err) { next(err); }
+});
+
+router.get('/:id/account-plan', async (req, res, next) => {
+  try {
+    await companyService.getById(getDB(), req.tenant, req.params['id']!);
+    const plan = await accountPlanService.getByCompanyId(getDB(), req.tenant, req.params['id']!);
+    res.json(plan);
   } catch (err) { next(err); }
 });
 
@@ -94,7 +149,7 @@ router.post('/:id/activities', validate(CreateInteractionSchema), async (req, re
 router.get('/:id/summary', async (req, res, next) => {
   try {
     const company = await companyService.getById(getDB(), req.tenant, req.params['id']!);
-    const deals = await DealRepository.listByCompanyName(getDB(), req.tenant, company.name);
+    const deals     = await DealRepository.listByCompanyName(getDB(), req.tenant, company.name);
 
     const openStatuses = new Set(['Draft', 'Pending Approval', 'Approved', 'Won', 'In Build']);
     let openPipelineTotal = 0;
@@ -104,20 +159,52 @@ router.get('/:id/summary', async (req, res, next) => {
       if (d.status === 'Won' || d.status === 'Delivered') wonTotal += d.amount ?? 0;
     }
 
-    // Next follow-up: the nearest future followUpAt across all activities for this company
-    const activitiesResult = await activityService.listForCompany(
-      getDB(), req.tenant, req.params['id']!, { page: 1, limit: 200, sort: 'followUpAt', order: 'asc' },
+    const nextI = await interactionService.getNextFollowUpForCompany(
+      getDB(), req.tenant, req.params['id']!,
     );
-    const now = new Date();
-    const nextFollowUp = (activitiesResult.data as Array<{ followUpAt?: Date | string; followUpNote?: string }>)
-      .filter(a => a.followUpAt && new Date(a.followUpAt) >= now)
-      .sort((a, b) => new Date(a.followUpAt!).getTime() - new Date(b.followUpAt!).getTime())[0];
+    const engagementState = await interactionService.getEngagementStateForCompany(
+      getDB(), req.tenant, req.params['id']!,
+    );
+    const coverage = await accountPenetrationService.byCompanyId(
+      getDB(), req.tenant, req.params['id']!,
+    );
+    const expansion = await accountExpansionService.byCompanyId(
+      getDB(), req.tenant, req.params['id']!,
+    );
+    const accountPlan = await accountPlanService.getByCompanyId(
+      getDB(), req.tenant, req.params['id']!,
+    );
+    const now   = new Date();
+    const nextFollowUp = nextI && nextI.followUpAt
+      ? {
+        date:      nextI.followUpAt,
+        summary:   nextI.summary,
+        isOverdue: new Date(nextI.followUpAt).getTime() < now.getTime() && nextI.status !== 'completed',
+        ownerName: nextI.ownerName,
+      }
+      : null;
 
     res.json({
       dealCount:          deals.length,
       openPipelineTotal,
       wonTotal,
-      nextFollowUp:       nextFollowUp ? { date: nextFollowUp.followUpAt, note: nextFollowUp.followUpNote } : null,
+      nextFollowUp,
+      engagementState,
+      accountPenetrationState: coverage?.accountPenetrationState,
+      accountCoverageWarnings: coverage?.accountCoverageWarnings ?? [],
+      accountExpansionState: expansion?.accountExpansionState,
+      accountPlan: accountPlan ? {
+        _id: accountPlan._id,
+        status: accountPlan.status,
+        ownerUserId: accountPlan.ownerUserId,
+        ownerName: accountPlan.ownerName,
+        objectives: accountPlan.objectives,
+        opportunities: accountPlan.opportunities,
+        risks: accountPlan.risks,
+        nextSteps: accountPlan.nextSteps,
+        reviewedAt: accountPlan.reviewedAt,
+        reviewedByName: accountPlan.reviewedByName,
+      } : null,
     });
   } catch (err) { next(err); }
 });

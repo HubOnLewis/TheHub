@@ -15,6 +15,91 @@ interface DashboardStats {
   staleDeals:    { total: number; pendingApproval: number };
   unassignedLeads: number;
   unassignedDeals: number;
+  /** Open interactions with followUpAt in the past */
+  followUpOverdueOpen?: number;
+  overdueActions?: number;
+  dueTodayActions?: number;
+  staleCompanies?: number;
+  noActivityCompanies?: number;
+  criticalDeals?: number;
+  highPressureDeals?: number;
+  stalledDeals?: number;
+  dealsWithoutRecentActivity?: number;
+  dealsWithOverdueFollowUps?: number;
+  dealPressureCounts?: { critical: number; high: number; medium: number; low: number };
+  forecastCounts?: { commit: number; best_case: number; pipeline: number; excluded: number };
+  forecastAmounts?: { commit: number; best_case: number; pipeline: number; excluded: number };
+  dealsNeedingManagementReview?: number;
+  lowConfidenceLateStageDeals?: number;
+  commitAmount?: number;
+  bestCaseAmount?: number;
+  excludedAmount?: number;
+  ownerBreakdown?: Array<{
+    ownerUserId: string;
+    ownerName?: string;
+    openDeals: number;
+    criticalDeals: number;
+    overdueFollowUps: number;
+    commitAmount: number;
+    bestCaseAmount: number;
+    excludedAmount: number;
+    dealsNeedingManagementReview: number;
+    ownerCoverageSummary?: {
+      ownedAccounts: number;
+      activeAccounts30d: number;
+      inactiveAccounts90d: number;
+      lowPenetrationAccounts: number;
+      criticalCoverageRiskAccounts: number;
+      accountsWithSingleContactDependency: number;
+    };
+    ownerExpansionSummary?: {
+      highReadinessAccounts: number;
+      urgentPlanningAccounts: number;
+      accountsWithoutPlan: number;
+    };
+  }>;
+  accountCoverageCounts?: {
+    lowPenetration: number;
+    mediumPenetration: number;
+    highPenetration: number;
+    criticalCoverageRisk: number;
+    highCoverageRisk: number;
+    accountsWithWhitespaceSignals: number;
+    singleContactDependencyAccounts: number;
+    activeAccountsWithoutOwner: number;
+  };
+  accountExpansionCounts?: {
+    highReadiness: number;
+    mediumReadiness: number;
+    lowReadiness: number;
+    urgentPlanningPriority: number;
+    highPlanningPriority: number;
+    accountsWithoutPlan: number;
+    highReadinessWithoutPlan: number;
+  };
+  buildEconomicsCounts?: {
+    quotedBuilds: number;
+    approvedBuilds: number;
+    buildsWithIncompleteCosting: number;
+    buildsWithIncompletePricing: number;
+    highMarginRiskBuilds: number;
+    criticalMarginRiskBuilds: number;
+    buildsWithSubstitutions: number;
+  };
+  changeOrderCounts?: {
+    pendingApproval: number;
+    approvedRecently: number;
+    rejected: number;
+    buildsWithUnapprovedChanges: number;
+  };
+  productionCounts?: {
+    queued: number;
+    ready: number;
+    inProgress: number;
+    paused: number;
+    completed: number;
+    jobsWithChangeConflicts: number;
+  };
 }
 
 /** Ordered deal stages for pipeline display */
@@ -70,7 +155,7 @@ export default function Dashboard() {
   const totalLeads = (stats?.leadsByStatus ?? []).reduce((n, s) => n + s.count, 0);
   const totalDeals = (stats?.dealsByStatus ?? []).reduce((n, s) => n + s.count, 0);
   const totalUnits = (unitSummary as Array<{ _id: string; count: number; totalMsrp: number }>).reduce((n, s) => n + s.count, 0);
-  const availUnits = (unitSummary as Array<{ _id: string; count: number; totalMsrp: number }>).find(s => s._id === 'Available')?.count ?? 0;
+  const availUnits = (unitSummary as Array<{ _id: string; count: number; totalMsrp: number }>).find(s => s._id === 'prospect')?.count ?? 0;
 
   const orderedDeals = DEAL_STAGE_ORDER
     .map(stage => stats?.dealsByStatus.find(s => s._id === stage))
@@ -115,7 +200,7 @@ export default function Dashboard() {
           <div style={{ marginBottom: 8, fontFamily: 'var(--font-cond)', fontSize: 13, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-secondary)' }}>
             Needs Attention
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10, marginBottom: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10, marginBottom: 24, maxWidth: 900 }}>
             <SignalCard
               label="New — Untouched"
               value={stats.staleLeads.newUntouched}
@@ -144,7 +229,140 @@ export default function Dashboard() {
               urgent
               sub={`${stats.unassignedLeads}L / ${stats.unassignedDeals}D`}
             />
+            {typeof stats.followUpOverdueOpen === 'number' && (
+              <SignalCard
+                label="Overdue follow-ups"
+                value={stats.followUpOverdueOpen}
+                urgent
+                sub="open + past due"
+              />
+            )}
+            {typeof stats.dueTodayActions === 'number' && (
+              <SignalCard label="Due Today Actions" value={stats.dueTodayActions} urgent sub="follow-up workload" />
+            )}
+            {typeof stats.staleCompanies === 'number' && (
+              <SignalCard label="Stale Companies" value={stats.staleCompanies} urgent sub=">14 days no interaction" />
+            )}
+            {typeof stats.noActivityCompanies === 'number' && (
+              <SignalCard label="No Activity Companies" value={stats.noActivityCompanies} sub="never engaged" />
+            )}
+            {typeof stats.criticalDeals === 'number' && (
+              <SignalCard label="Critical Deals" value={stats.criticalDeals} urgent sub="execution critical" />
+            )}
+            {typeof stats.highPressureDeals === 'number' && (
+              <SignalCard label="High Pressure Deals" value={stats.highPressureDeals} urgent sub="management attention" />
+            )}
+            {typeof stats.stalledDeals === 'number' && (
+              <SignalCard label="Stalled Deals" value={stats.stalledDeals} urgent sub="stage/interaction stall" />
+            )}
+            {typeof stats.dealsWithOverdueFollowUps === 'number' && (
+              <SignalCard label="Deals w/ Overdue Follow-ups" value={stats.dealsWithOverdueFollowUps} urgent />
+            )}
+            {typeof stats.dealsNeedingManagementReview === 'number' && (
+              <SignalCard label="Needs Mgmt Review" value={stats.dealsNeedingManagementReview} urgent />
+            )}
+            {typeof stats.lowConfidenceLateStageDeals === 'number' && (
+              <SignalCard label="Low-Conf Late Stage" value={stats.lowConfidenceLateStageDeals} urgent />
+            )}
+            {typeof stats.accountCoverageCounts?.criticalCoverageRisk === 'number' && (
+              <SignalCard label="Critical Coverage Risk Accounts" value={stats.accountCoverageCounts.criticalCoverageRisk} urgent />
+            )}
+            {typeof stats.accountCoverageCounts?.accountsWithWhitespaceSignals === 'number' && (
+              <SignalCard label="Whitespace Accounts" value={stats.accountCoverageCounts.accountsWithWhitespaceSignals} />
+            )}
+            {typeof stats.accountCoverageCounts?.singleContactDependencyAccounts === 'number' && (
+              <SignalCard label="Single-Contact Dependency" value={stats.accountCoverageCounts.singleContactDependencyAccounts} urgent />
+            )}
+            {typeof stats.accountCoverageCounts?.activeAccountsWithoutOwner === 'number' && (
+              <SignalCard label="Active Accounts No Owner" value={stats.accountCoverageCounts.activeAccountsWithoutOwner} urgent />
+            )}
+            {typeof stats.accountExpansionCounts?.urgentPlanningPriority === 'number' && (
+              <SignalCard label="Urgent Expansion Planning" value={stats.accountExpansionCounts.urgentPlanningPriority} urgent />
+            )}
+            {typeof stats.accountExpansionCounts?.highReadinessWithoutPlan === 'number' && (
+              <SignalCard label="High-Readiness No Plan" value={stats.accountExpansionCounts.highReadinessWithoutPlan} urgent />
+            )}
+            {typeof stats.buildEconomicsCounts?.criticalMarginRiskBuilds === 'number' && (
+              <SignalCard label="Critical Margin Risk Builds" value={stats.buildEconomicsCounts.criticalMarginRiskBuilds} urgent />
+            )}
+            {typeof stats.buildEconomicsCounts?.highMarginRiskBuilds === 'number' && (
+              <SignalCard label="High Margin Risk Builds" value={stats.buildEconomicsCounts.highMarginRiskBuilds} urgent />
+            )}
+            {typeof stats.buildEconomicsCounts?.buildsWithIncompleteCosting === 'number' && (
+              <SignalCard label="Builds Incomplete Costing" value={stats.buildEconomicsCounts.buildsWithIncompleteCosting} urgent />
+            )}
+            {typeof stats.buildEconomicsCounts?.buildsWithSubstitutions === 'number' && (
+              <SignalCard label="Builds With Substitutions" value={stats.buildEconomicsCounts.buildsWithSubstitutions} />
+            )}
+            {typeof stats.changeOrderCounts?.pendingApproval === 'number' && (
+              <SignalCard label="Change Orders Pending Approval" value={stats.changeOrderCounts.pendingApproval} urgent />
+            )}
+            {typeof stats.changeOrderCounts?.buildsWithUnapprovedChanges === 'number' && (
+              <SignalCard label="Builds With Unapproved Changes" value={stats.changeOrderCounts.buildsWithUnapprovedChanges} urgent />
+            )}
+            {typeof stats.productionCounts?.ready === 'number' && (
+              <SignalCard label="Production Ready" value={stats.productionCounts.ready} />
+            )}
+            {typeof stats.productionCounts?.inProgress === 'number' && (
+              <SignalCard label="Production In Progress" value={stats.productionCounts.inProgress} />
+            )}
+            {typeof stats.productionCounts?.paused === 'number' && (
+              <SignalCard label="Production Paused" value={stats.productionCounts.paused} urgent />
+            )}
+            {typeof stats.productionCounts?.jobsWithChangeConflicts === 'number' && (
+              <SignalCard label="Production Change Conflicts" value={stats.productionCounts.jobsWithChangeConflicts} urgent />
+            )}
           </div>
+          {stats.forecastAmounts && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: 10, marginBottom: 20, maxWidth: 780 }}>
+              <KPICard label="Commit Amount" value={formatCurrency(stats.forecastAmounts.commit ?? 0)} colorVar="--status-won" />
+              <KPICard label="Best Case Amount" value={formatCurrency(stats.forecastAmounts.best_case ?? 0)} colorVar="--status-approved" />
+              <KPICard label="Excluded Amount" value={formatCurrency(stats.forecastAmounts.excluded ?? 0)} colorVar="--status-lost" />
+            </div>
+          )}
+          {!!stats.ownerBreakdown?.length && (
+            <div className="card" style={{ marginBottom: 20 }}>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>
+                Owner Breakdown
+              </div>
+              <table className="data-table">
+                <thead>
+                  <tr>
+                    <th>Owner</th>
+                    <th>Open Deals</th>
+                    <th>Critical</th>
+                    <th>Overdue Follow-ups</th>
+                    <th>Commit</th>
+                    <th>Best Case</th>
+                    <th>Excluded</th>
+                    <th>Needs Review</th>
+                    <th>Low Penetration</th>
+                    <th>Critical Coverage Risk</th>
+                    <th>Urgent Planning</th>
+                    <th>No Plan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.ownerBreakdown.map(r => (
+                    <tr key={r.ownerUserId}>
+                      <td>{r.ownerName ?? r.ownerUserId}</td>
+                      <td>{r.openDeals}</td>
+                      <td>{r.criticalDeals}</td>
+                      <td>{r.overdueFollowUps}</td>
+                      <td>{formatCurrency(r.commitAmount)}</td>
+                      <td>{formatCurrency(r.bestCaseAmount)}</td>
+                      <td>{formatCurrency(r.excludedAmount)}</td>
+                      <td>{r.dealsNeedingManagementReview}</td>
+                      <td>{r.ownerCoverageSummary?.lowPenetrationAccounts ?? 0}</td>
+                      <td>{r.ownerCoverageSummary?.criticalCoverageRiskAccounts ?? 0}</td>
+                      <td>{r.ownerExpansionSummary?.urgentPlanningAccounts ?? 0}</td>
+                      <td>{r.ownerExpansionSummary?.accountsWithoutPlan ?? 0}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           {/* ── Lead Funnel + Deal Pipeline ───────────────────────── */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>

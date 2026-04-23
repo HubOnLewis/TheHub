@@ -1,9 +1,14 @@
 // packages/web/src/pages/Deals.tsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDeals, useDealMutations } from '../hooks/useDeals.js';
+import { useDeals, useDealMutations, useDealInteractions } from '../hooks/useDeals.js';
+import { useCompanySearch } from '../hooks/useCompanies.js';
+import { useCreateInteraction, type InteractionRow } from '../hooks/useInteractions.js';
 import { Modal, StatusSelect, EmptyState, Spinner, Pagination } from '../components/ui/index.js';
+import InteractionComposer from '../components/InteractionComposer.js';
+import InteractionTimeline from '../components/InteractionTimeline.js';
 import {
   CreateDealSchema, DEAL_STATUSES,
   type CreateDealPayload, type DealStatus,
@@ -13,6 +18,38 @@ import {
 type Deal = {
   _id: string; title: string; company: string; contact: string; amount: number;
   assignedTo?: string; status: DealStatus; tenantId: string; updatedAt: string; lastTouchedAt?: string;
+  ownerUserId?: string;
+  lastStageChangeAt?: string;
+  daysInStage?: number;
+  atRisk?: { flagged: boolean; reason?: string; flaggedAt?: string; flaggedByName?: string };
+  managementReview?: { reviewedAt?: string; reviewedByName?: string; status?: 'approved' | 'challenged' | 'watch'; notes?: string };
+  dealExecutionState?: {
+    pressureLevel: 'low' | 'medium' | 'high' | 'critical';
+    pressureReasons: string[];
+    lastInteractionAt?: string;
+    daysSinceLastInteraction?: number;
+    openFollowUps: number;
+    overdueFollowUps: number;
+    nextActionSummary?: string;
+    isStalled: boolean;
+  };
+  forecastState?: {
+    confidence: 'low' | 'medium' | 'high';
+    forecastCategory: 'commit' | 'best_case' | 'pipeline' | 'excluded';
+    forecastAmount?: number;
+    needsManagementReview: boolean;
+    confidenceReasons: string[];
+    reviewReasons: string[];
+  };
+  pipelineWarnings?: string[];
+  dealBuildFinancialSummary?: {
+    buildCount: number;
+    totalEstimatedCost: number;
+    totalEstimatedSell: number;
+    totalEstimatedMargin: number;
+    hasIncompleteBuildCosting: boolean;
+    hasHighMarginRiskBuilds: boolean;
+  };
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -70,6 +107,8 @@ export default function Deals() {
   const [unassigned,   setUnassigned]   = useState(false);
   const [page,         setPage]         = useState(1);
   const [showModal,    setShowModal]    = useState(false);
+  const [execDeal,     setExecDeal]     = useState<Deal | null>(null);
+  const [quickMode,    setQuickMode]    = useState<'log_call' | 'schedule_follow_up' | 'add_note'>('log_call');
   const [mutErr,       setMutErr]       = useState<string | null>(null);
 
   const params = {
@@ -85,6 +124,11 @@ export default function Deals() {
 
   const { data, isLoading } = useDeals(params);
   const mutations = useDealMutations();
+  const { data: dealInteractions = [] } = useDealInteractions(execDeal?._id ?? null);
+  const { data: companyOptions = [] } = useCompanySearch(execDeal?.company ?? '');
+  const companyId = ((companyOptions as Array<{ _id: string; name: string }>).find(c => c.name.toLowerCase() === (execDeal?.company ?? '').toLowerCase())
+    ?? (companyOptions as Array<{ _id: string }>)[0])?._id;
+  const createInteraction = useCreateInteraction(companyId ?? '');
 
   const deals = (data as any)?.data  ?? [];
   const total = (data as any)?.total ?? 0;
@@ -215,6 +259,28 @@ export default function Deals() {
                       {stale && <span className="badge badge-stale" style={{ marginLeft: 6 }}>stale</span>}
                     </td>
                     <td>
+                      {d.dealExecutionState && (
+                        <span
+                          className="badge"
+                          style={{
+                            marginRight: 8,
+                            background:
+                              d.dealExecutionState.pressureLevel === 'critical' ? 'var(--red)' :
+                                d.dealExecutionState.pressureLevel === 'high' ? '#d97706' :
+                                  d.dealExecutionState.pressureLevel === 'medium' ? '#3b82f6' : '#10b981',
+                          }}
+                        >
+                          {d.dealExecutionState.pressureLevel}
+                        </span>
+                      )}
+                      {d.atRisk?.flagged && <span className="badge" style={{ background: '#7c3aed', marginRight: 8 }}>at risk</span>}
+                      <button
+                        className="btn btn-ghost"
+                        style={{ padding: '3px 8px', fontSize: 11 }}
+                        onClick={() => setExecDeal(d)}
+                      >
+                        Execution
+                      </button>
                       <button
                         className="btn btn-ghost"
                         style={{ padding: '3px 8px', fontSize: 11, color: '#dc2626' }}
@@ -249,6 +315,102 @@ export default function Deals() {
             onSuccess: () => setShowModal(false),
             onError:   e  => { setShowModal(false); setMutErr(extractError(e)); },
           })} />
+        </Modal>
+      )}
+
+      {execDeal && (
+        <Modal title={`Deal Execution — ${execDeal.title}`} onClose={() => setExecDeal(null)} width={980}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+            <div className="card" style={{ padding: 12 }}>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>Execution Panel</div>
+              <div style={{ fontSize: 12, marginBottom: 6 }}>Pressure: <strong>{execDeal.dealExecutionState?.pressureLevel ?? '—'}</strong></div>
+              <ul style={{ margin: '0 0 8px 16px', fontSize: 12 }}>
+                {(execDeal.dealExecutionState?.pressureReasons ?? []).map((r, i) => <li key={i}>{r}</li>)}
+              </ul>
+              <div style={{ fontSize: 12 }}>Last Interaction: {execDeal.dealExecutionState?.lastInteractionAt ? timeAgo(execDeal.dealExecutionState.lastInteractionAt) : 'none'}</div>
+              <div style={{ fontSize: 12 }}>Open Follow-ups: {execDeal.dealExecutionState?.openFollowUps ?? 0}</div>
+              <div style={{ fontSize: 12 }}>Overdue Follow-ups: {execDeal.dealExecutionState?.overdueFollowUps ?? 0}</div>
+              <div style={{ fontSize: 12, marginBottom: 8 }}>Next Action: {execDeal.dealExecutionState?.nextActionSummary ?? '—'}</div>
+              {execDeal.forecastState && (
+                <>
+                  <div style={{ fontSize: 12 }}>Forecast: <strong>{execDeal.forecastState.forecastCategory}</strong> · confidence {execDeal.forecastState.confidence}</div>
+                  <ul style={{ margin: '4px 0 8px 16px', fontSize: 12 }}>
+                    {execDeal.forecastState.confidenceReasons.map((r, i) => <li key={`fc-${i}`}>{r}</li>)}
+                  </ul>
+                  {execDeal.forecastState.needsManagementReview && (
+                    <ul style={{ margin: '4px 0 8px 16px', fontSize: 12 }}>
+                      {execDeal.forecastState.reviewReasons.map((r, i) => <li key={`fr-${i}`}>{r}</li>)}
+                    </ul>
+                  )}
+                </>
+              )}
+              {execDeal.pipelineWarnings?.length ? (
+                <>
+                  <div style={{ fontSize: 12, fontWeight: 700, marginTop: 8 }}>Pipeline Warnings</div>
+                  <ul style={{ margin: '0 0 8px 16px', fontSize: 12 }}>
+                    {execDeal.pipelineWarnings.map((w, i) => <li key={i}>{w}</li>)}
+                  </ul>
+                </>
+              ) : null}
+              {execDeal.dealBuildFinancialSummary && (
+                <div style={{ marginTop: 8, fontSize: 12 }}>
+                  <div style={{ fontWeight: 700 }}>Build Financials</div>
+                  <div>Builds: {execDeal.dealBuildFinancialSummary.buildCount}</div>
+                  <div>Estimated Cost: {formatCurrency(execDeal.dealBuildFinancialSummary.totalEstimatedCost)}</div>
+                  <div>Estimated Sell: {formatCurrency(execDeal.dealBuildFinancialSummary.totalEstimatedSell)}</div>
+                  <div>Estimated Margin: {formatCurrency(execDeal.dealBuildFinancialSummary.totalEstimatedMargin)}</div>
+                  <div>
+                    Economics trusted:{' '}
+                    {execDeal.dealBuildFinancialSummary.hasIncompleteBuildCosting || execDeal.dealBuildFinancialSummary.hasHighMarginRiskBuilds
+                      ? 'no'
+                      : 'yes'}
+                  </div>
+                </div>
+              )}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <button className="btn btn-secondary" onClick={() => setQuickMode('log_call')}>Log Call</button>
+                <button className="btn btn-secondary" onClick={() => setQuickMode('schedule_follow_up')}>Schedule Follow-Up</button>
+                <button className="btn btn-secondary" onClick={() => setQuickMode('add_note')}>Add Note</button>
+                <Link className="btn btn-secondary" to={`/builds?dealId=${encodeURIComponent(execDeal._id)}`}>Create Build</Link>
+                <Link className="btn btn-secondary" to={`/builds?dealId=${encodeURIComponent(execDeal._id)}&incompleteCosting=1`}>Build Financials</Link>
+                <button className="btn btn-secondary" onClick={() => mutations.update.mutate({ id: execDeal._id, data: { atRisk: { flagged: true, reason: 'Manual risk flag' } } })}>Mark Deal At Risk</button>
+                <button className="btn btn-ghost" onClick={() => mutations.update.mutate({ id: execDeal._id, data: { atRisk: { flagged: false } } })}>Clear Risk</button>
+              </div>
+            </div>
+            <div>
+              {!companyId ? (
+                <div className="card" style={{ padding: 12, fontSize: 12, color: 'var(--text-secondary)' }}>
+                  Could not resolve company for quick actions. Ensure company exists in Companies.
+                </div>
+              ) : (
+                <InteractionComposer
+                  companyId={companyId}
+                  initialValues={{
+                    relatedDealId: execDeal._id,
+                    parentInteractionId: (dealInteractions as InteractionRow[])[0]?._id,
+                    type: quickMode === 'add_note' ? 'note' : quickMode === 'schedule_follow_up' ? 'task' : 'call',
+                    summary:
+                      quickMode === 'add_note'
+                        ? `Deal note: ${execDeal.title}`
+                        : quickMode === 'schedule_follow_up'
+                          ? `Schedule follow-up: ${execDeal.title}`
+                          : `Deal call: ${execDeal.title}`,
+                    followUpAt: quickMode === 'schedule_follow_up' ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined,
+                  }}
+                  onSubmit={async payload => {
+                    const out = await createInteraction.mutateAsync(payload);
+                    return { _id: out._id };
+                  }}
+                />
+              )}
+              <div style={{ fontFamily: 'var(--font-cond)', fontSize: 13, marginBottom: 8 }}>Linked Interaction Timeline</div>
+              <InteractionTimeline
+                rows={(dealInteractions as InteractionRow[])}
+                onSelect={() => undefined}
+                empty="No linked interactions yet."
+              />
+            </div>
+          </div>
         </Modal>
       )}
     </div>

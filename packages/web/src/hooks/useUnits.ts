@@ -11,6 +11,8 @@ interface UnitsQuery {
   limit?:   number;
   sort?:    string;
   order?:   string;
+  companyId?: string;
+  assignedDealId?: string;
 }
 
 export function useUnits(params: UnitsQuery = {}) {
@@ -25,6 +27,15 @@ export function useUnitSummary() {
   return useQuery({
     queryKey: ['units', 'summary'],
     queryFn:  () => client.get('/units/summary').then(r => r.data),
+    staleTime: 30_000,
+  });
+}
+
+export function useUnit(id: string | null) {
+  return useQuery({
+    queryKey: ['units', id],
+    queryFn: () => client.get(`/units/${id}`).then(r => r.data),
+    enabled: !!id,
     staleTime: 30_000,
   });
 }

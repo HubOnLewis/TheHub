@@ -1,5 +1,5 @@
 // packages/web/src/hooks/useCompanies.ts
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import client from '../api/client.js';
 
 export interface CompanyAddress {
@@ -23,44 +23,69 @@ export interface Company {
   updatedAt:            string;
 }
 
-export interface Activity {
-  _id:              string;
-  source:           string;
-  sourceId:         string;
-  companyId?:       string;
-  companyNameRaw:   string;
-  contactNameRaw?:  string;
-  activityTypeRaw:  string;
-  activityType:     string;
-  createdAt:        string;
-  createdByName:    string;
-  milesFromCompany?: number;
-  body:             string;
-  tags:             Record<string, boolean>;
-  // Interaction (manually-entered) fields
-  title?:         string;
-  outcome?:       string;
-  followUpAt?:    string;
-  followUpNote?:  string;
-  relatedDealId?: string;
-}
-
 export interface CompanySummary {
-  dealCount:         number;
-  openPipelineTotal: number;
-  wonTotal:          number;
-  nextFollowUp:      { date: string; note?: string } | null;
-}
-
-export interface CreateInteractionPayload {
-  activityType:   string;
-  body:           string;
-  title?:         string;
-  contactNameRaw?: string;
-  outcome?:       string;
-  followUpAt?:    string;
-  followUpNote?:  string;
-  relatedDealId?: string;
+  dealCount:          number;
+  openPipelineTotal:  number;
+  wonTotal:           number;
+  nextFollowUp:       {
+    date:      string;
+    summary:   string;
+    isOverdue: boolean;
+    ownerName: string;
+  } | null;
+  engagementState?: {
+    lastInteractionAt: string | null;
+    daysSinceLastInteraction: number | null;
+    openFollowUps: number;
+    overdueFollowUps: number;
+    nextActionSummary: string | null;
+    isStale: boolean;
+  };
+  accountPenetrationState?: {
+    lastInteractionAt?: string;
+    daysSinceLastInteraction?: number;
+    totalInteractions30d: number;
+    totalInteractions90d: number;
+    uniqueContacts30d: number;
+    uniqueContacts90d: number;
+    openDeals: number;
+    activeDeals: number;
+    stalledDeals: number;
+    criticalDeals: number;
+    openFollowUps: number;
+    overdueFollowUps: number;
+    assignedOwnerUserId?: string;
+    assignedOwnerName?: string;
+    penetrationLevel: 'low' | 'medium' | 'high';
+    penetrationReasons: string[];
+    coverageRiskLevel: 'low' | 'medium' | 'high' | 'critical';
+    coverageRiskReasons: string[];
+    whitespaceSignals: string[];
+  };
+  accountCoverageWarnings?: string[];
+  accountExpansionState?: {
+    expansionReadiness: 'low' | 'medium' | 'high';
+    expansionReasons: string[];
+    blockers: string[];
+    opportunitySignals: string[];
+    hasActiveExpansionMotion: boolean;
+    hasOpenPipeline: boolean;
+    hasRecentActivity: boolean;
+    planningPriority: 'low' | 'medium' | 'high' | 'urgent';
+    planningReasons: string[];
+  };
+  accountPlan?: {
+    _id: string;
+    status: 'draft' | 'active' | 'paused' | 'completed';
+    ownerUserId?: string;
+    ownerName?: string;
+    objectives: string[];
+    opportunities: string[];
+    risks: string[];
+    nextSteps: string[];
+    reviewedAt?: string;
+    reviewedByName?: string;
+  } | null;
 }
 
 interface CompaniesQuery {
@@ -70,11 +95,6 @@ interface CompaniesQuery {
   limit?:  number;
   sort?:   string;
   order?:  string;
-}
-
-interface ActivitiesQuery {
-  page?:  number;
-  limit?: number;
 }
 
 export function useCompanies(params: CompaniesQuery = {}) {
@@ -94,33 +114,12 @@ export function useCompany(id: string) {
   });
 }
 
-export function useCompanyActivities(companyId: string, params: ActivitiesQuery = {}) {
-  return useQuery({
-    queryKey:  ['companies', companyId, 'activities', params],
-    queryFn:   () => client.get(`/companies/${companyId}/activities`, { params }).then(r => r.data),
-    staleTime: 60_000,
-    enabled:   !!companyId,
-  });
-}
-
 export function useCompanySummary(companyId: string) {
   return useQuery({
     queryKey:  ['companies', companyId, 'summary'],
     queryFn:   () => client.get(`/companies/${companyId}/summary`).then(r => r.data as CompanySummary),
     staleTime: 120_000,
     enabled:   !!companyId,
-  });
-}
-
-export function useCreateActivity(companyId: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (payload: CreateInteractionPayload) =>
-      client.post(`/companies/${companyId}/activities`, payload).then(r => r.data),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: ['companies', companyId, 'activities'] });
-      void qc.invalidateQueries({ queryKey: ['companies', companyId, 'summary'] });
-    },
   });
 }
 

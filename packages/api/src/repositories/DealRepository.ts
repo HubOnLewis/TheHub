@@ -14,8 +14,26 @@ export interface DealDoc extends Document {
   assignedTo?: string;
   leadId?:    string;
   unitId?:    string;
+  unitIds?:   string[];
+  primaryUnitId?: string;
   notes?:     string;
   status:        DealStatus;
+  ownerUserId?:  string;
+  lastStageChangeAt?: Date;
+  atRisk?: {
+    flagged: boolean;
+    reason?: string;
+    flaggedAt?: Date | string;
+    flaggedByUserId?: string;
+    flaggedByName?: string;
+  };
+  managementReview?: {
+    reviewedAt?: Date | string;
+    reviewedByUserId?: string;
+    reviewedByName?: string;
+    status?: 'approved' | 'challenged' | 'watch';
+    notes?: string;
+  };
   createdAt:     Date;
   updatedAt:     Date;
   lastTouchedAt?: Date;
@@ -27,6 +45,9 @@ export interface DealFilter {
   /** true = exclude terminal statuses (Delivered, Lost) */
   activeOnly?: boolean;
   search?:     string;
+  company?:    string;
+  ownerUserId?: string;
+  stage?: DealStatus;
 }
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
@@ -46,9 +67,13 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
     // Status: specific status takes precedence over activeOnly
     if (filter.status) {
       query['status'] = filter.status;
+    } else if (filter.stage) {
+      query['status'] = filter.stage;
     } else if (filter.activeOnly) {
       query['status'] = { $nin: ['Delivered', 'Lost'] };
     }
+    if (filter.company) query['company'] = filter.company;
+    if (filter.ownerUserId) query['ownerUserId'] = filter.ownerUserId;
 
     // Assignment: '__unassigned__' sentinel matches missing/null/empty
     const isUnassigned = filter.assignedTo === '__unassigned__';

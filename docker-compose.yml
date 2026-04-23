@@ -56,6 +56,7 @@ services:
     volumes:
       - ./packages/api/src:/app/packages/api/src:ro
       - ./packages/shared/src:/app/packages/shared/src:ro
+      - ./packages/api/uploads:/app/packages/api/uploads
     command: npm run dev --workspace=packages/api
 
   # ── Web ──────────────────────────────────────────────────────────

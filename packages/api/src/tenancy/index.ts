@@ -27,6 +27,7 @@ export interface TenantContext {
   defaultLocation: string;
   /** Authenticated user's ID — use for assignedTo defaults and audit fields */
   userId: string;
+  userRole: string;
   /** Authenticated user's display name — use for assignedTo defaults */
   userName: string;
   /** Whether this user is operating with elevated cross-tenant access */
@@ -78,6 +79,7 @@ export function resolveTenant(req: Request, _res: Response, next: NextFunction):
     defaultEntity:   user.entity,
     defaultLocation: user.location,
     userId:          user.id,
+    userRole:        user.role,
     userName:        user.name,
     isCrossTenant,
     isSuperAdmin,

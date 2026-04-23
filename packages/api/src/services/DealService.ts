@@ -4,12 +4,19 @@ import type { TenantContext } from '../tenancy/index.js';
 import { DealRepository, type DealDoc, type DealFilter } from '../repositories/DealRepository.js';
 import { LeadRepository } from '../repositories/LeadRepository.js';
 import { UnitRepository } from '../repositories/UnitRepository.js';
+import { InteractionRepository } from '../repositories/InteractionRepository.js';
+import { BuildRepository } from '../repositories/BuildRepository.js';
+import { ChangeOrderRepository } from '../repositories/ChangeOrderRepository.js';
+import { ProductionJobRepository } from '../repositories/ProductionJobRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
 import type { CreateDealPayload, DealStatus, UnitStatus } from '@mtte-core/shared';
 import { buildTenantId } from '@mtte-core/shared';
 import type { Entity, Location } from '@mtte-core/shared';
 import { NotFoundError, ValidationError, ConflictError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
+import { dealPressureService } from './DealPressureService.js';
+import { forecastConfidenceService } from './ForecastConfidenceService.js';
+import { buildMarginService } from './BuildMarginService.js';
 
 /** Ordered deal stages — index = position in the forward progression */
 const DEAL_STAGE_ORDER: DealStatus[] = [
@@ -66,20 +73,230 @@ function validateTransition(before: DealDoc & { _id: string }, payload: Partial<
 
 /** Unit statuses that should follow key deal stage transitions */
 const DEAL_TO_UNIT_STATUS: Partial<Record<DealStatus, UnitStatus>> = {
-  'Won':       'Reserved',
-  'In Build':  'In Build',
-  'Delivered': 'Delivered',
+  'Won':       'ordered',
+  'In Build':  'in_build',
+  'Delivered': 'delivered',
 };
 
 export class DealService {
+  private enrichDeal(
+    deal: DealDoc & { _id: string },
+    interactions: Awaited<ReturnType<typeof InteractionRepository.listByRelatedDealIds>>,
+    builds: Array<{ _id: string; dealId?: string; unitId: string; status: string; specItems: Array<unknown> }>,
+    changeOrders: Array<{ buildId: string; status: string; costDelta?: number; sellDelta?: number; marginDelta?: number }>,
+    productionJobs: Array<{ buildId: string; status: string; createdAt: Date | string; actualStartDate?: string }>,
+  ) {
+    const linked = interactions.filter(i => i.relatedDealId === deal._id);
+    const linkedBuilds = builds.filter(b => b.dealId === deal._id || (deal.unitIds ?? []).includes(b.unitId) || deal.unitId === b.unitId);
+    const buildSummaries = linkedBuilds.map(b => ({ buildId: b._id, ...(buildMarginService.evaluate(b as any).buildBomSummary) }));
+    const dealBuildFinancialSummary = {
+      buildCount: linkedBuilds.length,
+      totalEstimatedCost: buildSummaries.reduce((n, s) => n + (s.estimatedCostTotal ?? 0), 0),
+      totalEstimatedSell: buildSummaries.reduce((n, s) => n + (s.estimatedSellTotal ?? 0), 0),
+      totalEstimatedMargin: buildSummaries.reduce((n, s) => n + (s.estimatedGrossMargin ?? 0), 0),
+      hasIncompleteBuildCosting: buildSummaries.some(s => s.incompleteCosting || s.incompletePricing),
+      hasHighMarginRiskBuilds: buildSummaries.some(s => s.marginRiskLevel === 'high' || s.marginRiskLevel === 'critical'),
+    };
+    const linkedBuildIds = new Set(linkedBuilds.map(b => b._id));
+    const linkedChangeOrders = changeOrders.filter(c => linkedBuildIds.has(c.buildId));
+    const linkedProductionJobs = productionJobs.filter(j => linkedBuildIds.has(j.buildId));
+    const execution = dealPressureService.evaluate(deal, linked);
+    const pipelineWarnings = dealPressureService.buildWarnings(deal, linked, execution, linkedBuilds);
+    if (dealBuildFinancialSummary.hasIncompleteBuildCosting) pipelineWarnings.push('Active deal has incomplete build costing');
+    if (buildSummaries.some(s => s.marginRiskLevel === 'high' || s.marginRiskLevel === 'critical')) pipelineWarnings.push('Build margin risk is high');
+    if (deal.status === 'Pending Approval' && dealBuildFinancialSummary.hasIncompleteBuildCosting) pipelineWarnings.push('Quoted build economics are not trusted');
+    if (linkedChangeOrders.some(c => c.status === 'pending_approval')) pipelineWarnings.push('Change order awaiting approval');
+    if (linkedChangeOrders.some(c => c.status === 'approved') && linkedChangeOrders.some(c => c.status === 'pending_approval' || c.status === 'draft')) pipelineWarnings.push('Approved build has pending change orders');
+    if (linkedChangeOrders.some(c => Math.abs((c.marginDelta ?? 0)) > 5000 || Math.abs((c.sellDelta ?? 0)) > 10000)) pipelineWarnings.push('Build changes affecting deal economics');
+    if (['Approved', 'Won', 'In Build'].includes(deal.status) && linkedBuilds.length > 0 && linkedProductionJobs.length === 0) {
+      pipelineWarnings.push('Production job not started for approved build');
+    }
+    if (linkedProductionJobs.some(j => j.status === 'paused')) pipelineWarnings.push('Production paused');
+    if (linkedProductionJobs.some(j => (j.status === 'queued' || j.status === 'ready') && (Date.now() - new Date(j.createdAt).getTime()) > 7 * 24 * 60 * 60 * 1000)) {
+      pipelineWarnings.push('Build delayed in production');
+    }
+    const forecastState = forecastConfidenceService.evaluate(deal, execution, pipelineWarnings, linked, linkedBuilds);
+    // Forecast hygiene overlays
+    if (forecastState.forecastCategory === 'commit' && execution.overdueFollowUps > 0) {
+      pipelineWarnings.push('Commit candidate has overdue follow-up');
+    }
+    if (forecastState.forecastCategory === 'best_case' && !execution.nextActionSummary) {
+      pipelineWarnings.push('Best-case candidate has no next action');
+    }
+    if (['Approved', 'Won', 'In Build'].includes(deal.status) && (execution.daysSinceLastInteraction ?? 999) > 7) {
+      pipelineWarnings.push('Advanced stage has no interaction within threshold');
+    }
+    const daysInStage = Math.floor((Date.now() - new Date(deal.lastStageChangeAt ?? deal.updatedAt).getTime()) / (24 * 60 * 60 * 1000));
+    const stageMovedAt = new Date(deal.lastStageChangeAt ?? deal.updatedAt).toISOString();
+    return {
+      ...deal,
+      buildSummary: {
+        buildCount: linkedBuilds.length,
+        hasBuildDefined: linkedBuilds.length > 0,
+        hasStructuredSpec: linkedBuilds.some(b => (b.specItems ?? []).length > 0),
+      },
+      dealBuildFinancialSummary,
+      dealChangeOrderSummary: {
+        total: linkedChangeOrders.length,
+        pendingApproval: linkedChangeOrders.filter(c => c.status === 'pending_approval').length,
+        draft: linkedChangeOrders.filter(c => c.status === 'draft').length,
+        approved: linkedChangeOrders.filter(c => c.status === 'approved').length,
+      },
+      dealProductionSummary: {
+        totalJobs: linkedProductionJobs.length,
+        pausedJobs: linkedProductionJobs.filter(j => j.status === 'paused').length,
+        inProgressJobs: linkedProductionJobs.filter(j => j.status === 'in_progress').length,
+      },
+      daysInStage,
+      lastStageChangeAt: stageMovedAt,
+      dealExecutionState: execution,
+      forecastState,
+      pipelineWarnings: Array.from(new Set(pipelineWarnings)),
+    };
+  }
+
+  async listAllActiveEnriched(db: Db, ctx: TenantContext) {
+    const first = await this.list(db, ctx, { activeOnly: true }, { page: 1, limit: 200, sort: 'updatedAt', order: 'desc' });
+    let rows = [...first.data];
+    for (let p = 2; p <= first.pages; p += 1) {
+      const next = await this.list(db, ctx, { activeOnly: true }, { page: p, limit: 200, sort: 'updatedAt', order: 'desc' });
+      rows = rows.concat(next.data);
+    }
+    return rows;
+  }
+
   async list(db: Db, ctx: TenantContext, filter: DealFilter, options: ListOptions) {
-    return DealRepository.listDeals(db, ctx, filter, options);
+    const result = await DealRepository.listDeals(db, ctx, filter, options);
+    const dealIds = result.data.map(d => d._id);
+    const unitIds = result.data.flatMap(d => [d.unitId, ...(d.unitIds ?? [])].filter(Boolean) as string[]);
+    const linked = await InteractionRepository.listByRelatedDealIds(db, ctx, dealIds);
+    const [dealBuilds, unitBuilds] = await Promise.all([
+      BuildRepository.listByDealIds(db, ctx, dealIds),
+      BuildRepository.listByUnitIds(db, ctx, unitIds),
+    ]);
+    const builds = Array.from(new Map([...dealBuilds, ...unitBuilds].map(b => [b._id, b])).values());
+    const changeOrders = await ChangeOrderRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
+    const productionJobs = await ProductionJobRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
+    return {
+      ...result,
+      data: result.data.map(d => this.enrichDeal(d, linked, builds, changeOrders as any, productionJobs as any)),
+    };
+  }
+
+  async listPipelinePressure(
+    db: Db,
+    ctx: TenantContext,
+    filter: DealFilter & { pressureLevel?: 'low' | 'medium' | 'high' | 'critical'; q?: string },
+    options: ListOptions,
+  ) {
+    const base = await this.list(db, ctx, { ...filter, activeOnly: true }, options);
+    const q = filter.q?.toLowerCase().trim();
+    let rows = base.data as Array<Record<string, unknown>>;
+    if (filter.pressureLevel) {
+      rows = rows.filter(r => (r.dealExecutionState as { pressureLevel?: string })?.pressureLevel === filter.pressureLevel);
+    }
+    if (q) {
+      rows = rows.filter(r =>
+        String(r.title ?? '').toLowerCase().includes(q) ||
+        String(r.company ?? '').toLowerCase().includes(q) ||
+        String(r.assignedTo ?? '').toLowerCase().includes(q),
+      );
+    }
+    const grouped = {
+      critical: rows.filter(r => (r.dealExecutionState as { pressureLevel?: string })?.pressureLevel === 'critical'),
+      high: rows.filter(r => (r.dealExecutionState as { pressureLevel?: string })?.pressureLevel === 'high'),
+      medium: rows.filter(r => (r.dealExecutionState as { pressureLevel?: string })?.pressureLevel === 'medium'),
+      low: rows.filter(r => (r.dealExecutionState as { pressureLevel?: string })?.pressureLevel === 'low'),
+    };
+    return {
+      ...base,
+      data: rows,
+      grouped,
+    };
+  }
+
+  async listForecastReview(
+    db: Db,
+    ctx: TenantContext,
+    filter: DealFilter & {
+      confidence?: 'low' | 'medium' | 'high';
+      forecastCategory?: 'commit' | 'best_case' | 'pipeline' | 'excluded';
+      needsManagementReview?: boolean;
+      q?: string;
+    },
+    options: ListOptions,
+  ) {
+    const base = await this.list(db, ctx, { ...filter, activeOnly: true }, options);
+    let rows = base.data as Array<Record<string, unknown>>;
+    if (filter.confidence) rows = rows.filter(r => (r.forecastState as { confidence?: string })?.confidence === filter.confidence);
+    if (filter.forecastCategory) rows = rows.filter(r => (r.forecastState as { forecastCategory?: string })?.forecastCategory === filter.forecastCategory);
+    if (typeof filter.needsManagementReview === 'boolean') {
+      rows = rows.filter(r => !!(r.forecastState as { needsManagementReview?: boolean })?.needsManagementReview === filter.needsManagementReview);
+    }
+    const q = filter.q?.toLowerCase().trim();
+    if (q) {
+      rows = rows.filter(r =>
+        String(r.title ?? '').toLowerCase().includes(q) ||
+        String(r.company ?? '').toLowerCase().includes(q) ||
+        String(r.assignedTo ?? '').toLowerCase().includes(q),
+      );
+    }
+    const grouped = {
+      needsReview: rows.filter(r => (r.forecastState as { needsManagementReview?: boolean })?.needsManagementReview),
+      lowConfidence: rows.filter(r => (r.forecastState as { confidence?: string })?.confidence === 'low'),
+      commit: rows.filter(r => (r.forecastState as { forecastCategory?: string })?.forecastCategory === 'commit'),
+      bestCase: rows.filter(r => (r.forecastState as { forecastCategory?: string })?.forecastCategory === 'best_case'),
+    };
+    return { ...base, data: rows, grouped };
+  }
+
+  async getForecastStats(db: Db, ctx: TenantContext) {
+    const rows = await this.listAllActiveEnriched(db, ctx) as Array<{
+      forecastState?: { forecastCategory?: 'commit' | 'best_case' | 'pipeline' | 'excluded'; forecastAmount?: number; needsManagementReview?: boolean; confidence?: 'low' | 'medium' | 'high' };
+      dealExecutionState?: { isStalled?: boolean };
+      status: string;
+    }>;
+    const cats = ['commit', 'best_case', 'pipeline', 'excluded'] as const;
+    const forecastCounts = {
+      commit: 0, best_case: 0, pipeline: 0, excluded: 0,
+    };
+    const forecastAmounts = {
+      commit: 0, best_case: 0, pipeline: 0, excluded: 0,
+    };
+    for (const r of rows) {
+      const c = r.forecastState?.forecastCategory ?? 'pipeline';
+      if (cats.includes(c)) {
+        forecastCounts[c] += 1;
+        forecastAmounts[c] += r.forecastState?.forecastAmount ?? 0;
+      }
+    }
+    const dealsNeedingManagementReview = rows.filter(r => r.forecastState?.needsManagementReview).length;
+    const lowConfidenceLateStageDeals = rows.filter(r =>
+      r.forecastState?.confidence === 'low' &&
+      ['Approved', 'Won', 'In Build'].includes(r.status),
+    ).length;
+    return { forecastCounts, forecastAmounts, dealsNeedingManagementReview, lowConfidenceLateStageDeals, rows };
   }
 
   async getById(db: Db, ctx: TenantContext, id: string) {
     const deal = await DealRepository.findById(db, ctx, id);
     if (!deal) throw new NotFoundError('Deal');
-    return deal;
+    const linked = await InteractionRepository.listByRelatedDealIds(db, ctx, [id]);
+    const [dealBuilds, unitBuilds] = await Promise.all([
+      BuildRepository.listByDealIds(db, ctx, [id]),
+      BuildRepository.listByUnitIds(db, ctx, [deal.unitId, ...(deal.unitIds ?? [])].filter(Boolean) as string[]),
+    ]);
+    const builds = Array.from(new Map([...dealBuilds, ...unitBuilds].map(b => [b._id, b])).values());
+    const changeOrders = await ChangeOrderRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
+    const productionJobs = await ProductionJobRepository.listByBuildIds(db, ctx, builds.map(b => b._id));
+    return this.enrichDeal(deal, linked, builds as any, changeOrders as any, productionJobs as any);
+  }
+
+  async listInteractionsForDeal(db: Db, ctx: TenantContext, id: string) {
+    const deal = await DealRepository.findById(db, ctx, id);
+    if (!deal) throw new NotFoundError('Deal');
+    const linked = await InteractionRepository.listByRelatedDealIds(db, ctx, [id]);
+    return linked;
   }
 
   async create(db: Db, ctx: TenantContext, payload: CreateDealPayload) {
@@ -101,7 +318,11 @@ export class DealService {
 
     const deal = await DealRepository.insertOne(db, { ...ctx, tenantId }, {
       ...payload,
+      unitIds: Array.from(new Set([...(payload.unitIds ?? []), ...(payload.unitId ? [payload.unitId] : [])])),
+      primaryUnitId: payload.primaryUnitId ?? payload.unitId,
       assignedTo,
+      ownerUserId: payload.ownerUserId ?? ctx.userId,
+      lastStageChangeAt: new Date(),
       tenantId,
       createdAt:     new Date(),
       updatedAt:     new Date(),
@@ -121,6 +342,35 @@ export class DealService {
     const before = await DealRepository.findById(db, ctx, id);
     if (!before) throw new NotFoundError('Deal');
 
+    if (payload.atRisk !== undefined) {
+      const isOwner = before.ownerUserId === ctx.userId;
+      const isAdmin = ctx.userRole === 'admin' || ctx.userRole === 'super_admin';
+      if (!isOwner && !isAdmin) throw new ValidationError('Only owner/admin can modify atRisk');
+      if (payload.atRisk.flagged) {
+        payload.atRisk = {
+          ...payload.atRisk,
+          flagged: true,
+          flaggedAt: new Date().toISOString(),
+          flaggedByUserId: ctx.userId,
+          flaggedByName: ctx.userName,
+        };
+      } else {
+        payload.atRisk = { flagged: false };
+      }
+    }
+    if (payload.managementReview !== undefined) {
+      const isAdmin = ctx.userRole === 'admin' || ctx.userRole === 'super_admin' || ctx.userRole === 'management';
+      if (!isAdmin) throw new ValidationError('Only management/admin can modify managementReview');
+      if (payload.managementReview.status) {
+        payload.managementReview = {
+          ...payload.managementReview,
+          reviewedAt: new Date().toISOString(),
+          reviewedByUserId: ctx.userId,
+          reviewedByName: ctx.userName,
+        };
+      }
+    }
+
     // Validate stage gate before writing anything
     validateTransition(before, payload);
 
@@ -128,6 +378,14 @@ export class DealService {
     // Run when (a) unitId is being set/changed, or (b) status is moving from
     // a terminal state back to an active state with a unitId already on the deal.
     const incomingUnitId  = payload.unitId !== undefined ? payload.unitId : before.unitId;
+    if (payload.unitIds || payload.primaryUnitId || payload.unitId) {
+      const merged = Array.from(new Set([
+        ...(payload.unitIds ?? before.unitIds ?? []),
+        ...(payload.unitId ? [payload.unitId] : []),
+      ]));
+      payload.unitIds = merged;
+      payload.primaryUnitId = payload.primaryUnitId ?? payload.unitId ?? before.primaryUnitId ?? merged[0];
+    }
     const incomingStatus  = payload.status ?? before.status;
     const closedStatuses: DealStatus[] = ['Delivered', 'Lost'];
     const wasActive       = !closedStatuses.includes(before.status);
@@ -144,7 +402,8 @@ export class DealService {
     // Set lastTouchedAt when any meaningful business field is being changed
     const TOUCH_FIELDS = ['status', 'assignedTo', 'notes', 'amount', 'unitId', 'leadId'] as const;
     const isTouched = TOUCH_FIELDS.some(f => f in payload);
-    const update = isTouched ? { ...payload, lastTouchedAt: new Date() } : payload;
+    const stageChanged = payload.status !== undefined && payload.status !== before.status;
+    const update = isTouched ? { ...payload, lastTouchedAt: new Date(), ...(stageChanged ? { lastStageChangeAt: new Date() } : {}) } : payload;
 
     const deal = await DealRepository.updateOne(db, ctx, id, update as never);
     if (!deal) throw new NotFoundError('Deal');
