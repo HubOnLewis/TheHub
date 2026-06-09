@@ -7,6 +7,13 @@
 # Everything else is wired here: JWT auto-generated, CORS + VITE API URLs derived
 # from service names, team emails, health checks, and first-admin bootstrap.
 #
+# Alpha service URLs:
+#   • Web service name: The-Hub → https://The-Hub.onrender.com
+#   • API service name: The-Hub-Api → https://The-Hub-Api.onrender.com
+# Render may normalize public URL slugs to lowercase:
+#   • https://the-hub.onrender.com
+#   • https://the-hub-api.onrender.com
+#
 # Custom domains later: set CLIENT_URL and VITE_API_URL explicitly on both services.
 #
 # Apply: Render Dashboard → New → Blueprint → connect repo → select this file.
@@ -19,9 +26,9 @@ envVarGroups:
       - key: RENDER_ONRENDER_ROOT
         value: onrender.com
       - key: HUB_API_SERVICE_NAME
-        value: the-hub-crm-api
+        value: The-Hub-Api
       - key: HUB_WEB_SERVICE_NAME
-        value: the-hub-crm-web
+        value: The-Hub
       - key: SUPER_ADMIN_EMAILS
         value: jason@hubonlewis.com,hannah@hubonlewis.com,jaden@hubonlewis.com
       - key: SEED_ADMIN_EMAIL
@@ -40,10 +47,10 @@ envVarGroups:
 services:
 
   - type: web
-    name: the-hub-crm-api
+    name: The-Hub-Api
     runtime: node
     region: oregon
-    plan: free
+    plan: starter
 
     rootDir: .
 
@@ -73,7 +80,8 @@ services:
       - key: SEED_ADMIN_PASSWORD
         sync: false
 
-      # Optional — override auto-derived https://<HUB_WEB_SERVICE_NAME>.onrender.com
+      # Optional — override auto-derived https://The-Hub.onrender.com
+      # Runtime derivation lowercases the onrender.com slug if Render normalizes it.
       # - key: CLIENT_URL
       #   sync: false
 
@@ -86,10 +94,8 @@ services:
         sync: false
 
   - type: web
-    name: the-hub-crm-web
+    name: The-Hub
     runtime: static
-    region: oregon
-    plan: free
     rootDir: .
 
     buildCommand: npm install --include=dev && node scripts/render-prepare-web-build.mjs
@@ -99,7 +105,8 @@ services:
     envVars:
       - fromGroup: hub-crm-platform
 
-      # Optional — override auto-derived https://<HUB_API_SERVICE_NAME>.onrender.com/api
+      # Optional — override auto-derived https://The-Hub-Api.onrender.com/api
+      # Runtime derivation lowercases the onrender.com slug if Render normalizes it.
       # - key: VITE_API_URL
       #   sync: false
 

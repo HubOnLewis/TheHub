@@ -17,7 +17,8 @@ function resolveClientUrl(
     return url.replace(/\/$/, '');
   }
   const domain = root.trim().replace(/^\./, '');
-  return `https://${serviceName}.${domain}`;
+  const slug = serviceName.trim().toLowerCase();
+  return `https://${slug}.${domain}`;
 }
 
 const EnvSchema = z.object({
@@ -29,7 +30,7 @@ const EnvSchema = z.object({
   JWT_SECRET:         z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
   /** Explicit browser origin for CORS; optional on Render when HUB_WEB_SERVICE_NAME is set. */
   CLIENT_URL:         z.string().optional(),
-  HUB_WEB_SERVICE_NAME: z.string().default('the-hub-crm-web'),
+  HUB_WEB_SERVICE_NAME: z.string().default('The-Hub'),
   RENDER_ONRENDER_ROOT: z.string().default('onrender.com'),
   SUPER_ADMIN_EMAILS: z.string().transform(s => s.split(',').map(e => e.trim()).filter(Boolean)),
   ATTACHMENT_STORAGE_DRIVER: z.enum(['local', 's3']).default('local'),

@@ -2,14 +2,14 @@
  * Production smoke — public routes + API health (no auth required for listed paths).
  *
  * Usage:
- *   HUB_WEB_URL=https://the-hub-crm-web.onrender.com \
- *   HUB_API_URL=https://the-hub-crm-api.onrender.com \
+ *   HUB_WEB_URL=https://the-hub.onrender.com \
+ *   HUB_API_URL=https://the-hub-api.onrender.com \
  *   node scripts/smoke-production.mjs
  */
 import { chromium } from 'playwright';
 
-const WEB = (process.env.HUB_WEB_URL ?? 'https://the-hub-crm-web.onrender.com').replace(/\/$/, '');
-const API = (process.env.HUB_API_URL ?? 'https://the-hub-crm-api.onrender.com').replace(/\/$/, '');
+const WEB = (process.env.HUB_WEB_URL ?? 'https://the-hub.onrender.com').replace(/\/$/, '');
+const API = (process.env.HUB_API_URL ?? 'https://the-hub-api.onrender.com').replace(/\/$/, '');
 
 const PUBLIC_ROUTES = [
   '/login',

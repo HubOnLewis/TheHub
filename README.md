@@ -129,7 +129,8 @@ npm run verify:deploy          # typecheck + production build
 npm run smoke:production       # after live deploy (optional)
 ```
 
-Default URLs: `https://the-hub-crm-web.onrender.com` (web), `https://the-hub-crm-api.onrender.com` (API).
+Default alpha URLs: `https://The-Hub.onrender.com` (web), `https://The-Hub-Api.onrender.com` (API).
+Render may lowercase public URL slugs, so the effective URLs can be `https://the-hub.onrender.com` and `https://the-hub-api.onrender.com`.
 
 ---
 

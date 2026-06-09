@@ -28,8 +28,8 @@ function checkBlueprint() {
   }
   const yaml = readFileSync(path, 'utf8');
   const required = [
-    'the-hub-crm-api',
-    'the-hub-crm-web',
+    'The-Hub-Api',
+    'The-Hub',
     'MONGODB_URI',
     'JWT_SECRET',
     'HUB_API_SERVICE_NAME',

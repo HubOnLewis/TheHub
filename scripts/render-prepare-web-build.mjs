@@ -1,7 +1,9 @@
 /**
  * Render static-site build wrapper — resolves VITE_API_URL before Vite build.
  *
- * When VITE_API_URL is unset, derives https://<HUB_API_SERVICE_NAME>.onrender.com/api
+ * When VITE_API_URL is unset, derives from The-Hub-Api:
+ *   expected service URL: https://The-Hub-Api.onrender.com/api
+ *   lowercase-safe URL:  https://the-hub-api.onrender.com/api
  * so Blueprint deploys do not require hand-typing API URLs.
  */
 import { spawnSync } from 'node:child_process';
@@ -14,7 +16,7 @@ const root = resolve(__dirname, '..');
 
 const apiUrl = resolveViteApiUrl({
   viteApiUrl: process.env.VITE_API_URL,
-  apiServiceName: process.env.HUB_API_SERVICE_NAME ?? 'the-hub-crm-api',
+  apiServiceName: process.env.HUB_API_SERVICE_NAME ?? 'The-Hub-Api',
   root: process.env.RENDER_ONRENDER_ROOT ?? 'onrender.com',
 });
 

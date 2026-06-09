@@ -1,6 +1,6 @@
 # HuB CRM — Render deploy runbook (client demo)
 
-Use this checklist when deploying with the client **without** pre-existing GitHub access. Total manual input: **two secrets** (`MONGODB_URI`, `SEED_ADMIN_PASSWORD`).
+Use this checklist when deploying the alpha with the client **without** pre-existing GitHub access. Total manual input: **two secrets** (`MONGODB_URI`, `SEED_ADMIN_PASSWORD`).
 
 ---
 
@@ -9,10 +9,12 @@ Use this checklist when deploying with the client **without** pre-existing GitHu
 | Item | How |
 |------|-----|
 | JWT signing secret | `generateValue: true` on API |
-| CORS `CLIENT_URL` | Derived from `HUB_WEB_SERVICE_NAME` → `https://the-hub-crm-web.onrender.com` |
-| Web `VITE_API_URL` | Build script → `https://the-hub-crm-api.onrender.com/api` |
+| Service names | API `The-Hub-Api`; web `The-Hub` |
+| Render plan | API uses `starter`; static web omits `plan` because Render static-site services do not accept that field |
+| CORS `CLIENT_URL` | Derived from `HUB_WEB_SERVICE_NAME` → `https://The-Hub.onrender.com` (Render may serve lowercase `https://the-hub.onrender.com`) |
+| Web `VITE_API_URL` | Build script → `https://The-Hub-Api.onrender.com/api` (Render may serve lowercase `https://the-hub-api.onrender.com/api`) |
 | Team admin emails | `SUPER_ADMIN_EMAILS` in `render.yaml` |
-| First login user | `preDeployCommand` seeds `jason@hubonlewis.com` when DB has **zero** users |
+| First login user | API `preDeployCommand` seeds `jason@hubonlewis.com` when DB has **zero** users |
 | Health monitoring | API `/health` |
 | Client-safe feature flags | Legacy modules off in production web build |
 
@@ -73,8 +75,8 @@ Alternatively: bulk-paste `render.secrets.template` into each service's Environm
 
 | Check | URL |
 |-------|-----|
-| API health | `https://the-hub-crm-api.onrender.com/health` → `{"status":"ok"}` |
-| Web login | `https://the-hub-crm-web.onrender.com/login` |
+| API health | `https://The-Hub-Api.onrender.com/health` or `https://the-hub-api.onrender.com/health` → `{"status":"ok"}` |
+| Web login | `https://The-Hub.onrender.com/login` or `https://the-hub.onrender.com/login` |
 
 ### Step C — First login
 
@@ -110,10 +112,10 @@ Or manually walk: Dashboard → Leads → Events → Marketing → Referrals →
 
 ---
 
-## Free-tier expectations
+## Alpha hosting expectations
 
-- **Cold start**: first request after ~15 min idle can take 30–60s. Open the app **2 minutes before** the demo.
-- **Ephemeral disk**: API local uploads reset on redeploy — fine for demo; use S3 later for production attachments.
+- **Instance plan**: the Blueprint uses Render `starter` for the API alpha service. The static web service omits `plan`, which is the current valid Blueprint shape for Render static sites.
+- **Ephemeral disk**: API local uploads reset on redeploy — fine for alpha; use S3 later for production attachments.
 
 ---
 
@@ -123,7 +125,7 @@ When `app.hubonlewis.com` is ready:
 
 1. Add custom domain on **web** static site in Render.
 2. Set on **API**: `CLIENT_URL=https://app.hubonlewis.com`
-3. Set on **web**: `VITE_API_URL=https://the-hub-crm-api.onrender.com/api` (or API custom domain + `/api`)
+3. Set on **web**: `VITE_API_URL=https://The-Hub-Api.onrender.com/api` (or API custom domain + `/api`)
 4. Redeploy **web** after changing `VITE_API_URL`.
 
 ---
