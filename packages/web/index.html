@@ -3,13 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MTTE Core</title>
+    <title>The Hub CRM · HuB on Lewis</title>
+    <link rel="icon" href="/branding/thehublogo.svg" type="image/svg+xml" />
+    <meta name="description" content="HuB on Lewis venue operations command center" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div id="boot-splash" style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#080a0d;color:#94a3b8;font-family:Inter,system-ui,sans-serif;gap:12px">
+        <img src="/branding/thehublogo.svg" alt="HuB on Lewis" width="120" height="auto" />
+        <p style="margin:0;font-size:14px">Loading venue workspace…</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

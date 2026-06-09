@@ -1,7 +1,7 @@
 import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { ValidationError, NotFoundError, ForbiddenError } from '../errors/index.js';
-import type { CreateProductionTaskPayload, PatchProductionTaskPayload, ProductionTaskCategory, ProductionTaskStatus } from '@mtte-core/shared';
+import type { CreateProductionTaskPayload, PatchProductionTaskPayload, ProductionTaskCategory, ProductionTaskStatus } from '@hub-crm/shared';
 import { ProductionTaskRepository } from '../repositories/ProductionTaskRepository.js';
 import { ProductionJobRepository } from '../repositories/ProductionJobRepository.js';
 import { BuildVersionRepository } from '../repositories/BuildVersionRepository.js';
@@ -9,13 +9,13 @@ import { productionProgressService } from './ProductionProgressService.js';
 
 const UPDATABLE_BY_SHOP = new Set(['service', 'parts', 'management', 'admin', 'super_admin']);
 const TASK_TEMPLATE: Array<{ category: ProductionTaskCategory; title: string }> = [
-  { category: 'body', title: 'Body prep / install' },
-  { category: 'hydraulics', title: 'Hydraulics setup' },
-  { category: 'electrical', title: 'Electrical wiring' },
-  { category: 'lighting', title: 'Lighting install and test' },
-  { category: 'install', title: 'Accessories / final install' },
-  { category: 'inspection', title: 'Inspection and QA' },
-  { category: 'final', title: 'Final completion' },
+  { category: 'body', title: 'Venue / staging structure' },
+  { category: 'hydraulics', title: 'Logistics & heavy equipment' },
+  { category: 'electrical', title: 'Power & AV backbone' },
+  { category: 'lighting', title: 'Lighting program' },
+  { category: 'install', title: 'Final fit-out & accessories' },
+  { category: 'inspection', title: 'Quality review' },
+  { category: 'final', title: 'Sign-off & handoff prep' },
 ];
 
 function canUpdateTask(role: string) {

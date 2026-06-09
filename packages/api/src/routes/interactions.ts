@@ -8,7 +8,7 @@ import { validate } from '../middleware/validate.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { getDB } from '../config/db.js';
 import { interactionService } from '../services/InteractionService.js';
-import { CreateInteractionRequestSchema, PatchInteractionRequestSchema } from '@mtte-core/shared';
+import { CreateInteractionRequestSchema, PatchInteractionRequestSchema } from '@hub-crm/shared';
 import { attachmentStorageService } from '../services/storage/AttachmentStorageService.js';
 const router = Router();
 router.use(requireAuth, resolveTenant);

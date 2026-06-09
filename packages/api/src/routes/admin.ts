@@ -4,7 +4,7 @@ import { requireAuth, requireRole } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { adminService } from '../services/AdminService.js';
 import { getDB } from '../config/db.js';
-import { CreateUserSchema } from '@mtte-core/shared';
+import { CreateUserSchema } from '@hub-crm/shared';
 import { identityIntegrityService } from '../services/IdentityIntegrityService.js';
 
 const router = Router();

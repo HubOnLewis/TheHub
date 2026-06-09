@@ -1,0 +1,17 @@
+- generic [ref=e15]:
+  - generic [ref=e17]:
+    - img "HuB on Lewis" [ref=e18]
+    - paragraph [ref=e19]: Venue operations command center
+    - paragraph [ref=e20]: HuB on Lewis · Wichita
+  - generic [ref=e22]:
+    - paragraph [ref=e23]: The Hub CRM
+    - heading "Sign in" [level=1] [ref=e24]
+    - paragraph [ref=e25]: Access your venue workspace
+    - generic [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]: Email
+        - textbox "you@yourcompany.com" [ref=e29]
+      - generic [ref=e30]:
+        - generic [ref=e31]: Password
+        - textbox "••••••••" [ref=e32]
+      - button "Sign In" [ref=e33] [cursor=pointer]

@@ -1,16 +1,17 @@
 {
-  "name": "@mtte-core/web",
+  "name": "@hub-crm/web",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev":       "vite",
+    "dev:demo":  "vite --mode demo",
     "build":     "tsc && vite build",
     "preview":   "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@hookform/resolvers":  "^3.3.4",
-    "@mtte-core/shared":    "*",
+    "@hub-crm/shared":    "*",
     "@tanstack/react-query":"^5.17.0",
     "axios":                "^1.6.5",
     "react":                "^18.2.0",

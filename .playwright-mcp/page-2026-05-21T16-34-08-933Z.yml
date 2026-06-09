@@ -1,0 +1,426 @@
+- generic [ref=e15]:
+  - navigation "Main navigation" [ref=e16]:
+    - generic [ref=e18]:
+      - img "HuB on Lewis" [ref=e20]
+      - generic [ref=e21]:
+        - paragraph [ref=e22]: Venue OS
+        - paragraph [ref=e23]: HuB on Lewis · Wichita
+    - button "« Menu" [ref=e24] [cursor=pointer]
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]: Command
+        - link "Dashboard" [ref=e28] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e30]
+          - generic [ref=e35]: Dashboard
+        - link "Today" [ref=e36] [cursor=pointer]:
+          - /url: /today
+          - img [ref=e38]
+          - generic [ref=e41]: Today
+        - link "Inbox" [ref=e42] [cursor=pointer]:
+          - /url: /inbox
+          - img [ref=e44]
+          - generic [ref=e46]: Inbox
+        - link "Calendar" [ref=e47] [cursor=pointer]:
+          - /url: /calendar
+          - img [ref=e49]
+          - generic [ref=e52]: Calendar
+        - link "Autopilot" [ref=e53] [cursor=pointer]:
+          - /url: /autopilot
+          - img [ref=e55]
+          - generic [ref=e60]: Autopilot
+      - generic [ref=e61]:
+        - generic [ref=e62]: Revenue
+        - link "Opportunities" [ref=e63] [cursor=pointer]:
+          - /url: /opportunities
+          - img [ref=e65]
+          - generic [ref=e67]: Opportunities
+        - link "Accounts" [ref=e68] [cursor=pointer]:
+          - /url: /accounts
+          - img [ref=e70]
+          - generic [ref=e73]: Accounts
+        - link "Follow-ups" [ref=e74] [cursor=pointer]:
+          - /url: /follow-ups
+          - img [ref=e76]
+          - generic [ref=e79]: Follow-ups
+      - button "⋯ More" [ref=e80] [cursor=pointer]:
+        - generic [ref=e81]: ⋯
+        - generic [ref=e82]: More
+      - generic [ref=e83]: Venue
+      - link "Settings" [ref=e84] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e86]
+        - generic [ref=e89]: Settings
+      - link "◇ Client portal" [ref=e90] [cursor=pointer]:
+        - /url: /portal/dashboard
+        - generic [ref=e91]: ◇
+        - generic [ref=e92]: Client portal
+      - link "Admin workspace" [ref=e93] [cursor=pointer]:
+        - /url: /admin
+        - img [ref=e95]
+        - generic [ref=e98]: Admin workspace
+    - generic [ref=e99]:
+      - generic [ref=e100]:
+        - generic [ref=e101]: Jason Lavender
+        - generic [ref=e102]: admin@hubonlewis.com
+      - button "Dark mode" [ref=e103] [cursor=pointer]:
+        - generic [ref=e104]: ◐
+        - generic [ref=e105]: Dark mode
+      - button "Sign out" [ref=e106] [cursor=pointer]
+  - generic [ref=e107]:
+    - banner [ref=e108]:
+      - generic "Venue operational status" [ref=e109]:
+        - generic [ref=e110]:
+          - generic [ref=e111]: 11:34:08 AM
+          - generic [ref=e112]: HuB on Lewis
+          - generic [ref=e113]: Thu, May 21 · Wichita · Live
+        - generic "Staff on duty" [ref=e115]: On duty
+      - generic [ref=e118]: super admin
+    - main [ref=e119]:
+      - region "Operational status" [ref=e120]:
+        - generic [ref=e121]:
+          - generic [ref=e123]: HuB on Lewis
+          - generic [ref=e124]:
+            - text: Changes saved locally · survives refresh ·
+            - strong [ref=e125]: Jason Lavender
+            - text: · just now
+        - region "Live operations" [ref=e126]:
+          - generic [ref=e128]: Live
+          - generic [ref=e130]:
+            - generic [ref=e131]:
+              - strong [ref=e133]: Follow-Up Hunter
+              - generic [ref=e134]: Proposal viewed again · Miller/Harris
+              - time [ref=e135]: just now
+            - generic [ref=e136]:
+              - strong [ref=e138]: Balance Guardian
+              - generic [ref=e139]: Deposit reminder queued · approval-gated
+              - time [ref=e140]: just now
+            - generic [ref=e141]:
+              - strong [ref=e143]: Follow-Up Hunter
+              - generic [ref=e144]: AI drafted follow-up · Miller/Harris shower
+              - time [ref=e145]: just now
+            - generic [ref=e146]:
+              - generic [ref=e148]: Kisi access task completed · Send Kisi Email
+              - time [ref=e149]: just now
+            - generic [ref=e150]:
+              - strong [ref=e152]: Balance Guardian
+              - generic [ref=e153]: Balance reminder escalated · Villarreal grad
+              - time [ref=e154]: just now
+            - generic [ref=e155]:
+              - strong [ref=e157]: Follow-Up Hunter
+              - generic [ref=e158]: Proposal viewed again · Miller/Harris
+              - time [ref=e159]: just now
+            - generic [ref=e160]:
+              - strong [ref=e162]: Balance Guardian
+              - generic [ref=e163]: Deposit reminder queued · approval-gated
+              - time [ref=e164]: just now
+            - generic [ref=e165]:
+              - strong [ref=e167]: Follow-Up Hunter
+              - generic [ref=e168]: AI drafted follow-up · Miller/Harris shower
+              - time [ref=e169]: just now
+            - generic [ref=e170]:
+              - generic [ref=e172]: Kisi access task completed · Send Kisi Email
+              - time [ref=e173]: just now
+            - generic [ref=e174]:
+              - strong [ref=e176]: Balance Guardian
+              - generic [ref=e177]: Balance reminder escalated · Villarreal grad
+              - time [ref=e178]: just now
+        - generic [ref=e179]:
+          - generic [ref=e180]:
+            - generic [ref=e181]: Occupancy
+            - generic [ref=e182]: 42%
+          - link "Approvals 3" [ref=e183] [cursor=pointer]:
+            - /url: /autopilot
+            - generic [ref=e184]: Approvals
+            - generic [ref=e185]: "3"
+          - generic [ref=e186]: Client review
+          - generic "Actions queue locally — no live emails, payments, or external automations are sent." [ref=e187]: Queued for approval
+      - generic [ref=e188]:
+        - navigation "Client walkthrough guide" [ref=e189]:
+          - generic [ref=e190]:
+            - generic [ref=e191]: Step 2 of 13
+            - strong [ref=e192]: Today
+            - generic [ref=e193]: "Next: Owner briefing"
+          - generic [ref=e194]:
+            - link "Continue →" [ref=e195] [cursor=pointer]:
+              - /url: /owner-briefing
+            - link "← Back" [ref=e196] [cursor=pointer]:
+              - /url: /dashboard
+            - button "Collapse walkthrough guide" [ref=e197] [cursor=pointer]: Hide
+        - generic [ref=e198]:
+          - generic [ref=e199]:
+            - generic [ref=e200]: Mission control
+            - heading "Today" [level=1] [ref=e201]
+            - paragraph [ref=e202]: HuB on Lewis · Wednesday, May 20 — what needs attention right now.
+          - generic [ref=e203]:
+            - link "Owner briefing →" [ref=e204] [cursor=pointer]:
+              - /url: /owner-briefing
+            - link "Autopilot queue (3)" [ref=e205] [cursor=pointer]:
+              - /url: /autopilot
+        - complementary "Agent operational context" [ref=e206]:
+          - generic [ref=e207]:
+            - generic [ref=e209]:
+              - text: Agents on this surface
+              - heading "Operational intelligence" [level=3] [ref=e210]
+            - link "Workforce →" [ref=e211] [cursor=pointer]:
+              - /url: /autopilot
+          - generic [ref=e212]:
+            - generic [ref=e213]: Watching
+            - generic [ref=e214]:
+              - generic [ref=e215]: Owner Briefing
+              - generic [ref=e216]: Balance Guardian
+              - generic [ref=e217]: Calendar Conflict
+          - generic [ref=e218]:
+            - generic [ref=e219]:
+              - generic [ref=e220]: Suggested next move
+              - paragraph [ref=e221]: Clear 3 Autopilot approvals before ICT lunch load-in
+            - generic [ref=e222]:
+              - generic [ref=e223]: Why this matters
+              - paragraph [ref=e224]: Two Event Space events today — turnover at 2:30p is the pressure point
+            - generic [ref=e225]:
+              - generic [ref=e226]: What changed recently
+              - paragraph [ref=e227]: Miller/Harris proposal viewed again · balance reminder drafted
+            - generic [ref=e228]:
+              - generic [ref=e229]: Recommended owner action
+              - paragraph [ref=e230]: Open Today mission control → approve Kisi batch
+          - generic [ref=e231]:
+            - generic [ref=e232]: medium operational risk
+            - generic [ref=e233]: Woven agents · approval-gated outbound
+        - link "6 active agents monitoring venue operations Signals refresh from Perfect Venue seed + your approvals Autopilot →" [ref=e235] [cursor=pointer]:
+          - /url: /autopilot
+          - generic [ref=e237]: "6"
+          - generic [ref=e238]:
+            - strong [ref=e239]: 6 active agents monitoring venue operations
+            - generic [ref=e240]: Signals refresh from Perfect Venue seed + your approvals
+          - generic [ref=e241]: Autopilot →
+        - generic [ref=e242]:
+          - generic [ref=e243]:
+            - heading "Today's events" [level=2] [ref=e244]
+            - list [ref=e245]:
+              - listitem [ref=e246]:
+                - generic [ref=e247]: 11:30a
+                - generic [ref=e248]:
+                  - strong [ref=e249]: ICT Investor Lunch · Event Space
+                  - generic [ref=e250]: Event Space · 85 guests · Confirmed
+              - listitem [ref=e251]:
+                - generic [ref=e252]: 4:00p
+                - generic [ref=e253]:
+                  - strong [ref=e254]: Bingo fundraiser · mental health awareness
+                  - generic [ref=e255]: Event Space · 75 guests · Confirmed
+            - link "Calendar intelligence →" [ref=e256] [cursor=pointer]:
+              - /url: /calendar
+          - generic [ref=e257]:
+            - heading "Today's tasks" [level=2] [ref=e258]
+            - list [ref=e259]:
+              - listitem [ref=e260]:
+                - generic [ref=e261]: high
+                - generic [ref=e262]:
+                  - strong [ref=e263]: Send Kisi Email
+                  - generic [ref=e264]: Jordan Lee · Dufferfest
+                - button "Done" [ref=e265] [cursor=pointer]
+              - listitem [ref=e266]:
+                - generic [ref=e267]: high
+                - generic [ref=e268]:
+                  - strong [ref=e269]: Send Kisi Email
+                  - generic [ref=e270]: Morgan Keesling · Miller/Harris Baby Shower
+                - button "Done" [ref=e271] [cursor=pointer]
+              - listitem [ref=e272]:
+                - generic [ref=e273]: medium
+                - generic [ref=e274]:
+                  - strong [ref=e275]: Send Kisi Email
+                  - generic [ref=e276]: Jordan Lee · WAREIA
+                - button "Done" [ref=e277] [cursor=pointer]
+              - listitem [ref=e278]:
+                - generic [ref=e279]: medium
+                - generic [ref=e280]:
+                  - strong [ref=e281]: Send Kisi Email
+                  - generic [ref=e282]: Alex Rivera · Investor Lunch
+                - button "Done" [ref=e283] [cursor=pointer]
+              - listitem [ref=e284]:
+                - generic [ref=e285]: medium
+                - generic [ref=e286]:
+                  - strong [ref=e287]: Send Kisi Email
+                  - generic [ref=e288]: Morgan Keesling · Villarreal Grad Party
+                - button "Done" [ref=e289] [cursor=pointer]
+              - listitem [ref=e290]:
+                - generic [ref=e291]: low
+                - generic [ref=e292]:
+                  - strong [ref=e293]: Send Kisi Email
+                  - generic [ref=e294]: Sam Okonkwo · Michelle Bradbury
+                - button "Done" [ref=e295] [cursor=pointer]
+            - link "Task center →" [ref=e296] [cursor=pointer]:
+              - /url: /tasks
+          - generic [ref=e297]:
+            - heading "Today's risks" [level=2] [ref=e298]
+            - list [ref=e299]:
+              - listitem [ref=e300]:
+                - strong [ref=e301]: Miller/Harris balance · Jun 7
+                - text: Final balance due · reminder drafted
+              - listitem [ref=e302]:
+                - strong [ref=e303]: Jun 6–7 turnover
+                - text: Dufferfest load-in then shower flip
+              - listitem [ref=e304]:
+                - strong [ref=e305]: 3 Autopilot approvals
+                - text: Kisi batch · client drafts
+          - generic [ref=e306]:
+            - heading "Today's approvals" [level=2] [ref=e307]
+            - list [ref=e308]:
+              - listitem [ref=e309]:
+                - generic [ref=e310]:
+                  - strong [ref=e311]: Owner escalation · balance concentration
+                  - generic [ref=e312]: Balance Guardian · Coordinator
+              - listitem [ref=e313]:
+                - generic [ref=e314]:
+                  - strong [ref=e315]: Batch proposal follow-ups
+                  - generic [ref=e316]: Follow-Up Hunter · Coordinator
+              - listitem [ref=e317]:
+                - generic [ref=e318]:
+                  - strong [ref=e319]: Approve Kisi batch · Dufferfest + Miller/Harris
+                  - generic [ref=e320]: Booking Coordinator · Coordinator
+            - link "Review in Autopilot →" [ref=e321] [cursor=pointer]:
+              - /url: /autopilot
+          - generic [ref=e322]:
+            - heading "Today's load-ins" [level=2] [ref=e323]
+            - list [ref=e324]:
+              - listitem [ref=e325]:
+                - strong [ref=e326]: ICT Investor Lunch
+                - text: 10:30a setup · 11:30a doorsEvent Space
+              - listitem [ref=e327]:
+                - strong [ref=e328]: Bingo fundraiser
+                - text: 2:30p flip · 4:00p startEvent Space
+          - generic [ref=e329]:
+            - heading "Today's balances due" [level=2] [ref=e330]
+            - list [ref=e331]:
+              - listitem [ref=e332]:
+                - generic [ref=e333]:
+                  - strong [ref=e334]: Erica Day
+                  - generic [ref=e335]: Erica Day · 2025-10-21 · due Jun 1
+                - generic [ref=e336]: $450
+              - listitem [ref=e337]:
+                - generic [ref=e338]:
+                  - strong [ref=e339]: Tessa Vice
+                  - generic [ref=e340]: Tessa Vice · 2025-10-21 · due Jun 1
+                - generic [ref=e341]: $450
+              - listitem [ref=e342]:
+                - generic [ref=e343]:
+                  - strong [ref=e344]: Hannah-Grace Gorman
+                  - generic [ref=e345]: Hannah-Grace Gorman · 2025-11-04 · due Jun 1
+                - generic [ref=e346]: $450
+              - listitem [ref=e347]:
+                - generic [ref=e348]:
+                  - strong [ref=e349]: WILL VAUGHT
+                  - generic [ref=e350]: Vaught baby shower · 2026-05-31 · due Jun 1
+                - generic [ref=e351]: $150
+            - link "Revenue leaks →" [ref=e352] [cursor=pointer]:
+              - /url: /revenue-leaks
+          - generic [ref=e353]:
+            - heading "Today's follow-ups" [level=2] [ref=e354]
+            - list [ref=e355]:
+              - listitem [ref=e356]:
+                - generic [ref=e357]:
+                  - strong [ref=e358]: Balance follow-up · Erica Day
+                  - generic [ref=e359]: Coordinator · 2025-10-21
+                - generic [ref=e360]: $450 balance
+              - listitem [ref=e361]:
+                - generic [ref=e362]:
+                  - strong [ref=e363]: Balance follow-up · Tessa Vice
+                  - generic [ref=e364]: Coordinator · 2025-10-21
+                - generic [ref=e365]: $450 balance
+              - listitem [ref=e366]:
+                - generic [ref=e367]:
+                  - strong [ref=e368]: Balance follow-up · Hannah-Grace Gorman
+                  - generic [ref=e369]: Coordinator · 2025-11-04
+                - generic [ref=e370]: $450 balance
+              - listitem [ref=e371]:
+                - generic [ref=e372]:
+                  - strong [ref=e373]: Balance follow-up · WAREIA
+                  - generic [ref=e374]: Jason Lavender · 2026-06-11
+                - generic [ref=e375]: $400 balance
+              - listitem [ref=e376]:
+                - generic [ref=e377]:
+                  - strong [ref=e378]: Balance follow-up · WAREIA
+                  - generic [ref=e379]: Jason Lavender · 2026-07-09
+                - generic [ref=e380]: $400 balance
+            - link "Miller/Harris workspace →" [ref=e381] [cursor=pointer]:
+              - /url: /opportunities/pv-miller-harris
+          - generic [ref=e382]:
+            - generic [ref=e385]:
+              - generic [ref=e386]: System pulse
+              - text: Active now
+            - generic [ref=e387]:
+              - link "3 Approvals" [ref=e388] [cursor=pointer]:
+                - /url: /autopilot
+                - generic [ref=e389]: "3"
+                - text: Approvals
+              - link "6 Open tasks" [ref=e390] [cursor=pointer]:
+                - /url: /tasks
+                - generic [ref=e391]: "6"
+                - text: Open tasks
+              - generic [ref=e392]:
+                - generic [ref=e393]: "2"
+                - text: Urgent
+            - paragraph [ref=e394]: Latest · Proposal viewed again · Miller/Harris
+          - generic [ref=e395]:
+            - generic [ref=e396]:
+              - heading "Movement log" [level=3] [ref=e397]
+              - generic [ref=e398]: Updating
+            - list [ref=e400]:
+              - listitem [ref=e401]:
+                - generic [ref=e402]:
+                  - generic [ref=e403]:
+                    - generic [ref=e404]: Event
+                    - time [ref=e405]: just now
+                  - text: Follow-Up Hunter
+                  - paragraph [ref=e406]: Proposal viewed again · Miller/Harris
+              - listitem [ref=e407]:
+                - generic [ref=e408]:
+                  - generic [ref=e409]:
+                    - generic [ref=e410]: Event
+                    - time [ref=e411]: just now
+                  - text: Balance Guardian
+                  - paragraph [ref=e412]: Deposit reminder queued · approval-gated
+              - listitem [ref=e413]:
+                - generic [ref=e414]:
+                  - generic [ref=e415]:
+                    - generic [ref=e416]: Agent
+                    - time [ref=e417]: just now
+                  - text: Follow-Up Hunter
+                  - paragraph [ref=e418]: AI drafted follow-up · Miller/Harris shower
+              - listitem [ref=e419]:
+                - generic [ref=e420]:
+                  - generic [ref=e421]:
+                    - generic [ref=e422]: Task
+                    - time [ref=e423]: just now
+                  - paragraph [ref=e424]: Kisi access task completed · Send Kisi Email
+              - listitem [ref=e425]:
+                - generic [ref=e426]:
+                  - generic [ref=e427]:
+                    - generic [ref=e428]: Event
+                    - time [ref=e429]: just now
+                  - text: Balance Guardian
+                  - paragraph [ref=e430]: Balance reminder escalated · Villarreal grad
+              - listitem [ref=e431]:
+                - generic [ref=e432]:
+                  - generic [ref=e433]:
+                    - generic [ref=e434]: Event
+                    - time [ref=e435]: just now
+                  - paragraph [ref=e436]: Guest count updated · Miller/Harris · 30
+          - complementary [ref=e437]:
+            - generic [ref=e438]:
+              - generic [ref=e439]: Woven agents
+              - heading "Agents on today" [level=3] [ref=e440]
+              - link "Command center →" [ref=e441] [cursor=pointer]:
+                - /url: /autopilot
+            - generic [ref=e442]:
+              - generic [ref=e443]:
+                - generic [ref=e444]: ◇
+                - generic [ref=e445]: Owner Briefing Agent
+                - generic [ref=e446]: 3 operational risks flagged for coordinator review
+              - generic [ref=e447]:
+                - generic [ref=e448]: ◇
+                - generic [ref=e449]: Calendar Conflict
+                - generic [ref=e450]: Event Space double-book risk cleared for May 20
+        - generic [ref=e451]:
+          - generic [ref=e452]: Staffing · 9 open · 2 urgent today
+          - link "Dashboard →" [ref=e453] [cursor=pointer]:
+            - /url: /dashboard

@@ -1,7 +1,7 @@
 // packages/api/src/repositories/BaseRepository.ts
 import { type Collection, type Db, type Filter, type Document, type OptionalUnlessRequiredId, ObjectId } from 'mongodb';
 import { type TenantContext, tenantFilter } from '../tenancy/index.js';
-import type { PaginatedResponse } from '@mtte-core/shared';
+import type { PaginatedResponse } from '@hub-crm/shared';
 
 export type WithStringId<T> = Omit<T, '_id'> & { _id: string };
 

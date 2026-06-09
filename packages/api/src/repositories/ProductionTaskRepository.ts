@@ -1,7 +1,7 @@
 import type { Db, Document, Filter } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { ProductionTaskCategory, ProductionTaskStatus } from '@mtte-core/shared';
+import type { ProductionTaskCategory, ProductionTaskStatus } from '@hub-crm/shared';
 
 export interface ProductionTaskDoc extends Document {
   tenantId: string;

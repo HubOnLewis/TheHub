@@ -9,7 +9,7 @@ import { buildService } from '../services/BuildService.js';
 import { unitService } from '../services/UnitService.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { getDB } from '../config/db.js';
-import { CreateBuildSchema, CreateDealSchema } from '@mtte-core/shared';
+import { CreateBuildSchema, CreateDealSchema } from '@hub-crm/shared';
 
 const CreateDealBuildSchema = CreateBuildSchema.omit({ dealId: true, unitId: true }).extend({
   unitId: z.string().optional(),

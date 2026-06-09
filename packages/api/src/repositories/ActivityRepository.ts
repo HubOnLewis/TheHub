@@ -3,7 +3,7 @@ import { ObjectId } from 'mongodb';
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { ActivityType } from '@mtte-core/shared';
+import type { ActivityType } from '@hub-crm/shared';
 
 export interface ActivityDoc extends Document {
   tenantId:          string;

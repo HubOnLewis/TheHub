@@ -5,7 +5,7 @@ import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
 import { leadService } from '../services/LeadService.js';
 import { getDB } from '../config/db.js';
-import { CreateLeadSchema } from '@mtte-core/shared';
+import { CreateLeadSchema } from '@hub-crm/shared';
 
 const router = Router();
 router.use(requireAuth, resolveTenant);

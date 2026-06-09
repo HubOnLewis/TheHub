@@ -9,7 +9,8 @@ import { useAppStore } from '../store/index.js';
 import {
   CreateUnitSchema, UNIT_STATUSES, ENTITIES, LOCATIONS,
   type CreateUnitPayload, type UnitStatus, formatCurrency, timeAgo,
-} from '@mtte-core/shared';
+  unitStatusForDisplay, entityForDisplay, HUB_LABELS,
+} from '@hub-crm/shared';
 
 type Unit = {
   _id: string; companyId: string; vin?: string; stockNumber?: string; year?: number; make: string; model: string;
@@ -52,10 +53,10 @@ export default function Units() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Units <span style={{ fontSize: 16, fontWeight: 400, color: 'var(--text-secondary)' }}>/ Build Anchors</span></h1>
-          <div className="page-subtitle">{total} units tracked across quote-build-delivery lifecycle</div>
+          <h1 className="page-title">{HUB_LABELS.bookings}</h1>
+          <div className="page-subtitle">{total} records · legacy fulfillment module (hidden from main nav unless enabled)</div>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Add Unit</button>
+        <button className="btn btn-primary" onClick={() => setShowModal(true)}>+ Add booking</button>
       </div>
 
       {/* Status summary strip */}
@@ -74,7 +75,7 @@ export default function Units() {
               }}
               onClick={() => setStatusFilter(f => f === s ? '' : s)}
             >
-              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-secondary)', marginBottom: 4 }}>{s}</div>
+              <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--text-secondary)', marginBottom: 4 }}>{unitStatusForDisplay(s)}</div>
               <div style={{ fontFamily: 'var(--font-cond)', fontSize: 28, fontWeight: 800, color: `var(${col})` }}>{d?.count ?? 0}</div>
               {d?.totalMsrp ? <div style={{ fontSize: 11, color: 'var(--text-light)', marginTop: 2 }}>{formatCurrency(d.totalMsrp)}</div> : null}
             </div>
@@ -86,11 +87,11 @@ export default function Units() {
       <div className="filter-bar">
         <div className="search-wrap">
           <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M6.5 1a5.5 5.5 0 014.227 9.02l3.127 3.126-.708.708-3.126-3.127A5.5 5.5 0 116.5 1zm0 1.5a4 4 0 100 8 4 4 0 000-8z"/></svg>
-          <input className="search-input" placeholder="Search VIN, stock #, model…" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+          <input className="search-input" placeholder="Search reference, stock #, title…" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
         </div>
         <select className="form-select" style={{ width: 'auto' }} value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}>
-          <option value="">All Statuses</option>
-          {UNIT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+          <option value="">All statuses</option>
+          {UNIT_STATUSES.map(s => <option key={s} value={s}>{unitStatusForDisplay(s)}</option>)}
         </select>
         {(search || statusFilter) && <button className="btn btn-ghost" onClick={() => { setSearch(''); setStatusFilter(''); }}>Clear</button>}
       </div>
@@ -100,19 +101,19 @@ export default function Units() {
         {isLoading ? (
           <div style={{ padding: 40, display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center' }}><Spinner /><span className="text-muted">Loading…</span></div>
         ) : units.length === 0 ? (
-          <EmptyState message="No units found" sub="Add your first unit to start tracking inventory" />
+          <EmptyState message="No bookings found" sub="Create a record to anchor proposals and fulfillment" />
         ) : (
           <table className="data-table">
             <thead>
               <tr>
-                <th>VIN / Stock #</th><th>Unit</th><th>Company / Deal</th><th>Status</th><th>Location</th><th>MSRP</th><th>Updated</th><th></th>
+                <th>Ref / stock #</th><th>Title</th><th>Account / opportunity</th><th>Status</th><th>Location</th><th>Budget</th><th>Updated</th><th></th>
               </tr>
             </thead>
             <tbody>
               {units.map((u: Unit) => (
                 <tr key={u._id} className={selectedId === u._id ? 'selected' : ''} onClick={() => setSelectedId(id => id === u._id ? null : u._id)}>
                   <td>
-                    <div className="table-num" style={{ fontSize: 11, letterSpacing: '0.5px' }}>{u.vin || 'VIN pending'}</div>
+                    <div className="table-num" style={{ fontSize: 11, letterSpacing: '0.5px' }}>{u.vin || '—'}</div>
                     <div className="table-sub">{u.stockNumber || 'No stock #'}</div>
                   </td>
                   <td>
@@ -121,21 +122,22 @@ export default function Units() {
                   </td>
                   <td>
                     <div style={{ fontSize: 12, color: 'var(--text-secondary)', maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      company {u.companyId}
+                      {HUB_LABELS.account} ID {u.companyId}
                     </div>
-                    <div className="table-sub">{u.assignedDealId ? `deal ${u.assignedDealId}` : 'no linked deal'}</div>
+                    <div className="table-sub">{u.assignedDealId ? `opportunity ${u.assignedDealId}` : 'no linked opportunity'}</div>
                   </td>
                   <td>
                     <StatusSelect
                       status={u.status}
                       options={UNIT_STATUSES}
+                      labelForValue={unitStatusForDisplay}
                       onChange={status => mutations.setStatus.mutate({ id: u._id, status: status as UnitStatus })}
                     />
                   </td>
                   <td className="text-sm text-muted">{u.location}</td>
                   <td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600 }}>{u.msrp ? formatCurrency(u.msrp) : '—'}</td>
                   <td className="text-sm text-muted">{timeAgo(u.updatedAt)}</td>
-                  <td><Link className="btn btn-ghost" to={`/builds?unitId=${encodeURIComponent(u._id)}`}>Builds</Link></td>
+                  <td><Link className="btn btn-ghost" to={`/builds?unitId=${encodeURIComponent(u._id)}`}>Proposals</Link></td>
                 </tr>
               ))}
             </tbody>
@@ -147,14 +149,14 @@ export default function Units() {
       {/* Create modal */}
       {showModal && (
         <Modal
-          title="Add Unit"
+          title="Add booking"
           onClose={() => setShowModal(false)}
           width={620}
           footer={
             <>
               <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancel</button>
               <button type="submit" form="unit-form" className="btn btn-primary" disabled={mutations.create.isPending}>
-                {mutations.create.isPending ? 'Saving…' : 'Add Unit'}
+                {mutations.create.isPending ? 'Saving…' : 'Save'}
               </button>
             </>
           }
@@ -176,8 +178,8 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
   const { register, handleSubmit, formState: { errors } } = useForm<CreateUnitPayload>({
     resolver: zodResolver(CreateUnitSchema),
     defaultValues: {
-      year: new Date().getFullYear(), make: 'Kenworth',
-      entity:   (defaultEntity   as never) ?? 'MTTE',
+      year: new Date().getFullYear(), make: 'TBD',
+      entity:   (defaultEntity   as never) ?? 'HUB',
       location: (defaultLocation as never) ?? 'Wichita',
       status: 'prospect',
     },
@@ -187,24 +189,24 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
     <form id="unit-form" onSubmit={handleSubmit(onSubmit)}>
       <div className="form-grid">
         <div className="form-group full">
-          <label className="form-label">VIN (optional early)</label>
+          <label className="form-label">External reference (optional, 17 chars if set)</label>
           <input {...register('vin')} className={`form-input${errors.vin ? ' error' : ''}`}
-            placeholder="1FD6W3GT2SED12345" style={{ fontFamily: 'monospace', letterSpacing: '1px' }} />
+            placeholder="Legacy 17-char reference" style={{ fontFamily: 'monospace', letterSpacing: '1px' }} />
           {errors.vin && <span className="form-error">{errors.vin.message}</span>}
         </div>
         <div className="form-group">
           <label className="form-label">Stock Number</label>
-          <input {...register('stockNumber')} className={`form-input${errors.stockNumber ? ' error' : ''}`} placeholder="WKI-2025-041" />
+          <input {...register('stockNumber')} className={`form-input${errors.stockNumber ? ' error' : ''}`} placeholder="HUB-EVT-2026-041" />
           {errors.stockNumber && <span className="form-error">{errors.stockNumber.message}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Company ID *</label>
-          <input {...register('companyId')} className={`form-input${errors.companyId ? ' error' : ''}`} placeholder="company id" />
+          <label className="form-label">Account ID *</label>
+          <input {...register('companyId')} className={`form-input${errors.companyId ? ' error' : ''}`} placeholder="Account _id" />
           {errors.companyId && <span className="form-error">{errors.companyId.message}</span>}
         </div>
         <div className="form-group">
-          <label className="form-label">Assigned Deal ID</label>
-          <input {...register('assignedDealId')} className="form-input" placeholder="optional deal id" />
+          <label className="form-label">Opportunity ID</label>
+          <input {...register('assignedDealId')} className="form-input" placeholder="optional opportunity id" />
         </div>
         <div className="form-group">
           <label className="form-label">Year *</label>
@@ -212,11 +214,11 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
         </div>
         <div className="form-group">
           <label className="form-label">Make *</label>
-          <input {...register('make')} className="form-input" placeholder="Kenworth" />
+          <input {...register('make')} className="form-input" placeholder="Venue / program type" />
         </div>
         <div className="form-group">
           <label className="form-label">Model *</label>
-          <input {...register('model')} className="form-input" placeholder="T680" />
+          <input {...register('model')} className="form-input" placeholder="Project name" />
         </div>
         <div className="form-group">
           <label className="form-label">Color</label>
@@ -225,7 +227,7 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
         <div className="form-group">
           <label className="form-label">Entity</label>
           <select {...register('entity')} className="form-select">
-            {ENTITIES.map(e => <option key={e} value={e}>{e}</option>)}
+            {ENTITIES.map(e => <option key={e} value={e}>{entityForDisplay(e)}</option>)}
           </select>
         </div>
         <div className="form-group">
@@ -241,12 +243,12 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
         <div className="form-group">
           <label className="form-label">Status</label>
           <select {...register('status')} className="form-select">
-            {UNIT_STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
+            {UNIT_STATUSES.map(s => <option key={s} value={s}>{unitStatusForDisplay(s)}</option>)}
           </select>
         </div>
         <div className="form-group full">
-          <label className="form-label">Spec / Equipment</label>
-          <textarea {...register('spec')} className="form-textarea" placeholder='192" Service Body, Air Compressor, Welder, Lighting Package, Pintle Hitch' />
+          <label className="form-label">Requirements / scope</label>
+          <textarea {...register('spec')} className="form-textarea" placeholder="AV, catering, staffing, run-of-show…" />
         </div>
         <div className="form-group full">
           <label className="form-label">Notes</label>

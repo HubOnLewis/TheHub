@@ -20,9 +20,9 @@ import { UserRepository } from '../repositories/UserRepository.js';
 import { LeadRepository } from '../repositories/LeadRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { ConflictError, NotFoundError } from '../errors/index.js';
-import type { CreateUserPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateUserPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 
 export class AdminService {
   async listUsers(db: Db) {
@@ -106,7 +106,7 @@ export const adminService = new AdminService();
 //  4. All other roles → tenantId = user.tenantId (hard-scoped to their location)
 
 import type { Request, Response, NextFunction } from 'express';
-import { CROSS_TENANT_ROLES } from '@mtte-core/shared';
+import { CROSS_TENANT_ROLES } from '@hub-crm/shared';
 import { env } from '../config/env.js';
 
 export interface TenantContext {
@@ -192,9 +192,9 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { DealRepository, type DealFilter } from '../repositories/DealRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateDealPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateDealPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
 
@@ -268,9 +268,9 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { LeadRepository, type LeadFilter } from '../repositories/LeadRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateLeadPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateLeadPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 
 export class LeadService {
@@ -324,7 +324,7 @@ export const leadService = new LeadService();
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { LeadStatus } from '@mtte-core/shared';
+import type { LeadStatus } from '@hub-crm/shared';
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
 function escapeRegex(s: string): string {
@@ -398,7 +398,7 @@ export const LeadRepository = new LeadRepositoryClass();
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { DealStatus } from '@mtte-core/shared';
+import type { DealStatus } from '@hub-crm/shared';
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
 function escapeRegex(s: string): string {
@@ -470,7 +470,7 @@ export const DealRepository = new DealRepositoryClass();
 
 ```json
 {
-  "name": "@mtte-core/api",
+  "name": "@hub-crm/api",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -480,7 +480,7 @@ export const DealRepository = new DealRepositoryClass();
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@mtte-core/shared":   "*",
+    "@hub-crm/shared":   "*",
     "bcryptjs":            "^2.4.3",
     "cors":                "^2.8.5",
     "express":             "^4.18.2",
@@ -545,9 +545,9 @@ import { UserRepository } from '../repositories/UserRepository.js';
 import { LeadRepository } from '../repositories/LeadRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { ConflictError, NotFoundError } from '../errors/index.js';
-import type { CreateUserPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateUserPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 
 export class AdminService {
   async listUsers(db: Db) {
@@ -631,7 +631,7 @@ export const adminService = new AdminService();
 //  4. All other roles → tenantId = user.tenantId (hard-scoped to their location)
 
 import type { Request, Response, NextFunction } from 'express';
-import { CROSS_TENANT_ROLES } from '@mtte-core/shared';
+import { CROSS_TENANT_ROLES } from '@hub-crm/shared';
 import { env } from '../config/env.js';
 
 export interface TenantContext {
@@ -717,9 +717,9 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { DealRepository, type DealFilter } from '../repositories/DealRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateDealPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateDealPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
 
@@ -793,9 +793,9 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { LeadRepository, type LeadFilter } from '../repositories/LeadRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateLeadPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateLeadPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 
 export class LeadService {
@@ -849,7 +849,7 @@ export const leadService = new LeadService();
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { LeadStatus } from '@mtte-core/shared';
+import type { LeadStatus } from '@hub-crm/shared';
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
 function escapeRegex(s: string): string {
@@ -923,7 +923,7 @@ export const LeadRepository = new LeadRepositoryClass();
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { DealStatus } from '@mtte-core/shared';
+import type { DealStatus } from '@hub-crm/shared';
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
 function escapeRegex(s: string): string {
@@ -995,7 +995,7 @@ export const DealRepository = new DealRepositoryClass();
 
 ```json
 {
-  "name": "@mtte-core/api",
+  "name": "@hub-crm/api",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -1005,7 +1005,7 @@ export const DealRepository = new DealRepositoryClass();
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@mtte-core/shared":   "*",
+    "@hub-crm/shared":   "*",
     "bcryptjs":            "^2.4.3",
     "cors":                "^2.8.5",
     "express":             "^4.18.2",
@@ -1070,9 +1070,9 @@ import { UserRepository } from '../repositories/UserRepository.js';
 import { LeadRepository } from '../repositories/LeadRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { ConflictError, NotFoundError } from '../errors/index.js';
-import type { CreateUserPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateUserPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 
 export class AdminService {
   async listUsers(db: Db) {
@@ -1156,7 +1156,7 @@ export const adminService = new AdminService();
 //  4. All other roles → tenantId = user.tenantId (hard-scoped to their location)
 
 import type { Request, Response, NextFunction } from 'express';
-import { CROSS_TENANT_ROLES } from '@mtte-core/shared';
+import { CROSS_TENANT_ROLES } from '@hub-crm/shared';
 import { env } from '../config/env.js';
 
 export interface TenantContext {
@@ -1242,9 +1242,9 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { DealRepository, type DealFilter } from '../repositories/DealRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateDealPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateDealPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
 
@@ -1318,9 +1318,9 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { LeadRepository, type LeadFilter } from '../repositories/LeadRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateLeadPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateLeadPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 
 export class LeadService {
@@ -1374,7 +1374,7 @@ export const leadService = new LeadService();
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { LeadStatus } from '@mtte-core/shared';
+import type { LeadStatus } from '@hub-crm/shared';
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
 function escapeRegex(s: string): string {
@@ -1448,7 +1448,7 @@ export const LeadRepository = new LeadRepositoryClass();
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { DealStatus } from '@mtte-core/shared';
+import type { DealStatus } from '@hub-crm/shared';
 
 /** Escape special regex characters to prevent ReDoS via user-supplied search strings */
 function escapeRegex(s: string): string {
@@ -1520,7 +1520,7 @@ export const DealRepository = new DealRepositoryClass();
 
 ```json
 {
-  "name": "@mtte-core/api",
+  "name": "@hub-crm/api",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -1530,7 +1530,7 @@ export const DealRepository = new DealRepositoryClass();
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@mtte-core/shared":   "*",
+    "@hub-crm/shared":   "*",
     "bcryptjs":            "^2.4.3",
     "cors":                "^2.8.5",
     "express":             "^4.18.2",

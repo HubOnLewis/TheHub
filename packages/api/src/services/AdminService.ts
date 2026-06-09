@@ -5,9 +5,9 @@ import { UserRepository } from '../repositories/UserRepository.js';
 import { LeadRepository } from '../repositories/LeadRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { ConflictError, NotFoundError } from '../errors/index.js';
-import type { CreateUserPayload } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateUserPayload } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 
 export class AdminService {
   async listUsers(db: Db) {

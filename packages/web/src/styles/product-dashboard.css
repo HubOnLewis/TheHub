@@ -1,0 +1,300 @@
+/* Productized dashboard — bands A/B/C, minimal card fatigue */
+
+.dashboard-product {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 1280px;
+}
+
+.dashboard-product__band-b {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .dashboard-product__band-b {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Venue command strip (Band A) ───────────────────────────────── */
+.venue-command-strip {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+  background: var(--hub-panel-raised, var(--surface-2));
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  border: 1px solid var(--hub-accent-border, var(--border));
+  border-left: 3px solid var(--hub-accent, #c4a574);
+}
+
+.venue-command-strip__identity {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.venue-command-strip__live {
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.45);
+  animation: ops-pulse-ring 2s ease infinite;
+  flex-shrink: 0;
+}
+
+.venue-command-strip__eyebrow {
+  margin: 0;
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+}
+
+.venue-command-strip__title {
+  margin: 2px 0 0;
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.venue-command-strip__suggestion {
+  margin: var(--space-3) 0 0;
+  font-size: var(--text-body);
+  color: var(--text-secondary);
+  line-height: 1.45;
+  max-width: 52rem;
+}
+
+.venue-command-strip__metric-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-5);
+  margin-top: var(--space-4);
+}
+
+.venue-command-strip__group-label {
+  display: block;
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--text-light);
+  margin-bottom: var(--space-2);
+  text-transform: none;
+  letter-spacing: 0.02em;
+}
+
+.venue-command-strip__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.venue-command-strip__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.metric-chip {
+  min-width: 100px;
+}
+
+.metric-chip__label {
+  display: block;
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.metric-chip__value {
+  font-family: var(--font-cond);
+  font-size: var(--text-metric);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.metric-chip--warn .metric-chip__value {
+  color: var(--amber);
+}
+
+/* ── Section headers ─────────────────────────────────────────────── */
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.section-head__title {
+  margin: 0;
+  font-size: var(--text-title);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.section-head__sub {
+  margin: 4px 0 0;
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+}
+
+.section-head__action {
+  font-size: var(--text-caption);
+  font-weight: 600;
+  color: var(--hub-accent, var(--text-secondary));
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.section-head__action:hover {
+  color: var(--text-primary);
+}
+
+/* ── Attention queue ───────────────────────────────────────────── */
+.attention-queue,
+.financial-snapshot {
+  padding: var(--space-4) var(--space-5);
+  background: var(--hub-panel, var(--surface));
+  border-radius: var(--radius-panel);
+  border: 1px solid var(--border);
+}
+
+.attention-queue__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.attention-queue__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 2px var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--ease-out);
+}
+
+.attention-queue__item:hover {
+  background: var(--surface-2);
+}
+
+.attention-queue__badge {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.attention-queue__item--critical .attention-queue__badge {
+  background: var(--red-muted);
+  color: var(--red);
+}
+
+.attention-queue__item--high .attention-queue__badge {
+  background: var(--amber-muted);
+  color: var(--amber);
+}
+
+.attention-queue__headline {
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.attention-queue__detail {
+  grid-column: 2;
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+}
+
+.attention-queue__empty {
+  font-size: var(--text-body);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Financial snapshot ──────────────────────────────────────────── */
+.financial-snapshot__grid {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.financial-snapshot__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border);
+}
+
+.financial-snapshot__row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.financial-snapshot__row dt {
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.financial-snapshot__row dd {
+  margin: 0;
+  font-family: var(--font-cond);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.financial-snapshot__row--emphasis dd {
+  color: var(--amber);
+}
+
+/* Pressure table uses existing ops-row-panel — tune for band C */
+.dashboard-product .ops-row-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-panel);
+  background: var(--hub-panel, var(--surface));
+}
+
+.dashboard-product .ops-row-panel__head h2 {
+  font-size: var(--text-title);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-product .ops-row__ai {
+  font-style: normal;
+  color: var(--text-secondary);
+}
+
+/* Slim topbar on dashboard */
+.topbar--slim .topbar-status__indicators {
+  display: none;
+}
+
+.page-content--dashboard {
+  padding-top: var(--space-5);
+}

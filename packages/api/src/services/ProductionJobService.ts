@@ -1,7 +1,7 @@
 import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { NotFoundError, ValidationError, ForbiddenError } from '../errors/index.js';
-import type { CreateProductionJobPayload, PatchProductionJobPayload, ProductionJobStatus } from '@mtte-core/shared';
+import type { CreateProductionJobPayload, PatchProductionJobPayload, ProductionJobStatus } from '@hub-crm/shared';
 import { ProductionJobRepository } from '../repositories/ProductionJobRepository.js';
 import { BuildRepository } from '../repositories/BuildRepository.js';
 import { ChangeOrderRepository } from '../repositories/ChangeOrderRepository.js';

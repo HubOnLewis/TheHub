@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client.js';
-import type { CreateBuildPayload, PatchBuildPayload } from '@mtte-core/shared';
+import type { CreateBuildPayload, PatchBuildPayload } from '@hub-crm/shared';
 
 export function useBuilds(params: {
   unitId?: string;

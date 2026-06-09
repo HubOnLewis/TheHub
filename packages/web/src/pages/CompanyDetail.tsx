@@ -16,7 +16,8 @@ import InteractionComposer from '../components/InteractionComposer.js';
 import InteractionTimeline from '../components/InteractionTimeline.js';
 import InteractionDetailPanel from '../components/InteractionDetailPanel.js';
 import AccountSidebar   from '../components/AccountSidebar.js';
-import { timeAgo, CreateDealSchema, type CreateDealPayload } from '@mtte-core/shared';
+import { timeAgo, CreateDealSchema, type CreateDealPayload, HUB_LABELS } from '@hub-crm/shared';
+import { ROUTES } from '../config/paths.js';
 
 type DealRow = { _id: string; company?: string; title: string; status: string; amount?: number };
 
@@ -81,7 +82,7 @@ export default function CompanyDetail() {
     );
   }
   if (!company) {
-    return <EmptyState message="Company not found" sub="It may have been removed or you may not have access." />;
+    return <EmptyState message="Account not found" sub="It may have been removed or you may not have access." />;
   }
 
   const c = company as { name: string; isStub?: boolean; source: string; address?: { street?: string; city?: string; state?: string; postalCode?: string }; phone?: string; daysSinceLastContact?: number; createdAt: string };
@@ -100,9 +101,9 @@ export default function CompanyDetail() {
         <button
           className="btn btn-ghost"
           style={{ fontSize: 12, padding: '4px 0', color: 'var(--text-secondary)' }}
-          onClick={() => navigate('/companies')}
+          onClick={() => navigate(ROUTES.accounts)}
         >
-          ← Companies
+          ← {HUB_LABELS.accounts}
         </button>
       </div>
 
@@ -164,7 +165,7 @@ export default function CompanyDetail() {
                 + Log interaction
               </button>
               <button type="button" className="btn btn-secondary" onClick={() => setShowQuickBuildModal(true)}>
-                + Create Build
+                + Create proposal
               </button>
             </div>
           </div>
@@ -294,7 +295,7 @@ export default function CompanyDetail() {
       )}
 
       {showQuickBuildModal && (
-        <Modal title="Quick Build Creation" onClose={() => setShowQuickBuildModal(false)} width={700}>
+        <Modal title="Quick proposal" onClose={() => setShowQuickBuildModal(false)} width={700}>
           <form onSubmit={async e => {
             e.preventDefault();
             await client.post(`/companies/${id}/builds`, {
@@ -327,32 +328,32 @@ export default function CompanyDetail() {
           }}>
             <div className="form-grid">
               <div className="form-group full">
-                <label className="form-label">Build Name</label>
-                <input className="form-input" value={quickBuildName} onChange={e => setQuickBuildName(e.target.value)} placeholder="Service Body Build" />
+                <label className="form-label">{HUB_LABELS.proposal} name</label>
+                <input className="form-input" value={quickBuildName} onChange={e => setQuickBuildName(e.target.value)} placeholder="Summit logistics package" />
               </div>
               <div className="form-group full">
-                <label className="form-label">Spec Items (category|description|qty|unitCost|unitSell|partNumber|vendor)</label>
+                <label className="form-label">{HUB_LABELS.requirements} lines (category|description|qty|unitCost|unitSell|partNumber|vendor)</label>
                 <textarea className="form-textarea" rows={6} value={quickBuildSpec} onChange={e => setQuickBuildSpec(e.target.value)} />
               </div>
             </div>
             <div className="modal-footer" style={{ padding: '16px 0 0', borderTop: 'none' }}>
-              <button type="submit" className="btn btn-primary">Create Build</button>
+              <button type="submit" className="btn btn-primary">Create {HUB_LABELS.proposal.toLowerCase()}</button>
             </div>
           </form>
         </Modal>
       )}
 
       {showDealModal && (
-        <Modal title="New Deal" onClose={() => setShowDealModal(false)} width={580}>
+        <Modal title="New opportunity" onClose={() => setShowDealModal(false)} width={580}>
           <form onSubmit={dealForm.handleSubmit(handleNewDeal)}>
             <div className="form-grid">
               <div className="form-group full">
-                <label className="form-label">Deal Title *</label>
-                <input className={`form-input${dealForm.formState.errors.title ? ' error' : ''}`} {...dealForm.register('title')} placeholder="e.g. 2025 Peterbilt 579 — Replacement" />
+                <label className="form-label">Opportunity title *</label>
+                <input className={`form-input${dealForm.formState.errors.title ? ' error' : ''}`} {...dealForm.register('title')} placeholder="e.g. Q3 client summit — logistics" />
                 {dealForm.formState.errors.title && <span className="form-error">{dealForm.formState.errors.title.message}</span>}
               </div>
               <div className="form-group">
-                <label className="form-label">Company</label>
+                <label className="form-label">Account</label>
                 <input className="form-input" {...dealForm.register('company')} readOnly style={{ background: 'var(--bg)' }} />
               </div>
               <div className="form-group">
@@ -372,7 +373,7 @@ export default function CompanyDetail() {
             <div className="modal-footer" style={{ padding: '16px 0 0', borderTop: 'none' }}>
               <button type="button" className="btn btn-secondary" onClick={() => setShowDealModal(false)}>Cancel</button>
               <button type="submit" className="btn btn-primary" disabled={createDeal.isPending}>
-                {createDeal.isPending ? 'Creating…' : 'Create Deal'}
+                {createDeal.isPending ? 'Creating…' : 'Create opportunity'}
               </button>
             </div>
           </form>

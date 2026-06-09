@@ -13,6 +13,15 @@ dist/
 voze data/
 voze_data/
 
+# Perfect Venue local extraction (PII — never commit)
+.playwright-pv-profile/
+data/perfect-venue-export/*
+!data/perfect-venue-export/.gitkeep
+!data/perfect-venue-export/README.md
+data/perfect-venue-import/
+data/perfect-venue-processed/
+import/*.xlsx
+
 # Build artifacts and temp output
 mnt/
 

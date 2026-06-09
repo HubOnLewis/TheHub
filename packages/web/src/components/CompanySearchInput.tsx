@@ -1,6 +1,6 @@
 // packages/web/src/components/CompanySearchInput.tsx
-// Query-backed autocomplete for company name lookup.
-// Calls onSelect(companyName) when a result is picked.
+// Query-backed autocomplete for account name lookup (API: companies).
+// Calls onSelect(accountName) when a result is picked.
 // Does not auto-create records.
 import React, { useState, useRef, useEffect } from 'react';
 import { useCompanySearch } from '../hooks/useCompanies.js';
@@ -10,7 +10,7 @@ interface Props {
   placeholder?: string;
 }
 
-export function CompanySearchInput({ onSelect, placeholder = 'Search companies…' }: Props) {
+export function CompanySearchInput({ onSelect, placeholder = 'Search accounts…' }: Props) {
   const [q,    setQ]    = useState('');
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);

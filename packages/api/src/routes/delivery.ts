@@ -10,7 +10,7 @@ import {
   PatchDeliveryPacketSchema,
   CreatePostDeliveryFollowUpSchema,
   PatchPostDeliveryFollowUpSchema,
-} from '@mtte-core/shared';
+} from '@hub-crm/shared';
 import { getDB } from '../config/db.js';
 import { deliveryService } from '../services/DeliveryService.js';
 

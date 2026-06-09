@@ -1,6 +1,8 @@
 # MTTE Core — Build Direction and Control File
 
-This file is the forward-looking source of truth for the MTTE Core build as we move from concept and scaffolding into execution.
+> **Note (2026):** The product has been rebranded to **The Hub CRM**. This document is retained for historical context; use `README.md` and the live codebase for current scope.
+
+This file was the forward-looking source of truth for the original MTTE Core build as we moved from concept and scaffolding into execution.
 
 It is intentionally high level. It is not a recap document. It exists to keep implementation aligned, prevent drift, and give both ChatGPT and Claude a stable project reference.
 
@@ -94,9 +96,9 @@ Every data model should support leadership reporting later, even if reporting is
 
 The current monorepo structure is good enough to continue with and should remain the base:
 
-- `@mtte-core/api` = Express/Node backend
-- `@mtte-core/web` = React/Vite frontend
-- `@mtte-core/shared` = shared schemas/types/constants
+- `@hub-crm/api` = Express/Node backend
+- `@hub-crm/web` = React/Vite frontend
+- `@hub-crm/shared` = shared schemas/types/constants
 
 That structure is appropriate for the app’s current maturity and supports disciplined growth if we keep responsibilities clean. fileciteturn0file0L1-L20
 

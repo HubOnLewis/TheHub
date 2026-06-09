@@ -1,87 +1,123 @@
-# render.yaml
-# Render deployment config for MTTE Core.
-# ─────────────────────────────────────────────────────────────────
-# Two services:
-#   mtte-core-api  — Node.js web service (Express + MongoDB)
-#   mtte-core-web  — Static site (React/Vite)
+# render.yaml — The Hub CRM (HuB on Lewis)
 #
-# env vars marked sync: false MUST be set manually in the Render
-# dashboard under each service's Environment tab. Never put secrets
-# in this file.
+# One-time manual setup (Dashboard prompts on first Blueprint apply):
+#   • MONGODB_URI — MongoDB Atlas connection string (only required secret)
+#   • SEED_ADMIN_PASSWORD — first-login password (only when DB has zero users)
 #
-# After first deploy:
-#   1. Set all sync: false vars in the dashboard
-#   2. Manually deploy both services
-#   3. Set API CLIENT_URL to the exact web service URL
-#   4. Set web VITE_API_URL to the exact API service URL + /api
-#      e.g. https://mtte-core-api.onrender.com/api
-#   5. Trigger a redeploy of the web service after setting VITE_API_URL
-# ─────────────────────────────────────────────────────────────────
+# Everything else is wired here: JWT auto-generated, CORS + VITE API URLs derived
+# from service names, team emails, health checks, and first-admin bootstrap.
+#
+# Custom domains later: set CLIENT_URL and VITE_API_URL explicitly on both services.
+#
+# Apply: Render Dashboard → New → Blueprint → connect repo → select this file.
+
+envVarGroups:
+  - name: hub-crm-platform
+    envVars:
+      - key: DB_NAME
+        value: hub_crm
+      - key: RENDER_ONRENDER_ROOT
+        value: onrender.com
+      - key: HUB_API_SERVICE_NAME
+        value: the-hub-crm-api
+      - key: HUB_WEB_SERVICE_NAME
+        value: the-hub-crm-web
+      - key: SUPER_ADMIN_EMAILS
+        value: jason@hubonlewis.com,hannah@hubonlewis.com,jaden@hubonlewis.com
+      - key: SEED_ADMIN_EMAIL
+        value: jason@hubonlewis.com
+      - key: SEED_ADMIN_NAME
+        value: Jason Lavender
+      - key: SEED_ADMIN_ENTITY
+        value: HUB
+      - key: SEED_ADMIN_LOCATION
+        value: Wichita
+      - key: SEED_ADMIN_TENANT_ID
+        value: hub-wichita
+      - key: ATTACHMENT_STORAGE_DRIVER
+        value: local
 
 services:
 
-  # ── API (Node web service) ─────────────────────────────────────
   - type: web
-    name: mtte-core-api
-    env: node
+    name: the-hub-crm-api
+    runtime: node
     region: oregon
     plan: free
 
-    # Run from repo root so workspace paths resolve correctly
     rootDir: .
 
-    # Build: compile shared first (API imports it at runtime), then compile API
-    buildCommand: npm install --include=dev && npm run build --workspace=packages/shared && npm run build --workspace=packages/api
+    buildCommand: >-
+      npm install --include=dev
+      && npm run build --workspace=packages/shared
+      && npm run build --workspace=packages/api
 
-    # Start: call node directly — npm start includes --env-file which crashes
-    # when .env doesn't exist (Render injects env vars into process.env directly)
     startCommand: node packages/api/dist/server.js
 
+    preDeployCommand: node scripts/render-bootstrap-admin.mjs
+
+    healthCheckPath: /health
+
     envVars:
+      - fromGroup: hub-crm-platform
+
       - key: NODE_ENV
         value: production
 
-      # MongoDB Atlas connection string — set in Render dashboard
+      - key: JWT_SECRET
+        generateValue: true
+
       - key: MONGODB_URI
         sync: false
 
-      - key: DB_NAME
-        value: mtte_core
-
-      # Must be ≥ 32 chars — generate with: openssl rand -hex 32
-      - key: JWT_SECRET
+      - key: SEED_ADMIN_PASSWORD
         sync: false
 
-      # Set to the exact Render static site URL for this web service
-      # e.g. https://mtte-core-web.onrender.com
-      - key: CLIENT_URL
+      # Optional — override auto-derived https://<HUB_WEB_SERVICE_NAME>.onrender.com
+      # - key: CLIENT_URL
+      #   sync: false
+
+      # Optional integrations (no-op when unset)
+      - key: MAILCHIMP_API_KEY
+        sync: false
+      - key: MAILCHIMP_SERVER_PREFIX
+        value: us21
+      - key: MAILCHIMP_AUDIENCE_ID
         sync: false
 
-      # Comma-separated super-admin emails
-      - key: SUPER_ADMIN_EMAILS
-        sync: false
-
-
-  # ── Web (Static site) ──────────────────────────────────────────
   - type: web
-    env: static
-    name: mtte-core-web
+    name: the-hub-crm-web
+    runtime: static
+    region: oregon
+    plan: free
     rootDir: .
 
-    # VITE_API_URL must be set in the Render dashboard BEFORE building.
-    # Vite bakes env vars into the bundle at build time — a redeploy is
-    # required if the API URL ever changes.
-    buildCommand: npm install --include=dev && npm run build --workspace=packages/web
+    buildCommand: npm install --include=dev && node scripts/render-prepare-web-build.mjs
 
     staticPublishPath: packages/web/dist
 
     envVars:
-      # Set to the full API base URL including /api path segment
-      # e.g. https://mtte-core-api.onrender.com/api
-      - key: VITE_API_URL
+      - fromGroup: hub-crm-platform
+
+      # Optional — override auto-derived https://<HUB_API_SERVICE_NAME>.onrender.com/api
+      # - key: VITE_API_URL
+      #   sync: false
+
+      - key: VITE_GA_MEASUREMENT_ID
         sync: false
 
-    # Client-side routing — serve index.html for all paths
+      # Client-safe production defaults (legacy modules off)
+      - key: VITE_FEATURE_BOOKINGS
+        value: "false"
+      - key: VITE_FEATURE_FULFILLMENT
+        value: "false"
+      - key: VITE_FEATURE_CLOSEOUT
+        value: "false"
+      - key: VITE_FEATURE_BUILDS
+        value: "false"
+      - key: VITE_FEATURE_LEGACY_IMPORTS_UI
+        value: "false"
+
     routes:
       - type: rewrite
         source: /*

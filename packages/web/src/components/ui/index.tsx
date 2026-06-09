@@ -1,5 +1,6 @@
 // packages/web/src/components/ui/index.tsx
 import React from 'react';
+import BrandLogo from '../BrandLogo.js';
 
 export { StatusBadge } from './StatusBadge.js';
 export { MetricHeroCard } from './MetricHeroCard.js';
@@ -47,6 +48,7 @@ export function Spinner({ size = 20 }: { size?: number }) {
       stroke="currentColor"
       strokeWidth="2.5"
       style={{ animation: 'spin 0.8s linear infinite', color: 'var(--red)' }}
+      aria-hidden
     >
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
@@ -54,11 +56,23 @@ export function Spinner({ size = 20 }: { size?: number }) {
   );
 }
 
+/** Centered branded loader for page-level data fetches */
+export function BrandedPageLoader({ message = 'Loading…' }: { message?: string }) {
+  return (
+    <div className="branded-page-loader" role="status" aria-live="polite">
+      <BrandLogo size="md" />
+      <span>{message}</span>
+    </div>
+  );
+}
+
 // ── EmptyState ────────────────────────────────────────────────────
 export function EmptyState({ message, sub }: { message: string; sub?: string }) {
   return (
     <div style={{ padding: '48px 24px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-      <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
+      <div className="empty-state-brand">
+        <BrandLogo size="sm" />
+      </div>
       <div style={{ fontFamily: 'var(--font-cond)', fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
         {message}
       </div>
@@ -83,12 +97,15 @@ export function KPICard({ label, value, colorVar = '--red', sub, className = '' 
 }
 
 // ── StatusSelect ──────────────────────────────────────────────────
-export function StatusSelect({ status, options, onChange, disabled }: {
+export function StatusSelect({ status, options, onChange, disabled, labelForValue }: {
   status:    string;
   options:   readonly string[];
   onChange:  (v: string) => void;
   disabled?: boolean;
+  /** Optional Hub-friendly labels; values sent onChange stay the stored enum strings. */
+  labelForValue?: (v: string) => string;
 }) {
+  const lab = labelForValue ?? ((v: string) => v);
   return (
     <select
       className="form-select"
@@ -99,7 +116,7 @@ export function StatusSelect({ status, options, onChange, disabled }: {
       disabled={disabled}
       title={disabled ? 'Terminal — no further transitions allowed' : undefined}
     >
-      {options.map(s => <option key={s} value={s}>{s}</option>)}
+      {options.map(s => <option key={s} value={s}>{lab(s)}</option>)}
     </select>
   );
 }

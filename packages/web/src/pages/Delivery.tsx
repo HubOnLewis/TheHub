@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { HUB_LABELS, deliveryRecordStatusForDisplay } from '@hub-crm/shared';
 import { useDeliveryRecords, useDeliveryMutations, useDeliveryRecord } from '../hooks/useDelivery.js';
+import { ROUTES } from '../config/paths.js';
 import { EmptyState, Spinner, StatusBadge, TableSkeleton } from '../components/ui/index.js';
 
 export default function Delivery() {
@@ -23,27 +25,27 @@ export default function Delivery() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Delivery</h1>
-          <div className="page-subtitle">Closeout, customer packet, and post-delivery follow-up</div>
+          <h1 className="page-title">{HUB_LABELS.client} {HUB_LABELS.closeout.toLowerCase()}</h1>
+          <div className="page-subtitle">Handoff checklist, client packet, and post-event follow-up</div>
         </div>
       </div>
       <div className="card" style={{ marginBottom: 16, padding: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
         <select className="form-select" value={status} onChange={e => setStatus(e.target.value)}>
           <option value="">All statuses</option>
-          {groups.map(g => <option key={g} value={g}>{g}</option>)}
+          {groups.map(g => <option key={g} value={g}>{deliveryRecordStatusForDisplay(g)}</option>)}
         </select>
         <input className="form-input" placeholder="Search contact/notes" value={q} onChange={e => setQ(e.target.value)} />
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: selectedId ? 'minmax(0,1fr) 380px' : '1fr', gap: 16, alignItems: 'start' }}>
         <div>
-          {rows.length === 0 ? <EmptyState message="No delivery records" sub="Create a delivery record from production context." /> : (
+          {rows.length === 0 ? <EmptyState message="No closeout records" sub="Create a record from fulfillment context when that module is in use." /> : (
             <div style={{ display: 'grid', gap: 18 }}>
               {groups.map(g => {
                 const list = rows.filter((r: { status: string }) => r.status === g);
                 return (
                   <section key={g}>
                     <div className="list-section-title" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                      <StatusBadge domain="delivery" value={g}>{g.replace(/_/g, ' ')}</StatusBadge>
+                      <StatusBadge domain="delivery" value={g}>{deliveryRecordStatusForDisplay(g)}</StatusBadge>
                       <span style={{ color: 'var(--text-light)', fontWeight: 700 }}>· {list.length}</span>
                     </div>
                     <div className="card list-card">
@@ -69,7 +71,7 @@ export default function Delivery() {
                           >
                             <div>
                               <div className="list-row__title">
-                                {(r.build as { name?: string })?.name ?? 'Build'} ·{' '}
+                                {(r.build as { name?: string })?.name ?? HUB_LABELS.proposal} ·{' '}
                                 {(r.unit as { year?: number; make?: string; model?: string })?.year ?? ''}{' '}
                                 {(r.unit as { make?: string })?.make ?? ''} {(r.unit as { model?: string })?.model ?? ''}
                               </div>
@@ -87,7 +89,7 @@ export default function Delivery() {
                             </div>
                             <div className="list-row__actions" onClick={e => e.stopPropagation()} onKeyDown={e => e.stopPropagation()}>
                               {r.status === 'pending' && (
-                                <button type="button" className="btn btn-secondary" onClick={() => mutations.update.mutate({ id, payload: { status: 'ready_for_delivery' } })}>Mark Ready</button>
+                                <button type="button" className="btn btn-secondary" onClick={() => mutations.update.mutate({ id, payload: { status: 'ready_for_delivery' } })}>Mark ready for client</button>
                               )}
                               {r.status === 'ready_for_delivery' && (
                                 <button
@@ -97,14 +99,14 @@ export default function Delivery() {
                                     id,
                                     payload: { status: 'scheduled', scheduledDeliveryDate: new Date(Date.now() + 86400000).toISOString() },
                                   })}
-                                >Schedule</button>
+                                >Schedule handoff</button>
                               )}
                               {r.status === 'scheduled' && (
                                 <button
                                   type="button"
                                   className="btn btn-secondary"
                                   onClick={() => mutations.update.mutate({ id, payload: { status: 'delivered', actualDeliveryDate: new Date().toISOString() } })}
-                                >Mark Delivered</button>
+                                >Mark completed</button>
                               )}
                               {r.status === 'delivered' && (
                                 <button type="button" className="btn btn-ghost" onClick={() => mutations.update.mutate({ id, payload: { status: 'closed' } })}>Close</button>
@@ -129,8 +131,8 @@ export default function Delivery() {
             {detailLoading || !detail ? <Spinner /> : (
               <>
                 <div style={{ fontSize: 13, marginBottom: 8 }}>
-                  <div><strong>Unit / build</strong>: {String(summary?.unitLabel ?? '')}</div>
-                  <div><strong>Build</strong>: {String(summary?.buildName ?? '')}</div>
+                  <div><strong>{HUB_LABELS.booking} / {HUB_LABELS.proposal.toLowerCase()}</strong>: {String(summary?.unitLabel ?? '')}</div>
+                  <div><strong>{HUB_LABELS.proposal}</strong>: {String(summary?.buildName ?? '')}</div>
                   <div><strong>Frozen version</strong>: {String(summary?.deliveredVersionId ?? '')}</div>
                   <div><strong>Packet</strong>: {String(summary?.packetStatus ?? '—')}</div>
                   <div><strong>Customer readiness</strong>: {handoff?.readinessLevel ?? '—'}</div>
@@ -180,7 +182,7 @@ export default function Delivery() {
                     </>
                   )}
                 </div>
-                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>Post-delivery follow-ups</div>
+                <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 4 }}>Post-{HUB_LABELS.closeout.toLowerCase()} follow-ups</div>
                 <ul style={{ fontSize: 12, margin: '0 0 10px 16px' }}>
                   {followUps.length === 0 ? <li>None</li> : followUps.map(f => (
                     <li key={String(f._id)} style={{ marginBottom: 6 }}>
@@ -220,7 +222,7 @@ export default function Delivery() {
                   })}
                 >Add service intro</button>
                 <div style={{ marginTop: 12 }}>
-                  <Link className="btn btn-ghost" to="/production">Open production</Link>
+                  <Link className="btn btn-ghost" to={ROUTES.fulfillment}>Open {HUB_LABELS.fulfillment.toLowerCase()}</Link>
                 </div>
               </>
             )}

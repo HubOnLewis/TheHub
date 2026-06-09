@@ -1,7 +1,8 @@
 // packages/web/src/hooks/useLeads.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client.js';
-import type { CreateLeadPayload } from '@mtte-core/shared';
+import type { CreateLeadPayload } from '@hub-crm/shared';
+import { trackEvent } from '../analytics/index.js';
 
 interface LeadsQuery {
   search?:     string;
@@ -28,7 +29,10 @@ export function useLeadMutations() {
 
   const create = useMutation({
     mutationFn: (data: CreateLeadPayload) => client.post('/leads', data).then(r => r.data),
-    onSuccess:  invalidate,
+    onSuccess:  (_data, variables) => {
+      trackEvent('lead_created', { source: variables.source ?? 'unknown' });
+      invalidate();
+    },
   });
 
   const update = useMutation({

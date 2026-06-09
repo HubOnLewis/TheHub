@@ -1,6 +1,7 @@
 // packages/shared/src/constants/index.ts
 
-export const ENTITIES = ['WKI', 'MTTE', 'PacLease'] as const;
+/** Tenant entity codes on stored rows — internal compatibility list; prefer `HUB` for HuB on Lewis / greenfield users. */
+export const ENTITIES = ['WKI', 'HUB', 'PacLease'] as const;
 export const LOCATIONS = ['Wichita', 'Dodge City', 'Salina', 'Liberal', 'Garden City'] as const;
 
 export const ROLES = [
@@ -150,6 +151,14 @@ export type InteractionStatus   = typeof INTERACTION_STATUS[number];
 export type InteractionOutcome  = typeof INTERACTION_OUTCOMES[number];
 export type AttachmentType      = typeof ATTACHMENT_TYPES[number];
 export type AccountPlanStatus   = typeof ACCOUNT_PLAN_STATUSES[number];
+
+export {
+  HUB_LABELS,
+  dealStatusForDisplay, leadStatusForDisplay, entityForDisplay, unitStatusForDisplay, buildStatusForDisplay,
+  deliveryRecordStatusForDisplay,
+  DEAL_STATUS_DISPLAY, LEAD_STATUS_DISPLAY, UNIT_STATUS_DISPLAY, BUILD_STATUS_DISPLAY,
+  DELIVERY_RECORD_STATUS_DISPLAY,
+} from './uiLabels.js';
 
 /**
  * Build the tenant ID from an entity + location.

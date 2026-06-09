@@ -18,7 +18,7 @@ export interface PaginatedResponse<T> {
 
 // ── Lead ──────────────────────────────────────────────────────────
 export const CreateLeadSchema = z.object({
-  company:    z.string().min(1, 'Company required'),
+  company:    z.string().min(1, 'Account / company name required'),
   contact:    z.string().min(1, 'Contact name required'),
   email:      z.string().email().optional().or(z.literal('')),
   phone:      z.string().optional(),
@@ -31,9 +31,9 @@ export type CreateLeadPayload = z.infer<typeof CreateLeadSchema>;
 
 // ── Deal ──────────────────────────────────────────────────────────
 export const CreateDealSchema = z.object({
-  title:      z.string().min(1, 'Deal title required'),
+  title:      z.string().min(1, 'Opportunity title required'),
   companyId:  z.string().min(1).optional(),
-  company:    z.string().min(1, 'Company required'),
+  company:    z.string().min(1, 'Account required'),
   contact:    z.string().min(1, 'Contact required'),
   amount:     z.number().min(0).default(0),
   assignedTo: z.string().optional(),
@@ -63,8 +63,9 @@ export type CreateDealPayload = z.infer<typeof CreateDealSchema>;
 
 // ── Unit ──────────────────────────────────────────────────────────
 export const CreateUnitSchema = z.object({
-  companyId:   z.string().min(1, 'Company required'),
-  vin:         z.string().length(17, 'VIN must be exactly 17 characters').optional().or(z.literal('')),
+  companyId:   z.string().min(1, 'Account required'),
+  /** Legacy field name; UI labels as external reference. When set, remains 17 chars for DB compatibility. */
+  vin:         z.string().length(17, 'Use 17 characters or leave blank').optional().or(z.literal('')),
   stockNumber: z.string().optional(),
   year:        z.number().int().min(1990).max(new Date().getFullYear() + 2).optional(),
   make:        z.string().min(1, 'Make required'),

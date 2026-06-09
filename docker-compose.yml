@@ -1,8 +1,8 @@
 # docker-compose.yml
-# Runs the full MTTE CORE stack locally:
-#   - MongoDB with persistent volume
-#   - API (packages/api) with hot reload via tsx watch
-#   - Web (packages/web) Vite dev server
+# The Hub CRM — local stack (MongoDB + API + Vite web)
+#
+# DB_NAME here must match the database in MONGODB_URI below (default hub_crm for new local installs).
+# For a volume that was created against another DB name, update both URI and DB_NAME or you will see empty data.
 #
 # Usage:
 #   docker-compose up           # start all services
@@ -13,17 +13,16 @@ version: '3.9'
 
 services:
 
-  # ── MongoDB ──────────────────────────────────────────────────────
   mongodb:
     image: mongo:7.0
-    container_name: mtte-mongodb
+    container_name: hub-mongodb
     restart: unless-stopped
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mtte
-      MONGO_INITDB_ROOT_PASSWORD: mtte_local
-      MONGO_INITDB_DATABASE: mtte_core
+      MONGO_INITDB_ROOT_USERNAME: hub
+      MONGO_INITDB_ROOT_PASSWORD: hub_local
+      MONGO_INITDB_DATABASE: hub_crm
     volumes:
       - mongodb_data:/data/db
       - ./scripts/mongo-init.js:/docker-entrypoint-initdb.d/init.js:ro
@@ -33,12 +32,11 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── API ──────────────────────────────────────────────────────────
   api:
     build:
       context: .
       dockerfile: packages/api/Dockerfile.dev
-    container_name: mtte-api
+    container_name: hub-api
     restart: unless-stopped
     depends_on:
       mongodb:
@@ -48,23 +46,22 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3001
-      MONGODB_URI: mongodb://mtte:mtte_local@mongodb:27017/mtte_core?authSource=admin
-      DB_NAME: mtte_core
+      MONGODB_URI: mongodb://hub:hub_local@mongodb:27017/hub_crm?authSource=admin
+      DB_NAME: hub_crm
       JWT_SECRET: ${JWT_SECRET:-local_dev_secret_change_in_production_minimum_32_chars}
       CLIENT_URL: http://localhost:5173
-      SUPER_ADMIN_EMAILS: mike@wki.com
+      SUPER_ADMIN_EMAILS: admin@hubonlewis.com
     volumes:
       - ./packages/api/src:/app/packages/api/src:ro
       - ./packages/shared/src:/app/packages/shared/src:ro
       - ./packages/api/uploads:/app/packages/api/uploads
     command: npm run dev --workspace=packages/api
 
-  # ── Web ──────────────────────────────────────────────────────────
   web:
     build:
       context: .
       dockerfile: packages/web/Dockerfile.dev
-    container_name: mtte-web
+    container_name: hub-web
     restart: unless-stopped
     depends_on:
       - api
@@ -78,4 +75,4 @@ services:
 
 volumes:
   mongodb_data:
-    name: mtte_mongodb_data
+    name: hub_mongodb_data

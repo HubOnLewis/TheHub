@@ -8,7 +8,7 @@ import type {
   InteractionOutcome,
   InteractionStatus,
   InteractionType,
-} from '@mtte-core/shared';
+} from '@hub-crm/shared';
 
 export interface InteractionAttachment {
   id:         string;

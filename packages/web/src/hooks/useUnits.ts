@@ -1,8 +1,8 @@
 // packages/web/src/hooks/useUnits.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client.js';
-import type { UnitStatus } from '@mtte-core/shared';
-import type { CreateUnitPayload } from '@mtte-core/shared';
+import type { UnitStatus } from '@hub-crm/shared';
+import type { CreateUnitPayload } from '@hub-crm/shared';
 
 interface UnitsQuery {
   search?:  string;

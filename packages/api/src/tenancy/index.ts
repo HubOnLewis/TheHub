@@ -2,7 +2,7 @@
 //
 // TENANT ARCHITECTURE
 // ───────────────────
-// TenantId format: "<entity_slug>-<location_slug>"  e.g. "wki-wichita", "mtte-dodge-city"
+// TenantId format: "<entity_slug>-<location_slug>"  e.g. "wki-wichita", "hub-wichita"
 //
 // Every authenticated request resolves to exactly one TenantContext.
 // The context flows through req.tenant and is injected into every
@@ -15,7 +15,7 @@
 //  4. All other roles → tenantId = user.tenantId (hard-scoped to their location)
 
 import type { Request, Response, NextFunction } from 'express';
-import { CROSS_TENANT_ROLES } from '@mtte-core/shared';
+import { CROSS_TENANT_ROLES } from '@hub-crm/shared';
 import { env } from '../config/env.js';
 
 export interface TenantContext {

@@ -3,7 +3,7 @@ import type { TenantContext } from '../tenancy/index.js';
 import { AccountPlanRepository } from '../repositories/AccountPlanRepository.js';
 import { companyService } from './CompanyService.js';
 import { NotFoundError, ValidationError } from '../errors/index.js';
-import type { CreateAccountPlanPayload, PatchAccountPlanPayload } from '@mtte-core/shared';
+import type { CreateAccountPlanPayload, PatchAccountPlanPayload } from '@hub-crm/shared';
 
 function canManage(role: string): boolean {
   return role === 'management' || role === 'admin' || role === 'super_admin';

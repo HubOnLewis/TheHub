@@ -4,11 +4,13 @@ import {
   INTERACTION_TYPES,
   INTERACTION_DIRECTIONS,
   INTERACTION_OUTCOMES,
+  HUB_LABELS,
+  dealStatusForDisplay,
   type InteractionType,
   type InteractionDirection,
   type InteractionOutcome,
   type CreateInteractionRequestPayload,
-} from '@mtte-core/shared';
+} from '@hub-crm/shared';
 import AttachmentUploader from './AttachmentUploader.js';
 import { useAddInteractionAttachment } from '../hooks/useInteractions.js';
 
@@ -235,7 +237,7 @@ export default function InteractionComposer({
 
         {deals.length > 0 && (
           <div className="form-group" style={{ marginBottom: 8 }}>
-            <label className="form-label">Related deal</label>
+            <label className="form-label">Related {HUB_LABELS.opportunity.toLowerCase()}</label>
             <select
               className="form-select"
               value={form.relatedDealId ?? ''}
@@ -243,7 +245,7 @@ export default function InteractionComposer({
             >
               <option value="">— none —</option>
               {deals.map(d => (
-                <option key={d._id} value={d._id}>{d.title} ({d.status})</option>
+                <option key={d._id} value={d._id}>{d.title} ({dealStatusForDisplay(d.status)})</option>
               ))}
             </select>
           </div>

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
-import { CreateBuildSchema, PatchBuildSchema, CreateBuildVersionSchema, CreateChangeOrderSchema, PatchChangeOrderSchema } from '@mtte-core/shared';
+import { CreateBuildSchema, PatchBuildSchema, CreateBuildVersionSchema, CreateChangeOrderSchema, PatchChangeOrderSchema } from '@hub-crm/shared';
 import { getDB } from '../config/db.js';
 import { buildService } from '../services/BuildService.js';
 import { buildChangeService } from '../services/BuildChangeService.js';

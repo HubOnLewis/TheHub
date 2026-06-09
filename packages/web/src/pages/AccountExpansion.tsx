@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { EmptyState, Spinner } from '../components/ui/index.js';
+import { HUB_LABELS } from '@hub-crm/shared';
+import { ROUTES, accountDetailPath } from '../config/paths.js';
 import { useAccountExpansion, useAccountPlanMutations } from '../hooks/useAccountExpansion.js';
 
 export default function AccountExpansion() {
@@ -49,7 +51,7 @@ export default function AccountExpansion() {
       <div className="card" style={{ marginBottom: 12, display: 'grid', gridTemplateColumns: '1fr 200px 180px 180px auto auto auto', gap: 8, alignItems: 'end' }}>
         <div>
           <label className="form-label">Search</label>
-          <input className="form-input" value={q} onChange={e => setSp(prev => { if (e.target.value) prev.set('q', e.target.value); else prev.delete('q'); return prev; })} placeholder="Company or owner" />
+          <input className="form-input" value={q} onChange={e => setSp(prev => { if (e.target.value) prev.set('q', e.target.value); else prev.delete('q'); return prev; })} placeholder="Account or owner" />
         </div>
         <div>
           <label className="form-label">Owner</label>
@@ -87,10 +89,10 @@ export default function AccountExpansion() {
                   <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Owner: {r.accountPenetrationState.assignedOwnerName ?? 'unassigned'}</div>
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <Link className="btn btn-secondary" to={`/companies/${r.companyId}`}>Open</Link>
+                  <Link className="btn btn-secondary" to={accountDetailPath(r.companyId)}>Open</Link>
                   <Link className="btn btn-secondary" to={`/account-coverage?ownerUserId=${encodeURIComponent(r.accountPenetrationState.assignedOwnerUserId ?? '')}`}>Coverage</Link>
-                  <Link className="btn btn-secondary" to={`/deals?search=${encodeURIComponent(r.companyName)}`}>Deals</Link>
-                  <Link className="btn btn-secondary" to={`/forecast-review?q=${encodeURIComponent(r.companyName)}`}>Forecast</Link>
+                  <Link className="btn btn-secondary" to={`${ROUTES.opportunities}?search=${encodeURIComponent(r.companyName)}`}>{HUB_LABELS.opportunities}</Link>
+                  <Link className="btn btn-secondary" to={`${ROUTES.insights}?q=${encodeURIComponent(r.companyName)}`}>{HUB_LABELS.insights}</Link>
                   <Link className="btn btn-secondary" to={`/weekly-cadence?ownerUserId=${encodeURIComponent(r.accountPenetrationState.assignedOwnerUserId ?? '')}`}>Weekly Cadence</Link>
                 </div>
               </div>
@@ -110,7 +112,7 @@ export default function AccountExpansion() {
               </div>
               {r.accountPlanId && (
                 <div style={{ marginTop: 8, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                  <Link className="btn btn-secondary" to={`/companies/${r.companyId}?plan=1`}>Edit Plan</Link>
+                  <Link className="btn btn-secondary" to={`${accountDetailPath(r.companyId)}?plan=1`}>Edit Plan</Link>
                   <button className="btn btn-secondary" onClick={() => planMutations.update.mutate({ id: r.accountPlanId!, payload: { status: 'active' } })}>Mark Active</button>
                   <button className="btn btn-secondary" onClick={() => planMutations.update.mutate({ id: r.accountPlanId!, payload: { status: 'paused' } })}>Mark Paused</button>
                   <button className="btn btn-ghost" onClick={() => planMutations.update.mutate({ id: r.accountPlanId!, payload: { status: 'completed' } })}>Mark Completed</button>

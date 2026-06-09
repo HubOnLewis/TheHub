@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { requireAuth } from '../middleware/auth.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
-import { CreateProductionJobSchema, PatchProductionJobSchema, CreateProductionTaskSchema, PatchProductionTaskSchema } from '@mtte-core/shared';
+import { CreateProductionJobSchema, PatchProductionJobSchema, CreateProductionTaskSchema, PatchProductionTaskSchema } from '@hub-crm/shared';
 import { getDB } from '../config/db.js';
 import { productionJobService } from '../services/ProductionJobService.js';
 import { productionTaskService } from '../services/ProductionTaskService.js';

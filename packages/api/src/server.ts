@@ -4,6 +4,7 @@ import cors from 'cors';
 import { connectDB } from './config/db.js';
 import { env } from './config/env.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { requestAudit } from './middleware/requestAudit.js';
 import { registerJobs } from './jobs/index.js';
 import { UPLOADS_ROOT } from './config/paths.js';
 
@@ -23,6 +24,7 @@ import accountPlanRoutes from './routes/accountPlans.js';
 import buildRoutes from './routes/builds.js';
 import productionRoutes from './routes/production.js';
 import deliveryRoutes from './routes/delivery.js';
+import integrationsRoutes from './routes/integrations.js';
 
 const app = express();
 
@@ -30,6 +32,7 @@ const app = express();
 app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
 app.use('/api/uploads', express.static(UPLOADS_ROOT));
 app.use(express.json({ limit: '2mb' }));
+app.use(requestAudit);
 
 // ── Health check ──────────────────────────────────────────────────
 app.get('/health', (_req, res) => res.json({ status: 'ok', env: env.NODE_ENV }));
@@ -51,6 +54,7 @@ app.use('/api/account-plans', accountPlanRoutes);
 app.use('/api/builds', buildRoutes);
 app.use('/api/production', productionRoutes);
 app.use('/api/delivery', deliveryRoutes);
+app.use('/api/integrations', integrationsRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────
 app.use(errorHandler);
@@ -60,8 +64,8 @@ async function start() {
   try {
     const db = await connectDB();
     registerJobs(db);
-    app.listen(env.PORT, () => {
-      console.log(`[API] MTTE Core v2 listening on http://localhost:${env.PORT}`);
+    app.listen(env.PORT, '0.0.0.0', () => {
+      console.log(`[API] The Hub CRM listening on 0.0.0.0:${env.PORT} (CORS: ${env.CLIENT_URL})`);
     });
   } catch (err) {
     console.error('[API] Failed to start:', err);

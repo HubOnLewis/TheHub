@@ -3,7 +3,7 @@ import type { TenantContext } from '../tenancy/index.js';
 import { BuildRepository } from '../repositories/BuildRepository.js';
 import { NotFoundError, ValidationError } from '../errors/index.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateBuildPayload, PatchBuildPayload } from '@mtte-core/shared';
+import type { CreateBuildPayload, PatchBuildPayload } from '@hub-crm/shared';
 import { buildMarginService } from './BuildMarginService.js';
 import { buildChangeService } from './BuildChangeService.js';
 import { ChangeOrderRepository } from '../repositories/ChangeOrderRepository.js';

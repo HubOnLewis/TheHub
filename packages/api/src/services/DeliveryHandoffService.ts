@@ -67,19 +67,19 @@ export class DeliveryHandoffService {
 
     const reasons: string[] = [];
     if (readinessLevel === 'ready') {
-      reasons.push('Customer handoff materials are ready');
+      reasons.push('Client handoff materials are ready');
     } else {
-      if (!co) reasons.push('Delivery closeout incomplete');
-      if (!packet) reasons.push('Delivery packet is missing');
+      if (!co) reasons.push('Event closeout checklist incomplete');
+      if (!packet) reasons.push('Client packet is missing');
       else {
-        if (!packet.deliveredVersionId) reasons.push('Delivered build version not recorded on packet');
-        if (!packet.includesPhotos) reasons.push('Customer photos not marked complete on packet');
-        if (!packet.includesFinalSpecSummary) reasons.push('Final spec summary not marked complete');
-        if (!packet.includesCustomerDocs) reasons.push('Customer-facing documents not marked complete');
+        if (!packet.deliveredVersionId) reasons.push('Approved proposal version not recorded on packet');
+        if (!packet.includesPhotos) reasons.push('Client photos not marked complete on packet');
+        if (!packet.includesFinalSpecSummary) reasons.push('Final scope summary not marked complete');
+        if (!packet.includesCustomerDocs) reasons.push('Client-facing documents not marked complete');
         if (!packet.includesKeyContacts) reasons.push('Key contacts not marked complete on packet');
       }
       if (deliveredLike && packet && packet.status !== 'issued') {
-        reasons.push('Delivery occurred but packet has not been issued');
+        reasons.push('Handoff recorded but client packet has not been issued');
       }
     }
 

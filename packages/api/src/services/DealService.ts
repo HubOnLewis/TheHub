@@ -16,9 +16,9 @@ import { PostDeliveryFollowUpRepository } from '../repositories/PostDeliveryFoll
 import { CloseoutChecklistRepository } from '../repositories/CloseoutChecklistRepository.js';
 import { identityIntegrityService } from './IdentityIntegrityService.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateDealPayload, DealStatus, UnitStatus } from '@mtte-core/shared';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import type { CreateDealPayload, DealStatus, UnitStatus } from '@hub-crm/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError, ValidationError, ConflictError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
 import { dealPressureService } from './DealPressureService.js';

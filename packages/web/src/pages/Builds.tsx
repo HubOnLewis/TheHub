@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { HUB_LABELS, buildStatusForDisplay } from '@hub-crm/shared';
 import { useBuilds, useBuildMutations, useBuildVersions, useBuildChangeOrders, useBuildDiff } from '../hooks/useBuilds.js';
 import { useProductionMutations } from '../hooks/useProduction.js';
 import { EmptyState, Modal, Spinner, StatusBadge } from '../components/ui/index.js';
+import { ROUTES } from '../config/paths.js';
 
 export default function Builds() {
   const [sp, setSp] = useSearchParams();
@@ -52,22 +54,22 @@ export default function Builds() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Builds</h1>
-          <div className="page-subtitle">Structured build configurations tied to units and deals</div>
+          <h1 className="page-title">{HUB_LABELS.proposals}</h1>
+          <div className="page-subtitle">Structured scopes and economics tied to bookings and opportunities</div>
         </div>
-        <button className="btn btn-primary" onClick={() => setCreating(true)}>+ Create Build</button>
+        <button className="btn btn-primary" onClick={() => setCreating(true)}>+ Create proposal</button>
       </div>
 
       <div className="card" style={{ marginBottom: 16, padding: 16, display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12, alignItems: 'end' }}>
-        <input className="form-input" placeholder="Unit ID" value={unitId} onChange={e => setSp(prev => { if (e.target.value) prev.set('unitId', e.target.value); else prev.delete('unitId'); return prev; })} />
-        <input className="form-input" placeholder="Deal ID" value={dealId} onChange={e => setSp(prev => { if (e.target.value) prev.set('dealId', e.target.value); else prev.delete('dealId'); return prev; })} />
+        <input className="form-input" placeholder="Booking ID" value={unitId} onChange={e => setSp(prev => { if (e.target.value) prev.set('unitId', e.target.value); else prev.delete('unitId'); return prev; })} />
+        <input className="form-input" placeholder="Opportunity ID" value={dealId} onChange={e => setSp(prev => { if (e.target.value) prev.set('dealId', e.target.value); else prev.delete('dealId'); return prev; })} />
         <select className="form-select" value={status} onChange={e => setSp(prev => { if (e.target.value) prev.set('status', e.target.value); else prev.delete('status'); return prev; })}>
           <option value="">Any status</option>
-          <option value="draft">draft</option>
-          <option value="quoted">quoted</option>
-          <option value="approved">approved</option>
-          <option value="in_production">in_production</option>
-          <option value="completed">completed</option>
+          <option value="draft">{buildStatusForDisplay('draft')}</option>
+          <option value="quoted">{buildStatusForDisplay('quoted')}</option>
+          <option value="approved">{buildStatusForDisplay('approved')}</option>
+          <option value="in_production">{buildStatusForDisplay('in_production')}</option>
+          <option value="completed">{buildStatusForDisplay('completed')}</option>
         </select>
         <input className="form-input" placeholder="Search name/spec" value={q} onChange={e => setSp(prev => { if (e.target.value) prev.set('q', e.target.value); else prev.delete('q'); return prev; })} />
         <select className="form-select" value={marginRiskLevel} onChange={e => setSp(prev => { if (e.target.value) prev.set('marginRiskLevel', e.target.value); else prev.delete('marginRiskLevel'); return prev; })}>
@@ -82,24 +84,24 @@ export default function Builds() {
         <label style={{ fontSize: 12 }}><input type="checkbox" checked={hasSubstitutions === 1} onChange={e => setSp(prev => { if (e.target.checked) prev.set('hasSubstitutions', '1'); else prev.delete('hasSubstitutions'); return prev; })} /> Substitutions</label>
       </div>
 
-      {rows.length === 0 ? <EmptyState message="No builds found" sub="Create a build from a deal, company, or unit." /> : (
+      {rows.length === 0 ? <EmptyState message="No proposals found" sub="Create from an opportunity, account, or booking record." /> : (
         <div style={{ display: 'grid', gap: 18 }}>
           {Object.entries(grouped).map(([k, list]) => (
             <section key={k}>
-              <div className="list-section-title">{k.replace(/_/g, ' ')} · {(list as any[]).length}</div>
+              <div className="list-section-title">{buildStatusForDisplay(k)} · {(list as any[]).length}</div>
               <div className="card list-card">
                 {(list as any[]).length === 0 ? <div style={{ padding: 16, fontSize: 13, color: 'var(--text-secondary)' }}>None</div> : (list as any[]).map(b => (
                   <div key={b._id} className="list-row">
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                       <div style={{ flex: '1 1 240px' }}>
                         <div className="list-row__title" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                          {b.name ?? 'Unnamed build'}
-                          <StatusBadge domain="build" value={String(b.status ?? '')}>{String(b.status ?? '')}</StatusBadge>
+                          {b.name ?? `Unnamed ${HUB_LABELS.proposal.toLowerCase()}`}
+                          <StatusBadge domain="build" value={String(b.status ?? '')}>{buildStatusForDisplay(String(b.status ?? ''))}</StatusBadge>
                         </div>
                         <div className="list-row__meta">
-                          unit {b.unitId} · {b.dealId ? `deal ${b.dealId}` : 'no linked deal'}
+                          booking {b.unitId} · {b.dealId ? `opportunity ${b.dealId}` : 'no linked opportunity'}
                         </div>
-                        <div className="list-row__meta">Spec items: {(b.specItems ?? []).length} · substitutions {(b.buildBomSummary?.substitutionCount ?? 0)}</div>
+                        <div className="list-row__meta">{HUB_LABELS.requirements} lines: {(b.specItems ?? []).length} · substitutions {(b.buildBomSummary?.substitutionCount ?? 0)}</div>
                         <div className="list-row__meta">
                           Cost {Math.round(b.buildBomSummary?.estimatedCostTotal ?? 0).toLocaleString()} · Sell {Math.round(b.buildBomSummary?.estimatedSellTotal ?? 0).toLocaleString()} · Margin {Math.round(b.buildBomSummary?.estimatedGrossMargin ?? 0).toLocaleString()} ({(b.buildBomSummary?.estimatedGrossMarginPct ?? 0).toFixed(1)}%)
                         </div>
@@ -113,10 +115,10 @@ export default function Builds() {
                         </ul>
                       </div>
                       <div className="list-row__actions">
-                        <button className="btn btn-secondary" onClick={() => mutations.update.mutate({ id: b._id, payload: { status: 'in_production' } })}>Move to Production</button>
-                        <button className="btn btn-secondary" onClick={() => production.create.mutate({ buildId: b._id, unitId: b.unitId, dealId: b.dealId, assignedTeam: 'Shop Team A' })}>Handoff to Shop</button>
+                        <button className="btn btn-secondary" onClick={() => mutations.update.mutate({ id: b._id, payload: { status: 'in_production' } })}>Move to fulfillment</button>
+                        <button className="btn btn-secondary" onClick={() => production.create.mutate({ buildId: b._id, unitId: b.unitId, dealId: b.dealId, assignedTeam: 'Ops Team A' })}>Start fulfillment</button>
                         <button className="btn btn-secondary" onClick={() => { setHistoryBuildId(b._id); setFromVersionId(null); setToVersionId(null); }}>History</button>
-                        <Link className="btn btn-ghost" to={`/units?search=${encodeURIComponent(b.unitId)}`}>Open Unit</Link>
+                        <Link className="btn btn-ghost" to={`${ROUTES.bookings}?search=${encodeURIComponent(b.unitId)}`}>Open booking</Link>
                       </div>
                     </div>
                   </div>
@@ -128,7 +130,7 @@ export default function Builds() {
       )}
 
       {creating && (
-        <Modal title="Create Build" onClose={() => setCreating(false)} width={680}>
+        <Modal title="Create proposal" onClose={() => setCreating(false)} width={680}>
           <form onSubmit={async e => {
             e.preventDefault();
             await mutations.create.mutateAsync({
@@ -162,30 +164,30 @@ export default function Builds() {
           }}>
             <div className="form-grid">
               <div className="form-group">
-                <label className="form-label">Unit ID *</label>
+                <label className="form-label">Booking ID *</label>
                 <input className="form-input" required value={unitId} onChange={e => setSp(prev => { prev.set('unitId', e.target.value); return prev; })} />
               </div>
               <div className="form-group">
-                <label className="form-label">Deal ID</label>
+                <label className="form-label">Opportunity ID</label>
                 <input className="form-input" value={dealId} onChange={e => setSp(prev => { if (e.target.value) prev.set('dealId', e.target.value); else prev.delete('dealId'); return prev; })} />
               </div>
               <div className="form-group full">
-                <label className="form-label">Build Name</label>
-                <input className="form-input" value={newName} onChange={e => setNewName(e.target.value)} placeholder="Service Body Build" />
+                <label className="form-label">Proposal name</label>
+                <input className="form-input" value={newName} onChange={e => setNewName(e.target.value)} placeholder="Summit AV package" />
               </div>
               <div className="form-group full">
-                <label className="form-label">Spec Items (category|description|qty|unitCost|unitSell|partNumber|vendor)</label>
+                <label className="form-label">{HUB_LABELS.requirements} lines (category|description|qty|unitCost|unitSell|partNumber|vendor)</label>
                 <textarea className="form-textarea" rows={7} value={newSpec} onChange={e => setNewSpec(e.target.value)} placeholder="body|48 in service body|1|8000|12000|SB-48|Knapheide&#10;labor|Install & wiring|12|95|165||" />
               </div>
             </div>
             <div className="modal-footer" style={{ padding: '16px 0 0', borderTop: 'none' }}>
-              <button type="submit" className="btn btn-primary">Create Build</button>
+              <button type="submit" className="btn btn-primary">Create proposal</button>
             </div>
           </form>
         </Modal>
       )}
       {historyBuildId && (
-        <Modal title="Build History + Change Orders" onClose={() => setHistoryBuildId(null)} width={920}>
+        <Modal title="Proposal history + change requests" onClose={() => setHistoryBuildId(null)} width={920}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <div className="card" style={{ padding: 10 }}>
               <div style={{ fontWeight: 700, marginBottom: 8 }}>Versions</div>

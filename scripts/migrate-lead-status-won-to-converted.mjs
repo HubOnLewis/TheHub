@@ -23,7 +23,8 @@ const envVars = Object.fromEntries(
     .map(l => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; })
 );
 const MONGODB_URI = envVars['MONGODB_URI'];
-const DB_NAME     = envVars['DB_NAME'] ?? 'mtte_core';
+// Default aligns with new installs; legacy cloned envs should set DB_NAME explicitly to match their database name.
+const DB_NAME     = envVars['DB_NAME'] ?? 'hub_crm';
 
 if (!MONGODB_URI) {
   console.error('[migrate] MONGODB_URI not found in .env');

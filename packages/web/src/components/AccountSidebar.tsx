@@ -1,5 +1,6 @@
 // packages/web/src/components/AccountSidebar.tsx
 import type { CompanySummary } from '../hooks/useCompanies.js';
+import { dealStatusForDisplay, HUB_LABELS } from '@hub-crm/shared';
 
 const fmt = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const fmtDate = (d: string) =>
@@ -46,9 +47,9 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
             <div style={{ color: 'var(--text-light)', fontSize: 12 }}>Loading…</div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <SnapRow label="Deals" value={String(summary.dealCount)} />
+              <SnapRow label="Opportunities" value={String(summary.dealCount)} />
               <SnapRow label="Open Pipeline" value={fmt.format(summary.openPipelineTotal)} />
-              <SnapRow label="Won / Delivered" value={fmt.format(summary.wonTotal)} />
+              <SnapRow label="Won / completed" value={fmt.format(summary.wonTotal)} />
               {summary.engagementState && (
                 <>
                   <SnapRow
@@ -70,7 +71,7 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
                   {summary.accountExpansionState && <SnapRow label="Planning Priority" value={summary.accountExpansionState.planningPriority} />}
                   {summary.accountPlan && <SnapRow label="Plan Status" value={summary.accountPlan.status} />}
                   <SnapRow label="Unique Contacts (30/90)" value={`${summary.accountPenetrationState.uniqueContacts30d}/${summary.accountPenetrationState.uniqueContacts90d}`} />
-                  <SnapRow label="Open/Stalled/Critical Deals" value={`${summary.accountPenetrationState.openDeals}/${summary.accountPenetrationState.stalledDeals}/${summary.accountPenetrationState.criticalDeals}`} />
+                  <SnapRow label={`Open / stalled / critical ${HUB_LABELS.opportunities.toLowerCase()}`} value={`${summary.accountPenetrationState.openDeals}/${summary.accountPenetrationState.stalledDeals}/${summary.accountPenetrationState.criticalDeals}`} />
                 </>
               )}
               {onEditPlan && (
@@ -107,11 +108,11 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
               )}
               {!!summary.customerDeliveryContext && (
                 <div style={{ paddingTop: 8, borderTop: '1px solid var(--border)' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Customer Delivery</div>
-                  <SnapRow label="Pending post-delivery follow-ups" value={String(summary.customerDeliveryContext.pendingPostDeliveryFollowUps.length)} />
+                  <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)', marginBottom: 4 }}>Client closeout</div>
+                  <SnapRow label="Pending post-event follow-ups" value={String(summary.customerDeliveryContext.pendingPostDeliveryFollowUps.length)} />
                   {summary.customerDeliveryContext.recentDeliveredUnits.slice(0, 3).map(u => (
                     <div key={u.deliveryRecordId} style={{ fontSize: 11, marginTop: 6, color: 'var(--text-secondary)' }}>
-                      {u.unitSummary} · packet {u.packetStatus} · {u.deliveryHandoffState?.readinessLevel ?? '—'}
+                      {u.unitSummary} · client packet {u.packetStatus} · {u.deliveryHandoffState?.readinessLevel ?? '—'}
                     </div>
                   ))}
                   {!!summary.customerDeliveryContext.customerHandoffWarnings?.length && (
@@ -156,21 +157,21 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
         </div>
       </div>
 
-      {/* Deals card */}
+      {/* Opportunities */}
       <div className="card">
         <div style={{ padding: '12px 14px 10px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: 'var(--font-cond)', fontSize: 14, fontWeight: 700, letterSpacing: 0.3, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
-            Deals
+            Opportunities
           </span>
           {onNewDeal && (
             <button className="btn btn-primary" style={{ padding: '4px 10px', fontSize: 12 }} onClick={onNewDeal}>
-              + New Deal
+              + New
             </button>
           )}
         </div>
         <div>
           {deals.length === 0 ? (
-            <div style={{ padding: '14px', color: 'var(--text-light)', fontSize: 12, textAlign: 'center' }}>No deals yet</div>
+            <div style={{ padding: '14px', color: 'var(--text-light)', fontSize: 12, textAlign: 'center' }}>No opportunities yet</div>
           ) : (
             deals.map(deal => (
               <div
@@ -182,7 +183,7 @@ export default function AccountSidebar({ summary, deals, loading, onNewDeal, onE
                     {deal.title}
                   </span>
                   <span className={`badge ${DEAL_STATUS_CSS[deal.status] ?? 'badge-draft'}`}>
-                    {deal.status}
+                    {dealStatusForDisplay(deal.status)}
                   </span>
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>

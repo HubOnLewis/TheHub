@@ -1,212 +1,163 @@
-# MTTE CORE v2
+# The Hub CRM
 
-> Multi-location CRM + Operations Platform for WKI / MTTE / PacLease  
-> Built as a production-ready monorepo with tenant-aware data isolation.
-
----
-
-## Monorepo Structure
-
-```
-mtte-core/
-├── packages/
-│   ├── shared/          # Types, Zod schemas, constants, utils
-│   │   └── src/
-│   │       ├── constants/   # ENTITIES, LOCATIONS, ROLES, STATUS enums
-│   │       ├── schemas/     # Zod schemas → TypeScript types
-│   │       └── utils/       # formatCurrency, timeAgo, statusClass
-│   │
-│   ├── api/             # Express + MongoDB backend
-│   │   └── src/
-│   │       ├── config/      # env.ts (validated), db.ts (indexes)
-│   │       ├── tenancy/     # TenantContext, resolveTenant middleware
-│   │       ├── repositories/# BaseRepository + entity repos
-│   │       ├── services/    # Business logic (no Express imports)
-│   │       ├── routes/      # Thin HTTP controllers
-│   │       ├── middleware/   # auth, validate, errorHandler
-│   │       └── errors/      # AppError subclasses
-│   │
-│   └── web/             # React + TypeScript + Vite frontend
-│       └── src/
-│           ├── api/         # Typed Axios modules per entity
-│           ├── store/       # Zustand (auth + activeTenantId)
-│           ├── hooks/       # useLeads, useDeals (React Query)
-│           ├── components/  # UI primitives + layout
-│           └── pages/       # Dashboard, Leads, Deals, Customers
-│
-├── tsconfig.base.json   # Shared TS config (strict mode)
-├── render.yaml          # One-click Render deployment
-└── package.json         # npm workspaces root
-```
+> Premium, automation-first venue operating system for **HuB on Lewis** and future multi-tenant SaaS — booking lifecycle, Autopilot agent workforce, owner intelligence, and CRM workflows.  
+> Monorepo: Express + MongoDB API, React (Vite) web app, shared Zod schemas and types.
 
 ---
 
-## Multi-Tenancy Architecture
+## Monorepo layout
 
-### Tenant ID Format
 ```
-<entity_slug>-<location_slug>
-```
-Examples: `wki-wichita`, `mtte-dodge-city`, `paclease-wichita`
-
-### Scope Resolution (per request)
-```
-1. SUPER_ADMIN (env: SUPER_ADMIN_EMAILS)
-   → tenantId = null (sees everything)
-   → Can scope via X-Tenant-Override header
-
-2. management / admin role
-   → tenantId = null (sees all by default)
-   → Can scope via X-Tenant-Override header
-
-3. All other roles (sales, service, parts)
-   → tenantId = user.tenantId (hard-scoped, no override)
+packages/
+  shared/     # Types, Zod schemas, constants, ui label helpers, utils
+  api/        # Express API, repositories, services, tenant middleware
+  web/        # React UI (The Hub CRM web app)
 ```
 
-### Database enforcement
-Every query goes through `BaseRepository.scope(ctx, filter)` which merges `{ tenantId }` into the MongoDB filter. **There is no path to retrieve data without tenant scoping** — it is not a UI guard, it is enforced at the query layer.
-
-### Index strategy
-All high-cardinality indexes lead with `tenantId`:
-```js
-{ tenantId: 1, status: 1, updatedAt: -1 }   // leads
-{ tenantId: 1, assignedTo: 1, status: 1 }   // leads by rep
-{ tenantId: 1, status: 1, updatedAt: -1 }   // deals
-{ tenantId: 1, entityType: 1, entityId: 1 } // activities
-```
-
-### Frontend tenant switching
-Management users see a **TenantSwitcher** dropdown in the sidebar. Selecting a tenant:
-1. Updates `activeTenantId` in Zustand (persisted to localStorage)
-2. Axios interceptor reads this on every request
-3. Sends `X-Tenant-Override: wki-emporia` header
-4. React Query cache is keyed on `activeTenantId` so switching invalidates stale data
+Workspace packages are published internally as `@hub-crm/shared`, `@hub-crm/api`, `@hub-crm/web`.
 
 ---
 
-## Layered Architecture
+## Product constitution
 
-```
-HTTP Request
-  → Auth middleware (JWT verify)
-    → resolveTenant (TenantContext)
-      → validate middleware (Zod schema)
-        → Route handler (HTTP only)
-          → Service (business logic)
-            → Repository (DB + tenant scope)
-              → MongoDB
-```
-
-**Rules:**
-- Routes call Services. Never repositories directly.
-- Services call Repositories. Never `getDB()` directly.
-- Repositories call `getDB()`. Nowhere else does.
-- Services throw `AppError` subclasses. Never raw `Error`.
-- `asyncHandler()` wraps all routes — no try/catch in route files.
+See **`docs/HUB_CRM_MASTER_CONSTITUTION.md`** — governing intent for venue realism, automation visibility, agentic AI, and screenshot-grade UX.
 
 ---
 
-## Setup
+## Tenancy
 
-### 1. Install
+Tenant IDs use `{entity}-{location}` in kebab-case. For **HuB on Lewis** operator / demo installs the canonical example is **`hub-wichita`**.
+
+Scoped roles and `X-Tenant-Override`: see `packages/api/src/tenancy/index.ts`.
+
+### Database name (`DB_NAME`)
+
+- **New installs** should use `hub_crm` with a `MONGODB_URI` whose path targets that database.
+- **Older cloned databases** may use a different name — keep **`DB_NAME`** and the URI segment **aligned** or the API will connect to an empty database (looks like “no data”).
+- Application code does **not** hardcode production database names; configuration lives in env only.
+
+### Feature flags (web)
+
+Legacy-adapted screens (bookings, fulfillment, closeout, proposals) use `VITE_FEATURE_*` (see `.env.example`). When unset, **Vite dev** defaults these **on** for local work; **production builds** default them **off** unless set to `true` in the host environment.
+
+### Session storage
+
+The SPA may read a legacy auth storage key once to migrate tokens to Hub-branded keys — intentional for upgrades after rebrand.
+
+---
+
+## Local setup — starting The Hub CRM
+
 ```bash
-git clone <repo>
-cd mtte-core
-npm install          # installs all workspaces
-```
-
-### 2. Configure
-```bash
+npm install
 cp .env.example .env
-# Fill in: MONGODB_URI, JWT_SECRET (min 32 chars)
+# Edit .env: MONGODB_URI, JWT_SECRET (≥32 chars), DB_NAME aligned with URI
 ```
 
-### 3. Seed database
+### Run API + web (native)
+
+**API** listens on **http://localhost:3001**.  
+**Web app** (The Hub CRM UI) listens on **http://localhost:5173**.
+
 ```bash
-npm run seed
-# Seeds 9 users across 4 locations × 3 entities
-# Seeds 17 leads spread across all tenants
+npm run dev:api    # API → http://localhost:3001
+npm run dev:web    # The Hub CRM web app → http://localhost:5173
 ```
 
-### 4. Run
+### Screenshot mode (no API or Mongo required)
+
+Local-only: set the env var when starting Vite (PowerShell: `$env:VITE_SCREENSHOT_MODE="true"; npm run dev:web`).
+
+Screenshot mode:
+
+`VITE_SCREENSHOT_MODE=true`
+
+`npm run dev:web`
+
+(no API or Mongo required)
+
+### Seed local demo admin (optional)
+
+Creates the first `super_admin` for development — **local/dev only**, not production secrets:
+
 ```bash
-npm run dev          # starts API (:3001) + web (:5173) concurrently
-npm run dev:api      # API only
-npm run dev:web      # web only
+node scripts/seed-admin.mjs
 ```
 
-### 5. Deploy to Render
+Defaults are defined in `scripts/seed-admin.mjs` and can be overridden with **`SEED_ADMIN_*`** variables in `.env` (see `.env.example`). **Do not commit real passwords.**
+
+### Default local demo login (after seed only)
+
+If you seeded with the script defaults and have not overridden `SEED_ADMIN_*`:
+
+| Field | Value |
+|--------|--------|
+| Email | `admin@hubonlewis.com` |
+| Password | `HubAdmin123!` |
+
+Change the password after first login on any shared machine.
+
+### Docker (MongoDB + API + web)
+
 ```bash
-# Push to GitHub, connect repo in Render dashboard
-# Select "Use render.yaml" — both services configure automatically
-# Set MONGODB_URI in the API service environment variables
+docker-compose up
 ```
 
----
+Same URLs: API **3001**, web **5173**.
 
-## Test Credentials
+### Login troubleshooting
 
-| Email                  | Password    | Role       | Tenant             |
-|------------------------|-------------|------------|--------------------|
-| mike@wki.com           | mtte2025!   | management | wki-wichita        |
-| joey@mtte.com          | mtte2025!   | sales      | mtte-wichita       |
-| august@mtte.com        | mtte2025!   | management | mtte-wichita       |
-| dana@wki-emp.com       | mtte2025!   | sales      | wki-emporia        |
-| ray@wki-dc.com         | mtte2025!   | sales      | wki-dodge-city     |
-| pam@wki-lib.com        | mtte2025!   | sales      | wki-liberal        |
-| greg@paclease.com      | mtte2025!   | sales      | paclease-wichita   |
-
-> **Test tenant isolation**: Log in as `joey@mtte.com` — only sees MTTE Wichita leads.  
-> Log in as `mike@wki.com` — can switch to any location via the sidebar switcher.
+| Symptom | What to check |
+|--------|----------------|
+| **Invalid credentials** | Run `node scripts/seed-admin.mjs` again — it **updates** the password for `admin@hubonlewis.com` if that user already exists. Ensure `.env` **`SUPER_ADMIN_EMAILS`** includes `admin@hubonlewis.com`. |
+| **Network / cannot reach API** | Start **`npm run dev:api`**. MongoDB must match **`MONGODB_URI`** / **`DB_NAME`**. |
+| **Wrong URL** | If you set **`VITE_API_URL`**, use **`http://localhost:3001/api`** (with `/api`). Or omit `VITE_API_URL` and rely on the dev proxy. The web client auto-appends `/api` when you only pass the host. |
 
 ---
 
-## Adding a New Module
+## Deploy (Render)
 
-1. **Schema** → `packages/shared/src/schemas/index.ts`  
-   Add `CreateXSchema`, `XSchema`, derive `CreateXPayload`, `X` types.
+**Runbook:** [`docs/HUB_RENDER_DEPLOY_RUNBOOK.md`](docs/HUB_RENDER_DEPLOY_RUNBOOK.md)
 
-2. **Repository** → `packages/api/src/repositories/XRepository.ts`  
-   Extend `BaseRepository<XDoc>`. Add custom query methods.
+The Blueprint (`render.yaml`) auto-wires JWT, CORS, and API URLs from service names. On first apply you only paste **two** secrets from `render.secrets.template`:
 
-3. **Service** → `packages/api/src/services/XService.ts`  
-   Inject repository. Write business logic. Throw `AppError` subclasses.
+- `MONGODB_URI` (MongoDB Atlas)
+- `SEED_ADMIN_PASSWORD` (first-login password for `jason@hubonlewis.com`)
 
-4. **Route** → `packages/api/src/routes/x.ts`  
-   Register `requireAuth`, `resolveTenant`. Use `validate()` + `asyncHandler()`.
+```bash
+npm run verify:deploy          # typecheck + production build
+npm run smoke:production       # after live deploy (optional)
+```
 
-5. **Register** → `packages/api/src/server.ts`  
-   `app.use('/api/x', xRoutes);`
-
-6. **Hook** → `packages/web/src/hooks/useX.ts`  
-   Query key factory + `useQuery`/`useMutation` wrappers.
-
-7. **Page** → `packages/web/src/pages/X.tsx`  
-   Use the hook. No direct API calls from pages.
+Default URLs: `https://the-hub-crm-web.onrender.com` (web), `https://the-hub-crm-api.onrender.com` (API).
 
 ---
 
-## Future Integrations
+## Import scripts (optional)
 
-| System       | Hook Point                              | Status     |
-|--------------|-----------------------------------------|------------|
-| Karmak Fusion| `karmakId` / `karmakJobId` fields       | Stub ready |
-| Decisiv      | `decisivCaseId` on deals               | Stub ready |
-| Email ingest | `POST /api/ingest/email`               | Planned    |
-| Excel import | `POST /api/import/leads`               | Planned    |
-| Webhooks     | `POST /api/webhooks/decisiv`           | Planned    |
+Node scripts under `scripts/` support bulk import from CSV/Excel for migration projects. Internal `source` fields may store historical values for deduplication — not user-facing branding.
 
 ---
 
-## Naming Conventions
+## Navigation (web)
 
-| Thing            | Convention                        | Example               |
-|------------------|-----------------------------------|-----------------------|
-| Tenant IDs       | `{entity}-{location}` kebab       | `wki-dodge-city`      |
-| Lead numbers     | `L-{ENTITY}-{YEAR}-{SEQ:4}`       | `L-WKI-2025-0047`     |
-| Deal numbers     | `{YY}W{SEQ:7}`                    | `25W0001234`          |
-| Stock numbers    | `{ENTITY}-{YEAR}-{SEQ:3}`         | `WKI-2025-041`        |
-| Collection names | `snake_case` plural               | `leads`, `activities` |
-| Services         | `PascalCase` + `Service` suffix   | `LeadService`         |
-| Repositories     | `PascalCase` + `Repository` suffix| `LeadRepository`      |
-| Query keys       | kebab segments in arrays          | `['leads','detail',id]`|
+Primary nav emphasizes Hub CRM workflows. Legacy fulfillment modules (`/builds`, `/production`, `/delivery`, `/units`) remain routable when feature flags allow but may be omitted from the main menu.
+
+---
+
+## Conventions
+
+- Routes and collections may use internal names (`deals`, `companies`, `units`, `builds`) for API compatibility; UI copy uses **accounts**, **opportunities**, **bookings**, **proposals**, **fulfillment**, and **closeout** where appropriate.
+- Pipeline stage *values* in the database remain existing strings; `dealStatusForDisplay()` maps them to Hub-friendly labels in the UI.
+
+---
+
+## Venue imagery (web)
+
+Place final photography under **`packages/web/public/venue/hub-on-lewis/`** (see **`packages/web/public/venue/hub-on-lewis/README.md`**). Settings → Venue profile and proposal previews reference these paths once files exist.
+
+---
+
+## Internal migration notes
+
+Technical notes for upgrades from older forks: **`docs/hub-crm-migration-notes.md`**.

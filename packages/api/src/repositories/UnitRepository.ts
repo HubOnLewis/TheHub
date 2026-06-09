@@ -2,7 +2,7 @@
 import type { Db, Document } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { UnitStatus } from '@mtte-core/shared';
+import type { UnitStatus } from '@hub-crm/shared';
 
 export interface UnitDoc extends Document {
   tenantId:    string;

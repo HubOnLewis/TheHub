@@ -4,7 +4,7 @@ import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
 import { getDB } from '../config/db.js';
 import { accountPlanService } from '../services/AccountPlanService.js';
-import { CreateAccountPlanSchema, PatchAccountPlanSchema } from '@mtte-core/shared';
+import { CreateAccountPlanSchema, PatchAccountPlanSchema } from '@hub-crm/shared';
 
 const router = Router();
 router.use(requireAuth, requireRole('super_admin', 'admin', 'management', 'sales'), resolveTenant);

@@ -1,0 +1,495 @@
+/* Client review mode — light-first polish, footer theme, review notes, user mgmt */
+
+/* ── Footer theme toggle ── */
+.sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-user {
+  margin-bottom: 4px;
+}
+
+.sidebar-user__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.sidebar-user__email {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.theme-footer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.theme-footer-toggle:hover {
+  background: var(--surface);
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.theme-footer-toggle[aria-pressed='true'] {
+  border-color: rgba(139, 92, 246, 0.35);
+  background: rgba(139, 92, 246, 0.08);
+}
+
+.theme-footer-toggle__icon {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.app-shell.sidebar-collapsed .theme-footer-toggle {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* ── Client review banner ── */
+.client-review-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 8px 14px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08), transparent);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.client-review-banner--full {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+}
+
+.client-review-banner--full p {
+  margin: 6px 0 0;
+  line-height: 1.5;
+  max-width: 720px;
+}
+
+.client-review-banner__tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+[data-theme='light'] .client-review-banner {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.06), #f8fafc);
+  border-color: #bfdbfe;
+}
+
+[data-theme='light'] .client-review-banner__tag {
+  color: #1d4ed8;
+}
+
+/* ── Light theme depth (priority demo pages) ── */
+[data-theme='light'] .page-content {
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -10%, rgba(200, 16, 46, 0.04), transparent 55%),
+    radial-gradient(ellipse 80% 50% at 0% 20%, rgba(37, 99, 235, 0.03), transparent 50%),
+    #eef1f6;
+}
+
+[data-theme='light'] .kpi-live-card,
+[data-theme='light'] .exec-kpi-card {
+  background: linear-gradient(165deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.06);
+  border-color: #e2e8f0;
+}
+
+[data-theme='light'] .kpi-live-card:hover {
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.1);
+}
+
+[data-theme='light'] .exec-dash__hero,
+[data-theme='light'] .briefing-deck__masthead,
+[data-theme='light'] .autopilot-hero,
+[data-theme='light'] .flagship-hero {
+  background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+  border-color: #cbd5e1;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08), inset 0 1px 0 #fff;
+}
+
+[data-theme='light'] .exec-panel,
+[data-theme='light'] .hub-widget,
+[data-theme='light'] .exec-analytic-card,
+[data-theme='light'] .pipeline-card,
+[data-theme='light'] .dashboard-autopilot-widget,
+[data-theme='light'] .autopilot-impact-card,
+[data-theme='light'] .autopilot-agent-card,
+[data-theme='light'] .autopilot-panel {
+  background: #ffffff;
+  border-color: #e2e8f0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 6px 20px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme='light'] .briefing-focus-elevated {
+  background: linear-gradient(160deg, #fff5f7 0%, #ffffff 55%);
+  border-color: rgba(200, 16, 46, 0.2);
+}
+
+[data-theme='light'] .briefing-snapshot {
+  background: #fff;
+}
+
+[data-theme='light'] .exec-intel-card {
+  background: #fff;
+}
+
+[data-theme='light'] .topbar {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme='light'] .topbar-pill {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+}
+
+[data-theme='light'] .sidebar {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 2px 0 16px rgba(15, 23, 42, 0.04);
+}
+
+[data-theme='light'] .nav-link.active {
+  background: linear-gradient(90deg, rgba(200, 16, 46, 0.08) 0%, transparent 100%);
+  border-color: rgba(200, 16, 46, 0.2);
+  box-shadow: inset 3px 0 0 var(--red);
+}
+
+[data-theme='light'] .nav-link:hover {
+  background: #f1f5f9;
+}
+
+[data-theme='light'] .exec-page__glow {
+  opacity: 0.45;
+}
+
+[data-theme='light'] .exec-focus-card {
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme='light'] .card {
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+/* ── User management ── */
+.um-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.um-toolbar__hint {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+.um-table-wrap {
+  overflow-x: auto;
+  padding: 0;
+}
+
+.um-table td,
+.um-table th {
+  vertical-align: top;
+  font-size: 13px;
+}
+
+.um-perms {
+  max-width: 220px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.um-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+.um-status {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.um-status--active {
+  background: var(--green-muted);
+  color: var(--green);
+}
+
+.um-status--invited {
+  background: var(--blue-muted);
+  color: var(--blue);
+}
+
+.um-status--disabled {
+  background: var(--red-muted);
+  color: var(--red);
+}
+
+[data-theme='light'] .um-status--active {
+  color: #15803d;
+}
+
+.um-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-lg);
+  font-size: 13px;
+  max-width: 360px;
+}
+
+/* ── Review notes ── */
+.review-notes-intro {
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.review-notes-toolbar {
+  margin-bottom: 16px;
+}
+
+.review-notes-form {
+  padding: 20px 22px;
+  margin-bottom: 22px;
+}
+
+.review-notes-form__title {
+  font-family: var(--font-cond);
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 14px;
+}
+
+.review-notes-form__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.review-notes-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.review-notes-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .review-notes-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .review-notes-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+.review-notes-column {
+  padding: 0;
+  overflow: hidden;
+}
+
+.review-notes-column__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.review-notes-column__head h3 {
+  font-family: var(--font-cond);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.review-notes-list {
+  list-style: none;
+  margin: 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 80px;
+}
+
+.review-notes-empty {
+  font-size: 12px;
+  color: var(--text-light);
+  padding: 8px;
+}
+
+.review-note-card {
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 13px;
+}
+
+[data-theme='light'] .review-note-card {
+  background: #f8fafc;
+}
+
+.review-note-card--high {
+  border-left: 3px solid var(--red);
+}
+
+.review-note-card--medium {
+  border-left: 3px solid var(--amber);
+}
+
+.review-note-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.review-note-card__comment {
+  margin: 8px 0;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  font-size: 12px;
+}
+
+.review-note-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.review-note-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.review-note-pri {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.review-note-pri--high {
+  color: var(--red);
+}
+
+.review-note-pri--medium {
+  color: var(--amber);
+}
+
+.review-note-pri--low {
+  color: var(--text-light);
+}
+
+.user-mgmt-page--embedded .um-toolbar,
+.review-notes-page--embedded .review-notes-toolbar {
+  margin-top: 8px;
+}
+
+/* Demo controls (Settings → Demo controls) */
+.demo-controls__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+.demo-controls__card h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+.demo-controls__card--warn {
+  border-color: var(--amber);
+}
+.demo-controls__toast {
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  background: var(--green-muted);
+  color: var(--green);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+}
+.demo-controls__console { margin-top: 20px; }
+.demo-controls__pre {
+  margin: 0;
+  padding: 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+[data-theme='light'] .demo-controls__card {
+  box-shadow: var(--shadow-sm);
+}

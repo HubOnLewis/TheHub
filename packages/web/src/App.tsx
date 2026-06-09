@@ -1,7 +1,10 @@
-import { useLayoutEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, NavLink } from 'react-router-dom';
+import { useLayoutEffect, useState, type ReactNode } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from './store/index.js';
 import { NavIcons } from './components/NavIcons.js';
+import { HUB_LABELS } from '@hub-crm/shared';
+import { ROUTES, CLIENT_SIMPLE_PATHS } from './config/paths.js';
+import LegacyModuleGate from './components/LegacyModuleGate.js';
 import Login         from './pages/Login.js';
 import Dashboard     from './pages/Dashboard.js';
 import Leads         from './pages/Leads.js';
@@ -11,6 +14,7 @@ import Admin         from './pages/Admin.js';
 import Companies     from './pages/Companies.js';
 import CompanyDetail from './pages/CompanyDetail.js';
 import MyWork        from './pages/MyWork.js';
+import FollowUps     from './pages/FollowUps.js';
 import PipelinePressure from './pages/PipelinePressure.js';
 import ForecastReview from './pages/ForecastReview.js';
 import RepScorecards from './pages/RepScorecards.js';
@@ -20,39 +24,161 @@ import AccountExpansion from './pages/AccountExpansion.js';
 import Builds from './pages/Builds.js';
 import Production from './pages/Production.js';
 import Delivery from './pages/Delivery.js';
+import TasksCenter from './pages/TasksCenter.js';
+import CalendarOccupancy from './pages/CalendarOccupancy.js';
+import DealDetail from './pages/DealDetail.js';
+import InboxPage from './pages/InboxPage.js';
+import SettingsLayout, { SettingsIndexRedirect } from './pages/settings/SettingsLayout.js';
+import SettingsModulePage from './pages/settings/SettingsModulePage.js';
+import AutopilotPage from './pages/AutopilotPage.js';
+import OwnerBriefing from './pages/OwnerBriefing.js';
+import TodayOperations from './pages/TodayOperations.js';
+import RevenueLeaks from './pages/RevenueLeaks.js';
+import AutomationImpact from './pages/AutomationImpact.js';
+import { isScreenshotMode } from './config/screenshotMode.js';
+import { getScreenshotDemoUser, SCREENSHOT_DEMO_TOKEN } from './config/screenshotSession.js';
+import TopbarStatus from './components/TopbarStatus.js';
+import ThemeFooterToggle from './components/ThemeFooterToggle.js';
+import DemoOpsInit from './components/demo/DemoOpsInit.js';
+import OperationalRail from './components/demo/OperationalRail.js';
+import DemoToastStack from './components/demo/DemoToastStack.js';
+import UserManagement from './pages/UserManagement.js';
+import ReviewNotes from './pages/ReviewNotes.js';
+import AuditTrail from './pages/AuditTrail.js';
+import BrandLogo from './components/BrandLogo.js';
+import { BRAND } from './branding/tokens.js';
+import PortalRoutes from './portal/PortalRoutes.js';
+import PrivacyPage from './pages/legal/PrivacyPage.js';
+import TermsPage from './pages/legal/TermsPage.js';
+import ReferralRedirect from './pages/ReferralRedirect.js';
+import ProspectsPage from './pages/ProspectsPage.js';
+import MarketingPage from './pages/MarketingPage.js';
+import ReferralsPage from './pages/ReferralsPage.js';
+import MonthlyScorecardPage from './pages/MonthlyScorecardPage.js';
+import AnalyticsRouteTracker from './components/AnalyticsRouteTracker.js';
+import LegalFooterLinks from './components/LegalFooterLinks.js';
+import ClientReviewBanner from './components/ClientReviewBanner.js';
 
-const NAV = [
-  { to: '/dashboard', label: 'Dashboard', icon: NavIcons.dashboard },
-  { to: '/leads', label: 'Leads', icon: NavIcons.leads },
-  { to: '/deals', label: 'Deals', icon: NavIcons.deals },
-  { to: '/units', label: 'Units', icon: NavIcons.units },
-  { to: '/builds', label: 'Builds', icon: NavIcons.builds },
-  { to: '/production', label: 'Production', icon: NavIcons.production },
-  { to: '/delivery', label: 'Delivery', icon: NavIcons.delivery },
-  { to: '/companies', label: 'Companies', icon: NavIcons.companies },
-  { to: '/my-work', label: 'My Work', icon: NavIcons.work },
-  { to: '/pipeline-pressure', label: 'Pipeline Pressure', icon: NavIcons.pressure },
-  { to: '/forecast-review', label: 'Forecast Review', icon: NavIcons.forecast },
-  { to: '/rep-scorecards', label: 'Rep Scorecards', icon: NavIcons.scorecards },
-  { to: '/weekly-cadence', label: 'Weekly Cadence', icon: NavIcons.cadence },
-  { to: '/account-coverage', label: 'Account Coverage', icon: NavIcons.coverage },
-  { to: '/account-expansion', label: 'Account Expansion', icon: NavIcons.expansion },
-] as const;
+type NavItem = { to: string; label: string; icon: ReactNode; aliasPrefixes?: string[]; matchPrefix?: string };
+
+/** Client-demo primary navigation */
+const NAV_MAIN: NavItem[] = [
+  { to: ROUTES.dashboard, label: 'Dashboard', icon: NavIcons.dashboard },
+  { to: ROUTES.leads, label: 'Leads & Prospects', icon: NavIcons.leads, aliasPrefixes: [ROUTES.prospects] },
+  { to: ROUTES.opportunities, label: 'Events', icon: NavIcons.deals, aliasPrefixes: [ROUTES.dealsAlias] },
+  { to: ROUTES.marketing, label: 'Marketing', icon: NavIcons.forecast, aliasPrefixes: [ROUTES.marketingBlasts] },
+  { to: ROUTES.referrals, label: 'Referrals', icon: NavIcons.followups },
+  { to: ROUTES.monthlyScorecard, label: 'Monthly Scorecard', icon: NavIcons.scorecards },
+];
+
+/** Admin / internal tools — collapsed under “More” */
+const NAV_INTERNAL: NavItem[] = [
+  { to: ROUTES.today, label: 'Today', icon: NavIcons.today },
+  { to: ROUTES.inbox, label: 'Inbox', icon: NavIcons.inbox },
+  { to: ROUTES.calendar, label: 'Calendar', icon: NavIcons.calendar },
+  { to: ROUTES.accounts, label: HUB_LABELS.accounts, icon: NavIcons.companies, aliasPrefixes: [ROUTES.companiesAlias] },
+  { to: ROUTES.followUps, label: HUB_LABELS.followUps, icon: NavIcons.followups },
+  { to: ROUTES.autopilot, label: 'Autopilot', icon: NavIcons.autopilot },
+  { to: ROUTES.tasks, label: 'Tasks', icon: NavIcons.tasks },
+  { to: ROUTES.audit, label: 'Audit trail', icon: NavIcons.audit },
+];
+
+const NAV_SETTINGS: NavItem = { to: ROUTES.settings, label: 'Settings', icon: NavIcons.settings, matchPrefix: ROUTES.settings };
+
+function isSimpleClientPath(pathname: string): boolean {
+  return CLIENT_SIMPLE_PATHS.some(
+    p => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
+
+function navLinkClass(to: string, aliasPrefixes: string[] | undefined, pathname: string, matchPrefix?: string): string {
+  if (matchPrefix) {
+    const active = pathname === matchPrefix || pathname.startsWith(`${matchPrefix}/`);
+    return `nav-link${active ? ' active' : ''}`;
+  }
+  const bases = [to, ...(aliasPrefixes ?? [])];
+  const active = bases.some(base => pathname === base || pathname.startsWith(`${base}/`));
+  return `nav-link${active ? ' active' : ''}`;
+}
+
+function NavLinks({
+  items,
+  pathname,
+  collapsed,
+}: {
+  items: NavItem[];
+  pathname: string;
+  collapsed: boolean;
+}) {
+  return items.map(l => (
+    <NavLink
+      key={l.to}
+      to={l.to}
+      className={() => navLinkClass(l.to, l.aliasPrefixes, pathname, l.matchPrefix)}
+      title={collapsed ? l.label : undefined}
+    >
+      <span className="nav-icon">{l.icon}</span>
+      <span className="nav-label">{l.label}</span>
+    </NavLink>
+  ));
+}
 
 function Shell() {
-  const { user, logout, theme: themeRaw, setTheme, sidebarCollapsed, setSidebarCollapsed } = useAppStore();
+  const { pathname } = useLocation();
+  const { user, logout, theme: themeRaw, sidebarCollapsed, setSidebarCollapsed } = useAppStore();
   const theme = themeRaw === 'light' ? 'light' : 'dark';
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const isDashboard = pathname === ROUTES.dashboard || pathname === `${ROUTES.dashboard}/`;
 
   useLayoutEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
 
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+
+  // More tools: admin-only, collapsed by default — opens only when user clicks or is on an internal route
+  useLayoutEffect(() => {
+    const onInternal = NAV_INTERNAL.some(l =>
+      navLinkClass(l.to, l.aliasPrefixes, pathname, l.matchPrefix).includes('active'),
+    );
+    if (onInternal) setMoreOpen(true);
+  }, [pathname]);
+
+  useLayoutEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
   return (
-    <div className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
-      <nav className="sidebar" aria-label="Main navigation">
+    <div
+      className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}${mobileNavOpen ? ' mobile-nav-open' : ''}${isDashboard ? ' app-shell--dashboard' : ''}`}
+    >
+      {mobileNavOpen ? (
+        <button
+          type="button"
+          className="sidebar-backdrop"
+          aria-label="Close navigation"
+          onClick={() => setMobileNavOpen(false)}
+        />
+      ) : null}
+      <nav className="sidebar sidebar--premium" aria-label="Main navigation">
         <div className="sidebar-logo">
-          <h1>MTTE</h1>
-          {!sidebarCollapsed && <p>{user?.entity} · {user?.location}</p>}
+          <div className="sidebar-brand-block">
+            <div className="sidebar-brand-block__frame">
+              <BrandLogo
+                size={sidebarCollapsed ? 'md' : 'hero'}
+                className="sidebar-brand-block__logo"
+              />
+            </div>
+            {!sidebarCollapsed && (
+              <div className="sidebar-brand-block__copy">
+                <p className="sidebar-brand-block__os">{BRAND.productSubtitle}</p>
+                <p className="sidebar-brand-block__venue">
+                  {BRAND.venueName} · {BRAND.venueLocation}
+                </p>
+              </div>
+            )}
+          </div>
         </div>
         <button
           type="button"
@@ -63,30 +189,55 @@ function Shell() {
           {sidebarCollapsed ? '»' : '«'} {!sidebarCollapsed && 'Menu'}
         </button>
         <div className="sidebar-nav">
-          {NAV.map(l => (
+          {!sidebarCollapsed && <span className="nav-section-label">Main</span>}
+          <NavLinks items={NAV_MAIN} pathname={pathname} collapsed={sidebarCollapsed} />
+          {isAdmin && !sidebarCollapsed && (
+            <>
+              <button
+                type="button"
+                className="sidebar-more-toggle"
+                onClick={() => setMoreOpen(v => !v)}
+                aria-expanded={moreOpen}
+              >
+                <span className="nav-icon">⋯</span>
+                <span className="nav-label">More tools</span>
+              </button>
+              {moreOpen ? (
+                <div className="sidebar-more-panel">
+                  <NavLinks items={NAV_INTERNAL} pathname={pathname} collapsed={false} />
+                </div>
+              ) : null}
+            </>
+          )}
+          {!sidebarCollapsed && <span className="nav-section-label">Admin</span>}
+          <NavLink
+            to={NAV_SETTINGS.to}
+            className={() => navLinkClass(NAV_SETTINGS.to, NAV_SETTINGS.aliasPrefixes, pathname, NAV_SETTINGS.matchPrefix)}
+            title={sidebarCollapsed ? NAV_SETTINGS.label : undefined}
+          >
+            <span className="nav-icon">{NAV_SETTINGS.icon}</span>
+            <span className="nav-label">{NAV_SETTINGS.label}</span>
+          </NavLink>
+          {isAdmin && (
             <NavLink
-              key={l.to}
-              to={l.to}
-              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-              title={sidebarCollapsed ? l.label : undefined}
-            >
-              <span className="nav-icon">{l.icon}</span>
-              <span className="nav-label">{l.label}</span>
-            </NavLink>
-          ))}
-          {(user?.role === 'admin' || user?.role === 'super_admin') && (
-            <NavLink
-              to="/admin"
-              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-              title={sidebarCollapsed ? 'Admin' : undefined}
+              to={ROUTES.admin}
+              className={() => navLinkClass(ROUTES.admin, undefined, pathname)}
+              title={sidebarCollapsed ? HUB_LABELS.adminWorkspace : undefined}
             >
               <span className="nav-icon">{NavIcons.admin}</span>
-              <span className="nav-label">Admin</span>
+              <span className="nav-label">{HUB_LABELS.adminWorkspace}</span>
             </NavLink>
           )}
         </div>
         <div className="sidebar-footer">
-          {!sidebarCollapsed && <div style={{ fontSize: 12, color: 'var(--text-light)', marginBottom: 8 }}>{user?.name}</div>}
+          {!sidebarCollapsed && (
+            <div className="sidebar-user">
+              <div className="sidebar-user__name">{user?.name}</div>
+              <div className="sidebar-user__email">{user?.email}</div>
+            </div>
+          )}
+          {!sidebarCollapsed && <LegalFooterLinks className="sidebar-legal-links" showContact={false} />}
+          <ThemeFooterToggle collapsed={sidebarCollapsed} />
           <button
             type="button"
             className="btn btn-ghost"
@@ -99,42 +250,75 @@ function Shell() {
         </div>
       </nav>
       <div className="main-area">
-        <header className="topbar">
-          <span style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, color: 'var(--text-secondary)', fontSize: 12, letterSpacing: '0.12em' }}>
-            {user?.role?.replace(/_/g, ' ').toUpperCase()}
-          </span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ fontSize: 12, color: 'var(--text-light)' }}>{user?.tenantId}</span>
-            <button
-              type="button"
-              className="theme-toggle"
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
-              {theme === 'dark' ? 'Light mode' : 'Dark mode'}
-            </button>
+        <header className={`topbar${isDashboard ? ' topbar--slim' : ''}`}>
+          <button
+            type="button"
+            className="topbar-menu-btn"
+            aria-label="Open navigation"
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen(v => !v)}
+          >
+            ☰
+          </button>
+          <TopbarStatus slim={isDashboard} />
+          <div className="topbar-actions">
+            <span className="topbar-role">{user?.role?.replace(/_/g, ' ')}</span>
           </div>
         </header>
-        <main className="page-content">
+        <ClientReviewBanner />
+        <main className={`page-content${isDashboard ? ' page-content--dashboard' : ''}`}>
+          <DemoOpsInit />
+          {!isDashboard && !isSimpleClientPath(pathname) && <OperationalRail />}
+          <DemoToastStack />
           <Routes>
-            <Route path="/dashboard"       element={<Dashboard />} />
-            <Route path="/leads"           element={<Leads />} />
-            <Route path="/deals"           element={<Deals />} />
-            <Route path="/units"           element={<Units />} />
-            <Route path="/builds"          element={<Builds />} />
-            <Route path="/production"      element={<Production />} />
-            <Route path="/delivery"        element={<Delivery />} />
-            <Route path="/admin"           element={<Admin />} />
-            <Route path="/companies"       element={<Companies />} />
-            <Route path="/companies/:id"   element={<CompanyDetail />} />
-            <Route path="/my-work"         element={<MyWork />} />
-            <Route path="/pipeline-pressure" element={<PipelinePressure />} />
-            <Route path="/forecast-review" element={<ForecastReview />} />
-            <Route path="/rep-scorecards" element={<RepScorecards />} />
-            <Route path="/weekly-cadence" element={<WeeklyCadence />} />
-            <Route path="/account-coverage" element={<AccountCoverage />} />
-            <Route path="/account-expansion" element={<AccountExpansion />} />
-            <Route path="*"               element={<Navigate to="/dashboard" replace />} />
+            <Route path={ROUTES.dashboard} element={<Dashboard />} />
+            <Route path={ROUTES.today} element={<TodayOperations />} />
+            <Route path={ROUTES.ownerBriefing} element={<OwnerBriefing />} />
+            <Route path={ROUTES.revenueLeaks} element={<RevenueLeaks />} />
+            <Route path={ROUTES.automationImpact} element={<AutomationImpact />} />
+            <Route path={ROUTES.autopilot} element={<AutopilotPage />} />
+            <Route path={ROUTES.inbox} element={<InboxPage />} />
+            <Route path={ROUTES.calendar} element={<CalendarOccupancy />} />
+            <Route path={ROUTES.tasks} element={<TasksCenter />} />
+            <Route path={ROUTES.settings} element={<SettingsLayout />}>
+              <Route index element={<SettingsIndexRedirect />} />
+              <Route path=":moduleId" element={<SettingsModulePage />} />
+            </Route>
+            <Route path={ROUTES.leads} element={<Leads />} />
+            <Route path={`${ROUTES.opportunities}/:dealId`} element={<DealDetail />} />
+            <Route path={`${ROUTES.dealsAlias}/:dealId`} element={<DealDetail />} />
+            <Route path={ROUTES.dealsAlias} element={<Deals />} />
+            <Route path={ROUTES.opportunities} element={<Deals />} />
+            <Route path={ROUTES.bookingsLegacy} element={<LegacyModuleGate module="bookings"><Units /></LegacyModuleGate>} />
+            <Route path={ROUTES.bookings} element={<LegacyModuleGate module="bookings"><Units /></LegacyModuleGate>} />
+            <Route path={ROUTES.proposalsLegacy} element={<LegacyModuleGate module="builds"><Builds /></LegacyModuleGate>} />
+            <Route path={ROUTES.proposals} element={<LegacyModuleGate module="builds"><Builds /></LegacyModuleGate>} />
+            <Route path={ROUTES.fulfillmentLegacy} element={<LegacyModuleGate module="fulfillment"><Production /></LegacyModuleGate>} />
+            <Route path={ROUTES.fulfillment} element={<LegacyModuleGate module="fulfillment"><Production /></LegacyModuleGate>} />
+            <Route path={ROUTES.closeoutLegacy} element={<LegacyModuleGate module="closeout"><Delivery /></LegacyModuleGate>} />
+            <Route path={ROUTES.closeout} element={<LegacyModuleGate module="closeout"><Delivery /></LegacyModuleGate>} />
+            <Route path={ROUTES.userManagement} element={<UserManagement />} />
+            <Route path={ROUTES.reviewNotes} element={<ReviewNotes />} />
+            <Route path={ROUTES.audit} element={<AuditTrail />} />
+            <Route path={ROUTES.admin} element={<Admin />} />
+            <Route path={ROUTES.accounts} element={<Companies />} />
+            <Route path={ROUTES.companiesAlias} element={<Companies />} />
+            <Route path={`${ROUTES.accounts}/:id`} element={<CompanyDetail />} />
+            <Route path={`${ROUTES.companiesAlias}/:id`} element={<CompanyDetail />} />
+            <Route path={ROUTES.myWork} element={<MyWork />} />
+            <Route path={ROUTES.followUps} element={<FollowUps />} />
+            <Route path={ROUTES.pipeline} element={<PipelinePressure />} />
+            <Route path={ROUTES.insights} element={<ForecastReview />} />
+            <Route path={ROUTES.repScorecards} element={<RepScorecards />} />
+            <Route path={ROUTES.weeklyCadence} element={<WeeklyCadence />} />
+            <Route path={ROUTES.accountCoverage} element={<AccountCoverage />} />
+            <Route path={ROUTES.accountExpansion} element={<AccountExpansion />} />
+            <Route path={ROUTES.prospects} element={<ProspectsPage />} />
+            <Route path={ROUTES.marketing} element={<MarketingPage />} />
+            <Route path={ROUTES.marketingBlasts} element={<Navigate to={ROUTES.marketing} replace />} />
+            <Route path={ROUTES.referrals} element={<ReferralsPage />} />
+            <Route path={ROUTES.monthlyScorecard} element={<MonthlyScorecardPage />} />
+            <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
           </Routes>
         </main>
       </div>
@@ -143,17 +327,38 @@ function Shell() {
 }
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user } = useAppStore();
-  return user ? <>{children}</> : <Navigate to="/login" replace />;
+  const login = useAppStore(s => s.login);
+  const user = useAppStore(s => s.user);
+
+  if (isScreenshotMode() && !useAppStore.getState().user) {
+    login(getScreenshotDemoUser(), SCREENSHOT_DEMO_TOKEN);
+    useAppStore.getState().setTheme('light');
+  }
+
+  const sessionUser = useAppStore.getState().user;
+  return sessionUser || user ? <>{children}</> : <Navigate to="/login" replace />;
+}
+
+function AppRouter() {
+  return (
+    <>
+      <AnalyticsRouteTracker />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path={ROUTES.privacy} element={<PrivacyPage />} />
+        <Route path={ROUTES.terms} element={<TermsPage />} />
+        <Route path="/r/:referralCode" element={<ReferralRedirect />} />
+        <Route path="/portal/*" element={<PortalRoutes />} />
+        <Route path="/*" element={<RequireAuth><Shell /></RequireAuth>} />
+      </Routes>
+    </>
+  );
 }
 
 export default function App() {
   return (
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/*" element={<RequireAuth><Shell /></RequireAuth>} />
-      </Routes>
+      <AppRouter />
     </BrowserRouter>
   );
 }

@@ -1,5 +1,5 @@
 // scripts/import-voze-activities.mjs
-// Imports VOZE activities.csv into the `activities` collection.
+// Legacy CRM import: activities.csv → `activities` collection.
 //
 // Usage:
 //   node scripts/import-voze-activities.mjs --tenant <tenantId>
@@ -42,7 +42,7 @@ const envVars = Object.fromEntries(
     .map(l => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; }),
 );
 const MONGODB_URI = envVars['MONGODB_URI'];
-const DB_NAME     = envVars['DB_NAME'] ?? 'mtte_core';
+const DB_NAME     = envVars['DB_NAME'] ?? 'hub_crm';
 
 if (!MONGODB_URI) {
   console.error('[import-activities] MONGODB_URI not found in .env');

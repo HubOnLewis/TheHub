@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import type { Db, Document, Filter } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { BuildStatus } from '@mtte-core/shared';
+import type { BuildStatus } from '@hub-crm/shared';
 
 export interface BuildSpecItemDoc {
   id: string;

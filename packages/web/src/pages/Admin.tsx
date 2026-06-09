@@ -1,5 +1,7 @@
 // packages/web/src/pages/Admin.tsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ROUTES } from '../config/paths.js';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -9,8 +11,8 @@ import { useAppStore } from '../store/index.js';
 import {
   ENTITIES, LOCATIONS, ROLES, CreateUserSchema,
   type Entity, type Location, type UserRole, type CreateUserPayload,
-  formatCurrency,
-} from '@mtte-core/shared';
+  formatCurrency, entityForDisplay, HUB_LABELS, dealStatusForDisplay, leadStatusForDisplay,
+} from '@hub-crm/shared';
 
 // ── Types ─────────────────────────────────────────────────────────
 type AdminUser = {
@@ -53,6 +55,13 @@ export default function Admin() {
     enabled: tab === 'integrations',
   });
 
+  const { data: mailchimpStatus } = useQuery({
+    queryKey: ['integrations', 'mailchimp', 'status'],
+    queryFn:  () => client.get<{ configured: boolean; audienceIdMasked: string | null; message: string }>('/integrations/mailchimp/status').then(r => r.data),
+    enabled: tab === 'integrations',
+    retry: false,
+  });
+
   const deactivate = useMutation({
     mutationFn: (id: string) => client.delete(`/admin/users/${id}`),
     onSuccess:  () => qc.invalidateQueries({ queryKey: ['admin', 'users'] }),
@@ -77,11 +86,16 @@ export default function Admin() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Admin</h1>
-          <div className="page-subtitle">System management · {currentUser?.entity} · {currentUser?.role}</div>
+          <h1 className="page-title">{HUB_LABELS.adminWorkspace}</h1>
+          <div className="page-subtitle">Admin tools · users, stats, and integrations</div>
         </div>
         {tab === 'users' && (
-          <button className="btn btn-primary" onClick={openCreate}>+ New User</button>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Link to={ROUTES.userManagement} className="btn btn-secondary">
+              HuB user roster (demo)
+            </Link>
+            <button className="btn btn-primary" onClick={openCreate}>+ New User</button>
+          </div>
         )}
       </div>
 
@@ -184,22 +198,22 @@ export default function Admin() {
                 Pipeline by Location <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 8 }}>{formatCurrency(totalPipeline)} active</span>
               </div>
               <table className="data-table">
-                <thead><tr><th>Tenant</th><th>Deals</th><th>Value</th></tr></thead>
+                <thead><tr><th>Tenant</th><th>{HUB_LABELS.opportunities}</th><th>Value</th></tr></thead>
                 <tbody>{stats.dealsByTenant.map(row => (<tr key={row._id}><td className="table-company">{row._id}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600 }}>{row.count}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td></tr>))}</tbody>
               </table>
             </div>
             <div className="card">
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>Lead Pipeline</div>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>{HUB_LABELS.lead} pipeline</div>
               <table className="data-table">
                 <thead><tr><th>Status</th><th>Count</th></tr></thead>
-                <tbody>{stats.leadsByStatus.sort((a,b) => b.count - a.count).map(row => (<tr key={row._id}><td><span className={`badge badge-${row._id.toLowerCase().replace(' ','')}`}>{row._id}</span></td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, fontSize: 18 }}>{row.count}</td></tr>))}</tbody>
+                <tbody>{stats.leadsByStatus.sort((a,b) => b.count - a.count).map(row => (<tr key={row._id}><td><span className={`badge badge-${row._id.toLowerCase().replace(' ','')}`}>{leadStatusForDisplay(row._id)}</span></td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, fontSize: 18 }}>{row.count}</td></tr>))}</tbody>
               </table>
             </div>
             <div className="card">
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>Deal Pipeline</div>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>{HUB_LABELS.opportunity} pipeline</div>
               <table className="data-table">
                 <thead><tr><th>Status</th><th>Count</th><th>Value</th></tr></thead>
-                <tbody>{stats.dealsByStatus.sort((a,b) => b.totalAmount - a.totalAmount).map(row => (<tr key={row._id}><td><span className={`badge badge-${row._id.toLowerCase().replace(' ','')}`}>{row._id}</span></td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, fontSize: 16 }}>{row.count}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td></tr>))}</tbody>
+                <tbody>{stats.dealsByStatus.sort((a,b) => b.totalAmount - a.totalAmount).map(row => (<tr key={row._id}><td><span className={`badge badge-${row._id.toLowerCase().replace(' ','')}`}>{dealStatusForDisplay(row._id)}</span></td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 700, fontSize: 16 }}>{row.count}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td></tr>))}</tbody>
               </table>
             </div>
           </div>
@@ -209,6 +223,21 @@ export default function Admin() {
       {/* ── Integrations tab ─────────────────────────────────── */}
       {tab === 'integrations' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <div style={{ fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700, marginBottom: 4 }}>Mailchimp</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+                Audience sync — explicit trigger only; no blast sending in this build
+                {mailchimpStatus?.audienceIdMasked ? ` · ${mailchimpStatus.audienceIdMasked}` : ''}
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span className={`badge ${mailchimpStatus?.configured ? 'badge-new' : 'badge-quoted'}`}>
+                {mailchimpStatus?.configured ? 'Configured' : 'Not configured'}
+              </span>
+              <Link to={`${ROUTES.settings}/integrations`} className="btn btn-secondary" style={{ fontSize: 12 }}>Settings</Link>
+            </div>
+          </div>
           {[
             { name: 'Karmak Fusion', description: 'DMS sync — customers, orders, invoices',      status: 'stub' },
             { name: 'Decisiv',       description: 'Service case communication and ETR tracking', status: 'stub' },
@@ -277,7 +306,7 @@ function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; 
       email:    existingUser?.email    ?? '',
       password: '',
       role:     existingUser?.role     ?? 'sales',
-      entity:   existingUser?.entity   ?? 'WKI',
+      entity:   existingUser?.entity   ?? 'HUB',
       location: existingUser?.location ?? 'Wichita',
     },
   });
@@ -292,7 +321,7 @@ function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; 
         </div>
         <div className="form-group">
           <label className="form-label">Email *</label>
-          <input {...register('email')} type="email" className={`form-input${errors.email ? ' error' : ''}`} placeholder="joey@mtte.com" />
+          <input {...register('email')} type="email" className={`form-input${errors.email ? ' error' : ''}`} placeholder="admin@yourcompany.com" />
           {errors.email && <span className="form-error">{errors.email.message}</span>}
         </div>
         <div className="form-group">
@@ -309,7 +338,7 @@ function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; 
         <div className="form-group">
           <label className="form-label">Entity</label>
           <select {...register('entity')} className="form-select">
-            {ENTITIES.map(e => <option key={e} value={e}>{e}</option>)}
+            {ENTITIES.map(e => <option key={e} value={e}>{entityForDisplay(e)}</option>)}
           </select>
         </div>
         <div className="form-group">

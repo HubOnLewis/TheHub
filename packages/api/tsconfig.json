@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": ".",
+    "paths": {
+      "@hub-crm/shared": ["../shared/src/index.ts"]
+    }
   },
   "include": ["src"]
 }

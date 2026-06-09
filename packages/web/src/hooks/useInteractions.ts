@@ -1,7 +1,7 @@
 // packages/web/src/hooks/useInteractions.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client.js';
-import type { CreateInteractionRequestPayload, PatchInteractionRequestPayload } from '@mtte-core/shared';
+import type { CreateInteractionRequestPayload, PatchInteractionRequestPayload } from '@hub-crm/shared';
 
 export type InteractionRow = {
   _id:              string;

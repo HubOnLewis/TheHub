@@ -1,5 +1,5 @@
 // packages/web/src/components/InteractionCard.tsx
-import type { InteractionType } from '@mtte-core/shared';
+import type { InteractionType } from '@hub-crm/shared';
 import type { InteractionRow } from '../hooks/useInteractions.js';
 
 const TYPE_ICONS: Record<InteractionType, string> = {

@@ -3,10 +3,10 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { LeadRepository, type LeadFilter } from '../repositories/LeadRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateLeadPayload } from '@mtte-core/shared';
+import type { CreateLeadPayload } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 
 export class LeadService {
   async list(db: Db, ctx: TenantContext, filter: LeadFilter, options: ListOptions) {

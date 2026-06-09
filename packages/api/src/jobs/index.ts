@@ -13,7 +13,7 @@
 
 import type { Db } from 'mongodb';
 import { runKarmakSync } from '../integrations/karmak/index.js';
-import { buildTenantId, ENTITIES, LOCATIONS, type Entity, type Location } from '@mtte-core/shared';
+import { buildTenantId, ENTITIES, LOCATIONS, type Entity, type Location } from '@hub-crm/shared';
 
 // ── Event types ───────────────────────────────────────────────────
 export type AppEvent =
@@ -52,20 +52,20 @@ export const eventBus = new EventBus();
 eventBus.on('deal.in_build', async (event, _db) => {
   if (event.type !== 'deal.in_build') return;
   // TODO: trigger Karmak work order creation
-  console.log(`[Job] Deal ${event.dealId} moved to In Build — trigger Karmak work order`);
+  console.log(`[Job] Opportunity ${event.dealId} moved to fulfillment — external work order hook (TODO)`);
 });
 
 eventBus.on('deal.won', async (event, _db) => {
   if (event.type !== 'deal.won') return;
   // TODO: calculate and record commission
   // TODO: trigger CSI survey email
-  console.log(`[Job] Deal ${event.dealId} won (${event.amount}) — record commission + queue CSI survey`);
+  console.log(`[Job] Opportunity ${event.dealId} won (${event.amount}) — post-win automation (TODO)`);
 });
 
 eventBus.on('deal.approved', async (event, _db) => {
   if (event.type !== 'deal.approved') return;
   // TODO: send Slack/email notification to next approver
-  console.log(`[Job] Deal ${event.dealId} approved by ${event.approver} — notify next approver`);
+  console.log(`[Job] Opportunity ${event.dealId} approved by ${event.approver} — notify next approver (TODO)`);
 });
 
 eventBus.on('lead.status_changed', async (event, _db) => {

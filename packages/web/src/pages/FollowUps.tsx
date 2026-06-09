@@ -1,86 +1,89 @@
-// packages/web/src/pages/FollowUps.tsx
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useFollowUps } from '../hooks/useInteractions.js';
-import { EmptyState, Spinner } from '../components/ui/index.js';
-
-const fmt = (d: string) => new Date(d).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+import { useMemo, useState } from 'react';
+import { HUB_LABELS } from '@hub-crm/shared';
+import DemoFlowNav from '../components/demo/DemoFlowNav.js';
+import OpsIntelShell from '../components/operations/intel/OpsIntelShell.js';
+import CommandPageFrame from '../components/operations/intel/CommandPageFrame.js';
+import OpsFilterChips from '../components/operations/intel/OpsFilterChips.js';
+import OperationalRowList, { type OperationalRow } from '../components/operations/intel/OperationalRowList.js';
+import {
+  getExecutiveRailSections,
+  getFollowUpIntelligence,
+  PV_OVERDUE_FOLLOWUPS,
+} from '../data/operationalIntelligence.js';
+import { ROUTES } from '../config/paths.js';
 
 export default function FollowUps() {
-  const [filters, setFilters] = useState({
-    q: '',
-    ownerUserId: '',
-    status: 'open' as 'open' | 'completed',
-    overdueOnly: '0',
-  });
-  const { data, isLoading } = useFollowUps({
-    mine: 1,
-    q: filters.q || undefined,
-    ownerUserId: filters.ownerUserId || undefined,
-    status: filters.status,
-    overdueOnly: filters.overdueOnly === '1' ? 1 : 0,
-    limit: 100,
-  });
-  const rows = data?.data ?? [];
+  const [filter, setFilter] = useState('all');
+  const items = useMemo(() => getFollowUpIntelligence(), []);
+  const rail = useMemo(
+    () => getExecutiveRailSections().filter(s => ['inbox', 'balances', 'proposals'].includes(s.id)),
+    [],
+  );
 
-  if (isLoading) {
-    return (
-      <div style={{ padding: 60, display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center' }}>
-        <Spinner /><span className="text-muted">Loading…</span>
-      </div>
-    );
-  }
+  const filtered = items.filter(f => {
+    if (filter === 'urgent') return f.urgency === 'high';
+    if (filter === 'inbox') return f.what.startsWith('Reply');
+    return true;
+  });
+
+  const rows: OperationalRow[] = filtered.map(f => ({
+    id: f.id,
+    stage: f.urgency === 'high' ? 'Urgent' : 'Queue',
+    stageTone: f.urgency === 'high' ? 'rose' : 'amber',
+    title: f.what,
+    subtitle: f.who,
+    meta: f.context,
+    value: f.due,
+    progress: f.urgency === 'high' ? 28 : 60,
+    urgency: f.urgency,
+    aiHint: `${f.aiTone}${f.relationshipRisk ? ` · Risk: ${f.relationshipRisk}` : ''}`,
+    live: f.urgency === 'high',
+  }));
 
   return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">My follow-ups</h1>
-          <div className="page-subtitle">Open interactions with a follow-up date, soonest first</div>
+    <>
+      <DemoFlowNav />
+      <CommandPageFrame
+        hero={
+          <OpsIntelShell
+            eyebrow="Communication urgency"
+            title={HUB_LABELS.followUps}
+            subtitle="Response pacing, proposal follow-ups, and coordinator action queue."
+            stats={[
+              { label: 'Queue', value: String(items.length) },
+              { label: 'Urgent', value: String(items.filter(i => i.urgency === 'high').length), tone: 'warn' },
+              { label: 'PV overdue', value: String(PV_OVERDUE_FOLLOWUPS.length) },
+            ]}
+          />
+        }
+        filters={
+          <OpsFilterChips
+            chips={[
+              { id: 'all', label: 'All', active: filter === 'all', count: items.length },
+              { id: 'urgent', label: 'Urgent', active: filter === 'urgent', count: items.filter(i => i.urgency === 'high').length },
+              { id: 'inbox', label: 'Inbox replies', active: filter === 'inbox', count: items.filter(i => i.what.startsWith('Reply')).length },
+            ]}
+            onSelect={setFilter}
+            aiHint="AI: warm tone for proposal follow-ups; professional for balance reminders."
+          />
+        }
+        railSections={rail}
+      >
+        <OperationalRowList
+          title="Actionable communication queue"
+          rows={rows}
+          dominant
+          linkAll={{ label: 'Inbox →', href: ROUTES.inbox }}
+        />
+        <div className="ops-insight-void">
+          <h3>Response pacing</h3>
+          <ul>
+            <li>Unread threads surface first — coordinator owns reply within SLA</li>
+            <li>WAREIA deposit cadence · recurring chapter risk</li>
+            <li>Proposal follow-up sent May 19 · Vaughn Engagement track</li>
+          </ul>
         </div>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 8, marginBottom: 12 }}>
-        <input className="form-input" placeholder="Search summary/body" value={filters.q} onChange={e => setFilters(f => ({ ...f, q: e.target.value }))} />
-        <input className="form-input" placeholder="Owner user ID" value={filters.ownerUserId} onChange={e => setFilters(f => ({ ...f, ownerUserId: e.target.value }))} />
-        <select className="form-select" value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value as 'open' | 'completed' }))}>
-          <option value="open">Open</option>
-          <option value="completed">Completed</option>
-        </select>
-        <select className="form-select" value={filters.overdueOnly} onChange={e => setFilters(f => ({ ...f, overdueOnly: e.target.value }))}>
-          <option value="0">All follow-ups</option>
-          <option value="1">Overdue only</option>
-        </select>
-      </div>
-
-      {!rows.length ? (
-        <EmptyState message="No follow-ups queued" sub="Set a follow-up on an interaction to see it here." />
-      ) : (
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          {rows.map(r => (
-            <Link
-              key={r._id}
-              to={`/companies/${r.companyId}?interactionId=${encodeURIComponent(r._id)}`}
-              style={{ display: 'block', padding: '12px 16px', borderBottom: '1px solid var(--border)', textDecoration: 'none', color: 'inherit' }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
-                <div style={{ minWidth: 0, flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{r.summary}</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                    {r.companyName ?? r.companyId} · {r.outcome.replace(/_/g, ' ')}
-                  </div>
-                  <div style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Owner: {r.ownerName}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 12, fontWeight: 700, color: r.isOverdue ? 'var(--red)' : 'var(--text-primary)' }}>
-                    {r.followUpAt ? fmt(r.followUpAt) : '—'}
-                  </div>
-                  {r.isOverdue && <div style={{ fontSize: 10, color: 'var(--red)' }}>Overdue</div>}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
+      </CommandPageFrame>
+    </>
   );
 }

@@ -1,5 +1,5 @@
 // scripts/import-voze-companies.mjs
-// Imports VOZE companies.csv into the `companies` collection.
+// Legacy CRM import: companies.csv → `companies` collection (historically VOZE export).
 //
 // Usage:
 //   node scripts/import-voze-companies.mjs --tenant <tenantId>
@@ -40,7 +40,7 @@ const envVars = Object.fromEntries(
     .map(l => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; }),
 );
 const MONGODB_URI = envVars['MONGODB_URI'];
-const DB_NAME     = envVars['DB_NAME'] ?? 'mtte_core';
+const DB_NAME     = envVars['DB_NAME'] ?? 'hub_crm';
 
 if (!MONGODB_URI) {
   console.error('[import-companies] MONGODB_URI not found in .env');

@@ -1,7 +1,7 @@
 // packages/api/src/repositories/UserRepository.ts
 import { type Db, type Document, ObjectId } from 'mongodb';
 import { BaseRepository } from './BaseRepository.js';
-import type { UserRole } from '@mtte-core/shared';
+import type { UserRole } from '@hub-crm/shared';
 
 export interface UserDoc extends Document {
   tenantId: string;

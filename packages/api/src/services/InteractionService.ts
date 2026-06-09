@@ -10,7 +10,7 @@ import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { UserRepository } from '../repositories/UserRepository.js';
 import { identityIntegrityService } from './IdentityIntegrityService.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateInteractionRequestPayload, PatchInteractionRequestPayload } from '@mtte-core/shared';
+import type { CreateInteractionRequestPayload, PatchInteractionRequestPayload } from '@hub-crm/shared';
 import { NotFoundError, ForbiddenError, ValidationError } from '../errors/index.js';
 import {
   interactionNextActionService,

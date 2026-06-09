@@ -1,102 +1,102 @@
-// packages/web/src/pages/Companies.tsx
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useCompanies } from '../hooks/useCompanies.js';
-import { EmptyState, Spinner, Pagination } from '../components/ui/index.js';
-import { timeAgo } from '@mtte-core/shared';
-
-export default function Companies() {
-  const navigate   = useNavigate();
-  const [search, setSearch] = useState('');
-  const [page,   setPage]   = useState(1);
-
-  const params = {
-    search: search || undefined,
-    page,
-    limit:  25,
-    sort:   'name',
-    order:  'asc' as const,
-  };
-
-  const { data, isLoading } = useCompanies(params);
-
-  const companies = (data as any)?.data  ?? [];
-  const total     = (data as any)?.total ?? 0;
-  const pages     = (data as any)?.pages ?? 1;
-
-  return (
-    <div>
-      <div className="page-header">
-        <div>
-          <h1 className="page-title">Companies</h1>
-          <div className="page-subtitle">{total} companies</div>
-        </div>
-      </div>
-
-      <div className="filter-bar">
-        <div className="search-wrap">
-          <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor">
-            <path d="M6.5 1a5.5 5.5 0 014.227 9.02l3.127 3.126-.708.708-3.126-3.127A5.5 5.5 0 116.5 1zm0 1.5a4 4 0 100 8 4 4 0 000-8z"/>
-          </svg>
-          <input
-            className="search-input"
-            placeholder="Search name or city…"
-            value={search}
-            onChange={e => { setSearch(e.target.value); setPage(1); }}
-          />
-        </div>
-      </div>
-
-      <div className="card">
-        {isLoading ? (
-          <div style={{ padding: 40, display: 'flex', justifyContent: 'center', gap: 10, alignItems: 'center' }}>
-            <Spinner /><span className="text-muted">Loading…</span>
-          </div>
-        ) : companies.length === 0 ? (
-          <EmptyState message="No companies found" sub="Try clearing the search or run the VOZE import script" />
-        ) : (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Company</th>
-                <th>Phone</th>
-                <th>Location</th>
-                <th>Last Contact</th>
-                <th>Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              {companies.map((c: any) => (
-                <tr
-                  key={c._id}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => navigate(`/companies/${c._id}`)}
-                >
-                  <td className="table-company">
-                    {c.name}
-                    {c.isStub && (
-                      <span className="badge" style={{ marginLeft: 6, fontSize: 10, background: 'var(--border)', color: 'var(--text-secondary)' }}>
-                        stub
-                      </span>
-                    )}
-                  </td>
-                  <td className="text-sm">{c.phone ?? '—'}</td>
-                  <td className="text-sm">
-                    {[c.address?.city, c.address?.state].filter(Boolean).join(', ') || '—'}
-                  </td>
-                  <td className="text-sm text-muted">
-                    {c.daysSinceLastContact != null
-                      ? `${c.daysSinceLastContact}d ago`
-                      : c.updatedAt ? timeAgo(c.updatedAt) : '—'}
-                  </td>
-                  <td className="text-sm text-muted">{c.source}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-        <Pagination page={page} pages={pages} total={total} onPage={setPage} />
-      </div>
-    </div>
-  );
-}
+import { useMemo, useState } from 'react';
+import { formatCurrency, HUB_LABELS } from '@hub-crm/shared';
+import DemoFlowNav from '../components/demo/DemoFlowNav.js';
+import OpsIntelShell from '../components/operations/intel/OpsIntelShell.js';
+import CommandPageFrame from '../components/operations/intel/CommandPageFrame.js';
+import OpsFilterChips from '../components/operations/intel/OpsFilterChips.js';
+import AccountIntelView, { type AccountFilterId } from '../components/accounts/AccountIntelView.js';
+import { getExecutiveRailSections, PV_VENUE_SUMMARY } from '../data/operationalIntelligence.js';
+import { getAccountIntelSections } from '../data/pvUiIntelligence.js';
+import { ROUTES } from '../config/paths.js';
+
+export default function Companies() {
+  const [filter, setFilter] = useState<AccountFilterId>('all');
+  const sections = useMemo(() => getAccountIntelSections(), []);
+  const rail = useMemo(
+    () => getExecutiveRailSections().filter(s => ['vip', 'balances', 'proposals'].includes(s.id)),
+    [],
+  );
+
+  const counts = {
+    all: sections.all.length,
+    vip: sections.vipRepeat.length,
+    upcoming: sections.upcoming.length,
+    balance: sections.balanceRisk.length,
+    dormant: sections.dormantValuable.length,
+    recent: sections.recent.length,
+  };
+
+  return (
+    <>
+      <DemoFlowNav />
+      <CommandPageFrame
+        hero={
+          <OpsIntelShell
+            eyebrow="Relationship intelligence"
+            title={HUB_LABELS.accounts}
+            subtitle="234 real accounts from Perfect Venue — VIP repeats, balances, and expansion windows."
+            stats={[
+              { label: 'Relationships', value: String(counts.all), hint: 'PV accounts' },
+              { label: 'VIP / repeat', value: String(counts.vip), hint: '3+ events or series' },
+              {
+                label: 'Balances',
+                value: formatCurrency(
+                  sections.balanceRisk.reduce((s, a) => s + a.balanceOutstanding, 0),
+                ),
+                tone: 'warn',
+              },
+            ]}
+          />
+        }
+        filters={
+          <OpsFilterChips
+            chips={[
+              { id: 'all', label: 'All', active: filter === 'all', count: counts.all },
+              { id: 'vip', label: 'VIP / repeat', active: filter === 'vip', count: counts.vip },
+              {
+                id: 'upcoming',
+                label: 'Upcoming',
+                active: filter === 'upcoming',
+                count: counts.upcoming,
+              },
+              {
+                id: 'balance',
+                label: 'Balance risk',
+                active: filter === 'balance',
+                count: counts.balance,
+              },
+              {
+                id: 'dormant',
+                label: 'Dormant · valuable',
+                active: filter === 'dormant',
+                count: counts.dormant,
+              },
+              {
+                id: 'recent',
+                label: 'Recent',
+                active: filter === 'recent',
+                count: counts.recent,
+              },
+            ]}
+            onSelect={id => setFilter(id as AccountFilterId)}
+            aiHint="Elevate Mentoring and similar repeat accounts surface in VIP — not flat spreadsheet rows."
+          />
+        }
+        railSections={rail}
+      >
+        <AccountIntelView filter={filter} />
+        <div className="ops-insight-void">
+          <h3>Relationship momentum</h3>
+          <ul>
+            <li>{PV_VENUE_SUMMARY.activeEvents} active events in pipeline</li>
+            <li>{counts.vip} VIP / repeat accounts from export</li>
+            <li>{counts.upcoming} accounts with upcoming bookings</li>
+          </ul>
+          <a href={ROUTES.pipeline} className="exec-panel__link">
+            Pipeline map →
+          </a>
+        </div>
+      </CommandPageFrame>
+    </>
+  );
+}

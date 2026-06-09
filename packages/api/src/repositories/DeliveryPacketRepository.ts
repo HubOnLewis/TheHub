@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import type { Db, Document, Filter } from 'mongodb';
 import { BaseRepository } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { DeliveryPacketStatus } from '@mtte-core/shared';
+import type { DeliveryPacketStatus } from '@hub-crm/shared';
 
 export interface DeliveryPacketDoc extends Document {
   tenantId: string;

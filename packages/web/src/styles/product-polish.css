@@ -1,0 +1,401 @@
+/**
+ * Pre-client-demo polish — visual confidence only (loaded last among product styles)
+ */
+
+/* ── Dashboard canvas ─────────────────────────────────────────────── */
+.app-shell--dashboard .main-area {
+  background: var(--hub-canvas, var(--bg));
+}
+
+.app-shell--dashboard .page-content--dashboard {
+  padding: 24px 32px 40px;
+  max-width: 1320px;
+}
+
+.dashboard-product {
+  gap: 28px;
+}
+
+/* ── Command strip ─────────────────────────────────────────────────── */
+.venue-command-strip {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 3px solid var(--hub-accent, #c4a574);
+  background: linear-gradient(
+    165deg,
+    rgba(26, 35, 48, 0.95) 0%,
+    rgba(18, 22, 30, 0.98) 55%,
+    rgba(12, 14, 18, 1) 100%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 16px 40px rgba(0, 0, 0, 0.35);
+}
+
+.venue-command-strip__main {
+  padding: 20px 22px 18px;
+}
+
+.venue-command-strip__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.venue-command-strip__identity {
+  align-items: center;
+  min-width: 0;
+}
+
+.venue-command-strip__live {
+  margin-top: 0;
+  flex-shrink: 0;
+  animation: none;
+  box-shadow: none;
+}
+
+.venue-command-strip__eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(196, 165, 116, 0.85);
+}
+
+.venue-command-strip__title {
+  margin: 4px 0 0;
+  font-family: var(--font-cond);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  color: var(--text-primary);
+}
+
+.venue-command-strip__venue-line {
+  margin: 6px 0 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.01em;
+}
+
+.venue-command-strip__actions {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding-top: 2px;
+}
+
+.venue-command-strip__actions .btn {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.venue-command-strip__suggestion {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 2px solid rgba(196, 165, 116, 0.45);
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.venue-command-strip__metric-groups {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+@media (max-width: 900px) {
+  .venue-command-strip__metric-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.venue-command-strip__group {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.venue-command-strip__group-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(148, 163, 184, 0.75);
+  margin-bottom: 8px;
+}
+
+.venue-command-strip__chips {
+  display: block;
+}
+
+.metric-chip {
+  min-width: 0;
+}
+
+.metric-chip__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(148, 163, 184, 0.9);
+}
+
+.metric-chip__value {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.metric-chip--warn .metric-chip__value {
+  color: #e8b86a;
+}
+
+/* ── Band B panels ─────────────────────────────────────────────────── */
+.attention-queue,
+.financial-snapshot {
+  padding: 18px 20px;
+  background: var(--hub-panel, var(--surface));
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.section-head {
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-head__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.section-head__sub {
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.section-head__action {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(196, 165, 116, 0.9);
+  transition: color var(--ease-out);
+}
+
+.attention-queue__item {
+  padding: 10px 12px;
+  border-radius: 8px;
+  gap: 3px 12px;
+}
+
+.attention-queue__item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.attention-queue__badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  padding: 4px 9px;
+  border-radius: 5px;
+}
+
+.attention-queue__headline {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.attention-queue__detail {
+  line-height: 1.4;
+  opacity: 0.85;
+}
+
+.attention-queue__empty {
+  font-size: 13px;
+  padding: 8px 0;
+}
+
+.financial-snapshot__row {
+  padding: 8px 0 10px;
+}
+
+.financial-snapshot__row dt {
+  font-size: 12px;
+}
+
+.financial-snapshot__row dd {
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.financial-snapshot__row--emphasis dd {
+  color: #e8b86a;
+}
+
+/* ── Pressure table ────────────────────────────────────────────────── */
+.dashboard-product .ops-row-panel {
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.dashboard-product .ops-row-panel__head {
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dashboard-product .ops-row-panel__head h2 {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-product .ops-row-panel__count {
+  background: rgba(255, 255, 255, 0.06);
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-product .ops-row {
+  padding: 14px 18px;
+  gap: 6px 14px;
+}
+
+.dashboard-product .ops-row__stage {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.dashboard-product .ops-row__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dashboard-product .ops-row__sub {
+  font-size: 12px;
+}
+
+.dashboard-product .ops-row__meta {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.dashboard-product .ops-row__value {
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.dashboard-product .ops-row__ai {
+  font-size: 11px;
+  grid-column: 2 / -1;
+  margin: 4px 0 0;
+  opacity: 0.8;
+}
+
+.dashboard-product .ops-row__tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.dashboard-product .ops-row-link:hover .ops-row {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Sidebar brand refinement ──────────────────────────────────────── */
+.sidebar-brand-block {
+  margin: 14px 12px 8px;
+}
+
+.sidebar-brand-block__frame {
+  padding: 22px 16px 14px;
+  min-height: 92px;
+}
+
+.sidebar-brand-block__logo {
+  max-height: 64px !important;
+  min-width: 0;
+  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.4));
+}
+
+.sidebar-brand-block__copy {
+  padding: 0 16px 16px;
+}
+
+.sidebar-brand-block__os {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(241, 245, 249, 0.88);
+}
+
+.sidebar-brand-block__venue {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(196, 165, 116, 0.75);
+  margin-top: 5px;
+}
+
+.app-shell .nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.88;
+}
+
+.app-shell .nav-link.active .nav-icon {
+  opacity: 1;
+}
+
+.sidebar-more-toggle .nav-icon {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+.app-shell .sidebar-toggle {
+  border-radius: 8px;
+  margin: 6px 12px 4px;
+}
+
+/* Light theme dashboard cohesion */
+[data-theme='light'] .dashboard-product {
+  gap: 28px;
+}
+
+[data-theme='light'] .venue-command-strip {
+  background: linear-gradient(165deg, #fffdf9 0%, #f7f2e9 100%);
+  border-color: rgba(62, 52, 42, 0.12);
+  box-shadow: var(--shadow-md);
+}
+
+[data-theme='light'] .venue-command-strip__group {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+[data-theme='light'] .attention-queue,
+[data-theme='light'] .financial-snapshot,
+[data-theme='light'] .dashboard-product .ops-row-panel {
+  box-shadow: var(--shadow-sm);
+}

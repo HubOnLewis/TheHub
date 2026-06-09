@@ -1,0 +1,258 @@
+- generic [ref=e15]:
+  - navigation "Main navigation" [ref=e16]:
+    - generic [ref=e18]:
+      - img "HuB on Lewis" [ref=e20]
+      - generic [ref=e21]:
+        - paragraph [ref=e22]: Venue OS
+        - paragraph [ref=e23]: HuB on Lewis · Wichita
+    - button "« Menu" [ref=e24] [cursor=pointer]
+    - generic [ref=e25]:
+      - generic [ref=e26]:
+        - generic [ref=e27]: Command
+        - link "Dashboard" [ref=e28] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e30]
+          - generic [ref=e35]: Dashboard
+        - link "Today" [ref=e36] [cursor=pointer]:
+          - /url: /today
+          - img [ref=e38]
+          - generic [ref=e41]: Today
+        - link "Inbox" [ref=e42] [cursor=pointer]:
+          - /url: /inbox
+          - img [ref=e44]
+          - generic [ref=e46]: Inbox
+        - link "Calendar" [ref=e47] [cursor=pointer]:
+          - /url: /calendar
+          - img [ref=e49]
+          - generic [ref=e52]: Calendar
+        - link "Autopilot" [ref=e53] [cursor=pointer]:
+          - /url: /autopilot
+          - img [ref=e55]
+          - generic [ref=e60]: Autopilot
+      - generic [ref=e61]:
+        - generic [ref=e62]: Revenue
+        - link "Opportunities" [ref=e63] [cursor=pointer]:
+          - /url: /opportunities
+          - img [ref=e65]
+          - generic [ref=e67]: Opportunities
+        - link "Accounts" [ref=e68] [cursor=pointer]:
+          - /url: /accounts
+          - img [ref=e70]
+          - generic [ref=e73]: Accounts
+        - link "Follow-ups" [ref=e74] [cursor=pointer]:
+          - /url: /follow-ups
+          - img [ref=e76]
+          - generic [ref=e79]: Follow-ups
+      - button "⋯ More" [ref=e80] [cursor=pointer]:
+        - generic [ref=e81]: ⋯
+        - generic [ref=e82]: More
+      - generic [ref=e83]: Venue
+      - link "Settings" [ref=e84] [cursor=pointer]:
+        - /url: /settings
+        - img [ref=e86]
+        - generic [ref=e89]: Settings
+      - link "◇ Client portal" [ref=e90] [cursor=pointer]:
+        - /url: /portal/dashboard
+        - generic [ref=e91]: ◇
+        - generic [ref=e92]: Client portal
+      - link "Admin workspace" [ref=e93] [cursor=pointer]:
+        - /url: /admin
+        - img [ref=e95]
+        - generic [ref=e98]: Admin workspace
+    - generic [ref=e99]:
+      - generic [ref=e100]:
+        - generic [ref=e101]: Jason Lavender
+        - generic [ref=e102]: admin@hubonlewis.com
+      - button "Dark mode" [ref=e103] [cursor=pointer]:
+        - generic [ref=e104]: ◐
+        - generic [ref=e105]: Dark mode
+      - button "Sign out" [ref=e106] [cursor=pointer]
+  - generic [ref=e107]:
+    - banner:
+      - generic "Venue operational status":
+        - generic:
+          - generic: 11:43:08 AM
+          - generic: HuB on Lewis
+          - generic: Thu, May 21 · Wichita
+      - generic:
+        - generic: super admin
+    - main [ref=e108]:
+      - generic [ref=e109]:
+        - region "Venue command" [ref=e110]:
+          - generic [ref=e111]:
+            - generic [ref=e112]:
+              - generic [ref=e115]:
+                - paragraph [ref=e116]: Today · 2026-05-20
+                - heading "Command center" [level=1] [ref=e117]
+                - paragraph [ref=e118]: HuB on Lewis · Wichita
+              - generic [ref=e119]:
+                - link "Today" [ref=e120] [cursor=pointer]:
+                  - /url: /today
+                - link "Review queue" [ref=e121] [cursor=pointer]:
+                  - /url: /autopilot
+            - paragraph [ref=e122]: 3 outbound items need your approval before send.
+            - generic [ref=e123]:
+              - generic "Revenue" [ref=e124]:
+                - generic [ref=e125]: Revenue
+                - generic [ref=e126]:
+                  - generic "Active pipeline only · lost & archived excluded" [ref=e127]:
+                    - generic [ref=e128]: Outstanding
+                    - text: $21,268
+                  - generic "MTD payments $2,518" [ref=e129]:
+                    - generic [ref=e130]: Collected
+                    - text: $20,925
+              - generic "Capacity" [ref=e131]:
+                - generic [ref=e132]: Capacity
+                - generic "May · 13 booked days of 31" [ref=e134]:
+                  - generic [ref=e135]: Occupancy
+                  - text: 42%
+              - generic "Workflow" [ref=e136]:
+                - generic [ref=e137]: Workflow
+                - generic "Awaiting review before send" [ref=e139]:
+                  - generic [ref=e140]: Approvals
+                  - text: "3"
+              - generic "Health" [ref=e141]:
+                - generic [ref=e142]: Health
+                - generic "42 items in the attention queue" [ref=e144]:
+                  - generic [ref=e145]: Health
+                  - text: 55%
+        - generic [ref=e146]:
+          - region "Attention queue" [ref=e147]:
+            - generic [ref=e148]:
+              - generic [ref=e149]:
+                - heading "Needs attention" [level=2] [ref=e150]
+                - paragraph [ref=e151]: Showing 5 of 42 active signals
+              - link "View pipeline" [ref=e152] [cursor=pointer]:
+                - /url: /opportunities
+            - list [ref=e153]:
+              - listitem [ref=e154]:
+                - 'link "Balance due Birthday Hector Morales: $650 outstanding · 3d out · Proposal Sent" [ref=e155] [cursor=pointer]':
+                  - /url: /opportunities/pv-2139413
+                  - generic [ref=e156]: Balance due
+                  - generic [ref=e157]: Birthday
+                  - generic [ref=e158]: "Hector Morales: $650 outstanding · 3d out · Proposal Sent"
+              - listitem [ref=e159]:
+                - 'link "Balance due Graduation Party Karla Ortiz: $650 outstanding · 10d out · Proposal Sent" [ref=e160] [cursor=pointer]':
+                  - /url: /opportunities/pv-2521092
+                  - generic [ref=e161]: Balance due
+                  - generic [ref=e162]: Graduation Party
+                  - generic [ref=e163]: "Karla Ortiz: $650 outstanding · 10d out · Proposal Sent"
+              - listitem [ref=e164]:
+                - 'link "Balance due Birthday party Jenny Nguyen: $600 outstanding · 17d out · Proposal Sent" [ref=e165] [cursor=pointer]':
+                  - /url: /opportunities/pv-2202263
+                  - generic [ref=e166]: Balance due
+                  - generic [ref=e167]: Birthday party
+                  - generic [ref=e168]: "Jenny Nguyen: $600 outstanding · 17d out · Proposal Sent"
+              - listitem [ref=e169]:
+                - 'link "Balance due Baby Shower Kimsha Carter: $550 outstanding · 4d out · Proposal Sent" [ref=e170] [cursor=pointer]':
+                  - /url: /opportunities/pv-2374578
+                  - generic [ref=e171]: Balance due
+                  - generic [ref=e172]: Baby Shower
+                  - generic [ref=e173]: "Kimsha Carter: $550 outstanding · 4d out · Proposal Sent"
+              - listitem [ref=e174]:
+                - 'link "Balance due Chauntel Gradution Chauntel Nguyen: $550 outstanding · 24d out · Proposal Sent" [ref=e175] [cursor=pointer]':
+                  - /url: /opportunities/pv-2374601
+                  - generic [ref=e176]: Balance due
+                  - generic [ref=e177]: Chauntel Gradution
+                  - generic [ref=e178]: "Chauntel Nguyen: $550 outstanding · 24d out · Proposal Sent"
+          - region "Financial snapshot" [ref=e179]:
+            - generic [ref=e180]:
+              - generic [ref=e181]:
+                - heading "Revenue position" [level=2] [ref=e182]
+                - paragraph [ref=e183]: Payment ledger and open pipeline
+              - link "Insights" [ref=e184] [cursor=pointer]:
+                - /url: /forecast-review
+            - generic [ref=e185]:
+              - generic [ref=e186]:
+                - term [ref=e187]: Collected
+                - definition [ref=e188]: $20,925
+              - generic [ref=e189]:
+                - term [ref=e190]: Outstanding
+                - definition [ref=e191]: $21,268
+              - generic [ref=e192]:
+                - term [ref=e193]: MTD payments
+                - definition [ref=e194]: $2,518
+              - generic [ref=e195]:
+                - term [ref=e196]: Proposal exposure
+                - definition [ref=e197]: $19,738
+              - generic [ref=e198]:
+                - term [ref=e199]: Proposals open
+                - definition [ref=e200]: "34"
+              - generic [ref=e201]:
+                - term [ref=e202]: Confirmed events
+                - definition [ref=e203]: "27"
+              - generic [ref=e204]:
+                - term [ref=e205]: Revenue at risk
+                - definition [ref=e206]: $21,350
+        - generic [ref=e207]:
+          - generic [ref=e208]:
+            - heading "Upcoming pressure" [level=2] [ref=e209]
+            - generic [ref=e210]: "5"
+            - link "View pipeline" [ref=e211] [cursor=pointer]:
+              - /url: /opportunities
+          - generic [ref=e212]:
+            - link "Active Proposal Sent Birthday Hector Morales 2026-05-23 · 3 days · $650 due $650 Due $650 balance remaining" [ref=e213] [cursor=pointer]:
+              - /url: /opportunities/pv-2139413
+              - generic [ref=e214]:
+                - generic "Active" [ref=e215]
+                - generic [ref=e216]: Proposal Sent
+                - generic [ref=e217]:
+                  - strong [ref=e218]: Birthday
+                  - generic [ref=e219]: Hector Morales
+                  - generic [ref=e220]: 2026-05-23 · 3 days · $650 due
+                - generic [ref=e221]: $650
+                - generic "Readiness / momentum" [ref=e222]
+                - generic [ref=e225]: Due
+                - paragraph [ref=e226]: $650 balance remaining
+            - link "Active Proposal Sent Graduation Party Karla Ortiz 2026-05-30 · 10 days · $650 due $650 Due $650 balance remaining" [ref=e227] [cursor=pointer]:
+              - /url: /opportunities/pv-2521092
+              - generic [ref=e228]:
+                - generic "Active" [ref=e229]
+                - generic [ref=e230]: Proposal Sent
+                - generic [ref=e231]:
+                  - strong [ref=e232]: Graduation Party
+                  - generic [ref=e233]: Karla Ortiz
+                  - generic [ref=e234]: 2026-05-30 · 10 days · $650 due
+                - generic [ref=e235]: $650
+                - generic "Readiness / momentum" [ref=e236]
+                - generic [ref=e239]: Due
+                - paragraph [ref=e240]: $650 balance remaining
+            - link "Active Proposal Sent Birthday party Jenny Nguyen 2026-06-06 · 17 days · $600 due $600 Due $600 balance remaining" [ref=e241] [cursor=pointer]:
+              - /url: /opportunities/pv-2202263
+              - generic [ref=e242]:
+                - generic "Active" [ref=e243]
+                - generic [ref=e244]: Proposal Sent
+                - generic [ref=e245]:
+                  - strong [ref=e246]: Birthday party
+                  - generic [ref=e247]: Jenny Nguyen
+                  - generic [ref=e248]: 2026-06-06 · 17 days · $600 due
+                - generic [ref=e249]: $600
+                - generic "Readiness / momentum" [ref=e250]
+                - generic [ref=e253]: Due
+                - paragraph [ref=e254]: $600 balance remaining
+            - link "Active Proposal Sent Baby Shower Kimsha Carter 2026-05-24 · 4 days · $550 due $550 Due $550 balance remaining" [ref=e255] [cursor=pointer]:
+              - /url: /opportunities/pv-2374578
+              - generic [ref=e256]:
+                - generic "Active" [ref=e257]
+                - generic [ref=e258]: Proposal Sent
+                - generic [ref=e259]:
+                  - strong [ref=e260]: Baby Shower
+                  - generic [ref=e261]: Kimsha Carter
+                  - generic [ref=e262]: 2026-05-24 · 4 days · $550 due
+                - generic [ref=e263]: $550
+                - generic "Readiness / momentum" [ref=e264]
+                - generic [ref=e267]: Due
+                - paragraph [ref=e268]: $550 balance remaining
+            - link "Active Proposal Sent Chauntel Gradution Chauntel Nguyen 2026-06-13 · 24 days · $550 due $550 Due $550 balance remaining" [ref=e269] [cursor=pointer]:
+              - /url: /opportunities/pv-2374601
+              - generic [ref=e270]:
+                - generic "Active" [ref=e271]
+                - generic [ref=e272]: Proposal Sent
+                - generic [ref=e273]:
+                  - strong [ref=e274]: Chauntel Gradution
+                  - generic [ref=e275]: Chauntel Nguyen
+                  - generic [ref=e276]: 2026-06-13 · 24 days · $550 due
+                - generic [ref=e277]: $550
+                - generic "Readiness / momentum" [ref=e278]
+                - generic [ref=e281]: Due
+                - paragraph [ref=e282]: $550 balance remaining

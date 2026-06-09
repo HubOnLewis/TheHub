@@ -20,7 +20,7 @@ import type {
   PatchDeliveryPacketPayload,
   CreatePostDeliveryFollowUpPayload,
   PatchPostDeliveryFollowUpPayload,
-} from '@mtte-core/shared';
+} from '@hub-crm/shared';
 import { identityIntegrityService } from './IdentityIntegrityService.js';
 
 const DEFAULT_CHECK_IN_DAYS = 7;

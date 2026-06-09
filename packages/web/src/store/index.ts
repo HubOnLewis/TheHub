@@ -2,6 +2,9 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+const AUTH_TOKEN_KEY = 'hub_crm_token';
+const LEGACY_TOKEN_KEY = 'mtte_token';
+
 export interface AppUser {
   id:       string;
   name:     string;
@@ -18,7 +21,7 @@ interface AppStore {
   user:           AppUser | null;
   token:          string | null;
   activeTenantId: string | null;
-  /** UI theme — default dark (executive). */
+  /** UI theme — default dark for operational demo; light optional. */
   theme:          UiTheme;
   sidebarCollapsed: boolean;
 
@@ -39,12 +42,14 @@ export const useAppStore = create<AppStore>()(
       sidebarCollapsed: false,
 
       login: (user, token) => {
-        localStorage.setItem('mtte_token', token);
+        localStorage.setItem(AUTH_TOKEN_KEY, token);
+        localStorage.removeItem(LEGACY_TOKEN_KEY);
         set({ user, token, activeTenantId: user.tenantId || null });
       },
 
       logout: () => {
-        localStorage.removeItem('mtte_token');
+        localStorage.removeItem(AUTH_TOKEN_KEY);
+        localStorage.removeItem(LEGACY_TOKEN_KEY);
         set({ user: null, token: null, activeTenantId: null });
       },
 
@@ -58,7 +63,15 @@ export const useAppStore = create<AppStore>()(
       setSidebarCollapsed: (sidebarCollapsed) => set({ sidebarCollapsed }),
     }),
     {
-      name:    'mtte-auth',
+      name: 'hub-crm-auth',
+      version: 1,
+      migrate: (persisted, version) => {
+        const state = persisted as { theme?: UiTheme } | undefined;
+        if (version === 0 && state) {
+          return { ...state, theme: 'dark' as UiTheme };
+        }
+        return persisted as typeof persisted;
+      },
       partialize: (s) => ({
         user: s.user,
         token: s.token,

@@ -1,7 +1,7 @@
 import type { Db, Document, Filter } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { DeliveryRecordStatus } from '@mtte-core/shared';
+import type { DeliveryRecordStatus } from '@hub-crm/shared';
 
 export interface DeliveryRecordDoc extends Document {
   tenantId: string;

@@ -1,7 +1,7 @@
 import { ObjectId, type Db, type Document, type Filter } from 'mongodb';
 import { BaseRepository, type ListOptions } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { AccountPlanStatus } from '@mtte-core/shared';
+import type { AccountPlanStatus } from '@hub-crm/shared';
 
 export interface AccountPlanDoc extends Document {
   tenantId: string;

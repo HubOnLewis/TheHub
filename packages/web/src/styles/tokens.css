@@ -1,0 +1,39 @@
+/**
+ * Hub CRM — consolidated design tokens (productization pass)
+ */
+
+:root,
+[data-theme='dark'] {
+  --hub-canvas: #080a0d;
+  --hub-panel: #12161e;
+  --hub-panel-raised: #181d28;
+  --hub-accent: #c4a574;
+  --hub-accent-muted: rgba(196, 165, 116, 0.14);
+  --hub-accent-border: rgba(196, 165, 116, 0.32);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+
+  --text-command: 28px;
+  --text-metric: 20px;
+  --text-title: 15px;
+  --text-body: 14px;
+  --text-caption: 12px;
+  --text-label: 11px;
+
+  --radius-panel: 12px;
+  --shadow-panel: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px rgba(0, 0, 0, 0.35);
+  --ease-out: 0.15s ease;
+}
+
+[data-theme='light'] {
+  --hub-canvas: #f0ebe3;
+  --hub-panel: #fffdf9;
+  --hub-panel-raised: #f7f2e9;
+  --hub-accent-muted: rgba(196, 165, 116, 0.22);
+}

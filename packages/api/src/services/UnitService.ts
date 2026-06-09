@@ -3,12 +3,12 @@ import type { Db } from 'mongodb';
 import type { TenantContext } from '../tenancy/index.js';
 import { UnitRepository, type UnitFilter } from '../repositories/UnitRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateUnitPayload, UnitStatus } from '@mtte-core/shared';
+import type { CreateUnitPayload, UnitStatus } from '@hub-crm/shared';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { BuildRepository } from '../repositories/BuildRepository.js';
 import { InteractionRepository } from '../repositories/InteractionRepository.js';
-import { buildTenantId } from '@mtte-core/shared';
-import type { Entity, Location } from '@mtte-core/shared';
+import { buildTenantId } from '@hub-crm/shared';
+import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 
 export class UnitService {

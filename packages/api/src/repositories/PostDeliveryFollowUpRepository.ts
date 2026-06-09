@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import type { Db, Document, Filter } from 'mongodb';
 import { BaseRepository } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { PostDeliveryFollowUpStatus, PostDeliveryFollowUpType } from '@mtte-core/shared';
+import type { PostDeliveryFollowUpStatus, PostDeliveryFollowUpType } from '@hub-crm/shared';
 
 export interface PostDeliveryFollowUpDoc extends Document {
   tenantId: string;

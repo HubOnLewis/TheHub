@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { HUB_LABELS } from '@hub-crm/shared';
 import { useProductionJobs, useProductionJob, useProductionMutations } from '../hooks/useProduction.js';
 import { useCloseoutChecklist, useDeliveryMutations } from '../hooks/useDelivery.js';
 import { EmptyState, Modal, Spinner, StatusBadge, TableSkeleton } from '../components/ui/index.js';
@@ -26,8 +27,8 @@ export default function Production() {
     <div>
       <div className="page-header">
         <div>
-          <h1 className="page-title">Production</h1>
-          <div className="page-subtitle">Frozen shop jobs from approved build versions</div>
+          <h1 className="page-title">{HUB_LABELS.fulfillment}</h1>
+          <div className="page-subtitle">Workflow jobs from approved proposal versions</div>
         </div>
       </div>
       <div className="card" style={{ marginBottom: 16, padding: 16, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -36,7 +37,7 @@ export default function Production() {
         </select>
         <input className="form-input" placeholder="Search team/notes/job#" value={q} onChange={e => setQ(e.target.value)} />
       </div>
-      {rows.length === 0 ? <EmptyState message="No production jobs" sub="Create jobs from approved builds." /> : (
+      {rows.length === 0 ? <EmptyState message={`No ${HUB_LABELS.fulfillment.toLowerCase()} jobs`} sub="Create jobs from approved proposals when this path is enabled." /> : (
         <div style={{ display: 'grid', gap: 18 }}>
           {Object.entries(grouped).map(([k, list]) => (
             <section key={k}>
@@ -47,7 +48,7 @@ export default function Production() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, flexWrap: 'wrap', alignItems: 'flex-start' }}>
                       <div style={{ flex: '1 1 260px' }}>
                         <div className="list-row__title" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                          {j.build?.name ?? 'Build'} · {j.unit?.year ?? ''} {j.unit?.make ?? ''} {j.unit?.model ?? ''}
+                          {j.build?.name ?? HUB_LABELS.proposal} · {j.unit?.year ?? ''} {j.unit?.make ?? ''} {j.unit?.model ?? ''}
                           <StatusBadge domain="production" value={String(j.status ?? '')}>{String(j.status ?? '').replace(/_/g, ' ')}</StatusBadge>
                         </div>
                         <div className="list-row__meta">job {j.jobNumber ?? j._id.slice(0, 8)} · team {j.assignedTeam ?? 'unassigned'}</div>
@@ -57,7 +58,7 @@ export default function Production() {
                         </div>
                         {j.delivery && (
                           <div className="list-row__meta" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
-                            <span>Delivery</span>
+                            <span>{HUB_LABELS.closeout}</span>
                             <StatusBadge domain="delivery" value={String(j.delivery.status ?? '')}>{String(j.delivery.status ?? '').replace(/_/g, ' ')}</StatusBadge>
                             <span style={{ color: 'var(--text-light)', fontSize: 11 }}>readiness {j.delivery.deliveryReadiness?.readinessLevel ?? '—'}</span>
                           </div>
@@ -65,7 +66,7 @@ export default function Production() {
                         {j.productionImpact?.hasImpact && <div className="list-row__meta" style={{ color: 'var(--red)', marginTop: 6 }}>{j.productionImpact.reasons.join(' · ')}</div>}
                       </div>
                       <div className="list-row__actions">
-                        <button className="btn btn-secondary" onClick={() => setSelectedId(j._id)}>Shop View</button>
+                        <button className="btn btn-secondary" onClick={() => setSelectedId(j._id)}>Open job</button>
                         {j.status !== 'completed' && <button className="btn btn-secondary" onClick={() => mutations.update.mutate({ id: j._id, payload: { status: j.status === 'queued' ? 'ready' : j.status === 'ready' ? 'in_progress' : j.status === 'in_progress' ? 'completed' : 'in_progress' } })}>Advance</button>}
                         {j.status !== 'paused' && j.status !== 'completed' && <button className="btn btn-ghost" onClick={() => mutations.update.mutate({ id: j._id, payload: { status: 'paused' } })}>Pause</button>}
                       </div>
@@ -78,13 +79,13 @@ export default function Production() {
         </div>
       )}
       {selectedId && (
-        <Modal title="Shop Floor Build View" onClose={() => setSelectedId(null)} width={900}>
+        <Modal title={`${HUB_LABELS.fulfillment} job`} onClose={() => setSelectedId(null)} width={900}>
           {!selected ? <Spinner /> : (
             <div>
               <div className="card" style={{ padding: 12, marginBottom: 10 }}>
-                <div style={{ fontWeight: 700 }}>Unit</div>
+                <div style={{ fontWeight: 700 }}>{HUB_LABELS.booking}</div>
                 <div style={{ fontSize: 12 }}>{selected.unit?.year ?? ''} {selected.unit?.make ?? ''} {selected.unit?.model ?? ''}</div>
-                <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>VIN {selected.unit?.vin || 'pending'} · Stock {selected.unit?.stockNumber || 'n/a'}</div>
+                <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Reference {selected.unit?.vin || '—'} · Stock {selected.unit?.stockNumber || 'n/a'}</div>
                 <div style={{ fontSize: 12 }}>Team {selected.assignedTeam ?? 'unassigned'} · Status {selected.status}</div>
               </div>
               <div className="card" style={{ padding: 12 }}>
@@ -143,7 +144,7 @@ export default function Production() {
                 )}
               </div>
               <div className="card" style={{ padding: 12, marginTop: 10 }}>
-                <div style={{ fontWeight: 700, marginBottom: 6 }}>Delivery Readiness + Closeout</div>
+                <div style={{ fontWeight: 700, marginBottom: 6 }}>{HUB_LABELS.closeout} readiness</div>
                 <div style={{ fontSize: 12, marginBottom: 6 }}>
                   readiness {selected.delivery?.deliveryReadiness?.readinessLevel ?? 'not_ready'} · {selected.delivery?.deliveryReadiness?.isReady ? 'ready' : 'not ready'}
                 </div>
@@ -153,10 +154,10 @@ export default function Production() {
                   </ul>
                 )}
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
-                  {!selected.delivery && <button className="btn btn-secondary" onClick={() => delivery.create.mutate({ productionJobId: selected._id, buildId: selected.buildId, unitId: selected.unitId, dealId: selected.dealId, status: 'pending' })}>Create Delivery Record</button>}
-                  {selected.delivery?.status === 'pending' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'ready_for_delivery' } })}>Mark Ready</button>}
-                  {selected.delivery?.status === 'ready_for_delivery' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'scheduled', scheduledDeliveryDate: new Date(Date.now() + 86400000).toISOString() } })}>Schedule Delivery</button>}
-                  {selected.delivery?.status === 'scheduled' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'delivered', actualDeliveryDate: new Date().toISOString() } })}>Mark Delivered</button>}
+                  {!selected.delivery && <button className="btn btn-secondary" onClick={() => delivery.create.mutate({ productionJobId: selected._id, buildId: selected.buildId, unitId: selected.unitId, dealId: selected.dealId, status: 'pending' })}>Create {HUB_LABELS.closeout} record</button>}
+                  {selected.delivery?.status === 'pending' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'ready_for_delivery' } })}>Mark ready for client</button>}
+                  {selected.delivery?.status === 'ready_for_delivery' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'scheduled', scheduledDeliveryDate: new Date(Date.now() + 86400000).toISOString() } })}>Schedule handoff</button>}
+                  {selected.delivery?.status === 'scheduled' && <button className="btn btn-secondary" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'delivered', actualDeliveryDate: new Date().toISOString() } })}>Mark completed</button>}
                   {selected.delivery?.status === 'delivered' && <button className="btn btn-ghost" onClick={() => delivery.update.mutate({ id: selected.delivery._id, payload: { status: 'closed' } })}>Close Out</button>}
                 </div>
                 <div style={{ fontSize: 12, marginBottom: 6 }}>

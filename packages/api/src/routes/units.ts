@@ -6,7 +6,7 @@ import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
 import { unitService } from '../services/UnitService.js';
 import { getDB } from '../config/db.js';
-import { CreateUnitSchema, UNIT_STATUSES, CreateBuildSchema } from '@mtte-core/shared';
+import { CreateUnitSchema, UNIT_STATUSES, CreateBuildSchema } from '@hub-crm/shared';
 import { buildService } from '../services/BuildService.js';
 
 const router = Router();

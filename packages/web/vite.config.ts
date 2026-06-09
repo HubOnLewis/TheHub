@@ -9,17 +9,18 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@mtte-core/shared': path.resolve(__dirname, '../shared/src/index.ts'),
+      '@hub-crm/shared': path.resolve(__dirname, '../shared/src/index.ts'),
     },
   },
   server: {
     host:  '0.0.0.0',
     port:  5173,
+    // Forward /api/* to the Express app (must match packages/api PORT, default 3001).
+    // Do not point `target` at a URL that already ends in `/api` — use host + port only.
     proxy: {
       '/api': {
-        target:      process.env['VITE_API_URL'] ?? 'http://localhost:3001',
+        target:       'http://localhost:3001',
         changeOrigin: true,
-        rewrite: (p) => p.replace(/^\/api/, '/api'),
       },
     },
   },

@@ -1,0 +1,30 @@
+/* Hospitality financial surfaces — warm ops, not spreadsheet CRM */
+
+.command-page {
+  --fin-ivory: #faf7f2;
+  --fin-champagne: #f3ebe0;
+}
+
+.dashboard-page--composed {
+  background: linear-gradient(165deg, var(--fin-ivory) 0%, var(--surface) 42%, var(--surface) 100%);
+}
+
+.exec-rail__block--gold {
+  background: linear-gradient(145deg, #1a2744 0%, #0f1729 55%, #1e293b 100%);
+  color: #f8f4ec;
+  border-color: rgba(212, 175, 95, 0.35);
+}
+
+.exec-rail__block--gold .exec-rail__meta {
+  color: rgba(248, 244, 236, 0.65);
+}
+
+.data-import-panel .settings-stat-card {
+  background: var(--fin-champagne);
+  border-color: rgba(15, 23, 41, 0.08);
+}
+
+.portal-card--flat h3 {
+  font-family: var(--portal-display);
+  letter-spacing: 0.02em;
+}

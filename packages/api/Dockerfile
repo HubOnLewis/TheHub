@@ -1,8 +1,8 @@
 # packages/api/Dockerfile
-# Production build for the MTTE Core API.
+# Production build for The Hub CRM API.
 # ─────────────────────────────────────────────────────────────────
-# Build:  docker build -f packages/api/Dockerfile -t mtte-api .
-# Run:    docker run -p 3001:3001 --env-file .env mtte-api
+# Build:  docker build -f packages/api/Dockerfile -t hub-crm-api .
+# Run:    docker run -p 3001:3001 --env-file .env hub-crm-api
 # ─────────────────────────────────────────────────────────────────
 
 # ── Stage 1: Builder ─────────────────────────────────────────────

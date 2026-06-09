@@ -1,7 +1,7 @@
 // packages/web/src/components/InteractionDetailPanel.tsx
 import { useEffect, useState } from 'react';
-import { INTERACTION_OUTCOMES, INTERACTION_TYPES, INTERACTION_DIRECTIONS } from '@mtte-core/shared';
-import type { PatchInteractionRequestPayload } from '@mtte-core/shared';
+import { INTERACTION_OUTCOMES, INTERACTION_TYPES, INTERACTION_DIRECTIONS } from '@hub-crm/shared';
+import type { PatchInteractionRequestPayload } from '@hub-crm/shared';
 import { EmptyState, Spinner } from './ui/index.js';
 import {
   useInteraction, useAddInteractionAttachment, useUpdateInteraction, useRemoveInteractionAttachment,
@@ -222,7 +222,7 @@ export default function InteractionDetailPanel({
 
               {row.relatedDealId && (
                 <div style={{ fontSize: 12, marginBottom: 8 }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Linked deal: </span>
+                  <span style={{ color: 'var(--text-secondary)' }}>Linked opportunity: </span>
                   {dealTitles.get(row.relatedDealId) ?? row.relatedDealId}
                 </div>
               )}

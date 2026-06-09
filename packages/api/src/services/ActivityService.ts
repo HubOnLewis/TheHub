@@ -4,8 +4,8 @@ import type { TenantContext } from '../tenancy/index.js';
 import { ActivityRepository } from '../repositories/ActivityRepository.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { ActivityType } from '@mtte-core/shared';
-import { ACTIVITY_TYPES } from '@mtte-core/shared';
+import type { ActivityType } from '@hub-crm/shared';
+import { ACTIVITY_TYPES } from '@hub-crm/shared';
 import { NotFoundError, ValidationError } from '../errors/index.js';
 
 export interface CreateActivityPayload {

@@ -1,5 +1,5 @@
 // scripts/import-qrf-data.mjs
-// Generates demo Deals + Units from the QRF price book templates.
+// Demo generator: sample catalog → opportunities + booking records (legacy truck templates).
 //
 // These files are BUILD ESTIMATOR TEMPLATES (no customer data filled in).
 // The Look Up Data sheets contain the real product catalog with pricing.
@@ -33,7 +33,7 @@ const envVars = Object.fromEntries(
     .map(l => { const i = l.indexOf('='); return [l.slice(0, i).trim(), l.slice(i + 1).trim()]; })
 );
 const MONGODB_URI = envVars['MONGODB_URI'];
-const DB_NAME     = envVars['DB_NAME'] ?? 'mtte_core';
+const DB_NAME     = envVars['DB_NAME'] ?? 'hub_crm';
 if (!MONGODB_URI) { console.error('MONGODB_URI not found in .env'); process.exit(1); }
 
 // ── Excel file paths ──────────────────────────────────────────────
@@ -223,7 +223,7 @@ async function main() {
 
     // Create unit first so we can link dealId
     const unitVin = fakeVin(index + 100);
-    const stockNum = `MTTE-${2025 + (index % 2)}-${String(index + 1).padStart(3, '0')}`;
+    const stockNum = `DEMO-${2025 + (index % 2)}-${String(index + 1).padStart(3, '0')}`;
 
     // Check for existing unit by stock number
     const existingUnit = await unitsCol.findOne({ tenantId: TENANT, stockNumber: stockNum });

@@ -8,7 +8,7 @@
 
     "noEmit": true,
     "paths": {
-      "@mtte-core/shared": ["../shared/src/index.ts"]
+      "@hub-crm/shared": ["../shared/src/index.ts"]
     }
   },
   "include": ["src", "../shared/src"]
