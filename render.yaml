@@ -59,7 +59,7 @@ services:
       && npm run build --workspace=packages/shared
       && npm run build --workspace=packages/api
 
-    startCommand: node packages/api/dist/server.js
+    startCommand: npm run start --workspace=packages/api
 
     preDeployCommand: node scripts/render-bootstrap-admin.mjs
 
