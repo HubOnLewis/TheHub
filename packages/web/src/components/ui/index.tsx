@@ -5,6 +5,7 @@ import BrandLogo from '../BrandLogo.js';
 export { StatusBadge } from './StatusBadge.js';
 export { MetricHeroCard } from './MetricHeroCard.js';
 export { SkeletonBlock, DashboardSkeleton, TableSkeleton } from './Skeleton.js';
+export { VenueContextFields } from './VenueContextFields.js';
 
 // ── Modal ─────────────────────────────────────────────────────────
 interface ModalProps {

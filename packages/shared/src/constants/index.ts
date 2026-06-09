@@ -1,8 +1,19 @@
 // packages/shared/src/constants/index.ts
 
-/** Tenant entity codes on stored rows — internal compatibility list; prefer `HUB` for HuB on Lewis / greenfield users. */
-export const ENTITIES = ['WKI', 'HUB', 'PacLease'] as const;
-export const LOCATIONS = ['Wichita', 'Dodge City', 'Salina', 'Liberal', 'Garden City'] as const;
+/** HuB on Lewis — single-venue deployment (Wichita only). */
+export const ENTITIES = ['HUB'] as const;
+export const LOCATIONS = ['Wichita'] as const;
+
+export type Entity   = (typeof ENTITIES)[number];
+export type Location = (typeof LOCATIONS)[number];
+
+export const DEFAULT_ENTITY: Entity = 'HUB';
+export const DEFAULT_LOCATION: Location = 'Wichita';
+export const VENUE_NAME = 'HuB on Lewis';
+export const VENUE_FULL_LABEL = `${VENUE_NAME} · Wichita, KS`;
+
+/** True when the deployment exposes one entity × one location (hide pickers in forms). */
+export const IS_SINGLE_VENUE = ENTITIES.length === 1 && LOCATIONS.length === 1;
 
 export const ROLES = [
   'super_admin',
@@ -126,8 +137,6 @@ export const INTERACTION_OUTCOMES = [
 export const ATTACHMENT_TYPES = ['image', 'document'] as const;
 export const ACCOUNT_PLAN_STATUSES = ['draft', 'active', 'paused', 'completed'] as const;
 
-export type Entity       = typeof ENTITIES[number];
-export type Location     = typeof LOCATIONS[number];
 export type UserRole     = typeof ROLES[number];
 export type LeadStatus   = typeof LEAD_STATUSES[number];
 export type DealStatus   = typeof DEAL_STATUSES[number];
@@ -154,16 +163,31 @@ export type AccountPlanStatus   = typeof ACCOUNT_PLAN_STATUSES[number];
 
 export {
   HUB_LABELS,
-  dealStatusForDisplay, leadStatusForDisplay, entityForDisplay, unitStatusForDisplay, buildStatusForDisplay,
+  dealStatusForDisplay, leadStatusForDisplay, entityForDisplay, roleForDisplay, unitStatusForDisplay, buildStatusForDisplay,
   deliveryRecordStatusForDisplay,
   DEAL_STATUS_DISPLAY, LEAD_STATUS_DISPLAY, UNIT_STATUS_DISPLAY, BUILD_STATUS_DISPLAY,
-  DELIVERY_RECORD_STATUS_DISPLAY,
+  DELIVERY_RECORD_STATUS_DISPLAY, ROLE_DISPLAY,
 } from './uiLabels.js';
 
 /**
  * Build the tenant ID from an entity + location.
- * 'WKI' + 'Dodge City' → 'wki-dodge-city'
+ * 'HUB' + 'Wichita' → 'hub-wichita'
  */
 export function buildTenantId(entity: Entity, location: Location): string {
   return `${entity.toLowerCase()}-${location.toLowerCase().replace(/\s+/g, '-')}`;
+}
+
+/** Coerce legacy imported entity codes to the active venue entity. */
+export function normalizeEntity(entity: string | undefined): Entity {
+  return DEFAULT_ENTITY;
+}
+
+/** Coerce legacy location values to the active venue city. */
+export function normalizeLocation(location: string | undefined): Location {
+  return DEFAULT_LOCATION;
+}
+
+/** User-facing label for stored tenant slugs (legacy slugs map to the same venue). */
+export function tenantForDisplay(tenantId: string): string {
+  return VENUE_FULL_LABEL;
 }

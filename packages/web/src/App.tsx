@@ -2,7 +2,7 @@ import { useLayoutEffect, useState, type ReactNode } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from './store/index.js';
 import { NavIcons } from './components/NavIcons.js';
-import { HUB_LABELS } from '@hub-crm/shared';
+import { HUB_LABELS, roleForDisplay } from '@hub-crm/shared';
 import { ROUTES, CLIENT_SIMPLE_PATHS } from './config/paths.js';
 import LegacyModuleGate from './components/LegacyModuleGate.js';
 import Login         from './pages/Login.js';
@@ -262,7 +262,7 @@ function Shell() {
           </button>
           <TopbarStatus slim={isDashboard} />
           <div className="topbar-actions">
-            <span className="topbar-role">{user?.role?.replace(/_/g, ' ')}</span>
+            <span className="topbar-role">{user?.role ? roleForDisplay(user.role) : ''}</span>
           </div>
         </header>
         <ClientReviewBanner />

@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useUnits, useUnitSummary, useUnitMutations } from '../hooks/useUnits.js';
-import { Modal, StatusSelect, EmptyState, Spinner, Pagination } from '../components/ui/index.js';
+import { Modal, StatusSelect, EmptyState, Spinner, Pagination, VenueContextFields } from '../components/ui/index.js';
 import { useAppStore } from '../store/index.js';
 import {
-  CreateUnitSchema, UNIT_STATUSES, ENTITIES, LOCATIONS,
+  CreateUnitSchema, UNIT_STATUSES, DEFAULT_ENTITY, DEFAULT_LOCATION,
   type CreateUnitPayload, type UnitStatus, formatCurrency, timeAgo,
-  unitStatusForDisplay, entityForDisplay, HUB_LABELS,
+  unitStatusForDisplay, normalizeEntity, normalizeLocation, HUB_LABELS,
 } from '@hub-crm/shared';
 
 type Unit = {
@@ -179,8 +179,8 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
     resolver: zodResolver(CreateUnitSchema),
     defaultValues: {
       year: new Date().getFullYear(), make: 'TBD',
-      entity:   (defaultEntity   as never) ?? 'HUB',
-      location: (defaultLocation as never) ?? 'Wichita',
+      entity:   normalizeEntity(defaultEntity),
+      location: normalizeLocation(defaultLocation),
       status: 'prospect',
     },
   });
@@ -224,21 +224,10 @@ function UnitForm({ defaultEntity, defaultLocation, onSubmit }: {
           <label className="form-label">Color</label>
           <input {...register('color')} className="form-input" placeholder="White" />
         </div>
+        <VenueContextFields register={register} />
         <div className="form-group">
-          <label className="form-label">Entity</label>
-          <select {...register('entity')} className="form-select">
-            {ENTITIES.map(e => <option key={e} value={e}>{entityForDisplay(e)}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Location</label>
-          <select {...register('location')} className="form-select">
-            {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label className="form-label">MSRP</label>
-          <input {...register('msrp', { valueAsNumber: true })} type="number" className="form-input" placeholder="165000" />
+          <label className="form-label">Package value</label>
+          <input {...register('msrp', { valueAsNumber: true })} type="number" className="form-input" placeholder="12500" />
         </div>
         <div className="form-group">
           <label className="form-label">Status</label>

@@ -89,15 +89,22 @@ export function leadStatusForDisplay(status: string): string {
   return LEAD_STATUS_DISPLAY[status] ?? status;
 }
 
-/** Entity codes on user/records; legacy codes may still appear in imported data. */
-export function entityForDisplay(entity: string): string {
-  const map: Record<string, string> = {
-    WKI: 'Partner org (legacy)',
-    MTTE: 'The Hub',
-    HUB: 'The Hub',
-    PacLease: 'PacLease',
-  };
-  return map[entity] ?? entity;
+/** Entity codes on user/records — always shown as the HuB venue (legacy codes normalized). */
+export function entityForDisplay(_entity: string): string {
+  return 'HuB on Lewis';
+}
+
+export const ROLE_DISPLAY: Record<string, string> = {
+  super_admin: 'Super Admin',
+  admin: 'Admin',
+  management: 'Management',
+  sales: 'Sales',
+  service: 'Service',
+  parts: 'Parts',
+};
+
+export function roleForDisplay(role: string): string {
+  return ROLE_DISPLAY[role] ?? role.replace(/_/g, ' ');
 }
 
 /** Legacy unit/booking workflow stages (stored values unchanged). */

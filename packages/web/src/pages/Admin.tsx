@@ -6,12 +6,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import client from '../api/client.js';
-import { Modal, EmptyState, Spinner, KPICard } from '../components/ui/index.js';
+import { Modal, EmptyState, Spinner, KPICard, VenueContextFields } from '../components/ui/index.js';
 import { useAppStore } from '../store/index.js';
 import {
-  ENTITIES, LOCATIONS, ROLES, CreateUserSchema,
+  ROLES, CreateUserSchema, DEFAULT_ENTITY, DEFAULT_LOCATION, IS_SINGLE_VENUE,
   type Entity, type Location, type UserRole, type CreateUserPayload,
-  formatCurrency, entityForDisplay, HUB_LABELS, dealStatusForDisplay, leadStatusForDisplay,
+  formatCurrency, roleForDisplay, tenantForDisplay, HUB_LABELS,
+  dealStatusForDisplay, leadStatusForDisplay, normalizeEntity, normalizeLocation,
 } from '@hub-crm/shared';
 
 // ── Types ─────────────────────────────────────────────────────────
@@ -124,8 +125,8 @@ export default function Admin() {
           <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
             <KPICard label="Total Users"  value={users.length}                                                         colorVar="--status-new" />
             <KPICard label="Active"       value={users.filter(u => u.active).length}                                   colorVar="--status-approved" />
-            <KPICard label="Tenants"      value={Object.keys(byTenant).length}                                         colorVar="--status-inbuild" />
-            <KPICard label="Mgmt / Admin" value={users.filter(u => ['management','admin'].includes(u.role)).length}    colorVar="--red" />
+            <KPICard label="Venue"        value={IS_SINGLE_VENUE ? 1 : Object.keys(byTenant).length}                      colorVar="--status-inbuild" />
+            <KPICard label="Mgmt / Admin" value={users.filter(u => ['management','admin','super_admin'].includes(u.role)).length} colorVar="--red" />
           </div>
 
           {usersLoading ? (
@@ -138,7 +139,7 @@ export default function Admin() {
               .map(([tenantId, tenantUsers]) => (
                 <div key={tenantId} className="card" style={{ marginBottom: 14 }}>
                   <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fafbfc' }}>
-                    <span style={{ fontFamily: 'var(--font-cond)', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>{tenantId}</span>
+                    <span style={{ fontFamily: 'var(--font-cond)', fontSize: 14, fontWeight: 700, letterSpacing: '0.5px' }}>{tenantForDisplay(tenantId)}</span>
                     <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{tenantUsers.length} users</span>
                   </div>
                   <table className="data-table">
@@ -151,7 +152,7 @@ export default function Admin() {
                           <td className="table-company">{u.name}</td>
                           <td className="text-sm">{u.email}</td>
                           <td>
-                            <span className={`badge ${u.role === 'management' || u.role === 'admin' ? 'badge-approved' : 'badge-inbuild'}`}>{u.role}</span>
+                            <span className={`badge ${u.role === 'management' || u.role === 'admin' || u.role === 'super_admin' ? 'badge-approved' : 'badge-inbuild'}`}>{roleForDisplay(u.role)}</span>
                           </td>
                           <td>
                             <span className={`badge ${u.active ? 'badge-new' : 'badge-lost'}`}>{u.active ? 'Active' : 'Inactive'}</span>
@@ -187,19 +188,19 @@ export default function Admin() {
         <div>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             <div className="card">
-              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>Leads by Location</div>
+              <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>Leads overview</div>
               <table className="data-table">
-                <thead><tr><th>Tenant</th><th>Leads</th></tr></thead>
-                <tbody>{stats.leadsByTenant.map(row => (<tr key={row._id}><td className="table-company">{row._id}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, fontSize: 16 }}>{row.count}</td></tr>))}</tbody>
+                <thead><tr><th>Venue</th><th>Leads</th></tr></thead>
+                <tbody>{stats.leadsByTenant.map(row => (<tr key={row._id}><td className="table-company">{tenantForDisplay(row._id)}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, fontSize: 16 }}>{row.count}</td></tr>))}</tbody>
               </table>
             </div>
             <div className="card">
               <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>
-                Pipeline by Location <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 8 }}>{formatCurrency(totalPipeline)} active</span>
+                Pipeline overview <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-secondary)', marginLeft: 8 }}>{formatCurrency(totalPipeline)} active</span>
               </div>
               <table className="data-table">
-                <thead><tr><th>Tenant</th><th>{HUB_LABELS.opportunities}</th><th>Value</th></tr></thead>
-                <tbody>{stats.dealsByTenant.map(row => (<tr key={row._id}><td className="table-company">{row._id}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600 }}>{row.count}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td></tr>))}</tbody>
+                <thead><tr><th>Venue</th><th>{HUB_LABELS.opportunities}</th><th>Value</th></tr></thead>
+                <tbody>{stats.dealsByTenant.map(row => (<tr key={row._id}><td className="table-company">{tenantForDisplay(row._id)}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600 }}>{row.count}</td><td style={{ fontFamily: 'var(--font-cond)', fontWeight: 600, color: 'var(--red)' }}>{formatCurrency(row.totalAmount)}</td></tr>))}</tbody>
               </table>
             </div>
             <div className="card">
@@ -239,10 +240,10 @@ export default function Admin() {
             </div>
           </div>
           {[
-            { name: 'Karmak Fusion', description: 'DMS sync — customers, orders, invoices',      status: 'stub' },
-            { name: 'Decisiv',       description: 'Service case communication and ETR tracking', status: 'stub' },
-            { name: 'Email Ingest',  description: 'Create leads from inbound email',             status: 'stub' },
-            { name: 'Excel Import',  description: 'Bulk lead import from spreadsheets',          status: 'planned' },
+            { name: 'Google Calendar', description: 'Sync venue holds, tours, and event blocks',   status: 'planned' },
+            { name: 'Email Ingest',    description: 'Create leads from inbound venue inquiries', status: 'stub' },
+            { name: 'Excel Import',      description: 'Bulk lead import from spreadsheets',        status: 'planned' },
+            { name: 'Stripe / Billing', description: 'Deposits, invoices, and payment links',     status: 'planned' },
           ].map(integration => (
             <div key={integration.name} className="card" style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
@@ -259,12 +260,12 @@ export default function Admin() {
             <div className="card">
               <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-cond)', fontSize: 16, fontWeight: 700 }}>Sync History</div>
               <table className="data-table">
-                <thead><tr><th>Service</th><th>Tenant</th><th>Last Sync</th><th>Records</th></tr></thead>
+                <thead><tr><th>Service</th><th>Venue</th><th>Last Sync</th><th>Records</th></tr></thead>
                 <tbody>
                   {(syncStatus as any[]).map((s, i) => (
                     <tr key={i}>
                       <td className="table-company">{s.service}</td>
-                      <td className="text-sm">{s.tenantId}</td>
+                      <td className="text-sm">{tenantForDisplay(s.tenantId)}</td>
                       <td className="text-sm text-muted">{s.lastSyncAt ? new Date(s.lastSyncAt).toLocaleString() : '—'}</td>
                       <td className="text-sm">{s.customersSynced ?? '—'}</td>
                     </tr>
@@ -306,8 +307,8 @@ function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; 
       email:    existingUser?.email    ?? '',
       password: '',
       role:     existingUser?.role     ?? 'sales',
-      entity:   existingUser?.entity   ?? 'HUB',
-      location: existingUser?.location ?? 'Wichita',
+      entity:   normalizeEntity(existingUser?.entity),
+      location: normalizeLocation(existingUser?.location),
     },
   });
 
@@ -332,21 +333,10 @@ function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; 
         <div className="form-group">
           <label className="form-label">Role</label>
           <select {...register('role')} className="form-select">
-            {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+            {ROLES.map(r => <option key={r} value={r}>{roleForDisplay(r)}</option>)}
           </select>
         </div>
-        <div className="form-group">
-          <label className="form-label">Entity</label>
-          <select {...register('entity')} className="form-select">
-            {ENTITIES.map(e => <option key={e} value={e}>{entityForDisplay(e)}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label className="form-label">Location</label>
-          <select {...register('location')} className="form-select">
-            {LOCATIONS.map(l => <option key={l} value={l}>{l}</option>)}
-          </select>
-        </div>
+        <VenueContextFields register={register} />
       </div>
     </form>
   );

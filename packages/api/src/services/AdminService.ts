@@ -6,7 +6,7 @@ import { LeadRepository } from '../repositories/LeadRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { ConflictError, NotFoundError } from '../errors/index.js';
 import type { CreateUserPayload } from '@hub-crm/shared';
-import { buildTenantId } from '@hub-crm/shared';
+import { buildTenantId, normalizeEntity, normalizeLocation } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
 
 export class AdminService {
@@ -18,7 +18,9 @@ export class AdminService {
     const existing = await UserRepository.findByEmail(db, payload.email);
     if (existing) throw new ConflictError('Email already in use');
 
-    const tenantId = buildTenantId(payload.entity as Entity, payload.location as Location);
+    const entity   = normalizeEntity(payload.entity);
+    const location = normalizeLocation(payload.location);
+    const tenantId = buildTenantId(entity, location);
     const hashed   = await bcrypt.hash(payload.password, 12);
 
     const inserted = await UserRepository.insertOne(db, { tenantId } as never, {
@@ -27,8 +29,8 @@ export class AdminService {
       email:        payload.email.toLowerCase(),
       passwordHash: hashed,
       role:         payload.role,
-      entity:       payload.entity,
-      location:     payload.location,
+      entity,
+      location,
       active:       true,
       createdAt:    new Date(),
       updatedAt:    new Date(),
