@@ -18,28 +18,6 @@ const App = React.lazy(() => import('./App.js'));
 
 
 
-// One-time migration from legacy CRM auth storage key → Hub-branded key
-
-(() => {
-
-  try {
-
-    const legacy = localStorage.getItem('mtte-auth');
-
-    if (legacy && !localStorage.getItem('hub-crm-auth')) {
-
-      localStorage.setItem('hub-crm-auth', legacy);
-
-      localStorage.removeItem('mtte-auth');
-
-    }
-
-  } catch { /* ignore */ }
-
-})();
-
-
-
 // Apply theme before first paint (default dark for operational demo)
 
 (() => {

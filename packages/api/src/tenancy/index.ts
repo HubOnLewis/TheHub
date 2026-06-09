@@ -2,7 +2,7 @@
 //
 // TENANT ARCHITECTURE
 // ───────────────────
-// TenantId format: "<entity_slug>-<location_slug>"  e.g. "wki-wichita", "hub-wichita"
+// TenantId format: "<entity_slug>-<location_slug>"  e.g. "hub-wichita"
 //
 // Every authenticated request resolves to exactly one TenantContext.
 // The context flows through req.tenant and is injected into every

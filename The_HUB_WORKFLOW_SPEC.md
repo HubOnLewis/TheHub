@@ -1,10 +1,10 @@
-# MTTE Core — Dealership Workflow Specification
+# The Hub CRM — Venue Workflow Specification
 
-**Status:** Phase 2 locked  
-**Controls:** MTTE_CORE_BUILD_DIRECTION.md  
+**Status:** Phase 2 locked
+**Controls:** The Hub CRM product direction
 **Scope:** Lead lifecycle, deal lifecycle, ownership rules, stale logic, required fields, manager visibility
 
-This file defines how the sales workflow operates inside MTTE Core.
+This file defines how the venue workflow operates inside The Hub CRM.
 It is the reference for every status, field, and rule decision made during Phase 2 and 3 builds.
 
 ---
@@ -99,9 +99,9 @@ Any active stage → Lost
 
 ### Cross-Tenant Visibility
 - `sales` role sees only their tenant (entity + location).
-- `management` role sees their entity across locations (all WKI locations, or all MTTE locations).
+- `management` role sees HuB on Lewis operational records for Wichita.
 - `admin` and `super_admin` see everything across all entities.
-- No cross-entity visibility for sales — a Wichita WKI rep cannot see MTTE Dodge City records.
+- No cross-entity or cross-location behavior is exposed; HuB on Lewis is a single Wichita venue.
 
 ### Accountability on Stale Records
 - Managers can view any stale record in their scope and reassign it.
@@ -177,7 +177,7 @@ Stale detection drives the accountability layer. These thresholds are operationa
 
 This section drives dashboard and list design in Phase 3.
 
-A sales manager opening MTTE Core should immediately see:
+A venue operator opening The Hub CRM should immediately see:
 
 ### Critical / Needs Action Today
 - Leads at **New** with no touch in > 1 day
@@ -206,7 +206,7 @@ A sales manager opening MTTE Core should immediately see:
 
 ## 7. Unit–Deal Linkage
 
-Units (inventory) are the physical product the dealership sells. They connect to deals.
+Units are legacy operational records and are hidden behind feature flags for the HuB on Lewis venue build.
 
 **Rules:**
 - A unit can be linked to at most one active deal (status not Lost/Delivered). Enforcing this uniqueness in the DB/service layer is a Phase 3 task.

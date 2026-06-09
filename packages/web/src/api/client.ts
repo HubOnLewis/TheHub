@@ -4,7 +4,6 @@ import { isScreenshotMode } from '../config/screenshotMode.js';
 import { createScreenshotMockAdapter } from './screenshotApiMock.js';
 
 const AUTH_TOKEN_KEY = 'hub_crm_token';
-const LEGACY_TOKEN_KEY = 'mtte_token';
 
 /**
  * API routes live under `/api` on the Express server (e.g. POST /api/auth/login).
@@ -22,7 +21,7 @@ function normalizeApiBaseUrl(): string {
 
 function getStoredToken(): string | null {
   if (typeof localStorage === 'undefined') return null;
-  return localStorage.getItem(AUTH_TOKEN_KEY) ?? localStorage.getItem(LEGACY_TOKEN_KEY);
+  return localStorage.getItem(AUTH_TOKEN_KEY);
 }
 
 const client = axios.create({
@@ -44,7 +43,6 @@ client.interceptors.response.use(
   err => {
     if (err.response?.status === 401) {
       localStorage.removeItem(AUTH_TOKEN_KEY);
-      localStorage.removeItem(LEGACY_TOKEN_KEY);
       window.location.href = '/login';
     }
     return Promise.reject(err);

@@ -1,8 +1,8 @@
 // scripts/mongo-init.js
 // Runs once when the MongoDB container is first initialised.
-// Creates the application database (default: hub_crm or mtte_core), applies indexes.
+// Creates the application database (default: hub_crm), applies indexes.
 
-// New local/docker installs use hub_crm. Legacy deployments may still use mtte_core — align with DB_NAME in your environment.
+// New local/docker installs use hub_crm — align DB_NAME with your environment.
 const db = db.getSiblingDB('hub_crm');
 
 // ── Indexes ────────────────────────────────────────────────────────

@@ -5,7 +5,7 @@
 //   node scripts/import-voze-activities.mjs --tenant <tenantId>
 //
 // Options:
-//   --tenant <tenantId>   Required. e.g. wki-wichita
+//   --tenant <tenantId>   Required. e.g. hub-wichita
 //   --dry-run             Preview without writing to the database
 //
 // Run AFTER import-voze-companies.mjs.
@@ -27,7 +27,7 @@ const isDryRun  = args.includes('--dry-run');
 
 if (tenantIdx === -1 || !args[tenantIdx + 1]) {
   console.error('[import-activities] --tenant <tenantId> is required');
-  console.error('  Example: node scripts/import-voze-activities.mjs --tenant wki-wichita');
+  console.error('  Example: node scripts/import-voze-activities.mjs --tenant hub-wichita');
   process.exit(1);
 }
 

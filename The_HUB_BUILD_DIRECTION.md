@@ -1,8 +1,8 @@
-# MTTE Core — Build Direction and Control File
+# The Hub CRM — Build Direction and Control File
 
-> **Note (2026):** The product has been rebranded to **The Hub CRM**. This document is retained for historical context; use `README.md` and the live codebase for current scope.
+> **Note (2026):** This document has been updated for **The Hub CRM** and HuB on Lewis. Use `README.md` and the live codebase for current scope.
 
-This file was the forward-looking source of truth for the original MTTE Core build as we moved from concept and scaffolding into execution.
+This file is the forward-looking source of truth for The Hub CRM as the product moves from concept and scaffolding into execution.
 
 It is intentionally high level. It is not a recap document. It exists to keep implementation aligned, prevent drift, and give both ChatGPT and Claude a stable project reference.
 
@@ -10,7 +10,7 @@ It is intentionally high level. It is not a recap document. It exists to keep im
 
 ## 1) Product Intent
 
-MTTE Core is the internal operating platform intended to replace the current Voze-style CRM workflow for MTTE and eventually support the wider dealership group where appropriate.
+The Hub CRM is the internal operating platform for HuB on Lewis, focused on the venue's lead, event, marketing, referral, and owner-intelligence workflows.
 
 The app is not just a lead tracker. It should become the operational sales core for:
 
@@ -19,15 +19,15 @@ The app is not just a lead tracker. It should become the operational sales core 
 - unit inventory visibility
 - accountability by salesperson, manager, entity, and location
 - administrative control of users, roles, and tenant scope
-- future integration with Karmak/Fusion and other dealership workflows
+- future integration with venue, payments, marketing, and communications workflows
 
-The build should stay grounded in real dealership operations, not generic SaaS CRM patterns.
+The build should stay grounded in real HuB on Lewis venue operations, not generic SaaS CRM patterns.
 
 ---
 
 ## 2) What We Are Actually Building
 
-We are building a **multi-tenant dealership sales operations platform** with three layers:
+We are building a **single-venue operating platform** with three layers:
 
 ### Layer A — Core CRM foundation
 The minimum business-critical replacement for Voze:
@@ -51,7 +51,7 @@ What makes this valuable beyond a generic CRM:
 - clean dashboards by location/entity
 - controlled workflow states instead of loose note chaos
 
-### Layer C — Future dealership intelligence/integration layer
+### Layer C — Future venue intelligence/integration layer
 Only after the core is stable:
 
 - Karmak/Fusion sync
@@ -167,7 +167,7 @@ The current scaffold can be trusted for internal usage and expansion.
 ---
 
 ## Phase 2 — Lock the business workflow
-Goal: define how MTTE actually wants sales operations to function.
+Goal: define how HuB on Lewis actually wants venue operations to function.
 
 This phase is not mainly code. It is workflow design.
 
@@ -225,7 +225,7 @@ Only after this should major integration-heavy work accelerate.
 The product should feel:
 
 - disciplined
-- dealership-specific
+- venue-specific
 - fast
 - operational
 - accountable
@@ -271,7 +271,7 @@ Units should support:
 - VIN / stock lookup
 - status
 - assignment or linkage to deals
-- dealership-usable visibility rather than consumer listing language
+- venue-usable visibility rather than consumer listing language
 
 ## D. Tenant and role clarity
 This is central to the architecture and should stay clean.
@@ -353,12 +353,12 @@ When prompting Claude for implementation help:
 - reference this file first
 - tell Claude to preserve current architecture unless specifically asked otherwise
 - require focused changes, not broad rewrites
-- require dealership/business relevance in UI and workflow decisions
+- require venue/business relevance in UI and workflow decisions
 - require tenant safety and role clarity in backend changes
 - require minimal-diff implementation when fixing known issues
 
 ### Suggested steering line for Claude
-“Use `MTTE_CORE_BUILD_DIRECTION.md` as the controlling project document. Do not drift into generic CRM patterns. Preserve the current monorepo architecture unless a change is explicitly requested. Favor minimal-diff, production-minded implementation that strengthens tenant-safe dealership sales workflow.”
+“Use The Hub product direction as the controlling project context. Do not drift into generic CRM patterns. Preserve the current monorepo architecture unless a change is explicitly requested. Favor minimal-diff, production-minded implementation that strengthens single-venue HuB on Lewis workflows.”
 
 ---
 
@@ -383,13 +383,13 @@ The practical next move is:
 
 ## 14) Non-Negotiable Success Criteria
 
-MTTE Core is successful only if:
+The Hub CRM is successful only if:
 
 - it can actually replace daily Voze-style usage
 - managers can trust what they see
 - sales staff know exactly what they own
 - tenant boundaries stay reliable
-- the workflow feels tailored to dealership operations
+- the workflow feels tailored to HuB on Lewis venue operations
 - future integrations can attach cleanly without re-architecting the whole app
 
 If a feature does not move one of those outcomes forward, it is probably not the next thing to build.

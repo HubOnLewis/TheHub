@@ -7,8 +7,8 @@
 // realistic active pipeline for demo purposes.
 //
 // Usage:
-//   node scripts/import-qrf-data.mjs --tenant wki-wichita
-//   node scripts/import-qrf-data.mjs --tenant wki-wichita --dry-run
+//   node scripts/import-qrf-data.mjs --tenant hub-wichita
+//   node scripts/import-qrf-data.mjs --tenant hub-wichita --dry-run
 
 import XLSX from 'xlsx';
 import { MongoClient, ObjectId } from 'mongodb';
@@ -104,7 +104,7 @@ function daysAgo(n) {
 // ── Generate a fake-but-plausible VIN ─────────────────────────────
 function fakeVin(index) {
   const chars = 'ABCDEFGHJKLMNPRSTUVWXYZ0123456789';
-  const prefix = 'WKI2026';
+  const prefix = 'HUB2026';
   let suffix = '';
   let seed = index * 7919 + 12345;
   for (let i = 0; i < 10; i++) {
@@ -239,7 +239,7 @@ async function main() {
         model:       product.unitType,
         spec:        product.description.slice(0, 200),
         msrp:        amount,
-        entity:      'WKI',
+        entity:      'HUB',
         location:    'Wichita',
         status:      ['Won', 'Delivered', 'In Build'].includes(status) ? 'Reserved' : 'Available',
         dealId:      null,   // will update after deal insert

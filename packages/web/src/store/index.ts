@@ -3,7 +3,6 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const AUTH_TOKEN_KEY = 'hub_crm_token';
-const LEGACY_TOKEN_KEY = 'mtte_token';
 
 export interface AppUser {
   id:       string;
@@ -43,13 +42,11 @@ export const useAppStore = create<AppStore>()(
 
       login: (user, token) => {
         localStorage.setItem(AUTH_TOKEN_KEY, token);
-        localStorage.removeItem(LEGACY_TOKEN_KEY);
         set({ user, token, activeTenantId: user.tenantId || null });
       },
 
       logout: () => {
         localStorage.removeItem(AUTH_TOKEN_KEY);
-        localStorage.removeItem(LEGACY_TOKEN_KEY);
         set({ user: null, token: null, activeTenantId: null });
       },
 

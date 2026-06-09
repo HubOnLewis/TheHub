@@ -93,7 +93,7 @@ export const adminService = new AdminService();
 //
 // TENANT ARCHITECTURE
 // ───────────────────
-// TenantId format: "<entity_slug>-<location_slug>"  e.g. "wki-wichita", "mtte-dodge-city"
+// TenantId format: "<entity_slug>-<location_slug>"  e.g. "hub-wichita"
 //
 // Every authenticated request resolves to exactly one TenantContext.
 // The context flows through req.tenant and is injected into every
@@ -184,7 +184,7 @@ export function tenantFilter(ctx: TenantContext): Record<string, string> {
 
 ### Fix 3 — `packages/api/src/services/DealService.ts`
 
-**Bug:** `ctx.tenantId ?? ctx.defaultEntity` writes raw entity name (e.g., `"WKI"`) as a tenantId when a cross-tenant user creates a deal without an override header.
+**Bug:** `ctx.tenantId ?? ctx.defaultEntity` writes raw entity name (e.g., `"HUB"`) as a tenantId when a cross-tenant user creates a deal without an override header.
 
 ```typescript
 // packages/api/src/services/DealService.ts
@@ -618,7 +618,7 @@ export const adminService = new AdminService();
 //
 // TENANT ARCHITECTURE
 // ───────────────────
-// TenantId format: "<entity_slug>-<location_slug>"  e.g. "wki-wichita", "mtte-dodge-city"
+// TenantId format: "<entity_slug>-<location_slug>"  e.g. "hub-wichita"
 //
 // Every authenticated request resolves to exactly one TenantContext.
 // The context flows through req.tenant and is injected into every
@@ -709,7 +709,7 @@ export function tenantFilter(ctx: TenantContext): Record<string, string> {
 
 ### Fix 3 — `packages/api/src/services/DealService.ts`
 
-**Bug:** `ctx.tenantId ?? ctx.defaultEntity` writes raw entity name (e.g., `"WKI"`) as a tenantId when a cross-tenant user creates a deal without an override header.
+**Bug:** `ctx.tenantId ?? ctx.defaultEntity` writes raw entity name (e.g., `"HUB"`) as a tenantId when a cross-tenant user creates a deal without an override header.
 
 ```typescript
 // packages/api/src/services/DealService.ts
@@ -1143,7 +1143,7 @@ export const adminService = new AdminService();
 //
 // TENANT ARCHITECTURE
 // ───────────────────
-// TenantId format: "<entity_slug>-<location_slug>"  e.g. "wki-wichita", "mtte-dodge-city"
+// TenantId format: "<entity_slug>-<location_slug>"  e.g. "hub-wichita"
 //
 // Every authenticated request resolves to exactly one TenantContext.
 // The context flows through req.tenant and is injected into every
@@ -1234,7 +1234,7 @@ export function tenantFilter(ctx: TenantContext): Record<string, string> {
 
 ### Fix 3 — `packages/api/src/services/DealService.ts`
 
-**Bug:** `ctx.tenantId ?? ctx.defaultEntity` writes raw entity name (e.g., `"WKI"`) as a tenantId when a cross-tenant user creates a deal without an override header.
+**Bug:** `ctx.tenantId ?? ctx.defaultEntity` writes raw entity name (e.g., `"HUB"`) as a tenantId when a cross-tenant user creates a deal without an override header.
 
 ```typescript
 // packages/api/src/services/DealService.ts
@@ -1574,4 +1574,3 @@ const router = Router();
 const loginLimiter = rateLimit({
   windowMs:       60
 ```
-

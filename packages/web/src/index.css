@@ -704,7 +704,7 @@ body {
 .monthly-scorecard__value { font-family: var(--font-cond); font-size: 22px; font-weight: 800; }
 
 /* ── Simplified client-demo pages ───────────────────────────────── */
-.page-simple { max-width: 1100px; }
+.page-simple { width: 100%; max-width: none; }
 .page-intro {
   display: flex;
   justify-content: space-between;
@@ -810,7 +810,7 @@ body {
 .lead-advanced-intel__stagger .command-stagger__tile span { font-size: 11px; color: var(--text-secondary); }
 .lead-advanced-intel__rail { margin-top: 12px; }
 
-.dashboard-simple { display: flex; flex-direction: column; gap: 28px; max-width: 1200px; }
+.dashboard-simple { display: flex; flex-direction: column; gap: 28px; width: 100%; max-width: none; }
 .dashboard-band__title {
   font-family: var(--font-cond);
   font-size: 13px;
@@ -902,7 +902,7 @@ body {
 }
 .deal-advanced__summary::-webkit-details-marker { display: none; }
 .deal-advanced__body { padding: 0 18px 18px; border-top: 1px solid var(--border); }
-.deal-layout-main--simple { max-width: 1100px; }
+.deal-layout-main--simple { width: 100%; max-width: none; }
 .finalization-checklist__group { margin-bottom: 16px; }
 .finalization-checklist__group-title {
   font-size: 12px;

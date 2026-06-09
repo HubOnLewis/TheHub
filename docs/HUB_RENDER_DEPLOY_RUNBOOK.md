@@ -40,7 +40,7 @@ npm run verify:deploy
 
 | Option | When to use |
 |--------|-------------|
-| **Your repo now** | Push to `MikeWKI/MTTECore` (or a new `hub-crm-demo` repo) — fastest |
+| **Your repo now** | Push to `HubOnLewis/TheHub` (or a new `hub-crm-demo` repo) — fastest |
 | **Client GitHub org** | Create org during meeting, add Render GitHub app, connect repo |
 | **GitLab / Bitbucket** | Render supports both — same Blueprint flow |
 

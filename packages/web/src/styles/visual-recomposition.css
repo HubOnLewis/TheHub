@@ -26,6 +26,17 @@
 
 .app-shell .page-content {
   padding: 20px 28px 36px;
+  width: 100%;
+  max-width: none;
+}
+
+.app-shell .main-area,
+.app-shell .command-page,
+.app-shell .dashboard-simple,
+.app-shell .dashboard-product,
+.app-shell .page-simple {
+  width: 100%;
+  max-width: none;
 }
 
 /* Dashboard uses command strip — hide redundant global topbar there only */
@@ -753,7 +764,8 @@
 /* ═══ Dashboard composition reduction (slim) ═══════════════════════ */
 
 .dashboard-page--slim {
-  max-width: 1280px;
+  width: 100%;
+  max-width: none;
 }
 
 .dashboard-page--slim .demo-flow-nav {
