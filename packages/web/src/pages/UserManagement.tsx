@@ -73,7 +73,7 @@ export default function UserManagement({ embedded = false }: { embedded?: boolea
           Invite user
         </button>
         <span className="um-toolbar__hint">
-          Invites and role changes are recorded in the audit trail — no emails sent in client review mode.
+          Invites and role changes are recorded in the audit trail. Email delivery is not enabled yet.
         </span>
       </div>
 
@@ -142,7 +142,7 @@ export default function UserManagement({ embedded = false }: { embedded?: boolea
                           setUsers(prev =>
                             prev.map(x => (x.id === u.id ? { ...x, status: 'active' as const } : x)),
                           );
-                          notify(`${u.name} re-enabled (demo).`);
+                          notify(`${u.name} re-enabled.`);
                         }}
                       >
                         Enable

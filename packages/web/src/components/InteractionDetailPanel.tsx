@@ -7,6 +7,7 @@ import {
   useInteraction, useAddInteractionAttachment, useUpdateInteraction, useRemoveInteractionAttachment,
 } from '../hooks/useInteractions.js';
 import AttachmentUploader from './AttachmentUploader.js';
+import { showInteractionAttachments } from '../config/alphaPresentation.js';
 
 const fmt = (d: string) => new Date(d).toLocaleString();
 
@@ -247,7 +248,7 @@ export default function InteractionDetailPanel({
                 </details>
               )}
 
-              {row.attachments.length > 0 && (
+              {showInteractionAttachments() && row.attachments.length > 0 && (
                 <div style={{ marginTop: 10 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>Attachments</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -309,7 +310,7 @@ export default function InteractionDetailPanel({
                 </div>
               )}
 
-              {canEdit && !edit && (
+              {showInteractionAttachments() && canEdit && !edit && (
                 <div style={{ marginTop: 14 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6 }}>Add attachment</div>
                   <AttachmentUploader

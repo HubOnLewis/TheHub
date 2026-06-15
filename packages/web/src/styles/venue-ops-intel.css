@@ -527,6 +527,7 @@
   border-radius: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 .venue-intel-panel {

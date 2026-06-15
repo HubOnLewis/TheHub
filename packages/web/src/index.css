@@ -94,7 +94,11 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { background: var(--bg); }
+html {
+  background: var(--bg);
+  width: 100%;
+  max-width: 100vw;
+}
 
 body {
   font-family: 'Inter', system-ui, sans-serif;
@@ -103,10 +107,19 @@ body {
   background:  var(--bg);
   line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100vh;
 }
 
 /* ── Layout ──────────────────────────────────────────────────────── */
-.app-shell       { display: flex; height: 100vh; overflow: hidden; }
+.app-shell       { display: flex; width: 100%; max-width: 100vw; height: 100vh; overflow: hidden; }
 .sidebar         {
   width: 248px;
   background: linear-gradient(180deg, var(--surface) 0%, var(--bg-elevated) 100%);
@@ -158,7 +171,7 @@ body {
 }
 .nav-icon { flex-shrink: 0; opacity: 0.85; }
 .nav-link.active .nav-icon { opacity: 1; color: var(--hub-accent, var(--red)); }
-.main-area       { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; background: var(--bg); }
+.main-area       { flex: 1 1 0; display: flex; flex-direction: column; overflow: hidden; min-width: 0; width: 100%; background: var(--bg); }
 .topbar          {
   height: 52px;
   background: var(--surface);
@@ -170,7 +183,7 @@ body {
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
 }
-.page-content    { flex: 1; overflow-y: auto; padding: 28px 32px 40px; }
+.page-content    { flex: 1; min-width: 0; width: 100%; box-sizing: border-box; overflow-y: auto; overflow-x: auto; padding: 28px 32px 40px; }
 
 /* ── Cards & elevation ───────────────────────────────────────────── */
 .card {
@@ -704,7 +717,7 @@ body {
 .monthly-scorecard__value { font-family: var(--font-cond); font-size: 22px; font-weight: 800; }
 
 /* ── Simplified client-demo pages ───────────────────────────────── */
-.page-simple { width: 100%; max-width: none; }
+.page-simple { width: 100%; max-width: none; min-width: 0; }
 .page-intro {
   display: flex;
   justify-content: space-between;
@@ -810,7 +823,7 @@ body {
 .lead-advanced-intel__stagger .command-stagger__tile span { font-size: 11px; color: var(--text-secondary); }
 .lead-advanced-intel__rail { margin-top: 12px; }
 
-.dashboard-simple { display: flex; flex-direction: column; gap: 28px; width: 100%; max-width: none; }
+.dashboard-simple { display: flex; flex-direction: column; gap: 28px; width: 100%; max-width: none; min-width: 0; }
 .dashboard-band__title {
   font-family: var(--font-cond);
   font-size: 13px;

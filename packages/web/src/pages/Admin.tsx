@@ -93,7 +93,7 @@ export default function Admin() {
         {tab === 'users' && (
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
             <Link to={ROUTES.userManagement} className="btn btn-secondary">
-              HuB user roster (demo)
+              HuB user roster
             </Link>
             <button className="btn btn-primary" onClick={openCreate}>+ New User</button>
           </div>

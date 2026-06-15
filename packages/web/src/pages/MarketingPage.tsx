@@ -7,7 +7,7 @@ export default function MarketingPage() {
     <div className="page-simple">
       <PageIntro
         title="Marketing"
-        subtitle="Draft-only campaigns for review. Sending is disabled until approved."
+        subtitle="Draft campaigns for review. Sending is not enabled yet."
       />
       <MarketingBlastsPage embedded />
     </div>

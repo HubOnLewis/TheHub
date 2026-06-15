@@ -89,7 +89,7 @@ export default function Dashboard() {
             <header className="section-head">
               <div>
                 <h2 className="section-head__title">Marketing drafts</h2>
-                <p className="section-head__sub">Draft only — sending disabled until approved.</p>
+                <p className="section-head__sub">Draft campaigns — sending not enabled yet.</p>
               </div>
               <Link to={ROUTES.marketing} className="section-head__action">
                 Open marketing

@@ -42,6 +42,7 @@ import ThemeFooterToggle from './components/ThemeFooterToggle.js';
 import DemoOpsInit from './components/demo/DemoOpsInit.js';
 import OperationalRail from './components/demo/OperationalRail.js';
 import DemoToastStack from './components/demo/DemoToastStack.js';
+import { isDeployedAlpha } from './config/alphaPresentation.js';
 import UserManagement from './pages/UserManagement.js';
 import ReviewNotes from './pages/ReviewNotes.js';
 import AuditTrail from './pages/AuditTrail.js';
@@ -265,11 +266,11 @@ function Shell() {
             <span className="topbar-role">{user?.role ? roleForDisplay(user.role) : ''}</span>
           </div>
         </header>
-        <ClientReviewBanner />
+        {!isDeployedAlpha() && <ClientReviewBanner />}
         <main className={`page-content${isDashboard ? ' page-content--dashboard' : ''}`}>
-          <DemoOpsInit />
-          {!isDashboard && !isSimpleClientPath(pathname) && <OperationalRail />}
-          <DemoToastStack />
+          {!isDeployedAlpha() && <DemoOpsInit />}
+          {!isDeployedAlpha() && !isDashboard && !isSimpleClientPath(pathname) && <OperationalRail />}
+          {!isDeployedAlpha() && <DemoToastStack />}
           <Routes>
             <Route path={ROUTES.dashboard} element={<Dashboard />} />
             <Route path={ROUTES.today} element={<TodayOperations />} />

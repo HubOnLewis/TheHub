@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/index.js';
 import PageIntro from '../../components/layout/PageIntro.js';
+import { isDeployedAlpha } from '../../config/alphaPresentation.js';
 
 type SettingsGroup = {
   label: string;
@@ -58,6 +59,14 @@ export default function SettingsLayout() {
   const isAdmin = role === 'admin' || role === 'super_admin';
   const moduleId = activeModuleId(pathname);
   const [systemOpen, setSystemOpen] = useState(() => SYSTEM_MODULE_IDS.has(moduleId));
+  const visibleGroups = useMemo(
+    () =>
+      SETTINGS_GROUPS.map(group => ({
+        ...group,
+        modules: group.modules.filter(m => !isDeployedAlpha() || m.id !== 'demo-controls'),
+      })).filter(g => g.modules.length > 0),
+    [],
+  );
 
   return (
     <div className="page-simple">
@@ -67,7 +76,7 @@ export default function SettingsLayout() {
       />
       <div className="settings-shell">
         <nav className="settings-nav settings-nav--grouped" aria-label="Settings sections">
-          {SETTINGS_GROUPS.filter(g => !g.adminOnly || isAdmin).map(group => {
+          {visibleGroups.filter(g => !g.adminOnly || isAdmin).map(group => {
             if (group.collapsible) {
               return (
                 <div key={group.label} className="settings-nav-group settings-nav-group--collapsible">
@@ -81,7 +90,7 @@ export default function SettingsLayout() {
                     <span className="settings-nav-group__chevron" aria-hidden>{systemOpen ? '▾' : '▸'}</span>
                   </button>
                   <p className="settings-nav-group__helper">
-                    Admin tools for configuration and diagnostics
+                    Admin tools for configuration
                   </p>
                   {systemOpen ? (
                     <div className="settings-nav-group__items">

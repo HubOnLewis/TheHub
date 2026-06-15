@@ -22,12 +22,23 @@
 
 .app-shell .main-area {
   background: var(--bg);
+  flex: 1 1 0;
+  min-width: 0;
+  width: 100%;
 }
 
 .app-shell .page-content {
   padding: 20px 28px 36px;
+  min-width: 0;
   width: 100%;
   max-width: none;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.app-shell .page-content > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .app-shell .main-area,
@@ -37,6 +48,7 @@
 .app-shell .page-simple {
   width: 100%;
   max-width: none;
+  min-width: 0;
 }
 
 /* Dashboard uses command strip — hide redundant global topbar there only */

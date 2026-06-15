@@ -13,6 +13,7 @@ import {
 } from '@hub-crm/shared';
 import AttachmentUploader from './AttachmentUploader.js';
 import { useAddInteractionAttachment } from '../hooks/useInteractions.js';
+import { showInteractionAttachments } from '../config/alphaPresentation.js';
 
 const TYPE_ICONS: Record<InteractionType, string> = {
   call: '📞', text: '💬', email: '✉️', meeting: '📅', note: '📝', task: '☑', visit: '🏢',
@@ -251,16 +252,20 @@ export default function InteractionComposer({
           </div>
         )}
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Attachments</span>
-          <button type="button" className="btn btn-ghost" style={{ fontSize: 11, padding: '2px 6px' }} onClick={() => setShowAttach(s => !s)}>
-            {showAttach ? 'Hide' : 'Show'}
-          </button>
-        </div>
-        {showAttach && (
-          <div style={{ marginBottom: 10 }}>
-            <AttachmentUploader files={files} onChange={setFiles} disabled={disabled} compact />
-          </div>
+        {showInteractionAttachments() && (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Attachments</span>
+              <button type="button" className="btn btn-ghost" style={{ fontSize: 11, padding: '2px 6px' }} onClick={() => setShowAttach(s => !s)}>
+                {showAttach ? 'Hide' : 'Show'}
+              </button>
+            </div>
+            {showAttach && (
+              <div style={{ marginBottom: 10 }}>
+                <AttachmentUploader files={files} onChange={setFiles} disabled={disabled} compact />
+              </div>
+            )}
+          </>
         )}
 
         {error && <p className="form-error" style={{ marginBottom: 8 }}>{error}</p>}

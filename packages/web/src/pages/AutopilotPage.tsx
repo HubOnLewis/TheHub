@@ -118,9 +118,11 @@ export default function AutopilotPage() {
             <Link to={ROUTES.ownerBriefing} className="btn btn-secondary">
               Owner briefing
             </Link>
-            <Link to={`${ROUTES.settings}/demo-controls`} className="btn btn-ghost" style={{ fontSize: 12 }}>
-              Demo controls
-            </Link>
+            {!import.meta.env.PROD && (
+              <Link to={`${ROUTES.settings}/demo-controls`} className="btn btn-ghost" style={{ fontSize: 12 }}>
+                Demo controls
+              </Link>
+            )}
           </div>
         </div>
       </div>

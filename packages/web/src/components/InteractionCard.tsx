@@ -1,6 +1,7 @@
 // packages/web/src/components/InteractionCard.tsx
 import type { InteractionType } from '@hub-crm/shared';
 import type { InteractionRow } from '../hooks/useInteractions.js';
+import { showInteractionAttachments } from '../config/alphaPresentation.js';
 
 const TYPE_ICONS: Record<InteractionType, string> = {
   call: '📞', text: '💬', email: '✉️', meeting: '📅', note: '📝', task: '☑', visit: '🏢',
@@ -16,7 +17,7 @@ interface Props {
 
 export default function InteractionCard({ row, onOpen }: Props) {
   const icon  = (TYPE_ICONS as Record<string, string>)[row.type] ?? '•';
-  const thumb = row.attachments.find(a => a.type === 'image');
+  const thumb = showInteractionAttachments() ? row.attachments.find(a => a.type === 'image') : undefined;
   return (
     <button
       type="button"

@@ -22,6 +22,7 @@ import {
   SMS_TEMPLATES,
 } from '../../integrations/sms/smsDemoAdapter.js';
 import { useAppStore } from '../../store/index.js';
+import { isDeployedAlpha } from '../../config/alphaPresentation.js';
 import DemoControlsPanel from '../../components/settings/DemoControlsPanel.js';
 import MailchimpSettingsPanel from '../../components/settings/MailchimpSettingsPanel.js';
 import TeamAccessPanel from '../../components/settings/TeamAccessPanel.js';
@@ -91,14 +92,14 @@ function DataImportQualityPanel() {
   return (
     <div className="settings-deep data-import-panel">
       <div className={`data-import-trust${safeForReview ? ' data-import-trust--ok' : ' data-import-trust--warn'}`}>
-        <strong>{safeForReview ? 'Safe for client review' : 'Review before client demo'}</strong>
+        <strong>{safeForReview ? 'Import quality looks good' : 'Review import quality before sharing'}</strong>
         <span>
           Join confidence {joinPct}% proposals · {contactPct}% contacts · PII masked in UI
         </span>
       </div>
 
       <p className="settings-lede">
-        Perfect Venue XLSX — authoritative demo source. Data freshness:{' '}
+        Perfect Venue XLSX import. Data freshness:{' '}
         <strong>{ageHours < 48 ? 'Current' : 'Stale'}</strong> · imported {freshness.toLocaleString()}.
       </p>
 
@@ -217,8 +218,12 @@ function DataImportQualityPanel() {
       )}
 
       <p className="settings-muted" style={{ marginTop: 20 }}>
-        Re-import: <code>npm run import:perfect-venue</code> · Debug JSON:{' '}
-        <code>data/perfect-venue-processed/</code>
+        Re-import: <code>npm run import:perfect-venue</code>
+        {!isDeployedAlpha() && (
+          <>
+            {' '}· Debug JSON: <code>data/perfect-venue-processed/</code>
+          </>
+        )}
       </p>
     </div>
   );
@@ -232,6 +237,13 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
       return <DataImportQualityPanel />;
 
     case 'demo-controls':
+      if (isDeployedAlpha()) {
+        return (
+          <div className="settings-deep">
+            <p className="settings-lede">Demo controls are available in local development only.</p>
+          </div>
+        );
+      }
       return <DemoControlsPanel />;
 
     case 'audit-trail':
@@ -241,7 +253,7 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
             Every operational change is traceable. Human, agent, and automation actions are logged — approvals create a permanent audit trail.
           </p>
           <p className="settings-muted" style={{ marginBottom: 16 }}>
-            Client review changes can be tracked from request to completion.
+            Operational changes can be tracked from request to completion.
           </p>
           <Link to={ROUTES.audit} className="btn btn-primary">
             Open audit trail →
@@ -276,7 +288,7 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
             <p className="settings-muted">{SMS_PROVIDER_STATUS.lastHealthCheck}</p>
           </div>
           <p className="settings-compliance">
-            SMS sending requires opt-in and approved Twilio configuration. No messages are sent in client review mode.
+            SMS sending requires opt-in and approved Twilio configuration. Outbound SMS is not enabled yet.
           </p>
 
           <h4 className="settings-autopilot-h4">SMS templates</h4>
@@ -356,7 +368,7 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
           <div className="settings-provider-card card">
             <h4>Payment provider</h4>
             <p>
-              Status: <strong>Not connected</strong> (client review)
+              Status: <strong>Not connected</strong>
             </p>
             <p className="settings-muted">
               Future paths: Stripe Payment Links, venue processor (e.g. BASYS) — see docs/HUB_PAYMENTS_FOUNDATION.md
@@ -396,7 +408,7 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
             className="btn btn-secondary"
             onClick={() =>
               window.alert(
-                'Payment link would be generated after provider connection. No charge in client review mode.',
+                'Payment link would be generated after provider connection. No charges are processed yet.',
               )
             }
           >
@@ -763,7 +775,7 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
           <div className="settings-form-grid">
             <Field label="Processor">
               <select className="form-select" defaultValue="none">
-                <option value="none">Not connected (client review)</option>
+                <option value="none">Not connected</option>
                 <option value="stripe">Stripe (future)</option>
               </select>
             </Field>

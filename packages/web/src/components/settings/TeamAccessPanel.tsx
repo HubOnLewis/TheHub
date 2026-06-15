@@ -4,7 +4,7 @@ export default function TeamAccessPanel() {
   return (
     <div className="settings-deep">
       <p className="settings-lede">
-        Typed access configuration for demo and future auth. Public contact:{' '}
+        Team access configuration. Public contact:{' '}
         <a href={`mailto:${HUB_PUBLIC_CONTACT_EMAIL}`}>{HUB_PUBLIC_CONTACT_EMAIL}</a>
       </p>
       <table className="data-table settings-table">

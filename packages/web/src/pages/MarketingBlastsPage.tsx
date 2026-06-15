@@ -55,7 +55,7 @@ export default function MarketingBlastsPage({ embedded = false }: { embedded?: b
       )}
 
       <p className="helper-banner">
-        <strong>Draft only.</strong> Nothing is sent automatically. Review drafts before any future send is enabled.
+        <strong>Draft campaigns.</strong> Sending is not enabled yet — review drafts before anything goes out.
       </p>
 
       <form className="card page-section" onSubmit={handleCreate}>
