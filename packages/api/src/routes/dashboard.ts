@@ -17,7 +17,7 @@ import { deliveryService } from '../services/DeliveryService.js';
 const router = Router();
 
 // management, admin, sup_admin all reach this; tenancy scoping is handled by resolveTenant
-router.use(requireAuth, requireRole('super_admin', 'admin', 'management'), resolveTenant);
+router.use(requireAuth, requireRole('super_admin', 'admin', 'management', 'sales'), resolveTenant);
 
 router.get('/stats', async (req, res, next) => {
   try {

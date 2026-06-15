@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { formatCurrency, dealStatusForDisplay, HUB_LABELS } from '@hub-crm/shared';
 import { ROUTES } from '../config/paths.js';
 import { useDeal } from '../hooks/useDeal.js';
+import { isProductionCRM } from '../config/productionData.js';
+import { DealDetailLiveShell } from './deal/DealDetailLive.js';
 import { DEMO_DEAL_WORKSPACE } from '../data/demoVenue.js';
 import DealAutopilotRail from '../components/DealAutopilotRail.js';
 import EventOperationsTimeline from '../components/deals/EventOperationsTimeline.js';
@@ -28,7 +30,17 @@ const STAGES: DemoEventStage[] = [
 
 export default function DealDetail() {
   const { dealId } = useParams<{ dealId: string }>();
-  const { data: apiDeal, isLoading } = useDeal(dealId);
+  const { data: apiDeal, isLoading, isError } = useDeal(dealId);
+
+  if (isProductionCRM()) {
+    return (
+      <DealDetailLiveShell
+        isLoading={isLoading}
+        isError={isError}
+        deal={apiDeal as Record<string, unknown> | undefined}
+      />
+    );
+  }
   const ensureInitialized = useDemoOpsStore(s => s.ensureInitialized);
   const dealOps = useDemoOpsStore(s => s.deal);
   const setDealStage = useDemoOpsStore(s => s.setDealStage);

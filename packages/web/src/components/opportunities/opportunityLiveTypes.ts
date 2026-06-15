@@ -1,0 +1,1 @@
+export type EventListFilter = 'all' | 'balance' | 'approaching' | 'stale';

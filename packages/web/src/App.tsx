@@ -43,6 +43,8 @@ import DemoOpsInit from './components/demo/DemoOpsInit.js';
 import OperationalRail from './components/demo/OperationalRail.js';
 import DemoToastStack from './components/demo/DemoToastStack.js';
 import { isDeployedAlpha } from './config/alphaPresentation.js';
+import { isProductionCRM, PRODUCTION_HIDDEN_MAIN_NAV } from './config/productionData.js';
+import ProductionModuleGate from './components/ProductionModuleGate.js';
 import UserManagement from './pages/UserManagement.js';
 import ReviewNotes from './pages/ReviewNotes.js';
 import AuditTrail from './pages/AuditTrail.js';
@@ -137,9 +139,13 @@ function Shell() {
   }, [theme]);
 
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const navMain = isProductionCRM()
+    ? NAV_MAIN.filter(item => !PRODUCTION_HIDDEN_MAIN_NAV.has(item.to))
+    : NAV_MAIN;
 
   // More tools: admin-only, collapsed by default — opens only when user clicks or is on an internal route
   useLayoutEffect(() => {
+    if (isProductionCRM()) return;
     const onInternal = NAV_INTERNAL.some(l =>
       navLinkClass(l.to, l.aliasPrefixes, pathname, l.matchPrefix).includes('active'),
     );
@@ -191,8 +197,8 @@ function Shell() {
         </button>
         <div className="sidebar-nav">
           {!sidebarCollapsed && <span className="nav-section-label">Main</span>}
-          <NavLinks items={NAV_MAIN} pathname={pathname} collapsed={sidebarCollapsed} />
-          {isAdmin && !sidebarCollapsed && (
+          <NavLinks items={navMain} pathname={pathname} collapsed={sidebarCollapsed} />
+          {isAdmin && !sidebarCollapsed && !isProductionCRM() && (
             <>
               <button
                 type="button"
@@ -273,14 +279,14 @@ function Shell() {
           {!isDeployedAlpha() && <DemoToastStack />}
           <Routes>
             <Route path={ROUTES.dashboard} element={<Dashboard />} />
-            <Route path={ROUTES.today} element={<TodayOperations />} />
-            <Route path={ROUTES.ownerBriefing} element={<OwnerBriefing />} />
-            <Route path={ROUTES.revenueLeaks} element={<RevenueLeaks />} />
-            <Route path={ROUTES.automationImpact} element={<AutomationImpact />} />
-            <Route path={ROUTES.autopilot} element={<AutopilotPage />} />
-            <Route path={ROUTES.inbox} element={<InboxPage />} />
-            <Route path={ROUTES.calendar} element={<CalendarOccupancy />} />
-            <Route path={ROUTES.tasks} element={<TasksCenter />} />
+            <Route path={ROUTES.today} element={<ProductionModuleGate moduleLabel="Today"><TodayOperations /></ProductionModuleGate>} />
+            <Route path={ROUTES.ownerBriefing} element={<ProductionModuleGate moduleLabel="Owner briefing"><OwnerBriefing /></ProductionModuleGate>} />
+            <Route path={ROUTES.revenueLeaks} element={<ProductionModuleGate moduleLabel="Revenue leaks"><RevenueLeaks /></ProductionModuleGate>} />
+            <Route path={ROUTES.automationImpact} element={<ProductionModuleGate moduleLabel="Automation impact"><AutomationImpact /></ProductionModuleGate>} />
+            <Route path={ROUTES.autopilot} element={<ProductionModuleGate moduleLabel="Autopilot"><AutopilotPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.inbox} element={<ProductionModuleGate moduleLabel="Inbox"><InboxPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.calendar} element={<ProductionModuleGate moduleLabel="Calendar"><CalendarOccupancy /></ProductionModuleGate>} />
+            <Route path={ROUTES.tasks} element={<ProductionModuleGate moduleLabel="Tasks"><TasksCenter /></ProductionModuleGate>} />
             <Route path={ROUTES.settings} element={<SettingsLayout />}>
               <Route index element={<SettingsIndexRedirect />} />
               <Route path=":moduleId" element={<SettingsModulePage />} />
@@ -300,25 +306,25 @@ function Shell() {
             <Route path={ROUTES.closeout} element={<LegacyModuleGate module="closeout"><Delivery /></LegacyModuleGate>} />
             <Route path={ROUTES.userManagement} element={<UserManagement />} />
             <Route path={ROUTES.reviewNotes} element={<ReviewNotes />} />
-            <Route path={ROUTES.audit} element={<AuditTrail />} />
+            <Route path={ROUTES.audit} element={<ProductionModuleGate moduleLabel="Audit trail"><AuditTrail /></ProductionModuleGate>} />
             <Route path={ROUTES.admin} element={<Admin />} />
-            <Route path={ROUTES.accounts} element={<Companies />} />
-            <Route path={ROUTES.companiesAlias} element={<Companies />} />
+            <Route path={ROUTES.accounts} element={<ProductionModuleGate moduleLabel={HUB_LABELS.accounts}><Companies /></ProductionModuleGate>} />
+            <Route path={ROUTES.companiesAlias} element={<ProductionModuleGate moduleLabel={HUB_LABELS.accounts}><Companies /></ProductionModuleGate>} />
             <Route path={`${ROUTES.accounts}/:id`} element={<CompanyDetail />} />
             <Route path={`${ROUTES.companiesAlias}/:id`} element={<CompanyDetail />} />
-            <Route path={ROUTES.myWork} element={<MyWork />} />
-            <Route path={ROUTES.followUps} element={<FollowUps />} />
-            <Route path={ROUTES.pipeline} element={<PipelinePressure />} />
-            <Route path={ROUTES.insights} element={<ForecastReview />} />
-            <Route path={ROUTES.repScorecards} element={<RepScorecards />} />
-            <Route path={ROUTES.weeklyCadence} element={<WeeklyCadence />} />
-            <Route path={ROUTES.accountCoverage} element={<AccountCoverage />} />
-            <Route path={ROUTES.accountExpansion} element={<AccountExpansion />} />
+            <Route path={ROUTES.myWork} element={<ProductionModuleGate moduleLabel="My work"><MyWork /></ProductionModuleGate>} />
+            <Route path={ROUTES.followUps} element={<ProductionModuleGate moduleLabel={HUB_LABELS.followUps}><FollowUps /></ProductionModuleGate>} />
+            <Route path={ROUTES.pipeline} element={<ProductionModuleGate moduleLabel="Pipeline pressure"><PipelinePressure /></ProductionModuleGate>} />
+            <Route path={ROUTES.insights} element={<ProductionModuleGate moduleLabel="Forecast review"><ForecastReview /></ProductionModuleGate>} />
+            <Route path={ROUTES.repScorecards} element={<ProductionModuleGate moduleLabel="Rep scorecards"><RepScorecards /></ProductionModuleGate>} />
+            <Route path={ROUTES.weeklyCadence} element={<ProductionModuleGate moduleLabel="Weekly cadence"><WeeklyCadence /></ProductionModuleGate>} />
+            <Route path={ROUTES.accountCoverage} element={<ProductionModuleGate moduleLabel="Account coverage"><AccountCoverage /></ProductionModuleGate>} />
+            <Route path={ROUTES.accountExpansion} element={<ProductionModuleGate moduleLabel="Account expansion"><AccountExpansion /></ProductionModuleGate>} />
             <Route path={ROUTES.prospects} element={<ProspectsPage />} />
-            <Route path={ROUTES.marketing} element={<MarketingPage />} />
+            <Route path={ROUTES.marketing} element={<ProductionModuleGate moduleLabel="Marketing"><MarketingPage /></ProductionModuleGate>} />
             <Route path={ROUTES.marketingBlasts} element={<Navigate to={ROUTES.marketing} replace />} />
-            <Route path={ROUTES.referrals} element={<ReferralsPage />} />
-            <Route path={ROUTES.monthlyScorecard} element={<MonthlyScorecardPage />} />
+            <Route path={ROUTES.referrals} element={<ProductionModuleGate moduleLabel="Referrals"><ReferralsPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.monthlyScorecard} element={<ProductionModuleGate moduleLabel="Monthly scorecard"><MonthlyScorecardPage /></ProductionModuleGate>} />
             <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
           </Routes>
         </main>

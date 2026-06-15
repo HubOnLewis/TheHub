@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '../../config/paths.js';
-import type { AttentionItemView } from '../../data/buildDashboardViewModel.js';
+import { EMPTY_LIVE_MESSAGE, isProductionCRM } from '../../config/productionData.js';
+import type { AttentionItemView } from '../../lib/liveDataMappers.js';
 
 type Props = {
   items: AttentionItemView[];
@@ -22,7 +23,9 @@ export default function AttentionQueue({ items, totalSignals }: Props) {
         </Link>
       </header>
       {items.length === 0 ? (
-        <p className="attention-queue__empty">Nothing requires immediate action in the active pipeline.</p>
+        <p className="attention-queue__empty">
+          {isProductionCRM() ? EMPTY_LIVE_MESSAGE : 'Nothing requires immediate action in the active pipeline.'}
+        </p>
       ) : (
         <ul className="attention-queue__list">
           {items.map(item => (

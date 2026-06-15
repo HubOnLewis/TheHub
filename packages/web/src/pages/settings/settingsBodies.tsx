@@ -274,6 +274,13 @@ export function SettingsBody({ moduleId }: { moduleId: string }) {
       return <TeamAccessPanel />;
 
     case 'referrals':
+      if (isDeployedAlpha()) {
+        return (
+          <div className="settings-deep">
+            <p className="settings-lede">Referral tracking is not connected to live CRM data in the production alpha yet.</p>
+          </div>
+        );
+      }
       return <ReferralProgramPanel />;
 
     case 'sms-notifications':
