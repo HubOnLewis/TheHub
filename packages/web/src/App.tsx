@@ -63,7 +63,8 @@ import LegalFooterLinks from './components/LegalFooterLinks.js';
 import ClientReviewBanner from './components/ClientReviewBanner.js';
 import HubAdminShell from './components/layout/HubAdminShell.js';
 import { usesHubAdminShell } from './config/hubAdminPaths.js';
-import { GatedHubRoute, OpenHubRoute } from './components/routing/GatedHubRoute.js';
+import { resolveHubRouteElement } from './components/routing/GatedHubRoute.js';
+import { withLiveModuleBoundary } from './components/live/LiveModuleErrorBoundary.js';
 
 type NavItem = { to: string; label: string; icon: ReactNode; aliasPrefixes?: string[]; matchPrefix?: string };
 
@@ -271,37 +272,37 @@ function Shell() {
           {!isDeployedAlpha() && <DemoOpsInit />}
           {!isDeployedAlpha() && <DemoToastStack />}
           <Routes>
-            <OpenHubRoute path={ROUTES.dashboard}><Dashboard /></OpenHubRoute>
-            <GatedHubRoute path={ROUTES.today} gateLabel="Today"><TodayOperations /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.ownerBriefing} gateLabel="Owner briefing"><OwnerBriefing /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.revenueLeaks} gateLabel="Revenue leaks"><RevenueLeaks /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.automationImpact} gateLabel="Automation impact"><AutomationImpact /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.autopilot} gateLabel="Autopilot"><AutopilotPage /></GatedHubRoute>
-            <OpenHubRoute path={ROUTES.inbox}><InboxPage /></OpenHubRoute>
-            <OpenHubRoute path={ROUTES.calendar}><CalendarOccupancy /></OpenHubRoute>
-            <OpenHubRoute path={ROUTES.tasks}><TasksCenter /></OpenHubRoute>
+            <Route path={ROUTES.dashboard} element={resolveHubRouteElement(ROUTES.dashboard, withLiveModuleBoundary('Home', <Dashboard />))} />
+            <Route path={ROUTES.today} element={resolveHubRouteElement(ROUTES.today, <TodayOperations />, 'Today')} />
+            <Route path={ROUTES.ownerBriefing} element={resolveHubRouteElement(ROUTES.ownerBriefing, <OwnerBriefing />, 'Owner briefing')} />
+            <Route path={ROUTES.revenueLeaks} element={resolveHubRouteElement(ROUTES.revenueLeaks, <RevenueLeaks />, 'Revenue leaks')} />
+            <Route path={ROUTES.automationImpact} element={resolveHubRouteElement(ROUTES.automationImpact, <AutomationImpact />, 'Automation impact')} />
+            <Route path={ROUTES.autopilot} element={resolveHubRouteElement(ROUTES.autopilot, <AutopilotPage />, 'Autopilot')} />
+            <Route path={ROUTES.inbox} element={resolveHubRouteElement(ROUTES.inbox, withLiveModuleBoundary('Inbox', <InboxPage />))} />
+            <Route path={ROUTES.calendar} element={resolveHubRouteElement(ROUTES.calendar, withLiveModuleBoundary('Calendar', <CalendarOccupancy />))} />
+            <Route path={ROUTES.tasks} element={resolveHubRouteElement(ROUTES.tasks, withLiveModuleBoundary('Tasks', <TasksCenter />))} />
             <Route path={ROUTES.settings} element={<SettingsLayout />}>
               <Route index element={<SettingsIndexRedirect />} />
               <Route path=":moduleId" element={<SettingsModulePage />} />
             </Route>
-            <GatedHubRoute path={ROUTES.leads}><Leads /></GatedHubRoute>
+            <Route path={ROUTES.leads} element={resolveHubRouteElement(ROUTES.leads, <Leads />)} />
             <Route path={`${ROUTES.opportunities}/:dealId`} element={<DealDetail />} />
             <Route path={`${ROUTES.dealsAlias}/:dealId`} element={<DealDetail />} />
-            <GatedHubRoute path={ROUTES.dealsAlias}><Deals /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.opportunities}><Deals /></GatedHubRoute>
-            <OpenHubRoute path={ROUTES.userManagement}><UserManagement /></OpenHubRoute>
-            <GatedHubRoute path={ROUTES.audit} gateLabel="Audit trail"><AuditTrail /></GatedHubRoute>
-            <OpenHubRoute path={ROUTES.admin}><Admin /></OpenHubRoute>
-            <GatedHubRoute path={ROUTES.accounts} gateLabel={HUB_LABELS.accounts}><Companies /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.companiesAlias} gateLabel={HUB_LABELS.accounts}><Companies /></GatedHubRoute>
+            <Route path={ROUTES.dealsAlias} element={resolveHubRouteElement(ROUTES.dealsAlias, <Deals />)} />
+            <Route path={ROUTES.opportunities} element={resolveHubRouteElement(ROUTES.opportunities, <Deals />)} />
+            <Route path={ROUTES.userManagement} element={resolveHubRouteElement(ROUTES.userManagement, <UserManagement />)} />
+            <Route path={ROUTES.audit} element={resolveHubRouteElement(ROUTES.audit, <AuditTrail />, 'Audit trail')} />
+            <Route path={ROUTES.admin} element={resolveHubRouteElement(ROUTES.admin, <Admin />)} />
+            <Route path={ROUTES.accounts} element={resolveHubRouteElement(ROUTES.accounts, <Companies />, HUB_LABELS.accounts)} />
+            <Route path={ROUTES.companiesAlias} element={resolveHubRouteElement(ROUTES.companiesAlias, <Companies />, HUB_LABELS.accounts)} />
             <Route path={`${ROUTES.accounts}/:id`} element={<CompanyDetail />} />
             <Route path={`${ROUTES.companiesAlias}/:id`} element={<CompanyDetail />} />
-            <GatedHubRoute path={ROUTES.myWork} gateLabel="My work"><MyWork /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.followUps} gateLabel={HUB_LABELS.followUps}><FollowUps /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.prospects}><ProspectsPage /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.marketing} gateLabel="Marketing"><MarketingPage /></GatedHubRoute>
-            <GatedHubRoute path={ROUTES.referrals} gateLabel="Referrals"><ReferralsPage /></GatedHubRoute>
-            <OpenHubRoute path={ROUTES.monthlyScorecard}><MonthlyScorecardPage /></OpenHubRoute>
+            <Route path={ROUTES.myWork} element={resolveHubRouteElement(ROUTES.myWork, <MyWork />, 'My work')} />
+            <Route path={ROUTES.followUps} element={resolveHubRouteElement(ROUTES.followUps, <FollowUps />, HUB_LABELS.followUps)} />
+            <Route path={ROUTES.prospects} element={resolveHubRouteElement(ROUTES.prospects, <ProspectsPage />)} />
+            <Route path={ROUTES.marketing} element={resolveHubRouteElement(ROUTES.marketing, <MarketingPage />, 'Marketing')} />
+            <Route path={ROUTES.referrals} element={resolveHubRouteElement(ROUTES.referrals, <ReferralsPage />, 'Referrals')} />
+            <Route path={ROUTES.monthlyScorecard} element={resolveHubRouteElement(ROUTES.monthlyScorecard, withLiveModuleBoundary('Reports', <MonthlyScorecardPage />))} />
             <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
           </Routes>
         </HubAdminShell>

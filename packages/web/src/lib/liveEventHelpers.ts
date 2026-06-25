@@ -11,6 +11,22 @@ import {
   type CrmMetricCategory,
 } from './crmEvents.js';
 
+export function safeText(value: unknown, fallback = '—'): string {
+  if (value == null || value === '') return fallback;
+  if (value instanceof Date) return value.toLocaleDateString();
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map(v => safeText(v, '')).filter(Boolean).join(', ') || fallback;
+  }
+  if (typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    return String(obj.name ?? obj.title ?? obj.label ?? obj.displayName ?? obj.email ?? fallback);
+  }
+  return fallback;
+}
+
 export function getEventDate(row: CrmEventRow): Date | null {
   if (!row.eventDate) return null;
   const d = new Date(row.eventDate.includes('T') ? row.eventDate : `${row.eventDate}T12:00:00`);
@@ -22,7 +38,7 @@ export function getEventTimeRange(row: CrmEventRow): string {
 }
 
 export function getEventContactName(row: CrmEventRow): string {
-  return row.contact?.trim() || '—';
+  return safeText(row.contact, '—');
 }
 
 export function getEventValue(row: CrmEventRow): number {
