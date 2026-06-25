@@ -14,6 +14,7 @@
     "verify:web-env": "node scripts/verify-web-env.mjs --strict",
     "verify:deploy": "node scripts/verify-deploy-readiness.mjs",
     "smoke:production": "node scripts/smoke-production.mjs",
+    "smoke:cors": "node scripts/smoke-cors.mjs",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "extract:perfect-venue": "node scripts/extract-perfect-venue.mjs",
     "import:perfect-venue": "node scripts/import-perfect-venue-export.mjs",

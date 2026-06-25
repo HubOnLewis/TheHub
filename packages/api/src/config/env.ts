@@ -26,6 +26,13 @@ function deriveWebServiceOrigin(serviceName: string, root: string): string {
   return `https://${slug}.${domain}`;
 }
 
+/** Always allowed in production — survives partial Render env misconfiguration. */
+const PRODUCTION_FRONTEND_ORIGINS = [
+  'https://admin.hubonlewis.com',
+  'https://the-hub-qy8a.onrender.com',
+  'https://the-hub.onrender.com',
+];
+
 function resolveAllowedOrigins(opts: {
   corsOrigins?: string;
   clientUrl?: string;
@@ -42,11 +49,15 @@ function resolveAllowedOrigins(opts: {
     merged.push(deriveWebServiceOrigin(opts.webServiceName, opts.onrenderRoot));
   }
 
+  if (opts.nodeEnv === 'production') {
+    merged.push(...PRODUCTION_FRONTEND_ORIGINS);
+  }
+
   if (opts.nodeEnv === 'development') {
     merged.push('http://localhost:5173', 'http://127.0.0.1:5173');
   }
 
-  return [...new Set(merged)];
+  return [...new Set(merged.map(normalizeOrigin))];
 }
 
 const EnvSchema = z.object({

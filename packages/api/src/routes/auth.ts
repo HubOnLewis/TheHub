@@ -17,6 +17,7 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders:   false,
   message:         { error: 'Too many login attempts — try again in a minute' },
+  skip: req => req.method === 'OPTIONS',
 });
 
 router.post('/login', loginLimiter, async (req, res, next) => {

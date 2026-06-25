@@ -2,13 +2,22 @@
 import type { Request, Response, NextFunction } from 'express';
 import { AppError } from '../errors/index.js';
 import { ZodError } from 'zod';
+import {
+  applyCorsHeadersIfAllowed,
+  type createOriginMatcher,
+} from '../config/cors.js';
 
 export function errorHandler(
   err: unknown,
-  _req: Request,
+  req: Request,
   res: Response,
   _next: NextFunction,
+  corsMatcher?: ReturnType<typeof createOriginMatcher>,
 ): void {
+  if (corsMatcher) {
+    applyCorsHeadersIfAllowed(req, res, corsMatcher);
+  }
+
   if (err instanceof AppError) {
     res.status(err.statusCode).json({ error: err.message });
     return;

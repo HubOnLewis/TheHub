@@ -1,8 +1,8 @@
 // packages/api/src/server.ts
-import express from 'express';
+import express, { type NextFunction, type Request, type Response } from 'express';
 import { connectDB } from './config/db.js';
 import { env } from './config/env.js';
-import { createCorsMiddleware } from './config/cors.js';
+import { createCorsSetup } from './config/cors.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestAudit } from './middleware/requestAudit.js';
 import { registerJobs } from './jobs/index.js';
@@ -28,8 +28,13 @@ import integrationsRoutes from './routes/integrations.js';
 
 const app = express();
 
+const { middleware: corsMiddleware, matcher: corsMatcher } = createCorsSetup(env.CORS_ORIGINS);
+
+// ── CORS first — before body parsing, audit, auth, or routes ───────
+app.use(corsMiddleware);
+app.options(/.*/, corsMiddleware);
+
 // ── Middleware ────────────────────────────────────────────────────
-app.use(createCorsMiddleware(env.CORS_ORIGINS));
 app.use('/api/uploads', express.static(UPLOADS_ROOT));
 app.use(express.json({ limit: '2mb' }));
 app.use(requestAudit);
@@ -57,7 +62,9 @@ app.use('/api/delivery', deliveryRoutes);
 app.use('/api/integrations', integrationsRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────
-app.use(errorHandler);
+app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+  errorHandler(err, req, res, next, corsMatcher);
+});
 
 // ── Boot ──────────────────────────────────────────────────────────
 async function start() {
