@@ -1,23 +1,16 @@
 // packages/web/src/api/client.ts
 import axios from 'axios';
 import { isScreenshotMode } from '../config/screenshotMode.js';
+import {
+  logApiBaseUrlDiagnostics,
+  resolveApiBaseUrl,
+} from '../config/apiBaseUrl.js';
 import { createScreenshotMockAdapter } from './screenshotApiMock.js';
 
 const AUTH_TOKEN_KEY = 'hub_crm_token';
 
-/**
- * API routes live under `/api` on the Express server (e.g. POST /api/auth/login).
- * - Relative mode: use `/api` so Vite dev proxy forwards to the API.
- * - Absolute `VITE_API_URL` must include the `/api` base path. If someone sets
- *   `http://localhost:3001` only, we append `/api` so login is not sent to a 404.
- */
-function normalizeApiBaseUrl(): string {
-  const raw = import.meta.env['VITE_API_URL'] as string | undefined;
-  if (raw == null || String(raw).trim() === '') return '/api';
-  let base = String(raw).trim().replace(/\/$/, '');
-  if (!base.endsWith('/api')) base = `${base}/api`;
-  return base;
-}
+const apiResolution = resolveApiBaseUrl();
+logApiBaseUrlDiagnostics();
 
 function getStoredToken(): string | null {
   if (typeof localStorage === 'undefined') return null;
@@ -25,10 +18,15 @@ function getStoredToken(): string | null {
 }
 
 const client = axios.create({
-  baseURL: normalizeApiBaseUrl(),
+  baseURL: apiResolution.baseUrl || 'https://api-not-configured.invalid/api',
   timeout: 15_000,
   ...(isScreenshotMode() ? { adapter: createScreenshotMockAdapter() } : {}),
 });
+
+/** Production misconfiguration — show before attempting login. */
+export function getApiConfigError(): string | null {
+  return apiResolution.configError;
+}
 
 // Attach JWT from localStorage on every request
 client.interceptors.request.use(config => {

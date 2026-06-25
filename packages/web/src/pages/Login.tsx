@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import client from '../api/client.js';
+import client, { getApiConfigError } from '../api/client.js';
+import { getApiNetworkErrorMessage } from '../config/apiBaseUrl.js';
 import { BRAND } from '../branding/tokens.js';
 import BrandLoader from '../components/BrandLoader.js';
 import BrandLogo from '../components/BrandLogo.js';
@@ -43,6 +44,11 @@ export default function Login() {
       enterDemoWorkspace();
       return;
     }
+    const configErr = getApiConfigError();
+    if (configErr) {
+      setError(configErr);
+      return;
+    }
     setLoading(true);
     try {
       const { data } = await client.post<{ token: string; user: AppUser }>('/auth/login', { email, password });
@@ -61,9 +67,7 @@ export default function Login() {
         (typeof ax.message === 'string' && ax.message.includes('Network'));
       const msg =
         apiErr ??
-        (network
-          ? 'Cannot reach the API. Start `npm run dev:api`, confirm MongoDB is running, and set `VITE_API_URL` to `http://localhost:3001/api` if you do not use the Vite proxy.'
-          : ax.message ?? 'Login failed');
+        (network ? getApiNetworkErrorMessage() : ax.message ?? 'Login failed');
       setError(msg);
     } finally {
       setLoading(false);
