@@ -1,13 +1,15 @@
+import { isProductionCRM } from '../config/productionData.js';
+import LiveReportsPage from './live/LiveReportsPage.js';
 import MonthlyScorecard from '../components/admin/MonthlyScorecard.js';
 
-export default function MonthlyScorecardPage() {
+function MonthlyScorecardDemo() {
   return (
     <div className="hub-reports-page">
       <header className="hub-admin-page__header">
         <div>
           <h1 className="hub-admin-page__title">Monthly Scorecard</h1>
           <p className="hub-admin-page__subtitle">
-            Key venue metrics from your CRM data. Unavailable metrics are labeled until live data is connected.
+            Key venue metrics from your CRM data.
           </p>
         </div>
         <span className="hub-admin-stat-pill">Monthly report</span>
@@ -30,4 +32,9 @@ export default function MonthlyScorecardPage() {
       </section>
     </div>
   );
+}
+
+export default function MonthlyScorecardPage() {
+  if (isProductionCRM()) return <LiveReportsPage />;
+  return <MonthlyScorecardDemo />;
 }

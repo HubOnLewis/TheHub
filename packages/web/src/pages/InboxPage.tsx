@@ -1,4 +1,6 @@
 import { useEffect, useMemo } from 'react';
+import { isProductionCRM } from '../config/productionData.js';
+import LiveInboxPage from './live/LiveInboxPage.js';
 import { DEMO_INBOX_MESSAGES } from '../data/demoVenue.js';
 import EmbeddedAgentPanel from '../components/agents/EmbeddedAgentPanel.js';
 import { INBOX_INSIGHTS } from '../data/embeddedAgentInsights.js';
@@ -13,6 +15,11 @@ const TEMPLATES = [
 ] as const;
 
 export default function InboxPage() {
+  if (isProductionCRM()) return <LiveInboxPage />;
+  return <InboxPageDemo />;
+}
+
+function InboxPageDemo() {
   const ensureInitialized = useDemoOpsStore(s => s.ensureInitialized);
   const inbox = useDemoOpsStore(s => s.inbox);
   const selectInbox = useDemoOpsStore(s => s.selectInbox);

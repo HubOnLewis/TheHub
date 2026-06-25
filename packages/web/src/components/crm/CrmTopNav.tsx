@@ -1,9 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import BrandLogo from '../BrandLogo.js';
 import { BRAND } from '../../branding/tokens.js';
-import { ROUTES } from '../../config/paths.js';
 import { PV_INBOX_MESSAGES, PV_TASKS } from '../../data/perfectVenueSeed.js';
 import { isProductionCRM } from '../../config/productionData.js';
+import { getHubTopNavItems } from '../../config/productionAlphaNav.js';
+import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
+import { generateInboxActivity, generateLiveTasks } from '../../lib/liveEventHelpers.js';
 import { useAppStore } from '../../store/index.js';
 
 type NavItem = {
@@ -36,28 +38,16 @@ export default function CrmTopNav() {
   const { pathname } = useLocation();
   const user = useAppStore(s => s.user);
   const hideBadges = isProductionCRM();
+  const { rows: liveRows } = useLiveCrmEvents();
 
-  const items: NavItem[] = [
-    {
-      to: ROUTES.dashboard,
-      label: 'Home',
-      match: p => p === ROUTES.dashboard || p === ROUTES.opportunities || p === ROUTES.dealsAlias,
-    },
-    {
-      to: ROUTES.inbox,
-      label: 'Inbox',
-      badge: hideBadges ? undefined : unreadInbox(),
-    },
-    { to: ROUTES.calendar, label: 'Calendar' },
-    {
-      to: ROUTES.tasks,
-      label: 'Tasks',
-      badge: hideBadges ? undefined : openTasks(),
-    },
-    { to: `${ROUTES.settings}/express-book`, label: 'Express Book' },
-    { to: ROUTES.monthlyScorecard, label: 'Reports' },
-    { to: ROUTES.settings, label: 'Settings', match: p => p === ROUTES.settings || p.startsWith(`${ROUTES.settings}/`) },
-  ];
+  const items = getHubTopNavItems({
+    inboxBadge: hideBadges
+      ? generateInboxActivity(liveRows).length || undefined
+      : unreadInbox(),
+    tasksBadge: hideBadges
+      ? generateLiveTasks(liveRows).length || undefined
+      : openTasks(),
+  });
 
   const displayName = user?.name?.trim() || user?.email?.split('@')[0] || 'User';
 
@@ -113,15 +103,5 @@ export default function CrmTopNav() {
   );
 }
 
-export const CRM_TOPNAV_PATHS: readonly string[] = [
-  ROUTES.dashboard,
-  ROUTES.opportunities,
-  ROUTES.dealsAlias,
-  ROUTES.inbox,
-  ROUTES.calendar,
-  ROUTES.tasks,
-  ROUTES.monthlyScorecard,
-  ROUTES.settings,
-];
-
+export { CRM_TOPNAV_PATHS } from '../../config/productionAlphaNav.js';
 export { usesHubAdminShell, usesHubAdminShell as usesCrmTopNav } from '../../config/hubAdminPaths.js';

@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
+import { isProductionCRM } from '../config/productionData.js';
+import LiveTasksPage from './live/LiveTasksPage.js';
 import { type TaskAutomationBadge } from '../data/demoVenue.js';
 import EmbeddedAgentPanel from '../components/agents/EmbeddedAgentPanel.js';
 import { TASKS_INSIGHTS } from '../data/embeddedAgentInsights.js';
@@ -37,6 +39,11 @@ const OWNERS = [
 ];
 
 export default function TasksCenter() {
+  if (isProductionCRM()) return <LiveTasksPage />;
+  return <TasksCenterDemo />;
+}
+
+function TasksCenterDemo() {
   const ensureInitialized = useDemoOpsStore(s => s.ensureInitialized);
   const tasks = useDemoOpsStore(s => s.tasks);
   const completeTask = useDemoOpsStore(s => s.completeTask);

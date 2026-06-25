@@ -45,8 +45,82 @@ const PAYMENT_FILTER = {
   ],
 };
 
+const TARGET_REFRESH_DEAL_COUNT = {
+  tenantId: targetTenant,
+  ...REFRESH_FILTER,
+};
+const TARGET_REFRESH_PAYMENT_COUNT = {
+  tenantId: targetTenant,
+  ...PAYMENT_FILTER,
+};
+
 function getDb(client, name) {
   return name ? client.db(name) : client.db();
+}
+
+function toDate(val, fallback) {
+  if (val == null) return fallback;
+  if (val instanceof Date) return val;
+  const d = new Date(val);
+  return Number.isNaN(d.getTime()) ? fallback : d;
+}
+
+/** Strip fields that must not appear in $set during upsert. */
+function buildSafeUpsertDoc(sourceDoc, extraSet = {}) {
+  const { _id, createdAt, updatedAt, ...rest } = sourceDoc;
+  const now = new Date();
+  return {
+    update: {
+      $set: {
+        ...rest,
+        ...extraSet,
+        updatedAt: now,
+      },
+      $setOnInsert: {
+        createdAt: toDate(createdAt, now),
+      },
+    },
+  };
+}
+
+function buildDealFilter(deal, tenantId) {
+  const sourceKey = deal.importMeta?.sourceKey;
+  if (sourceKey != null && String(sourceKey).trim() !== '') {
+    return { tenantId, 'importMeta.sourceKey': String(sourceKey) };
+  }
+  const pvEventId = deal.importMeta?.pvEventId;
+  if (pvEventId != null && String(pvEventId).trim() !== '') {
+    return { tenantId, 'importMeta.pvEventId': String(pvEventId) };
+  }
+  const payPvId = deal.importMeta?.pvId;
+  if (payPvId != null && String(payPvId).trim() !== '') {
+    return { tenantId, 'importMeta.pvId': String(payPvId) };
+  }
+  return { tenantId, title: deal.title, source: 'perfect_venue_refresh' };
+}
+
+function buildPaymentFilter(payment, tenantId) {
+  const payId = payment.id ?? payment.pvPaymentId;
+  if (payId != null && String(payId).trim() !== '') {
+    return { tenantId, id: String(payId) };
+  }
+  const pvPaymentId = payment.pvPaymentId;
+  if (pvPaymentId != null) {
+    return { tenantId, pvPaymentId: String(pvPaymentId) };
+  }
+  return {
+    tenantId,
+    eventId: payment.eventId ?? null,
+    paymentDate: payment.paymentDate ?? null,
+    amount: payment.amount ?? null,
+  };
+}
+
+function accumulateWriteStats(stats, result) {
+  stats.matched += result.matchedCount;
+  stats.modified += result.modifiedCount;
+  stats.upserted += result.upsertedCount;
+  stats.processed += 1;
 }
 
 const sourceClient = new MongoClient(sourceUri);
@@ -84,57 +158,39 @@ try {
     process.exit(0);
   }
 
-  const now = new Date();
-  let dealsWritten = 0;
-  let paymentsWritten = 0;
   const dealsCol = targetDb.collection('deals');
   const paymentsCol = targetDb.collection('hub_payments');
 
-  for (const d of deals) {
-    const sourceKey = d.importMeta?.sourceKey;
-    const filter =
-      sourceKey != null
-        ? { tenantId: targetTenant, 'importMeta.sourceKey': sourceKey }
-        : { tenantId: targetTenant, title: d.title, 'importMeta.pvEventId': d.importMeta?.pvEventId };
+  const dealStats = { processed: 0, matched: 0, modified: 0, upserted: 0 };
+  const paymentStats = { processed: 0, matched: 0, modified: 0, upserted: 0 };
 
-    const { _id, ...rest } = d;
-    await dealsCol.updateOne(
-      filter,
-      {
-        $set: { ...rest, tenantId: targetTenant, updatedAt: now },
-        $setOnInsert: { createdAt: d.createdAt ?? now },
-      },
-      { upsert: true },
-    );
-    dealsWritten += 1;
+  for (const d of deals) {
+    const filter = buildDealFilter(d, targetTenant);
+    const { update } = buildSafeUpsertDoc(d, { tenantId: targetTenant });
+    const result = await dealsCol.updateOne(filter, update, { upsert: true });
+    accumulateWriteStats(dealStats, result);
   }
 
   for (const p of payments) {
-    const payId = p.id ?? String(p._id);
-    await paymentsCol.updateOne(
-      { tenantId: targetTenant, id: payId },
-      {
-        $set: { ...p, tenantId: targetTenant, updatedAt: now },
-        $setOnInsert: { createdAt: p.createdAt ?? now },
-      },
-      { upsert: true },
-    );
-    paymentsWritten += 1;
+    const filter = buildPaymentFilter(p, targetTenant);
+    const { update } = buildSafeUpsertDoc(p, { tenantId: targetTenant });
+    const result = await paymentsCol.updateOne(filter, update, { upsert: true });
+    accumulateWriteStats(paymentStats, result);
   }
 
-  const afterDeals = await dealsCol.countDocuments({
-    tenantId: targetTenant,
-    ...REFRESH_FILTER,
-  });
-  const afterPayments = await paymentsCol.countDocuments({
-    tenantId: targetTenant,
-    ...PAYMENT_FILTER,
-  });
+  const afterDeals = await dealsCol.countDocuments(TARGET_REFRESH_DEAL_COUNT);
+  const afterPayments = await paymentsCol.countDocuments(TARGET_REFRESH_PAYMENT_COUNT);
 
   console.log(`\n[copy] Applied:`);
-  console.log(`  Deals upserted:    ${dealsWritten}`);
-  console.log(`  Payments upserted: ${paymentsWritten}`);
-  console.log(`  Target refresh deals now: ${afterDeals}`);
+  console.log(`  Deals processed:   ${dealStats.processed}`);
+  console.log(`  Deals matched:     ${dealStats.matched}`);
+  console.log(`  Deals modified:    ${dealStats.modified}`);
+  console.log(`  Deals upserted:    ${dealStats.upserted}`);
+  console.log(`  Payments processed: ${paymentStats.processed}`);
+  console.log(`  Payments matched:   ${paymentStats.matched}`);
+  console.log(`  Payments modified:  ${paymentStats.modified}`);
+  console.log(`  Payments upserted:  ${paymentStats.upserted}`);
+  console.log(`  Target refresh deals now:    ${afterDeals}`);
   console.log(`  Target refresh payments now: ${afterPayments}`);
 } finally {
   await sourceClient.close();

@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { isProductionCRM } from '../config/productionData.js';
+import LiveCalendarPage from './live/LiveCalendarPage.js';
 import { Link } from 'react-router-dom';
 import { formatCurrency, HUB_LABELS } from '@hub-crm/shared';
 import { ROUTES } from '../config/paths.js';
@@ -17,6 +19,11 @@ const calChipClass: Record<string, string> = {
 };
 
 export default function CalendarOccupancy() {
+  if (isProductionCRM()) return <LiveCalendarPage />;
+  return <CalendarOccupancyDemo />;
+}
+
+function CalendarOccupancyDemo() {
   const now = new Date();
   const [cursor, setCursor] = useState({ y: now.getFullYear(), m: now.getMonth() });
 

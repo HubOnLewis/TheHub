@@ -5,6 +5,9 @@ import { BRAND } from '../../branding/tokens.js';
 import { ROUTES } from '../../config/paths.js';
 import { PV_INBOX_MESSAGES, PV_TASKS } from '../../data/perfectVenueSeed.js';
 import { isProductionCRM } from '../../config/productionData.js';
+import { getHubTopNavItems } from '../../config/productionAlphaNav.js';
+import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
+import { generateInboxActivity, generateLiveTasks } from '../../lib/liveEventHelpers.js';
 import { useAppStore } from '../../store/index.js';
 import HubThemeToggle from './HubThemeToggle.js';
 
@@ -52,36 +55,16 @@ export default function HubAdminShell({
   const user = useAppStore(s => s.user);
   const hideBadges = isProductionCRM();
   const displayName = user?.name?.trim() || user?.email?.split('@')[0] || 'User';
+  const { rows: liveRows } = useLiveCrmEvents();
 
-  const items: NavItem[] = [
-    {
-      to: ROUTES.dashboard,
-      label: 'Home',
-      match: p =>
-        p === ROUTES.dashboard ||
-        p === ROUTES.opportunities ||
-        p === ROUTES.dealsAlias ||
-        p.startsWith(`${ROUTES.opportunities}/`) ||
-        p.startsWith(`${ROUTES.dealsAlias}/`),
-    },
-    {
-      to: ROUTES.inbox,
-      label: 'Inbox',
-      badge: hideBadges ? undefined : unreadInbox(),
-    },
-    { to: ROUTES.calendar, label: 'Calendar' },
-    {
-      to: ROUTES.tasks,
-      label: 'Tasks',
-      badge: hideBadges ? undefined : openTasks(),
-    },
-    { to: ROUTES.monthlyScorecard, label: 'Reports' },
-    {
-      to: ROUTES.settings,
-      label: 'Settings',
-      match: p => p === ROUTES.settings || p.startsWith(`${ROUTES.settings}/`),
-    },
-  ];
+  const items = getHubTopNavItems({
+    inboxBadge: hideBadges
+      ? generateInboxActivity(liveRows).length || undefined
+      : unreadInbox(),
+    tasksBadge: hideBadges
+      ? generateLiveTasks(liveRows).length || undefined
+      : openTasks(),
+  });
 
   return (
     <div className="crm-pv-shell">
