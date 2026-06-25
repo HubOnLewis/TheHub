@@ -35,14 +35,18 @@ const PRODUCTION_FRONTEND_ORIGINS = [
 
 function resolveAllowedOrigins(opts: {
   corsOrigins?: string;
+  corsOrigin?: string;
   clientUrl?: string;
+  frontendUrl?: string;
   webServiceName: string;
   onrenderRoot: string;
   nodeEnv: string;
 }): string[] {
   const merged = [
     ...parseOriginsList(opts.corsOrigins),
+    ...parseOriginsList(opts.corsOrigin),
     ...parseOriginsList(opts.clientUrl),
+    ...parseOriginsList(opts.frontendUrl),
   ];
 
   if (merged.length === 0) {
@@ -67,13 +71,12 @@ const EnvSchema = z.object({
   /** Logical MongoDB database name; must match the database segment in MONGODB_URI. */
   DB_NAME:            z.string().default('hub_crm'),
   JWT_SECRET:         z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-  /**
-   * Comma-separated browser origins for CORS (preferred).
-   * Example: https://admin.hubonlewis.com,https://the-hub-qy8a.onrender.com
-   */
+  /** Comma-separated browser origins for CORS (preferred). */
   CORS_ORIGINS:       z.string().optional(),
-  /** Legacy single or comma-separated origin(s); merged with CORS_ORIGINS when set. */
+  /** Legacy aliases — merged into allowlist. */
+  CORS_ORIGIN:        z.string().optional(),
   CLIENT_URL:         z.string().optional(),
+  FRONTEND_URL:       z.string().optional(),
   HUB_WEB_SERVICE_NAME: z.string().default('The-Hub'),
   RENDER_ONRENDER_ROOT: z.string().default('onrender.com'),
   SUPER_ADMIN_EMAILS: z.string().transform(s => s.split(',').map(e => e.trim()).filter(Boolean)),
@@ -94,7 +97,9 @@ const base = parsed.data;
 
 const corsOrigins = resolveAllowedOrigins({
   corsOrigins: base.CORS_ORIGINS,
+  corsOrigin: base.CORS_ORIGIN,
   clientUrl: base.CLIENT_URL,
+  frontendUrl: base.FRONTEND_URL,
   webServiceName: base.HUB_WEB_SERVICE_NAME,
   onrenderRoot: base.RENDER_ONRENDER_ROOT,
   nodeEnv: base.NODE_ENV,
@@ -102,7 +107,10 @@ const corsOrigins = resolveAllowedOrigins({
 
 export const env = {
   ...base,
+  CORS_ORIGINS_LIST: corsOrigins,
+  CORS_ORIGINS_CONFIGURED: Boolean(base.CORS_ORIGINS?.trim()),
+  CORS_ORIGINS_RAW: base.CORS_ORIGINS ?? null,
+  /** @deprecated use CORS_ORIGINS_LIST */
   CORS_ORIGINS: corsOrigins,
-  /** First allowed origin — logging / legacy references only. */
   CLIENT_URL: corsOrigins[0] ?? deriveWebServiceOrigin(base.HUB_WEB_SERVICE_NAME, base.RENDER_ONRENDER_ROOT),
 };

@@ -1,7 +1,7 @@
 import type { CorsOptions } from 'cors';
 import cors from 'cors';
 
-function normalizeOrigin(url: string): string {
+export function normalizeOrigin(url: string): string {
   return url.trim().replace(/\/$/, '');
 }
 

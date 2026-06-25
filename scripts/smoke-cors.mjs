@@ -5,13 +5,18 @@
  * Usage:
  *   npm run smoke:cors
  *   API_BASE_URL=https://the-hub-api.onrender.com/api node scripts/smoke-cors.mjs
+ *   API_BASE_URL=https://api.hubonlewis.com/api node scripts/smoke-cors.mjs
  *   API_BASE_URL=http://localhost:3001/api node scripts/smoke-cors.mjs
  */
 
-const API_BASE = (process.env.API_BASE_URL ?? 'https://the-hub-api.onrender.com/api').replace(
-  /\/$/,
-  '',
-);
+const DEFAULT_API_BASES = [
+  'https://the-hub-api.onrender.com/api',
+  'https://api.hubonlewis.com/api',
+];
+
+const API_BASES = process.env.API_BASE_URL
+  ? [process.env.API_BASE_URL.replace(/\/$/, '')]
+  : DEFAULT_API_BASES;
 
 const ORIGINS = (
   process.env.CORS_TEST_ORIGINS ??
@@ -21,10 +26,9 @@ const ORIGINS = (
   .map(s => s.trim())
   .filter(Boolean);
 
-const LOGIN_URL = `${API_BASE}/auth/login`;
-
-async function probe(origin) {
-  const res = await fetch(LOGIN_URL, {
+async function probe(apiBase, origin) {
+  const loginUrl = `${apiBase}/auth/login`;
+  const res = await fetch(loginUrl, {
     method: 'OPTIONS',
     headers: {
       Origin: origin,
@@ -35,36 +39,42 @@ async function probe(origin) {
 
   const acao = res.headers.get('access-control-allow-origin');
   const acam = res.headers.get('access-control-allow-methods');
+  const acah = res.headers.get('access-control-allow-headers');
   const ok = res.status >= 200 && res.status < 300 && acao === origin;
 
-  console.log(`\nOrigin: ${origin}`);
-  console.log(`  URL:    OPTIONS ${LOGIN_URL}`);
+  console.log(`\nAPI:    ${apiBase}`);
+  console.log(`Origin: ${origin}`);
+  console.log(`  URL:    OPTIONS ${loginUrl}`);
   console.log(`  Status: ${res.status}`);
   console.log(`  ACAO:   ${acao ?? '(missing)'}`);
   console.log(`  ACAM:   ${acam ?? '(missing)'}`);
+  console.log(`  ACAH:   ${acah ?? '(missing)'}`);
   console.log(`  Result: ${ok ? 'PASS' : 'FAIL'}`);
 
   return ok;
 }
 
 console.log('[smoke:cors] CORS preflight check');
-console.log(`[smoke:cors] API_BASE_URL=${API_BASE}`);
+console.log(`[smoke:cors] Testing ${API_BASES.length} API base(s)`);
 
 let allOk = true;
-for (const origin of ORIGINS) {
-  try {
-    const ok = await probe(origin);
-    if (!ok) allOk = false;
-  } catch (err) {
-    console.error(`\nOrigin: ${origin}`);
-    console.error(`  Result: FAIL — ${err instanceof Error ? err.message : err}`);
-    allOk = false;
+for (const apiBase of API_BASES) {
+  for (const origin of ORIGINS) {
+    try {
+      const ok = await probe(apiBase, origin);
+      if (!ok) allOk = false;
+    } catch (err) {
+      console.error(`\nAPI:    ${apiBase}`);
+      console.error(`Origin: ${origin}`);
+      console.error(`  Result: FAIL — ${err instanceof Error ? err.message : err}`);
+      allOk = false;
+    }
   }
 }
 
 if (!allOk) {
-  console.error('\n[smoke:cors] ✗ One or more origins failed');
+  console.error('\n[smoke:cors] ✗ One or more checks failed');
   process.exit(1);
 }
 
-console.log('\n[smoke:cors] ✓ All origins passed');
+console.log('\n[smoke:cors] ✓ All checks passed');

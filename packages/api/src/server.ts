@@ -1,8 +1,12 @@
 // packages/api/src/server.ts
 import express, { type NextFunction, type Request, type Response } from 'express';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { connectDB } from './config/db.js';
 import { env } from './config/env.js';
 import { createCorsSetup } from './config/cors.js';
+import { createManualCorsMiddleware } from './middleware/manualCors.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestAudit } from './middleware/requestAudit.js';
 import { registerJobs } from './jobs/index.js';
@@ -28,11 +32,13 @@ import integrationsRoutes from './routes/integrations.js';
 
 const app = express();
 
-const { middleware: corsMiddleware, matcher: corsMatcher } = createCorsSetup(env.CORS_ORIGINS);
+const manualCors = createManualCorsMiddleware(env.CORS_ORIGINS_LIST);
+const { middleware: corsMiddleware, matcher: corsMatcher } = createCorsSetup(env.CORS_ORIGINS_LIST);
 
-// ── CORS first — before body parsing, audit, auth, or routes ───────
+// ── Manual CORS + OPTIONS — absolute first (before json, audit, routes) ──
+app.use(manualCors);
+// Secondary cors() for non-OPTIONS responses (headers on GET/POST/etc.)
 app.use(corsMiddleware);
-app.options(/.*/, corsMiddleware);
 
 // ── Middleware ────────────────────────────────────────────────────
 app.use('/api/uploads', express.static(UPLOADS_ROOT));
@@ -66,15 +72,40 @@ app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
   errorHandler(err, req, res, next, corsMatcher);
 });
 
+function readApiVersion(): string {
+  if (process.env.RENDER_GIT_COMMIT) return process.env.RENDER_GIT_COMMIT.slice(0, 12);
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkgPath = resolve(here, '../../package.json');
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf8')) as { version?: string };
+    return pkg.version ?? 'unknown';
+  } catch {
+    return 'unknown';
+  }
+}
+
+function logBootConfig(): void {
+  console.log(
+    JSON.stringify({
+      type: 'api_boot',
+      nodeEnv: env.NODE_ENV,
+      corsOriginsEnvSet: env.CORS_ORIGINS_CONFIGURED,
+      corsOriginsRaw: env.CORS_ORIGINS_RAW,
+      corsAllowedOrigins: env.CORS_ORIGINS_LIST,
+      version: readApiVersion(),
+      manualCorsPreflight: true,
+    }),
+  );
+}
+
 // ── Boot ──────────────────────────────────────────────────────────
 async function start() {
   try {
+    logBootConfig();
     const db = await connectDB();
     registerJobs(db);
     app.listen(env.PORT, '0.0.0.0', () => {
-      console.log(
-        `[API] The Hub CRM listening on 0.0.0.0:${env.PORT} (CORS origins: ${env.CORS_ORIGINS.join(', ')})`,
-      );
+      console.log(`[API] The Hub CRM listening on 0.0.0.0:${env.PORT}`);
     });
   } catch (err) {
     console.error('[API] Failed to start:', err);
