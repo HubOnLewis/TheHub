@@ -8,14 +8,20 @@
  *
  * Local `npm run build` in packages/web skips strict checks unless --strict is passed.
  */
-import { resolveViteApiUrl } from './render-onrender-url.mjs';
+import {
+  HUB_API_PUBLIC_VITE_URL,
+  resolveProductionViteApiUrl,
+} from './lib/hub-api-public-url.mjs';
 
 const LOCALHOST = /localhost|127\.0\.0\.1/i;
+const INVALID_ONRENDER_API = /the-hub-api\.onrender\.com/i;
 
 function isInvalidProductionUrl(url) {
   const s = String(url ?? '').trim();
   if (!s) return true;
-  return LOCALHOST.test(s);
+  if (LOCALHOST.test(s)) return true;
+  if (INVALID_ONRENDER_API.test(s)) return true;
+  return false;
 }
 
 function shouldEnforce(argv) {
@@ -34,29 +40,14 @@ if (!enforce) {
   process.exit(0);
 }
 
-let viteApiUrl = process.env.VITE_API_URL;
-
-if (!String(viteApiUrl ?? '').trim()) {
-  const derived = resolveViteApiUrl({
-    viteApiUrl: undefined,
-    apiServiceName: process.env.HUB_API_SERVICE_NAME ?? 'The-Hub-Api',
-    root: process.env.RENDER_ONRENDER_ROOT ?? 'onrender.com',
-  });
-  if (derived) {
-    viteApiUrl = derived;
-    console.log(`[verify-web-env] Derived VITE_API_URL=${derived}`);
-  }
-}
+const viteApiUrl = resolveProductionViteApiUrl(process.env.VITE_API_URL);
 
 if (isInvalidProductionUrl(viteApiUrl)) {
   console.error(`
 ✗ Invalid production VITE_API_URL.
 
 Set on the Render static site (The-Hub):
-  VITE_API_URL=https://the-hub-api.onrender.com/api
-
-If using a custom API domain:
-  VITE_API_URL=https://<your-api-host>/api
+  VITE_API_URL=${HUB_API_PUBLIC_VITE_URL}
 
 Current value: ${JSON.stringify(process.env.VITE_API_URL ?? '')}
 `);

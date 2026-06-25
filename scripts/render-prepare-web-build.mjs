@@ -1,40 +1,29 @@
 /**
  * Render static-site build wrapper — resolves VITE_API_URL before Vite build.
  *
- * When VITE_API_URL is unset, derives from The-Hub-Api:
- *   https://the-hub-api.onrender.com/api
+ * Production default (browser-facing):
+ *   https://api.hubonlewis.com/api
  *
  * Fails the build if production VITE_API_URL is missing or points at localhost.
  */
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
-import { resolveViteApiUrl } from './render-onrender-url.mjs';
+import { resolveProductionViteApiUrl } from './lib/hub-api-public-url.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = resolve(__dirname, '..');
 
-const apiUrl = resolveViteApiUrl({
-  viteApiUrl: process.env.VITE_API_URL,
-  apiServiceName: process.env.HUB_API_SERVICE_NAME ?? 'The-Hub-Api',
-  root: process.env.RENDER_ONRENDER_ROOT ?? 'onrender.com',
-});
+const apiUrl = resolveProductionViteApiUrl(process.env.VITE_API_URL);
 
 const env = {
   ...process.env,
   NODE_ENV: 'production',
   VERIFY_WEB_ENV_STRICT: '1',
+  VITE_API_URL: apiUrl,
 };
 
-if (apiUrl && !String(env.VITE_API_URL ?? '').trim()) {
-  env.VITE_API_URL = apiUrl;
-  console.log(`[render-prepare-web-build] VITE_API_URL=${apiUrl}`);
-} else if (env.VITE_API_URL) {
-  console.log(`[render-prepare-web-build] Using configured VITE_API_URL=${env.VITE_API_URL}`);
-} else {
-  console.error('[render-prepare-web-build] No VITE_API_URL and could not derive API URL');
-  process.exit(1);
-}
+console.log(`[render-prepare-web-build] VITE_API_URL=${apiUrl}`);
 
 const npmCmd = process.platform === 'win32' ? 'npm.cmd' : 'npm';
 

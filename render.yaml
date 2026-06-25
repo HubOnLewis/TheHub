@@ -7,14 +7,13 @@
 # Everything else is wired here: JWT auto-generated, CORS + VITE API URLs derived
 # from service names, team emails, health checks, and first-admin bootstrap.
 #
-# Alpha service URLs:
-#   • Web service name: The-Hub → https://The-Hub.onrender.com
-#   • API service name: The-Hub-Api → https://The-Hub-Api.onrender.com
-# Render may normalize public URL slugs to lowercase:
-#   • https://the-hub.onrender.com
-#   • https://the-hub-api.onrender.com
+# Production public URLs (custom domains):
+#   • API: https://api.hubonlewis.com
+#   • Web admin: https://admin.hubonlewis.com
+#   • Web Render default: https://the-hub-qy8a.onrender.com
 #
-# Custom domains later: set CLIENT_URL and VITE_API_URL explicitly on both services.
+# Internal Render API hostname (service-to-service only, not for browsers):
+#   the-hub-api-c94d:10000
 #
 # Apply: Render Dashboard → New → Blueprint → connect repo → select this file.
 
@@ -43,6 +42,8 @@ envVarGroups:
         value: hub-wichita
       - key: ATTACHMENT_STORAGE_DRIVER
         value: local
+      - key: HUB_API_PUBLIC_URL
+        value: https://api.hubonlewis.com
 
 services:
 
@@ -110,9 +111,7 @@ services:
 
       # Required — baked into static bundle at build time (must end with /api)
       - key: VITE_API_URL
-        value: https://the-hub-api.onrender.com/api
-
-      # Optional — override when API uses a custom domain (e.g. https://api.hubonlewis.com/api)
+        value: https://api.hubonlewis.com/api
 
       - key: VITE_GA_MEASUREMENT_ID
         sync: false

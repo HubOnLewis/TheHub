@@ -4,19 +4,15 @@
  *
  * Usage:
  *   npm run smoke:cors
- *   API_BASE_URL=https://the-hub-api.onrender.com/api node scripts/smoke-cors.mjs
  *   API_BASE_URL=https://api.hubonlewis.com/api node scripts/smoke-cors.mjs
  *   API_BASE_URL=http://localhost:3001/api node scripts/smoke-cors.mjs
  */
 
-const DEFAULT_API_BASES = [
-  'https://the-hub-api.onrender.com/api',
-  'https://api.hubonlewis.com/api',
-];
+import { HUB_API_PUBLIC_VITE_URL } from './lib/hub-api-public-url.mjs';
 
 const API_BASES = process.env.API_BASE_URL
   ? [process.env.API_BASE_URL.replace(/\/$/, '')]
-  : DEFAULT_API_BASES;
+  : [HUB_API_PUBLIC_VITE_URL];
 
 const ORIGINS = (
   process.env.CORS_TEST_ORIGINS ??

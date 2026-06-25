@@ -1,15 +1,7 @@
 /**
- * Build public Render URLs from service names (default *.onrender.com).
- * Alpha service names are The-Hub and The-Hub-Api, whose expected URLs are:
- *   https://The-Hub.onrender.com
- *   https://The-Hub-Api.onrender.com
- *
- * Render may normalize public URL slugs to lowercase, so generated runtime
- * hostnames intentionally lowercase service names:
- *   https://the-hub.onrender.com
- *   https://the-hub-api.onrender.com
- *
- * Override with explicit CLIENT_URL / VITE_API_URL when using custom domains.
+ * Build public Render URLs from service names (legacy *.onrender.com fallback).
+ * Production browser API uses custom domain via HUB_API_PUBLIC_URL / VITE_API_URL:
+ *   https://api.hubonlewis.com/api
  */
 
 export function onRenderServiceUrl(serviceName, root = 'onrender.com') {

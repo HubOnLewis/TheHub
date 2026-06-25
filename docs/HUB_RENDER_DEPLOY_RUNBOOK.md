@@ -12,7 +12,7 @@ Use this checklist when deploying the alpha with the client **without** pre-exis
 | Service names | API `The-Hub-Api`; web `The-Hub` |
 | Render plan | API uses `starter`; static web omits `plan` because Render static-site services do not accept that field |
 | CORS `CLIENT_URL` | Derived from `HUB_WEB_SERVICE_NAME` → `https://The-Hub.onrender.com` (Render may serve lowercase `https://the-hub.onrender.com`) |
-| Web `VITE_API_URL` | Build script → `https://The-Hub-Api.onrender.com/api` (Render may serve lowercase `https://the-hub-api.onrender.com/api`) |
+| Web `VITE_API_URL` | `https://api.hubonlewis.com/api` (custom API domain) |
 | Team admin emails | `SUPER_ADMIN_EMAILS` in `render.yaml` |
 | First login user | API `preDeployCommand` seeds `jason@hubonlewis.com` when DB has **zero** users |
 | Health monitoring | API `/health` |
@@ -75,8 +75,8 @@ Alternatively: bulk-paste `render.secrets.template` into each service's Environm
 
 | Check | URL |
 |-------|-----|
-| API health | `https://The-Hub-Api.onrender.com/health` or `https://the-hub-api.onrender.com/health` → `{"status":"ok"}` |
-| Web login | `https://The-Hub.onrender.com/login` or `https://the-hub.onrender.com/login` |
+| API health | `https://api.hubonlewis.com/health` → `{"status":"ok"}` |
+| Web login | `https://admin.hubonlewis.com/login` or `https://the-hub-qy8a.onrender.com/login` |
 
 ### Step C — First login
 
@@ -125,7 +125,7 @@ When `app.hubonlewis.com` is ready:
 
 1. Add custom domain on **web** static site in Render.
 2. Set on **API**: `CLIENT_URL=https://app.hubonlewis.com`
-3. Set on **web**: `VITE_API_URL=https://The-Hub-Api.onrender.com/api` (or API custom domain + `/api`)
+3. Set on **web**: `VITE_API_URL=https://api.hubonlewis.com/api`
 4. Redeploy **web** after changing `VITE_API_URL`.
 
 ---

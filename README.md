@@ -130,7 +130,8 @@ npm run smoke:production       # after live deploy (optional)
 ```
 
 Default alpha URLs: `https://The-Hub.onrender.com` (web), `https://The-Hub-Api.onrender.com` (API).
-Render may lowercase public URL slugs, so the effective URLs can be `https://the-hub.onrender.com` and `https://the-hub-api.onrender.com`.
+ * Render may lowercase public URL slugs for default *.onrender.com web URLs.
+ * Production API uses custom domain: https://api.hubonlewis.com
 
 ---
 

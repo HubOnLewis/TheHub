@@ -3,13 +3,13 @@
  *
  * Usage:
  *   HUB_WEB_URL=https://the-hub.onrender.com \
- *   HUB_API_URL=https://the-hub-api.onrender.com \
+ *   HUB_API_URL=https://api.hubonlewis.com \
  *   node scripts/smoke-production.mjs
  */
 import { chromium } from 'playwright';
 
 const WEB = (process.env.HUB_WEB_URL ?? 'https://the-hub.onrender.com').replace(/\/$/, '');
-const API = (process.env.HUB_API_URL ?? 'https://the-hub-api.onrender.com').replace(/\/$/, '');
+const API = (process.env.HUB_API_URL ?? 'https://api.hubonlewis.com').replace(/\/$/, '');
 
 const PUBLIC_ROUTES = [
   '/login',
