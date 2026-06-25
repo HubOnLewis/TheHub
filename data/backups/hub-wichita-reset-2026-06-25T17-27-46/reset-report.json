@@ -1,0 +1,36 @@
+{
+  "resetAt": "2026-06-25T17:27:46.067Z",
+  "mode": "dry-run",
+  "tenantIds": [
+    "hub-wichita",
+    "hub-on-lewis"
+  ],
+  "mongo": {
+    "collections": {
+      "deals": 0,
+      "leads": 0,
+      "companies": 0,
+      "units": 0,
+      "builds": 0,
+      "build_versions": 0,
+      "change_orders": 0,
+      "production_jobs": 0,
+      "production_tasks": 0,
+      "delivery_records": 0,
+      "delivery_packets": 0,
+      "post_delivery_follow_ups": 0,
+      "closeout_checklists": 0,
+      "interactions": 0,
+      "activities": 0,
+      "account_plans": 0,
+      "weekly_cadence_reviews": 0,
+      "karmak_sync": 0
+    },
+    "manualReview": [],
+    "backupPath": "C:\\Users\\Michaela\\Outside\\The Hub\\data\\backups\\hub-wichita-reset-2026-06-25T17-27-46\\mongo-tenant-records.json",
+    "deleted": {}
+  },
+  "artifacts": {
+    "backedUp": 34
+  }
+}

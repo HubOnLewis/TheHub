@@ -1,0 +1,2342 @@
+[
+  {
+    "accountId": "acct-bandits-construction",
+    "accountName": "Bandits Construction",
+    "lifetimeCollected": 0,
+    "outstanding": 300,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-samantha-lucciarini",
+    "accountName": "Samantha Lucciarini",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 4,
+    "avgEventValue": 0,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-21"
+  },
+  {
+    "accountId": "acct-elevate-mentoring",
+    "accountName": "Elevate Mentoring",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 32,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jason-lavender",
+    "accountName": "Jason Lavender",
+    "lifetimeCollected": 5,
+    "outstanding": 5,
+    "eventCount": 18,
+    "avgEventValue": 0.56,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-02"
+  },
+  {
+    "accountId": "acct-homes-by-erica-day",
+    "accountName": "Homes By Erica Day",
+    "lifetimeCollected": 0,
+    "outstanding": 450,
+    "eventCount": 3,
+    "avgEventValue": 150,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-vice-real-estate",
+    "accountName": "Vice Real Estate",
+    "lifetimeCollected": 0,
+    "outstanding": 450,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-express-contracting-renovations-llc",
+    "accountName": "Express Contracting &Renovations, LLC",
+    "lifetimeCollected": 450,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 1,
+    "lastPaidOn": "2025-10-24"
+  },
+  {
+    "accountId": "acct-stw-plumbing-excavation",
+    "accountName": "STW Plumbing & Excavation",
+    "lifetimeCollected": 0,
+    "outstanding": 300,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-dk-motors",
+    "accountName": "DK Motors",
+    "lifetimeCollected": 0,
+    "outstanding": 450,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ashley-moore",
+    "accountName": "Ashley Moore",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-maria-treto",
+    "accountName": "Maria Treto",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-heidi-lavender",
+    "accountName": "Heidi Lavender",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alejandra-ochoa",
+    "accountName": "Alejandra Ochoa",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-dinora-lopez",
+    "accountName": "Dinora Lopez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-emily-phrakonkham",
+    "accountName": "Emily Phrakonkham",
+    "lifetimeCollected": 450,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 2,
+    "lastPaidOn": "2025-12-05"
+  },
+  {
+    "accountId": "acct-amber-card",
+    "accountName": "Amber Card",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 255,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-praislynn-emerold",
+    "accountName": "Praislynn Emerold",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-lorena-mireles",
+    "accountName": "Lorena Mireles",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 600,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-marudhu",
+    "accountName": "Marudhu",
+    "lifetimeCollected": 585,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 292.5,
+    "paymentCount": 2,
+    "lastPaidOn": "2025-12-07"
+  },
+  {
+    "accountId": "acct-pamela-fruhauf",
+    "accountName": "Pamela Fruhauf",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-luis-adame",
+    "accountName": "Luis Adame",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 750,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ely-randelas",
+    "accountName": "Ely Randelas",
+    "lifetimeCollected": 2000,
+    "outstanding": 2800,
+    "eventCount": 24,
+    "avgEventValue": 200,
+    "paymentCount": 5,
+    "lastPaidOn": "2026-05-12"
+  },
+  {
+    "accountId": "acct-ely-randleas",
+    "accountName": "Ely Randleas",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 0,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-memar-jimenez",
+    "accountName": "Memar Jimenez",
+    "lifetimeCollected": 450,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 2,
+    "lastPaidOn": "2025-11-22"
+  },
+  {
+    "accountId": "acct-brianna-richardson",
+    "accountName": "Brianna Richardson",
+    "lifetimeCollected": 552.5,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 276.25,
+    "paymentCount": 2,
+    "lastPaidOn": "2025-12-22"
+  },
+  {
+    "accountId": "acct-daisy-perez",
+    "accountName": "Daisy Perez",
+    "lifetimeCollected": 552.5,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 276.25,
+    "paymentCount": 2,
+    "lastPaidOn": "2025-12-11"
+  },
+  {
+    "accountId": "acct-emily-gamez",
+    "accountName": "Emily Gamez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-melissa-ceballos",
+    "accountName": "Melissa Ceballos",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-theresa-higgins",
+    "accountName": "Theresa Higgins",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 415,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-amanda-wilson",
+    "accountName": "Amanda Wilson",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-dscax-dsx",
+    "accountName": "dscax dsx",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-danicka-bo",
+    "accountName": "Danicka Bo",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-allison-childs",
+    "accountName": "Allison Childs",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-amber-brehm",
+    "accountName": "Amber Brehm",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-gisselle-fierros",
+    "accountName": "Gisselle Fierros",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-stephanie-martinez",
+    "accountName": "Stephanie Martinez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 575,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ben-engelbrecht",
+    "accountName": "Ben Engelbrecht",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 3,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ben-nts-engel-nts",
+    "accountName": "Ben (NTS) Engel (NTS)",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-lola",
+    "accountName": "Lola",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-olivia-lemmons",
+    "accountName": "Olivia Lemmons",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-thuy-chang",
+    "accountName": "Thuy Chang",
+    "lifetimeCollected": 650,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-03-21"
+  },
+  {
+    "accountId": "acct-amanda-rempe",
+    "accountName": "Amanda Rempe",
+    "lifetimeCollected": 300,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-01-05"
+  },
+  {
+    "accountId": "acct-ashleigh-fleming",
+    "accountName": "Ashleigh Fleming",
+    "lifetimeCollected": 400,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 200,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-02-26"
+  },
+  {
+    "accountId": "acct-brandy-horsch",
+    "accountName": "Brandy Horsch",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-karis-rogers",
+    "accountName": "Karis Rogers",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-carissa-carrrasco",
+    "accountName": "Carissa Carrrasco",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 375,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-cori-beemer",
+    "accountName": "Cori Beemer",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-athena-mcgeary",
+    "accountName": "Athena McGeary",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 375,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-lorna-quezada",
+    "accountName": "Lorna Quezada",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 875,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-edith-bernal",
+    "accountName": "Edith Bernal",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-hector-morales",
+    "accountName": "Hector Morales",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-isaac-caraveo",
+    "accountName": "Isaac Caraveo",
+    "lifetimeCollected": 500,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 250,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-01-23"
+  },
+  {
+    "accountId": "acct-tannah-doub",
+    "accountName": "Tannah Doub",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-monica-young",
+    "accountName": "Monica Young",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-cadence-brozek",
+    "accountName": "Cadence Brozek",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-joyce-maloney",
+    "accountName": "Joyce Maloney",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 800,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-selena-sensanith",
+    "accountName": "selena sensanith",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-victoria-murphy",
+    "accountName": "Victoria Murphy",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-samantha-gourley",
+    "accountName": "Samantha Gourley",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 600,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-nicola-schroeder",
+    "accountName": "Nicola Schroeder",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 350,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-britt-tasker",
+    "accountName": "Britt Tasker",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alyssa-jones",
+    "accountName": "Alyssa Jones",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jenny-nguyen",
+    "accountName": "Jenny Nguyen",
+    "lifetimeCollected": 0,
+    "outstanding": 600,
+    "eventCount": 2,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-breanna-taylor",
+    "accountName": "Breanna Taylor",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-hom-souvannarath",
+    "accountName": "Hom Souvannarath",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-carrie-davis",
+    "accountName": "Carrie Davis",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alayla-finney",
+    "accountName": "Alayla Finney",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-paige-roubideaux",
+    "accountName": "Paige Roubideaux",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-22"
+  },
+  {
+    "accountId": "acct-megan-estrada",
+    "accountName": "Megan Estrada",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-tenia-perez",
+    "accountName": "Tenia Perez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kali-mills",
+    "accountName": "Kali Mills",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-joanne-kimani",
+    "accountName": "Joanne Kimani",
+    "lifetimeCollected": 400,
+    "outstanding": 400,
+    "eventCount": 2,
+    "avgEventValue": 400,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-02-07"
+  },
+  {
+    "accountId": "acct-naya-ponds",
+    "accountName": "Naya Ponds",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-03-31"
+  },
+  {
+    "accountId": "acct-selena-dulin",
+    "accountName": "Selena Dulin",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-bethany-bayne",
+    "accountName": "Bethany Bayne",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-05-07"
+  },
+  {
+    "accountId": "acct-brisa-cruz",
+    "accountName": "Brisa Cruz",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-aaron-clark",
+    "accountName": "Aaron Clark",
+    "lifetimeCollected": 150,
+    "outstanding": 0,
+    "eventCount": 3,
+    "avgEventValue": 50,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-03-02"
+  },
+  {
+    "accountId": "acct-susanne-suellentrop",
+    "accountName": "Susanne Suellentrop",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-nate-wills",
+    "accountName": "Nate Wills",
+    "lifetimeCollected": 0,
+    "outstanding": 475,
+    "eventCount": 3,
+    "avgEventValue": 265,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-tanada-garcia",
+    "accountName": "Tanada Garcia",
+    "lifetimeCollected": 400,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 200,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-03-11"
+  },
+  {
+    "accountId": "acct-laride-conerly",
+    "accountName": "Laride Conerly",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 975,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-rigy-lehman",
+    "accountName": "Rigy Lehman",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kristyn-smith",
+    "accountName": "Kristyn Smith",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-will-vaught",
+    "accountName": "WILL VAUGHT",
+    "lifetimeCollected": 150,
+    "outstanding": 150,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-05"
+  },
+  {
+    "accountId": "acct-leslie-garcia",
+    "accountName": "Leslie Garcia",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 600,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-emily-ngugi",
+    "accountName": "Emily Ngugi",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-hannah-bayless",
+    "accountName": "Hannah Bayless",
+    "lifetimeCollected": 0,
+    "outstanding": 550,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-tiffany-bouddhara",
+    "accountName": "Tiffany Bouddhara",
+    "lifetimeCollected": 325,
+    "outstanding": 325,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-13"
+  },
+  {
+    "accountId": "acct-danielle-vega",
+    "accountName": "Danielle vega",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jeff-morten",
+    "accountName": "Jeff Morten",
+    "lifetimeCollected": 175,
+    "outstanding": 175,
+    "eventCount": 2,
+    "avgEventValue": 175,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-02-19"
+  },
+  {
+    "accountId": "acct-hope-root",
+    "accountName": "Hope Root",
+    "lifetimeCollected": 500,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 250,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-30"
+  },
+  {
+    "accountId": "acct-vanessa-talbert",
+    "accountName": "Vanessa Talbert",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-brandi-martin",
+    "accountName": "Brandi Martin",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jillian-gonzales",
+    "accountName": "Jillian Gonzales",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-mayah-martinez",
+    "accountName": "Mayah Martinez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-joann-parent",
+    "accountName": "Joann Parent",
+    "lifetimeCollected": 475,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 237.5,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-08"
+  },
+  {
+    "accountId": "acct-cat-nero",
+    "accountName": "Cat Nero",
+    "lifetimeCollected": 375,
+    "outstanding": 375,
+    "eventCount": 2,
+    "avgEventValue": 375,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-02-25"
+  },
+  {
+    "accountId": "acct-chauntel-nguyen",
+    "accountName": "Chauntel Nguyen",
+    "lifetimeCollected": 0,
+    "outstanding": 550,
+    "eventCount": 3,
+    "avgEventValue": 183.33,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-neal-siewert",
+    "accountName": "Neal Siewert",
+    "lifetimeCollected": 300,
+    "outstanding": 0,
+    "eventCount": 4,
+    "avgEventValue": 75,
+    "paymentCount": 4,
+    "lastPaidOn": "2026-02-26"
+  },
+  {
+    "accountId": "acct-neal-seiwert",
+    "accountName": "Neal Seiwert",
+    "lifetimeCollected": 150,
+    "outstanding": 0,
+    "eventCount": 3,
+    "avgEventValue": 50,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-02-26"
+  },
+  {
+    "accountId": "acct-gisela-hernandez",
+    "accountName": "Gisela Hernandez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-07"
+  },
+  {
+    "accountId": "acct-crystle-perez",
+    "accountName": "Crystle Perez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 750,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-nousette-jefferson",
+    "accountName": "Nousette Jefferson",
+    "lifetimeCollected": 0,
+    "outstanding": 400,
+    "eventCount": 2,
+    "avgEventValue": 200,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-liberty-larouche",
+    "accountName": "Liberty Larouche",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-29"
+  },
+  {
+    "accountId": "acct-amanda-jolley",
+    "accountName": "Amanda Jolley",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alejandro-ceja",
+    "accountName": "Alejandro Ceja",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-03-22"
+  },
+  {
+    "accountId": "acct-valeria-rosales",
+    "accountName": "Valeria Rosales",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-auna-cantrell",
+    "accountName": "Auna Cantrell",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-auna-cantril",
+    "accountName": "Auna Cantril",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 0,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-auna-cantril",
+    "accountName": "Auna cantril",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ro-wheeler",
+    "accountName": "Ro Wheeler",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ashlee-ainsworth",
+    "accountName": "Ashlee Ainsworth",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-holly-hatten",
+    "accountName": "Holly Hatten",
+    "lifetimeCollected": 275,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 137.5,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-10"
+  },
+  {
+    "accountId": "acct-alayna-nolan",
+    "accountName": "Alayna Nolan",
+    "lifetimeCollected": 250,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 125,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-05-20"
+  },
+  {
+    "accountId": "acct-shasta-bolden",
+    "accountName": "Shasta Bolden",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kasandra-minjares",
+    "accountName": "Kasandra Minjares",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-05-05"
+  },
+  {
+    "accountId": "acct-chayanne-garcia",
+    "accountName": "Chayanne Garcia",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-briza-barraza",
+    "accountName": "Briza Barraza",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-anais-contreras",
+    "accountName": "Anais Contreras",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-elizabeth-terry",
+    "accountName": "Elizabeth Terry",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jocelyn-triplett",
+    "accountName": "Jocelyn Triplett",
+    "lifetimeCollected": 275,
+    "outstanding": 275,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-03"
+  },
+  {
+    "accountId": "acct-sherrie-lane",
+    "accountName": "Sherrie Lane",
+    "lifetimeCollected": 325,
+    "outstanding": 325,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-06"
+  },
+  {
+    "accountId": "acct-umber",
+    "accountName": "Umber",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-michelle-stewart",
+    "accountName": "Michelle Stewart",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ashley-dukes",
+    "accountName": "Ashley Dukes",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 400,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ki-arra-collins",
+    "accountName": "Ki-Arra Collins",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-tracey-ripperger",
+    "accountName": "Tracey Ripperger",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 450,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-nicole-krueger",
+    "accountName": "Nicole Krueger",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-dulce-reyes",
+    "accountName": "Dulce Reyes",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-crystal",
+    "accountName": "Crystal",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alexis-noble",
+    "accountName": "Alexis Noble",
+    "lifetimeCollected": 300,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-03-19"
+  },
+  {
+    "accountId": "acct-megan-deppner",
+    "accountName": "Megan Deppner",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-camron-ahmad-daugherty",
+    "accountName": "Camron Ahmad-Daugherty",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jamie-bui",
+    "accountName": "Jamie Bui",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 4,
+    "avgEventValue": 162.5,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-miriah-conley",
+    "accountName": "Miriah Conley",
+    "lifetimeCollected": 600,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 300,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-10"
+  },
+  {
+    "accountId": "acct-kendra-enfield",
+    "accountName": "Kendra Enfield",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kimsha-carter",
+    "accountName": "Kimsha Carter",
+    "lifetimeCollected": 0,
+    "outstanding": 550,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-martha-horn",
+    "accountName": "Martha Horn",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-robin-villa",
+    "accountName": "Robin Villa",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alexis-phakornkham",
+    "accountName": "Alexis Phakornkham",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kyara-parker",
+    "accountName": "Kyara Parker",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jordan-farr",
+    "accountName": "Jordan Farr",
+    "lifetimeCollected": 250,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 500,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-16"
+  },
+  {
+    "accountId": "acct-lizbeth-gonzalez",
+    "accountName": "Lizbeth Gonzalez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kayden-roman",
+    "accountName": "Kayden Roman",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jessica-cabrales",
+    "accountName": "Jessica Cabrales",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-brianna-saka",
+    "accountName": "Brianna Saka",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-adriana-duran",
+    "accountName": "Adriana Duran",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kiley-schneweis",
+    "accountName": "Kiley Schneweis",
+    "lifetimeCollected": 0,
+    "outstanding": 400,
+    "eventCount": 4,
+    "avgEventValue": 100,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-haleigh-allred",
+    "accountName": "Haleigh Allred",
+    "lifetimeCollected": 350,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 175,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-02"
+  },
+  {
+    "accountId": "acct-tina-bell",
+    "accountName": "Tina Bell",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-hannah-grace-gorman",
+    "accountName": "Hannah-Grace Gorman",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 1.5,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ashley-karson",
+    "accountName": "ASHLEY Karson",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-amy-nguyen",
+    "accountName": "Amy Nguyen",
+    "lifetimeCollected": 437.5,
+    "outstanding": 437.5,
+    "eventCount": 2,
+    "avgEventValue": 437.5,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-22"
+  },
+  {
+    "accountId": "acct-felicia-rodriguez",
+    "accountName": "Felicia Rodriguez",
+    "lifetimeCollected": 437.5,
+    "outstanding": 437.5,
+    "eventCount": 2,
+    "avgEventValue": 437.5,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-03-22"
+  },
+  {
+    "accountId": "acct-rayonda-black",
+    "accountName": "Rayonda Black",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-haley-krizek",
+    "accountName": "Haley Krizek",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-lys-besa",
+    "accountName": "Lys Besa",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jamie-luallen",
+    "accountName": "Jamie Luallen",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 280,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-selina-garcia",
+    "accountName": "Selina Garcia",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-victoria-lopez",
+    "accountName": "Victoria Lopez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-maira-gomez",
+    "accountName": "Maira Gomez",
+    "lifetimeCollected": 300,
+    "outstanding": 300,
+    "eventCount": 4,
+    "avgEventValue": 150,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-02"
+  },
+  {
+    "accountId": "acct-alex-hamlin-masters",
+    "accountName": "Alex Hamlin-Masters",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-samantha-felton",
+    "accountName": "Samantha Felton",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ashab-conner",
+    "accountName": "Ashab Conner",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-megan-shaw",
+    "accountName": "Megan Shaw",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-derek-blades",
+    "accountName": "Derek Blades",
+    "lifetimeCollected": 325,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 162.5,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-04-10"
+  },
+  {
+    "accountId": "acct-arriyana-leyva",
+    "accountName": "Arriyana Leyva",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-carson-elman",
+    "accountName": "Carson Elman",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kena-dacus",
+    "accountName": "Kena Dacus",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 200,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-carla-hernandez",
+    "accountName": "Carla Hernandez",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-taryn-clary",
+    "accountName": "Taryn Clary",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kiasia-allen",
+    "accountName": "Kiasia Allen",
+    "lifetimeCollected": 225,
+    "outstanding": 225,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-04"
+  },
+  {
+    "accountId": "acct-jania-warner",
+    "accountName": "Jania Warner",
+    "lifetimeCollected": 550,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 275,
+    "paymentCount": 2,
+    "lastPaidOn": "2026-05-07"
+  },
+  {
+    "accountId": "acct-tammy-corum",
+    "accountName": "Tammy Corum",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-amy-jensen",
+    "accountName": "Amy Jensen",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-maelissa-taylor",
+    "accountName": "MAELISSA TAYLOR",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jorelle-hadley",
+    "accountName": "Jorelle Hadley",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-06"
+  },
+  {
+    "accountId": "acct-ma-kiya-rose",
+    "accountName": "Ma’Kiya Rose",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-dana-lyn",
+    "accountName": "Dana Lyn",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-rigina-sithara",
+    "accountName": "Rigina Sithara",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-melissa-slaughter",
+    "accountName": "Melissa Slaughter",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-erica-barrios",
+    "accountName": "Erica Barrios",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-sarah-fricker",
+    "accountName": "Sarah Fricker",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 550,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-victor-lerma",
+    "accountName": "Victor Lerma",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-daisy-ramirez",
+    "accountName": "Daisy Ramirez",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-yessenia-orozco-garcia",
+    "accountName": "Yessenia Orozco Garcia",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-sarah-dowell",
+    "accountName": "Sarah Dowell",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 150,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-yovana-villarreal",
+    "accountName": "Yovana Villarreal",
+    "lifetimeCollected": 325,
+    "outstanding": 325,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-12"
+  },
+  {
+    "accountId": "acct-reagan-wolfe",
+    "accountName": "Reagan wolfe",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jessica-kingari",
+    "accountName": "Jessica Kingari",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-angelina-cotham",
+    "accountName": "Angelina Cotham",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-andrea-fuentes",
+    "accountName": "andrea fuentes",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-karla-ortiz",
+    "accountName": "Karla Ortiz",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-melani-marroquin",
+    "accountName": "Melani Marroquin",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ashlynn-mills",
+    "accountName": "Ashlynn Mills",
+    "lifetimeCollected": 325,
+    "outstanding": 325,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-30"
+  },
+  {
+    "accountId": "acct-casey-bui",
+    "accountName": "Casey Bui",
+    "lifetimeCollected": 337.5,
+    "outstanding": 337.5,
+    "eventCount": 2,
+    "avgEventValue": 337.5,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-04-28"
+  },
+  {
+    "accountId": "acct-mariajose-escobar",
+    "accountName": "Mariajose Escobar",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-samantha-thompson",
+    "accountName": "Samantha Thompson",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-monica-hiraldo",
+    "accountName": "Monica Hiraldo",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 200,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-edwardo-lira",
+    "accountName": "Edwardo Lira",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jasmin-hernandez",
+    "accountName": "Jasmin Hernandez",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-joe-williams-iii",
+    "accountName": "Joe Williams III",
+    "lifetimeCollected": 0,
+    "outstanding": 400,
+    "eventCount": 2,
+    "avgEventValue": 200,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-omar-ferraez",
+    "accountName": "Omar Ferraez",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-valerie-anderson",
+    "accountName": "Valerie Anderson",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-jennifer-dawso",
+    "accountName": "jennifer Dawso",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-sidnee-bruner",
+    "accountName": "Sidnee Bruner",
+    "lifetimeCollected": 0,
+    "outstanding": 600,
+    "eventCount": 2,
+    "avgEventValue": 300,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-vanessa-chavez",
+    "accountName": "vanessa chavez",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-susan-lee",
+    "accountName": "Susan Lee",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-niki-bustamante",
+    "accountName": "Niki Bustamante",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-shawanda-neal",
+    "accountName": "Shawanda Neal",
+    "lifetimeCollected": 325,
+    "outstanding": 325,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-05-05"
+  },
+  {
+    "accountId": "acct-lori-dougan",
+    "accountName": "Lori Dougan",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-michelle-bradbury",
+    "accountName": "Michelle Bradbury",
+    "lifetimeCollected": 225,
+    "outstanding": 225,
+    "eventCount": 2,
+    "avgEventValue": 225,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-05-05"
+  },
+  {
+    "accountId": "acct-juan-solorzano",
+    "accountName": "Juan Solorzano",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 600,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-sueah-kim",
+    "accountName": "Sueah Kim",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-alisha-doan",
+    "accountName": "Alisha Doan",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 650,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-estefani-franco",
+    "accountName": "Estefani Franco",
+    "lifetimeCollected": 0,
+    "outstanding": 487.5,
+    "eventCount": 2,
+    "avgEventValue": 243.75,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-charity-gaza",
+    "accountName": "Charity Gaza",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-caitlyn-johnson",
+    "accountName": "Caitlyn Johnson",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 600,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-auriana-jones",
+    "accountName": "Auriana Jones",
+    "lifetimeCollected": 325,
+    "outstanding": 325,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-05-13"
+  },
+  {
+    "accountId": "acct-chase-lemmons",
+    "accountName": "Chase Lemmons",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-leonora-mcnickle",
+    "accountName": "Leonora McNickle",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-mariajose-gonzalez",
+    "accountName": "Mariajose Gonzalez",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-danica-alexander",
+    "accountName": "Danica Alexander",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-annabel-rodriguez",
+    "accountName": "Annabel Rodriguez",
+    "lifetimeCollected": 292.5,
+    "outstanding": 292.5,
+    "eventCount": 2,
+    "avgEventValue": 292.5,
+    "paymentCount": 1,
+    "lastPaidOn": "2026-05-20"
+  },
+  {
+    "accountId": "acct-mia-temple",
+    "accountName": "Mia Temple",
+    "lifetimeCollected": 0,
+    "outstanding": 975,
+    "eventCount": 2,
+    "avgEventValue": 487.5,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-daniel-gutierrez",
+    "accountName": "Daniel Gutierrez",
+    "lifetimeCollected": 0,
+    "outstanding": 300,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-kendra-drummond",
+    "accountName": "Kendra Drummond",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-madison-wilson",
+    "accountName": "Madison Wilson",
+    "lifetimeCollected": 0,
+    "outstanding": 300,
+    "eventCount": 2,
+    "avgEventValue": 150,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-stephanie-espinosa",
+    "accountName": "Stephanie Espinosa",
+    "lifetimeCollected": 0,
+    "outstanding": 975,
+    "eventCount": 2,
+    "avgEventValue": 487.5,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-chay-garcia",
+    "accountName": "Chay Garcia",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-ciara-trass",
+    "accountName": "Ciara Trass",
+    "lifetimeCollected": 0,
+    "outstanding": 650,
+    "eventCount": 2,
+    "avgEventValue": 325,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-melly-zabalza",
+    "accountName": "Melly Zabalza",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 2,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-contact",
+    "accountName": "Contact",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 0,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  },
+  {
+    "accountId": "acct-guest",
+    "accountName": "Guest",
+    "lifetimeCollected": 0,
+    "outstanding": 0,
+    "eventCount": 1,
+    "avgEventValue": 0,
+    "paymentCount": 0,
+    "lastPaidOn": null
+  }
+]

@@ -1,0 +1,27 @@
+{
+  "resetAt": "2026-06-25T17:27:55.321Z",
+  "tenantIds": [
+    "hub-wichita",
+    "hub-on-lewis"
+  ],
+  "collections": {
+    "deals": [],
+    "leads": [],
+    "companies": [],
+    "units": [],
+    "builds": [],
+    "build_versions": [],
+    "change_orders": [],
+    "production_jobs": [],
+    "production_tasks": [],
+    "delivery_records": [],
+    "delivery_packets": [],
+    "post_delivery_follow_ups": [],
+    "closeout_checklists": [],
+    "interactions": [],
+    "activities": [],
+    "account_plans": [],
+    "weekly_cadence_reviews": [],
+    "karmak_sync": []
+  }
+}

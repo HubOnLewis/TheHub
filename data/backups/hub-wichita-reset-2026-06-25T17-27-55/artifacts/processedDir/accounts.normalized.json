@@ -1,0 +1,3435 @@
+[
+  {
+    "id": "acct-bandits-construction",
+    "name": "Bandits Construction",
+    "contactIds": [
+      "ct-gr8whytehype-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1943356"
+    ],
+    "totalSpend": 300,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-samantha-lucciarini",
+    "name": "Samantha Lucciarini",
+    "contactIds": [
+      "ct-samantha-lucciarini-n2co-com"
+    ],
+    "eventIds": [
+      "pv-1943423",
+      "pv-2418614"
+    ],
+    "totalSpend": 0,
+    "eventCount": 4,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-elevate-mentoring",
+    "name": "Elevate Mentoring",
+    "contactIds": [
+      "ct-jason-harmonyhomebuyer-com"
+    ],
+    "eventIds": [
+      "pv-1943911",
+      "pv-2032563",
+      "pv-2032566",
+      "pv-2047118",
+      "pv-2047120",
+      "pv-2047122",
+      "pv-2047132",
+      "pv-2047135",
+      "pv-2047137",
+      "pv-2047140",
+      "pv-2047141",
+      "pv-2047142",
+      "pv-2047143",
+      "pv-2047145",
+      "pv-2047147",
+      "pv-2047148"
+    ],
+    "totalSpend": 0,
+    "eventCount": 32,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-jason-lavender",
+    "name": "Jason Lavender",
+    "contactIds": [
+      "ct-jason-harmonyhomebuyer-com"
+    ],
+    "eventIds": [
+      "pv-2074216",
+      "pv-2102267",
+      "pv-2261565",
+      "pv-2367069",
+      "pv-2367072",
+      "pv-2367075",
+      "pv-2367077",
+      "pv-2544465",
+      "pv-2582540"
+    ],
+    "totalSpend": 15,
+    "eventCount": 18,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-homes-by-erica-day",
+    "name": "Homes By Erica Day",
+    "contactIds": [
+      "ct-erica-homesbyericaday-com"
+    ],
+    "eventIds": [
+      "pv-1944096",
+      "pv-2015247"
+    ],
+    "totalSpend": 450,
+    "eventCount": 3,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-vice-real-estate",
+    "name": "Vice Real Estate",
+    "contactIds": [
+      "ct-vicetessa-outlook-com"
+    ],
+    "eventIds": [
+      "pv-1944097"
+    ],
+    "totalSpend": 450,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-express-contracting-renovations-llc",
+    "name": "Express Contracting &Renovations, LLC",
+    "contactIds": [
+      "ct-aserna80-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1944101"
+    ],
+    "totalSpend": 900,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-stw-plumbing-excavation",
+    "name": "STW Plumbing & Excavation",
+    "contactIds": [
+      "ct-ictsethwilson-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1944116"
+    ],
+    "totalSpend": 300,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-dk-motors",
+    "name": "DK Motors",
+    "contactIds": [
+      "ct-info-dkmotorsllc-com"
+    ],
+    "eventIds": [
+      "pv-1977596"
+    ],
+    "totalSpend": 450,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ashley-moore",
+    "name": "Ashley Moore",
+    "contactIds": [
+      "ct-ashleydmm-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1986677"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-maria-treto",
+    "name": "Maria Treto",
+    "contactIds": [
+      "ct-maria-treto"
+    ],
+    "eventIds": [
+      "pv-1986680"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-heidi-lavender",
+    "name": "Heidi Lavender",
+    "contactIds": [
+      "ct-hilav417-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1988273"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-alejandra-ochoa",
+    "name": "Alejandra Ochoa",
+    "contactIds": [
+      "ct-aleejaandraxoxo-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1988728"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-dinora-lopez",
+    "name": "Dinora Lopez",
+    "contactIds": [
+      "ct-dinoralopez34-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-1988743"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-emily-phrakonkham",
+    "name": "Emily Phrakonkham",
+    "contactIds": [
+      "ct-emilyphrak-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1994573"
+    ],
+    "totalSpend": 900,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-amber-card",
+    "name": "Amber Card",
+    "contactIds": [
+      "ct-ambercardrealtor-gmail-com"
+    ],
+    "eventIds": [
+      "pv-1996355"
+    ],
+    "totalSpend": 255,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-praislynn-emerold",
+    "name": "Praislynn Emerold",
+    "contactIds": [
+      "ct-pemerold-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2004513"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-lorena-mireles",
+    "name": "Lorena Mireles",
+    "contactIds": [
+      "ct-mireles-lorena-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2005047"
+    ],
+    "totalSpend": 600,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-marudhu",
+    "name": "Marudhu",
+    "contactIds": [
+      "ct-marudhu-m-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2006583"
+    ],
+    "totalSpend": 1170,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-pamela-fruhauf",
+    "name": "Pamela Fruhauf",
+    "contactIds": [
+      "ct-pamfruhauf-me-com"
+    ],
+    "eventIds": [
+      "pv-2008314"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-luis-adame",
+    "name": "Luis Adame",
+    "contactIds": [
+      "ct-luisadame94-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2011072"
+    ],
+    "totalSpend": 750,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-ely-randelas",
+    "name": "Ely Randelas",
+    "contactIds": [
+      "ct-ely-randleas-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2015416",
+      "pv-2047083",
+      "pv-2047085",
+      "pv-2047095",
+      "pv-2047097",
+      "pv-2047100",
+      "pv-2047103",
+      "pv-2047105",
+      "pv-2047108",
+      "pv-2047109",
+      "pv-2047111",
+      "pv-2047112"
+    ],
+    "totalSpend": 6800,
+    "eventCount": 24,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ely-randleas",
+    "name": "Ely Randleas",
+    "contactIds": [
+      "ct-ely-randleas"
+    ],
+    "eventIds": [],
+    "totalSpend": 0,
+    "eventCount": 0,
+    "isVip": false,
+    "isDormant": true
+  },
+  {
+    "id": "acct-memar-jimenez",
+    "name": "Memar Jimenez",
+    "contactIds": [
+      "ct-m3mar08-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2019689"
+    ],
+    "totalSpend": 900,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-brianna-richardson",
+    "name": "Brianna Richardson",
+    "contactIds": [
+      "ct-felicitysmom2018-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2032506"
+    ],
+    "totalSpend": 1105,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-daisy-perez",
+    "name": "Daisy Perez",
+    "contactIds": [
+      "ct-daisychristina805-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2035253"
+    ],
+    "totalSpend": 1105,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-emily-gamez",
+    "name": "Emily Gamez",
+    "contactIds": [
+      "ct-elizabethegh14-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2057067"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-melissa-ceballos",
+    "name": "Melissa Ceballos",
+    "contactIds": [
+      "ct-melissajc26-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2059552"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-theresa-higgins",
+    "name": "Theresa Higgins",
+    "contactIds": [
+      "ct-thigginsw-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2066465"
+    ],
+    "totalSpend": 415,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-amanda-wilson",
+    "name": "Amanda Wilson",
+    "contactIds": [
+      "ct-amanda-wilson"
+    ],
+    "eventIds": [
+      "pv-2081173"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-dscax-dsx",
+    "name": "dscax dsx",
+    "contactIds": [
+      "ct-abc-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2090918"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-danicka-bo",
+    "name": "Danicka Bo",
+    "contactIds": [
+      "ct-danicka-bo-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2091174"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-allison-childs",
+    "name": "Allison Childs",
+    "contactIds": [
+      "ct-childsa86-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2094077"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-amber-brehm",
+    "name": "Amber Brehm",
+    "contactIds": [
+      "ct-amber-brehm-hotmail-com"
+    ],
+    "eventIds": [
+      "pv-2097985"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-gisselle-fierros",
+    "name": "Gisselle Fierros",
+    "contactIds": [
+      "ct-gisselle-montoya18-gmail-com",
+      "ct-gisselle-montoya18-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2098003"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-stephanie-martinez",
+    "name": "Stephanie Martinez",
+    "contactIds": [
+      "ct-martinezfannyi-yahoo-com",
+      "ct-jurado-stephanie-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2098031",
+      "pv-2132245"
+    ],
+    "totalSpend": 1150,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ben-engelbrecht",
+    "name": "Ben Engelbrecht",
+    "contactIds": [
+      "ct-benjamin-engelbrecht-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2103336"
+    ],
+    "totalSpend": 0,
+    "eventCount": 3,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ben-nts-engel-nts",
+    "name": "Ben (NTS) Engel (NTS)",
+    "contactIds": [
+      "ct-nts-norristraining-com"
+    ],
+    "eventIds": [
+      "pv-2103468"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-lola",
+    "name": "Lola",
+    "contactIds": [
+      "ct-lolabouchard1234-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2103579"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-olivia-lemmons",
+    "name": "Olivia Lemmons",
+    "contactIds": [
+      "ct-ocredels-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2106599"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-thuy-chang",
+    "name": "Thuy Chang",
+    "contactIds": [
+      "ct-tduong2812-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2108613"
+    ],
+    "totalSpend": 1300,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-amanda-rempe",
+    "name": "Amanda Rempe",
+    "contactIds": [
+      "ct-amanda-remperealestate-com"
+    ],
+    "eventIds": [
+      "pv-2112268"
+    ],
+    "totalSpend": 600,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ashleigh-fleming",
+    "name": "Ashleigh Fleming",
+    "contactIds": [
+      "ct-ashleigh-n-richards-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2113927"
+    ],
+    "totalSpend": 800,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-brandy-horsch",
+    "name": "Brandy Horsch",
+    "contactIds": [
+      "ct-brandybrand-ymail-com"
+    ],
+    "eventIds": [
+      "pv-2116700"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-karis-rogers",
+    "name": "Karis Rogers",
+    "contactIds": [
+      "ct-karismarie41-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2127735"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-carissa-carrrasco",
+    "name": "Carissa Carrrasco",
+    "contactIds": [
+      "ct-carissacarrasco03-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2131130"
+    ],
+    "totalSpend": 375,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-cori-beemer",
+    "name": "Cori Beemer",
+    "contactIds": [
+      "ct-corimmckissick-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2131762"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-athena-mcgeary",
+    "name": "Athena McGeary",
+    "contactIds": [
+      "ct-amcgeary11-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2135546"
+    ],
+    "totalSpend": 375,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-lorna-quezada",
+    "name": "Lorna Quezada",
+    "contactIds": [
+      "ct-lornaquezada18-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2138470"
+    ],
+    "totalSpend": 875,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-edith-bernal",
+    "name": "Edith Bernal",
+    "contactIds": [
+      "ct-edithivalencia5-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2138498"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-hector-morales",
+    "name": "Hector Morales",
+    "contactIds": [
+      "ct-hmoraless0121-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2139413"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-isaac-caraveo",
+    "name": "Isaac Caraveo",
+    "contactIds": [
+      "ct-caraveoisaac-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2141531"
+    ],
+    "totalSpend": 1000,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-tannah-doub",
+    "name": "Tannah Doub",
+    "contactIds": [
+      "ct-tdoub2017-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2142131"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-monica-young",
+    "name": "Monica Young",
+    "contactIds": [
+      "ct-monica-my-snackies-com"
+    ],
+    "eventIds": [
+      "pv-2142740"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-cadence-brozek",
+    "name": "Cadence Brozek",
+    "contactIds": [
+      "ct-cadencebrozek-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2151708"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-joyce-maloney",
+    "name": "Joyce Maloney",
+    "contactIds": [
+      "ct-joycescmaloney-hotmail-com"
+    ],
+    "eventIds": [
+      "pv-2155779"
+    ],
+    "totalSpend": 800,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-selena-sensanith",
+    "name": "selena sensanith",
+    "contactIds": [
+      "ct-selena-sensanith-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2168588"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-victoria-murphy",
+    "name": "Victoria Murphy",
+    "contactIds": [
+      "ct-victoria-lowry90-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2168705"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-samantha-gourley",
+    "name": "Samantha Gourley",
+    "contactIds": [
+      "ct-samantha-gourley-outlook-com"
+    ],
+    "eventIds": [
+      "pv-2169470"
+    ],
+    "totalSpend": 600,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-nicola-schroeder",
+    "name": "Nicola Schroeder",
+    "contactIds": [
+      "ct-nicola-lira-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2179226"
+    ],
+    "totalSpend": 350,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-britt-tasker",
+    "name": "Britt Tasker",
+    "contactIds": [
+      "ct-britt-tasker24-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2193137"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-alyssa-jones",
+    "name": "Alyssa Jones",
+    "contactIds": [
+      "ct-alyssahenwood14-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2202144"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jenny-nguyen",
+    "name": "Jenny Nguyen",
+    "contactIds": [
+      "ct-jenny-n-jenny-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2202263"
+    ],
+    "totalSpend": 600,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-breanna-taylor",
+    "name": "Breanna Taylor",
+    "contactIds": [
+      "ct-23lilblue-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2203216"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-hom-souvannarath",
+    "name": "Hom Souvannarath",
+    "contactIds": [
+      "ct-hmsvnnrth-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2205942"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-carrie-davis",
+    "name": "Carrie Davis",
+    "contactIds": [
+      "ct-mscarrie1977-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2206981"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-alayla-finney",
+    "name": "Alayla Finney",
+    "contactIds": [
+      "ct-ajilamarie-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2207092"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-paige-roubideaux",
+    "name": "Paige Roubideaux",
+    "contactIds": [
+      "ct-paigerzz5678-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2207859"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-megan-estrada",
+    "name": "Megan Estrada",
+    "contactIds": [
+      "ct-mestrada-ecginsurance-com"
+    ],
+    "eventIds": [
+      "pv-2208541"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-tenia-perez",
+    "name": "Tenia Perez",
+    "contactIds": [
+      "ct-pereztenia60-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2210157"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kali-mills",
+    "name": "Kali Mills",
+    "contactIds": [
+      "ct-kali-mills-geogroup-com"
+    ],
+    "eventIds": [
+      "pv-2213018"
+    ],
+    "totalSpend": 300,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-joanne-kimani",
+    "name": "Joanne Kimani",
+    "contactIds": [
+      "ct-joannebluew-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2214191"
+    ],
+    "totalSpend": 1200,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-naya-ponds",
+    "name": "Naya Ponds",
+    "contactIds": [
+      "ct-nayaaponds34-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2220435"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-selena-dulin",
+    "name": "Selena Dulin",
+    "contactIds": [
+      "ct-selenahienvo-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2220480"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-bethany-bayne",
+    "name": "Bethany Bayne",
+    "contactIds": [
+      "ct-bguriel-hotmail-com"
+    ],
+    "eventIds": [
+      "pv-2222779"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-brisa-cruz",
+    "name": "Brisa Cruz",
+    "contactIds": [
+      "ct-brisaidalia-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2225583"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-aaron-clark",
+    "name": "Aaron Clark",
+    "contactIds": [
+      "ct-aaron-clark-guildmortgage-net",
+      "ct-aaron-clark-guildmortgage-net"
+    ],
+    "eventIds": [
+      "pv-2227655"
+    ],
+    "totalSpend": 450,
+    "eventCount": 3,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-susanne-suellentrop",
+    "name": "Susanne Suellentrop",
+    "contactIds": [
+      "ct-susanne-m-minsurance-com"
+    ],
+    "eventIds": [
+      "pv-2228113"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-nate-wills",
+    "name": "Nate Wills",
+    "contactIds": [
+      "ct-phatrat7879-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2228437",
+      "pv-2457028"
+    ],
+    "totalSpend": 795,
+    "eventCount": 3,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-tanada-garcia",
+    "name": "Tanada Garcia",
+    "contactIds": [
+      "ct-tanada-lbc-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2236315"
+    ],
+    "totalSpend": 800,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-laride-conerly",
+    "name": "Laride Conerly",
+    "contactIds": [
+      "ct-l-conerly72-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2239145"
+    ],
+    "totalSpend": 975,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-rigy-lehman",
+    "name": "Rigy Lehman",
+    "contactIds": [
+      "ct-rigylehman-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2245547"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kristyn-smith",
+    "name": "Kristyn Smith",
+    "contactIds": [
+      "ct-ksmith3298503-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2245554"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-will-vaught",
+    "name": "WILL VAUGHT",
+    "contactIds": [
+      "ct-vaughtwill96-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2252827"
+    ],
+    "totalSpend": 450,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-leslie-garcia",
+    "name": "Leslie Garcia",
+    "contactIds": [
+      "ct-lesliegarciaroman-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2252834"
+    ],
+    "totalSpend": 600,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-emily-ngugi",
+    "name": "Emily Ngugi",
+    "contactIds": [
+      "ct-emilyngugi-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2258701"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-hannah-bayless",
+    "name": "Hannah Bayless",
+    "contactIds": [
+      "ct-amrgrl2003-hotmail-com"
+    ],
+    "eventIds": [
+      "pv-2264957"
+    ],
+    "totalSpend": 550,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-tiffany-bouddhara",
+    "name": "Tiffany Bouddhara",
+    "contactIds": [
+      "ct-t-bouddhara-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2269409"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-danielle-vega",
+    "name": "Danielle vega",
+    "contactIds": [
+      "ct-walkbyfaith0803-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2269500"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jeff-morten",
+    "name": "Jeff Morten",
+    "contactIds": [
+      "ct-mortenjeffrey-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2269506"
+    ],
+    "totalSpend": 525,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-hope-root",
+    "name": "Hope Root",
+    "contactIds": [
+      "ct-hope-e-root-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2271971"
+    ],
+    "totalSpend": 1000,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-vanessa-talbert",
+    "name": "Vanessa Talbert",
+    "contactIds": [
+      "ct-vtalbert63-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2272467"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-brandi-martin",
+    "name": "Brandi Martin",
+    "contactIds": [
+      "ct-brandim20041-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2288283"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jillian-gonzales",
+    "name": "Jillian Gonzales",
+    "contactIds": [
+      "ct-jgonz1116-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2288990"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-mayah-martinez",
+    "name": "Mayah Martinez",
+    "contactIds": [
+      "ct-martinezmayah236-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2295748"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-joann-parent",
+    "name": "Joann Parent",
+    "contactIds": [
+      "ct-hibafaheem2212-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2295907"
+    ],
+    "totalSpend": 950,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-cat-nero",
+    "name": "Cat Nero",
+    "contactIds": [
+      "ct-lytthenite-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2295943"
+    ],
+    "totalSpend": 1125,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-chauntel-nguyen",
+    "name": "Chauntel Nguyen",
+    "contactIds": [
+      "ct-nguyen-chauntel-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2306515",
+      "pv-2374601"
+    ],
+    "totalSpend": 550,
+    "eventCount": 3,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-neal-siewert",
+    "name": "Neal Siewert",
+    "contactIds": [
+      "ct-neal-seiwert-harvesthouseks-com",
+      "ct-neal-seiwert-harvesthouseks-com"
+    ],
+    "eventIds": [
+      "pv-2311300",
+      "pv-2311303"
+    ],
+    "totalSpend": 600,
+    "eventCount": 4,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-neal-seiwert",
+    "name": "Neal Seiwert",
+    "contactIds": [
+      "ct-neal-seiwert-harvesthouseks-com"
+    ],
+    "eventIds": [
+      "pv-2311309",
+      "pv-2647673"
+    ],
+    "totalSpend": 150,
+    "eventCount": 3,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-gisela-hernandez",
+    "name": "Gisela Hernandez",
+    "contactIds": [
+      "ct-giselasarmiento123-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2311349",
+      "pv-2368749"
+    ],
+    "totalSpend": 550,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-crystle-perez",
+    "name": "Crystle Perez",
+    "contactIds": [
+      "ct-cjp1998-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2312014"
+    ],
+    "totalSpend": 750,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-nousette-jefferson",
+    "name": "Nousette Jefferson",
+    "contactIds": [
+      "ct-nousette14-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2312106"
+    ],
+    "totalSpend": 400,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-liberty-larouche",
+    "name": "Liberty Larouche",
+    "contactIds": [
+      "ct-pricedrightplumbing-paul-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2312508"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-amanda-jolley",
+    "name": "Amanda Jolley",
+    "contactIds": [
+      "ct-amanda-jolley"
+    ],
+    "eventIds": [
+      "pv-2312801"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-alejandro-ceja",
+    "name": "Alejandro Ceja",
+    "contactIds": [
+      "ct-tapukokoguy-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2313195"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-valeria-rosales",
+    "name": "Valeria Rosales",
+    "contactIds": [
+      "ct-r-valeria1993-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2319429"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-auna-cantrell",
+    "name": "Auna Cantrell",
+    "contactIds": [
+      "ct-auna-cantrell"
+    ],
+    "eventIds": [],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-auna-cantril",
+    "name": "Auna Cantril",
+    "contactIds": [
+      "ct-lovelyfloralco-gmail-com"
+    ],
+    "eventIds": [],
+    "totalSpend": 0,
+    "eventCount": 0,
+    "isVip": false,
+    "isDormant": true
+  },
+  {
+    "id": "acct-auna-cantril",
+    "name": "Auna cantril",
+    "contactIds": [
+      "ct-lovelyfloralco-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2321153"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ro-wheeler",
+    "name": "Ro Wheeler",
+    "contactIds": [
+      "ct-rrwheeler12709-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2324652"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-ashlee-ainsworth",
+    "name": "Ashlee Ainsworth",
+    "contactIds": [
+      "ct-thomleeainsworth-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2325372"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-holly-hatten",
+    "name": "Holly Hatten",
+    "contactIds": [
+      "ct-hhatten-corterra-wichita-com"
+    ],
+    "eventIds": [
+      "pv-2325735"
+    ],
+    "totalSpend": 550,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-alayna-nolan",
+    "name": "Alayna Nolan",
+    "contactIds": [
+      "ct-stackadolla20-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2326035"
+    ],
+    "totalSpend": 500,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-shasta-bolden",
+    "name": "Shasta Bolden",
+    "contactIds": [
+      "ct-snormore-me-com"
+    ],
+    "eventIds": [
+      "pv-2331435"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kasandra-minjares",
+    "name": "Kasandra Minjares",
+    "contactIds": [
+      "ct-kminjares12-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2331636"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-chayanne-garcia",
+    "name": "Chayanne Garcia",
+    "contactIds": [
+      "ct-chayanne1823-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2342075"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-briza-barraza",
+    "name": "Briza Barraza",
+    "contactIds": [
+      "ct-brizabarraza9-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2343342"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-anais-contreras",
+    "name": "Anais Contreras",
+    "contactIds": [
+      "ct-anaiscont03-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2344458"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-elizabeth-terry",
+    "name": "Elizabeth Terry",
+    "contactIds": [
+      "ct-remblterry5-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2344978"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jocelyn-triplett",
+    "name": "Jocelyn Triplett",
+    "contactIds": [
+      "ct-jocelynmarie-me-com"
+    ],
+    "eventIds": [
+      "pv-2346792"
+    ],
+    "totalSpend": 825,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-sherrie-lane",
+    "name": "Sherrie Lane",
+    "contactIds": [
+      "ct-sherrie-laneictrealty-com"
+    ],
+    "eventIds": [
+      "pv-2347266"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-umber",
+    "name": "Umber",
+    "contactIds": [
+      "ct-umber-zaheer-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2352886"
+    ],
+    "totalSpend": 300,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-michelle-stewart",
+    "name": "Michelle Stewart",
+    "contactIds": [
+      "ct-stewarts4lsu-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2359854"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-ashley-dukes",
+    "name": "Ashley Dukes",
+    "contactIds": [
+      "ct-wichitawomenscircle-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2359864"
+    ],
+    "totalSpend": 400,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-ki-arra-collins",
+    "name": "Ki-Arra Collins",
+    "contactIds": [
+      "ct-kiarracollins-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2361669"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-tracey-ripperger",
+    "name": "Tracey Ripperger",
+    "contactIds": [
+      "ct-tripperger-cox-net"
+    ],
+    "eventIds": [
+      "pv-2361864"
+    ],
+    "totalSpend": 450,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-nicole-krueger",
+    "name": "Nicole Krueger",
+    "contactIds": [
+      "ct-nicolekr2004-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2362874"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-dulce-reyes",
+    "name": "Dulce Reyes",
+    "contactIds": [
+      "ct-nena-reyes316-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2363668"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-crystal",
+    "name": "Crystal",
+    "contactIds": [
+      "ct-crystal-sportsmedrecovery-com"
+    ],
+    "eventIds": [
+      "pv-2364603"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-alexis-noble",
+    "name": "Alexis Noble",
+    "contactIds": [
+      "ct-alexis-noble-cargill-com"
+    ],
+    "eventIds": [
+      "pv-2364799"
+    ],
+    "totalSpend": 600,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-megan-deppner",
+    "name": "Megan Deppner",
+    "contactIds": [
+      "ct-mkdepp-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2365263"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-camron-ahmad-daugherty",
+    "name": "Camron Ahmad-Daugherty",
+    "contactIds": [
+      "ct-camronakacammi123-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2367925"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jamie-bui",
+    "name": "Jamie Bui",
+    "contactIds": [
+      "ct-bui-jamie-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2369361",
+      "pv-2585173"
+    ],
+    "totalSpend": 650,
+    "eventCount": 4,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-miriah-conley",
+    "name": "Miriah Conley",
+    "contactIds": [
+      "ct-miriahkinderknecht4-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2372347"
+    ],
+    "totalSpend": 1200,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-kendra-enfield",
+    "name": "Kendra Enfield",
+    "contactIds": [
+      "ct-kendracollins715-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2372753"
+    ],
+    "totalSpend": 300,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kimsha-carter",
+    "name": "Kimsha Carter",
+    "contactIds": [
+      "ct-kimshacarter-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2374578"
+    ],
+    "totalSpend": 550,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-martha-horn",
+    "name": "Martha Horn",
+    "contactIds": [
+      "ct-hornmartha75-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2377453"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-robin-villa",
+    "name": "Robin Villa",
+    "contactIds": [
+      "ct-robchelcar-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2377692"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-alexis-phakornkham",
+    "name": "Alexis Phakornkham",
+    "contactIds": [
+      "ct-alexisphakornkham-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2383164"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kyara-parker",
+    "name": "Kyara Parker",
+    "contactIds": [
+      "ct-kyaraparker0321-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2384715"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jordan-farr",
+    "name": "Jordan Farr",
+    "contactIds": [
+      "ct-rosenthalzoey-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2385357"
+    ],
+    "totalSpend": 500,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-lizbeth-gonzalez",
+    "name": "Lizbeth Gonzalez",
+    "contactIds": [
+      "ct-seryliz22-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2386316"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kayden-roman",
+    "name": "Kayden Roman",
+    "contactIds": [
+      "ct-info-roaminbuddies-com"
+    ],
+    "eventIds": [
+      "pv-2388170"
+    ],
+    "totalSpend": 300,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jessica-cabrales",
+    "name": "Jessica Cabrales",
+    "contactIds": [
+      "ct-jesscabrales-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2392111"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-brianna-saka",
+    "name": "Brianna Saka",
+    "contactIds": [
+      "ct-briannastudent1017-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2395471"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-adriana-duran",
+    "name": "Adriana Duran",
+    "contactIds": [
+      "ct-aduran7291-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2396257"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-kiley-schneweis",
+    "name": "Kiley Schneweis",
+    "contactIds": [
+      "ct-schneweis-kiley-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2396614",
+      "pv-2424347"
+    ],
+    "totalSpend": 400,
+    "eventCount": 4,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-haleigh-allred",
+    "name": "Haleigh Allred",
+    "contactIds": [
+      "ct-haleighallred-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2397552"
+    ],
+    "totalSpend": 700,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-tina-bell",
+    "name": "Tina Bell",
+    "contactIds": [
+      "ct-tinabell10001-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2400461"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-hannah-grace-gorman",
+    "name": "Hannah-Grace Gorman",
+    "contactIds": [
+      "ct-hannahgracekei-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2401174"
+    ],
+    "totalSpend": 1.5,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-ashley-karson",
+    "name": "ASHLEY Karson",
+    "contactIds": [
+      "ct-ashley-jordanchiro-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2409548"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-amy-nguyen",
+    "name": "Amy Nguyen",
+    "contactIds": [
+      "ct-amnyen03-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2409968"
+    ],
+    "totalSpend": 1312.5,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-felicia-rodriguez",
+    "name": "Felicia Rodriguez",
+    "contactIds": [
+      "ct-felicia10309915-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2411470"
+    ],
+    "totalSpend": 1312.5,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-rayonda-black",
+    "name": "Rayonda Black",
+    "contactIds": [
+      "ct-rayrayrayonda-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2412117"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-haley-krizek",
+    "name": "Haley Krizek",
+    "contactIds": [
+      "ct-mazzantih-gmail-col"
+    ],
+    "eventIds": [
+      "pv-2412584"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-lys-besa",
+    "name": "Lys Besa",
+    "contactIds": [
+      "ct-besalys62-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2412946"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jamie-luallen",
+    "name": "Jamie Luallen",
+    "contactIds": [
+      "ct-jamie-stewardright-com"
+    ],
+    "eventIds": [
+      "pv-2416535"
+    ],
+    "totalSpend": 280,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-selina-garcia",
+    "name": "Selina Garcia",
+    "contactIds": [
+      "ct-sgarciaaa1121-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2421154"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-victoria-lopez",
+    "name": "Victoria Lopez",
+    "contactIds": [
+      "ct-victorianichole16-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2424426"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-maira-gomez",
+    "name": "Maira Gomez",
+    "contactIds": [
+      "ct-maira-gianna-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2424503",
+      "pv-2468022"
+    ],
+    "totalSpend": 900,
+    "eventCount": 4,
+    "isVip": true,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-alex-hamlin-masters",
+    "name": "Alex Hamlin-Masters",
+    "contactIds": [
+      "ct-alex-hmln-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2436409"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-samantha-felton",
+    "name": "Samantha Felton",
+    "contactIds": [
+      "ct-sjprice1988-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2449942"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ashab-conner",
+    "name": "Ashab Conner",
+    "contactIds": [
+      "ct-ashahconner-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2450830"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-megan-shaw",
+    "name": "Megan Shaw",
+    "contactIds": [
+      "ct-mshaw42106-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2451767"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-derek-blades",
+    "name": "Derek Blades",
+    "contactIds": [
+      "ct-dmblades-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2457052"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-arriyana-leyva",
+    "name": "Arriyana Leyva",
+    "contactIds": [
+      "ct-arriyanaleyva-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2457887"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-carson-elman",
+    "name": "Carson Elman",
+    "contactIds": [
+      "ct-devandcrsn-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2465219"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-kena-dacus",
+    "name": "Kena Dacus",
+    "contactIds": [
+      "ct-kena-dacusauto-com"
+    ],
+    "eventIds": [
+      "pv-2465412"
+    ],
+    "totalSpend": 200,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-carla-hernandez",
+    "name": "Carla Hernandez",
+    "contactIds": [
+      "ct-carlhernan07-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2469249"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-taryn-clary",
+    "name": "Taryn Clary",
+    "contactIds": [
+      "ct-tniedens123-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2472144"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-kiasia-allen",
+    "name": "Kiasia Allen",
+    "contactIds": [
+      "ct-kiasiaa2-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2474854"
+    ],
+    "totalSpend": 675,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-jania-warner",
+    "name": "Jania Warner",
+    "contactIds": [
+      "ct-janiawarne04-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2478298"
+    ],
+    "totalSpend": 1100,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-tammy-corum",
+    "name": "Tammy Corum",
+    "contactIds": [
+      "ct-corumtl-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2479384"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-amy-jensen",
+    "name": "Amy Jensen",
+    "contactIds": [
+      "ct-cattyamy-att-net"
+    ],
+    "eventIds": [
+      "pv-2482587"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-maelissa-taylor",
+    "name": "MAELISSA TAYLOR",
+    "contactIds": [
+      "ct-taylordmae87-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2483054"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-jorelle-hadley",
+    "name": "Jorelle Hadley",
+    "contactIds": [
+      "ct-jorelle07-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2483140"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-ma-kiya-rose",
+    "name": "Ma’Kiya Rose",
+    "contactIds": [
+      "ct-makiyarose1-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2484138"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-dana-lyn",
+    "name": "Dana Lyn",
+    "contactIds": [
+      "ct-dana-theblesscollective-com"
+    ],
+    "eventIds": [
+      "pv-2496371"
+    ],
+    "totalSpend": 300,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-rigina-sithara",
+    "name": "Rigina Sithara",
+    "contactIds": [
+      "ct-rr-sithara8-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2500058"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-melissa-slaughter",
+    "name": "Melissa Slaughter",
+    "contactIds": [
+      "ct-slaughtermelissa-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2500336"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-erica-barrios",
+    "name": "Erica Barrios",
+    "contactIds": [
+      "ct-eponce1018-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2503857"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-sarah-fricker",
+    "name": "Sarah Fricker",
+    "contactIds": [
+      "ct-sfricker-dccca-org"
+    ],
+    "eventIds": [
+      "pv-2504723"
+    ],
+    "totalSpend": 550,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-victor-lerma",
+    "name": "Victor Lerma",
+    "contactIds": [
+      "ct-victorlerma650-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2506720"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-daisy-ramirez",
+    "name": "Daisy Ramirez",
+    "contactIds": [
+      "ct-1995dramirez-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2508803"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-yessenia-orozco-garcia",
+    "name": "Yessenia Orozco Garcia",
+    "contactIds": [
+      "ct-yesseniaorozco1718-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2509080"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-sarah-dowell",
+    "name": "Sarah Dowell",
+    "contactIds": [
+      "ct-dowells4-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2510218"
+    ],
+    "totalSpend": 150,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-yovana-villarreal",
+    "name": "Yovana Villarreal",
+    "contactIds": [
+      "ct-yovanavillarreal2-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2510323"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-reagan-wolfe",
+    "name": "Reagan wolfe",
+    "contactIds": [
+      "ct-reaganwolfe33-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2512874"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jessica-kingari",
+    "name": "Jessica Kingari",
+    "contactIds": [
+      "ct-riplico123-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2514893"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-angelina-cotham",
+    "name": "Angelina Cotham",
+    "contactIds": [
+      "ct-a-nicholle01-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2516411"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-andrea-fuentes",
+    "name": "andrea fuentes",
+    "contactIds": [
+      "ct-andreabfuentes-outlook-com"
+    ],
+    "eventIds": [
+      "pv-2520506"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-karla-ortiz",
+    "name": "Karla Ortiz",
+    "contactIds": [
+      "ct-karlaortiz1124-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2521092"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-melani-marroquin",
+    "name": "Melani Marroquin",
+    "contactIds": [
+      "ct-melmarroquin0688-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2523322"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ashlynn-mills",
+    "name": "Ashlynn Mills",
+    "contactIds": [
+      "ct-ashlynn-mills2000-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2554692"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-casey-bui",
+    "name": "Casey Bui",
+    "contactIds": [
+      "ct-caseyabui-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2558312"
+    ],
+    "totalSpend": 1012.5,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-mariajose-escobar",
+    "name": "Mariajose Escobar",
+    "contactIds": [
+      "ct-mescobar18-outlook-com"
+    ],
+    "eventIds": [
+      "pv-2559253"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-samantha-thompson",
+    "name": "Samantha Thompson",
+    "contactIds": [
+      "ct-samanthathomps23-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2559497"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-monica-hiraldo",
+    "name": "Monica Hiraldo",
+    "contactIds": [
+      "ct-monicaticas-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2561668"
+    ],
+    "totalSpend": 200,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-edwardo-lira",
+    "name": "Edwardo Lira",
+    "contactIds": [
+      "ct-chevyblue86-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2564022"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jasmin-hernandez",
+    "name": "Jasmin Hernandez",
+    "contactIds": [
+      "ct-jasminhdz191-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2564612"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-joe-williams-iii",
+    "name": "Joe Williams III",
+    "contactIds": [
+      "ct-joewiii10-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2566120"
+    ],
+    "totalSpend": 400,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-omar-ferraez",
+    "name": "Omar Ferraez",
+    "contactIds": [
+      "ct-omarsillo1212-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2572263"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-valerie-anderson",
+    "name": "Valerie Anderson",
+    "contactIds": [
+      "ct-anderwoman23-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2574936"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-jennifer-dawso",
+    "name": "jennifer Dawso",
+    "contactIds": [
+      "ct-jendawson03-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2577788"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-sidnee-bruner",
+    "name": "Sidnee Bruner",
+    "contactIds": [
+      "ct-brunersidnee-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2578588"
+    ],
+    "totalSpend": 600,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-vanessa-chavez",
+    "name": "vanessa chavez",
+    "contactIds": [
+      "ct-chavezvanessa-3104-icloud-com"
+    ],
+    "eventIds": [
+      "pv-2578849"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-susan-lee",
+    "name": "Susan Lee",
+    "contactIds": [
+      "ct-susyqlee-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2588531"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-niki-bustamante",
+    "name": "Niki Bustamante",
+    "contactIds": [
+      "ct-mooseturtle16-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2593167"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-shawanda-neal",
+    "name": "Shawanda Neal",
+    "contactIds": [
+      "ct-ssneal37-hotmail-com"
+    ],
+    "eventIds": [
+      "pv-2593825"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-lori-dougan",
+    "name": "Lori Dougan",
+    "contactIds": [
+      "ct-yorkieluv4me-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2593841"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-michelle-bradbury",
+    "name": "Michelle Bradbury",
+    "contactIds": [
+      "ct-mbrad12-hotmail-com"
+    ],
+    "eventIds": [
+      "pv-2601228"
+    ],
+    "totalSpend": 675,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-juan-solorzano",
+    "name": "Juan Solorzano",
+    "contactIds": [
+      "ct-ozsolorzano10-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2601938"
+    ],
+    "totalSpend": 600,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-sueah-kim",
+    "name": "Sueah Kim",
+    "contactIds": [
+      "ct-shuahkim08-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2602468"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-alisha-doan",
+    "name": "Alisha Doan",
+    "contactIds": [
+      "ct-alishadoan19-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2605252"
+    ],
+    "totalSpend": 650,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-estefani-franco",
+    "name": "Estefani Franco",
+    "contactIds": [
+      "ct-estefanifranco143-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2606077"
+    ],
+    "totalSpend": 487.5,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-charity-gaza",
+    "name": "Charity Gaza",
+    "contactIds": [
+      "ct-charity-gaza-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2608069"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-caitlyn-johnson",
+    "name": "Caitlyn Johnson",
+    "contactIds": [
+      "ct-caitlynandjustise-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2611593"
+    ],
+    "totalSpend": 600,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  },
+  {
+    "id": "acct-auriana-jones",
+    "name": "Auriana Jones",
+    "contactIds": [
+      "ct-aurij-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2613483"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-chase-lemmons",
+    "name": "Chase Lemmons",
+    "contactIds": [
+      "ct-versachase-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2618736"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-leonora-mcnickle",
+    "name": "Leonora McNickle",
+    "contactIds": [
+      "ct-leonora-m-mcnickle-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2623982"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-mariajose-gonzalez",
+    "name": "Mariajose Gonzalez",
+    "contactIds": [
+      "ct-mescobar18-outlook-com"
+    ],
+    "eventIds": [
+      "pv-2624908"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-danica-alexander",
+    "name": "Danica Alexander",
+    "contactIds": [
+      "ct-danicanicole12-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2630490"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-annabel-rodriguez",
+    "name": "Annabel Rodriguez",
+    "contactIds": [
+      "ct-axrodriguez164-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2631546"
+    ],
+    "totalSpend": 877.5,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-mia-temple",
+    "name": "Mia Temple",
+    "contactIds": [
+      "ct-miatemple2017-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2632115"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-daniel-gutierrez",
+    "name": "Daniel Gutierrez",
+    "contactIds": [
+      "ct-dxgutierrez-kw-com"
+    ],
+    "eventIds": [
+      "pv-2634186"
+    ],
+    "totalSpend": 300,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-kendra-drummond",
+    "name": "Kendra Drummond",
+    "contactIds": [
+      "ct-jkdrummond25-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2637399"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-madison-wilson",
+    "name": "Madison Wilson",
+    "contactIds": [
+      "ct-mwilson-younglife-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2643948"
+    ],
+    "totalSpend": 300,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-stephanie-espinosa",
+    "name": "Stephanie Espinosa",
+    "contactIds": [
+      "ct-sespinosa0305-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2651261"
+    ],
+    "totalSpend": 975,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-chay-garcia",
+    "name": "Chay Garcia",
+    "contactIds": [
+      "ct-chayanne1823-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2652293"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-ciara-trass",
+    "name": "Ciara Trass",
+    "contactIds": [
+      "ct-thatdogmom24-gmail-com"
+    ],
+    "eventIds": [
+      "pv-2652464"
+    ],
+    "totalSpend": 650,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-melly-zabalza",
+    "name": "Melly Zabalza",
+    "contactIds": [
+      "ct-alexis-zabalza-yahoo-com"
+    ],
+    "eventIds": [
+      "pv-2658364"
+    ],
+    "totalSpend": 0,
+    "eventCount": 2,
+    "isVip": false,
+    "isDormant": false,
+    "expansionNote": "Repeat booker"
+  },
+  {
+    "id": "acct-contact",
+    "name": "Contact",
+    "contactIds": [
+      "ct-contact"
+    ],
+    "eventIds": [],
+    "totalSpend": 0,
+    "eventCount": 0,
+    "isVip": false,
+    "isDormant": true
+  },
+  {
+    "id": "acct-guest",
+    "name": "Guest",
+    "contactIds": [],
+    "eventIds": [
+      "pv-totals"
+    ],
+    "totalSpend": 0,
+    "eventCount": 1,
+    "isVip": false,
+    "isDormant": false
+  }
+]

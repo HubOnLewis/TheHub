@@ -1,0 +1,5114 @@
+{
+  "pv-1940629": {
+    "eventId": "pv-1940629",
+    "lineCount": 1,
+    "subtotal": 8000,
+    "discount": 0,
+    "total": 8000,
+    "primaryPackage": "Charcuterie Board",
+    "menuSections": [],
+    "addonCandidates": [
+      "Charcuterie Board"
+    ],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [
+      "Charcuterie Board"
+    ],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1940629",
+        "pvEventId": 1940629,
+        "itemName": "Charcuterie Board",
+        "pricePerUnit": 80,
+        "quantity": 100,
+        "total": 8000,
+        "unit": "person",
+        "menuSection": "",
+        "details": "Assortment of local cured meats, cheeses, and spreads",
+        "category": "menu"
+      }
+    ]
+  },
+  "pv-1940628": {
+    "eventId": "pv-1940628",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Main Event Space",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1940628",
+        "pvEventId": 1940628,
+        "itemName": "Main Event Space",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-1943356": {
+    "eventId": "pv-1943356",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Small Office",
+    "menuSections": [
+      "Small Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1943356",
+        "pvEventId": 1943356,
+        "itemName": "Small Office",
+        "pricePerUnit": 300,
+        "quantity": 1,
+        "total": 300,
+        "unit": "item",
+        "menuSection": "Small Office",
+        "details": "$300/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-1943423": {
+    "eventId": "pv-1943423",
+    "lineCount": 1,
+    "subtotal": 0,
+    "discount": 0,
+    "total": 0,
+    "primaryPackage": "Venue Space",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1943423",
+        "pvEventId": 1943423,
+        "itemName": "Venue Space",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 0,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-1944096": {
+    "eventId": "pv-1944096",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Large Office",
+    "menuSections": [
+      "Large Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-1944096",
+        "pvEventId": 1944096,
+        "itemName": "Large Office",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Large Office",
+        "details": "$450/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-1944097": {
+    "eventId": "pv-1944097",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Large Office",
+    "menuSections": [
+      "Large Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-1944097",
+        "pvEventId": 1944097,
+        "itemName": "Large Office",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Large Office",
+        "details": "$450/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-1944101": {
+    "eventId": "pv-1944101",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Large Office",
+    "menuSections": [
+      "Large Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-1944101",
+        "pvEventId": 1944101,
+        "itemName": "Large Office",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Large Office",
+        "details": "$450/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-1944116": {
+    "eventId": "pv-1944116",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Small Office",
+    "menuSections": [
+      "Small Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1944116",
+        "pvEventId": 1944116,
+        "itemName": "Small Office",
+        "pricePerUnit": 300,
+        "quantity": 1,
+        "total": 300,
+        "unit": "item",
+        "menuSection": "Small Office",
+        "details": "$300/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-1977596": {
+    "eventId": "pv-1977596",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Large Office",
+    "menuSections": [
+      "Large Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-1977596",
+        "pvEventId": 1977596,
+        "itemName": "Large Office",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Large Office",
+        "details": "$450/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-1988743": {
+    "eventId": "pv-1988743",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1988743",
+        "pvEventId": 1988743,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-1988728": {
+    "eventId": "pv-1988728",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 5.42,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1988728",
+        "pvEventId": 1988728,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-1994573": {
+    "eventId": "pv-1994573",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1994573",
+        "pvEventId": 1994573,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-1996355": {
+    "eventId": "pv-1996355",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-1996355",
+        "pvEventId": 1996355,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2005047": {
+    "eventId": "pv-2005047",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 12,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2005047",
+        "pvEventId": 2005047,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2006583": {
+    "eventId": "pv-2006583",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2006583",
+        "pvEventId": 2006583,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2011072": {
+    "eventId": "pv-2011072",
+    "lineCount": 1,
+    "subtotal": 750,
+    "discount": 0,
+    "total": 750,
+    "primaryPackage": "Weekday Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2011072",
+        "pvEventId": 2011072,
+        "itemName": "Weekday Full-Day",
+        "pricePerUnit": 750,
+        "quantity": 1,
+        "total": 750,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2015416": {
+    "eventId": "pv-2015416",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 5.29,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2015416",
+        "pvEventId": 2015416,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2019689": {
+    "eventId": "pv-2019689",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2019689",
+        "pvEventId": 2019689,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2032506": {
+    "eventId": "pv-2032506",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2032506",
+        "pvEventId": 2032506,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2035253": {
+    "eventId": "pv-2035253",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2035253",
+        "pvEventId": 2035253,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2057067": {
+    "eventId": "pv-2057067",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2057067",
+        "pvEventId": 2057067,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2059552": {
+    "eventId": "pv-2059552",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2059552",
+        "pvEventId": 2059552,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2066465": {
+    "eventId": "pv-2066465",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 22.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2066465",
+        "pvEventId": 2066465,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2108613": {
+    "eventId": "pv-2108613",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2108613",
+        "pvEventId": 2108613,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2106599": {
+    "eventId": "pv-2106599",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2106599",
+        "pvEventId": 2106599,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2094077": {
+    "eventId": "pv-2094077",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.67,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2094077",
+        "pvEventId": 2094077,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2097985": {
+    "eventId": "pv-2097985",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2097985",
+        "pvEventId": 2097985,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2098031": {
+    "eventId": "pv-2098031",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2098031",
+        "pvEventId": 2098031,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2098003": {
+    "eventId": "pv-2098003",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.22,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2098003",
+        "pvEventId": 2098003,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2091174": {
+    "eventId": "pv-2091174",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.89,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2091174",
+        "pvEventId": 2091174,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2112268": {
+    "eventId": "pv-2112268",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Small Office",
+    "menuSections": [
+      "Small Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2112268",
+        "pvEventId": 2112268,
+        "itemName": "Small Office",
+        "pricePerUnit": 300,
+        "quantity": 1,
+        "total": 300,
+        "unit": "item",
+        "menuSection": "Small Office",
+        "details": "$300/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-2127735": {
+    "eventId": "pv-2127735",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2127735",
+        "pvEventId": 2127735,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2116700": {
+    "eventId": "pv-2116700",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2116700",
+        "pvEventId": 2116700,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2113927": {
+    "eventId": "pv-2113927",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2113927",
+        "pvEventId": 2113927,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2135546": {
+    "eventId": "pv-2135546",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 17.14,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2135546",
+        "pvEventId": 2135546,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2131130": {
+    "eventId": "pv-2131130",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 21.67,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2131130",
+        "pvEventId": 2131130,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2131762": {
+    "eventId": "pv-2131762",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2131762",
+        "pvEventId": 2131762,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2132245": {
+    "eventId": "pv-2132245",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2132245",
+        "pvEventId": 2132245,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2139413": {
+    "eventId": "pv-2139413",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2139413",
+        "pvEventId": 2139413,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2141531": {
+    "eventId": "pv-2141531",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2141531",
+        "pvEventId": 2141531,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2138498": {
+    "eventId": "pv-2138498",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2138498",
+        "pvEventId": 2138498,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2142131": {
+    "eventId": "pv-2142131",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 21.67,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2142131",
+        "pvEventId": 2142131,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2138470": {
+    "eventId": "pv-2138470",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 19.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2138470",
+        "pvEventId": 2138470,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2151708": {
+    "eventId": "pv-2151708",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2151708",
+        "pvEventId": 2151708,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2168588": {
+    "eventId": "pv-2168588",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 15,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2168588",
+        "pvEventId": 2168588,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2168705": {
+    "eventId": "pv-2168705",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 15,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2168705",
+        "pvEventId": 2168705,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2155779": {
+    "eventId": "pv-2155779",
+    "lineCount": 1,
+    "subtotal": 2000,
+    "discount": 0,
+    "total": 2000,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 22.22,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2155779",
+        "pvEventId": 2155779,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 10,
+        "total": 2000,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2169470": {
+    "eventId": "pv-2169470",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2169470",
+        "pvEventId": 2169470,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2179226": {
+    "eventId": "pv-2179226",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2179226",
+        "pvEventId": 2179226,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2193137": {
+    "eventId": "pv-2193137",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2193137",
+        "pvEventId": 2193137,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2202144": {
+    "eventId": "pv-2202144",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 20,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2202144",
+        "pvEventId": 2202144,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2202263": {
+    "eventId": "pv-2202263",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.67,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2202263",
+        "pvEventId": 2202263,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2203216": {
+    "eventId": "pv-2203216",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2203216",
+        "pvEventId": 2203216,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2207092": {
+    "eventId": "pv-2207092",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2207092",
+        "pvEventId": 2207092,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2205942": {
+    "eventId": "pv-2205942",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2205942",
+        "pvEventId": 2205942,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2206981": {
+    "eventId": "pv-2206981",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2206981",
+        "pvEventId": 2206981,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2207859": {
+    "eventId": "pv-2207859",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2207859",
+        "pvEventId": 2207859,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2210157": {
+    "eventId": "pv-2210157",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.67,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2210157",
+        "pvEventId": 2210157,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2213018": {
+    "eventId": "pv-2213018",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2213018",
+        "pvEventId": 2213018,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2214191": {
+    "eventId": "pv-2214191",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 32.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2214191",
+        "pvEventId": 2214191,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2220435": {
+    "eventId": "pv-2220435",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 4.33,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2220435",
+        "pvEventId": 2220435,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2222779": {
+    "eventId": "pv-2222779",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2222779",
+        "pvEventId": 2222779,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2227655": {
+    "eventId": "pv-2227655",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2227655",
+        "pvEventId": 2227655,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2228437": {
+    "eventId": "pv-2228437",
+    "lineCount": 1,
+    "subtotal": 320,
+    "discount": 0,
+    "total": 320,
+    "primaryPackage": "Small Office",
+    "menuSections": [
+      "Small Office"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2228437",
+        "pvEventId": 2228437,
+        "itemName": "Small Office",
+        "pricePerUnit": 320,
+        "quantity": 1,
+        "total": 320,
+        "unit": "item",
+        "menuSection": "Small Office",
+        "details": "$300/month office rental",
+        "category": "office"
+      }
+    ]
+  },
+  "pv-2236315": {
+    "eventId": "pv-2236315",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.15,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2236315",
+        "pvEventId": 2236315,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2228113": {
+    "eventId": "pv-2228113",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2228113",
+        "pvEventId": 2228113,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2239145": {
+    "eventId": "pv-2239145",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2239145",
+        "pvEventId": 2239145,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2252834": {
+    "eventId": "pv-2252834",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2252834",
+        "pvEventId": 2252834,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2252827": {
+    "eventId": "pv-2252827",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2252827",
+        "pvEventId": 2252827,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2264957": {
+    "eventId": "pv-2264957",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 12,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2264957",
+        "pvEventId": 2264957,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2269506": {
+    "eventId": "pv-2269506",
+    "lineCount": 1,
+    "subtotal": 1400,
+    "discount": 0,
+    "total": 1400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2269506",
+        "pvEventId": 2269506,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 7,
+        "total": 1400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2271971": {
+    "eventId": "pv-2271971",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2271971",
+        "pvEventId": 2271971,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2288283": {
+    "eventId": "pv-2288283",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2288283",
+        "pvEventId": 2288283,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2269500": {
+    "eventId": "pv-2269500",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2269500",
+        "pvEventId": 2269500,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2288990": {
+    "eventId": "pv-2288990",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2288990",
+        "pvEventId": 2288990,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2295748": {
+    "eventId": "pv-2295748",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2295748",
+        "pvEventId": 2295748,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2295907": {
+    "eventId": "pv-2295907",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2295907",
+        "pvEventId": 2295907,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2311300": {
+    "eventId": "pv-2311300",
+    "lineCount": 1,
+    "subtotal": 800,
+    "discount": 0,
+    "total": 800,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2311300",
+        "pvEventId": 2311300,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 4,
+        "total": 800,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2311303": {
+    "eventId": "pv-2311303",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2311303",
+        "pvEventId": 2311303,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2311309": {
+    "eventId": "pv-2311309",
+    "lineCount": 1,
+    "subtotal": 800,
+    "discount": 0,
+    "total": 800,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2311309",
+        "pvEventId": 2311309,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 4,
+        "total": 800,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2312014": {
+    "eventId": "pv-2312014",
+    "lineCount": 1,
+    "subtotal": 750,
+    "discount": 0,
+    "total": 750,
+    "primaryPackage": "Weekday Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2312014",
+        "pvEventId": 2312014,
+        "itemName": "Weekday Full-Day",
+        "pricePerUnit": 750,
+        "quantity": 1,
+        "total": 750,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2312508": {
+    "eventId": "pv-2312508",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2312508",
+        "pvEventId": 2312508,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2295943": {
+    "eventId": "pv-2295943",
+    "lineCount": 1,
+    "subtotal": 750,
+    "discount": 0,
+    "total": 750,
+    "primaryPackage": "Weekday Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 15,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2295943",
+        "pvEventId": 2295943,
+        "itemName": "Weekday Full-Day",
+        "pricePerUnit": 750,
+        "quantity": 1,
+        "total": 750,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2319429": {
+    "eventId": "pv-2319429",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2319429",
+        "pvEventId": 2319429,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2312106": {
+    "eventId": "pv-2312106",
+    "lineCount": 1,
+    "subtotal": 800,
+    "discount": 0,
+    "total": 800,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13.33,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2312106",
+        "pvEventId": 2312106,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 4,
+        "total": 800,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2321153": {
+    "eventId": "pv-2321153",
+    "lineCount": 1,
+    "subtotal": 900,
+    "discount": 0,
+    "total": 900,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 18,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2321153",
+        "pvEventId": 2321153,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 6,
+        "total": 900,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2313195": {
+    "eventId": "pv-2313195",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 11.82,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2313195",
+        "pvEventId": 2313195,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2325735": {
+    "eventId": "pv-2325735",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 4.55,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2325735",
+        "pvEventId": 2325735,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 3,
+        "total": 450,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2326035": {
+    "eventId": "pv-2326035",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.43,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2326035",
+        "pvEventId": 2326035,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2331636": {
+    "eventId": "pv-2331636",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2331636",
+        "pvEventId": 2331636,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2343342": {
+    "eventId": "pv-2343342",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 5,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2343342",
+        "pvEventId": 2343342,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2344458": {
+    "eventId": "pv-2344458",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 11.82,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2344458",
+        "pvEventId": 2344458,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2344978": {
+    "eventId": "pv-2344978",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 32.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2344978",
+        "pvEventId": 2344978,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2346792": {
+    "eventId": "pv-2346792",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2346792",
+        "pvEventId": 2346792,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2261565": {
+    "eventId": "pv-2261565",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2261565",
+        "pvEventId": 2261565,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 3,
+        "total": 450,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2347266": {
+    "eventId": "pv-2347266",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2347266",
+        "pvEventId": 2347266,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2359864": {
+    "eventId": "pv-2359864",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2359864",
+        "pvEventId": 2359864,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2359854": {
+    "eventId": "pv-2359854",
+    "lineCount": 1,
+    "subtotal": 800,
+    "discount": 0,
+    "total": 800,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2359854",
+        "pvEventId": 2359854,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 4,
+        "total": 800,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2361864": {
+    "eventId": "pv-2361864",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2361864",
+        "pvEventId": 2361864,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2364799": {
+    "eventId": "pv-2364799",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2364799",
+        "pvEventId": 2364799,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 3,
+        "total": 450,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2368749": {
+    "eventId": "pv-2368749",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2368749",
+        "pvEventId": 2368749,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047085": {
+    "eventId": "pv-2047085",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2047085",
+        "pvEventId": 2047085,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047095": {
+    "eventId": "pv-2047095",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2047095",
+        "pvEventId": 2047095,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047097": {
+    "eventId": "pv-2047097",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.06,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2047097",
+        "pvEventId": 2047097,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047100": {
+    "eventId": "pv-2047100",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.06,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2047100",
+        "pvEventId": 2047100,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047103": {
+    "eventId": "pv-2047103",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.06,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2047103",
+        "pvEventId": 2047103,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047105": {
+    "eventId": "pv-2047105",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.06,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2047105",
+        "pvEventId": 2047105,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2047108": {
+    "eventId": "pv-2047108",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.06,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2047108",
+        "pvEventId": 2047108,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 4,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2352886": {
+    "eventId": "pv-2352886",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2352886",
+        "pvEventId": 2352886,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2372347": {
+    "eventId": "pv-2372347",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2372347",
+        "pvEventId": 2372347,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2374601": {
+    "eventId": "pv-2374601",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2374601",
+        "pvEventId": 2374601,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2361669": {
+    "eventId": "pv-2361669",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2361669",
+        "pvEventId": 2361669,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2377692": {
+    "eventId": "pv-2377692",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2377692",
+        "pvEventId": 2377692,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2392111": {
+    "eventId": "pv-2392111",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2392111",
+        "pvEventId": 2392111,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2385357": {
+    "eventId": "pv-2385357",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2385357",
+        "pvEventId": 2385357,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2397552": {
+    "eventId": "pv-2397552",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2397552",
+        "pvEventId": 2397552,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2401174": {
+    "eventId": "pv-2401174",
+    "lineCount": 1,
+    "subtotal": 150,
+    "discount": 0,
+    "total": 150,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2401174",
+        "pvEventId": 2401174,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 1,
+        "total": 150,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2374578": {
+    "eventId": "pv-2374578",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2374578",
+        "pvEventId": 2374578,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2405267": {
+    "eventId": "pv-2405267",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2405267",
+        "pvEventId": 2405267,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2411470": {
+    "eventId": "pv-2411470",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2411470",
+        "pvEventId": 2411470,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2409968": {
+    "eventId": "pv-2409968",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13.93,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2409968",
+        "pvEventId": 2409968,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2457052": {
+    "eventId": "pv-2457052",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2457052",
+        "pvEventId": 2457052,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2457028": {
+    "eventId": "pv-2457028",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2457028",
+        "pvEventId": 2457028,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2465412": {
+    "eventId": "pv-2465412",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 12,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2465412",
+        "pvEventId": 2465412,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2468022": {
+    "eventId": "pv-2468022",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2468022",
+        "pvEventId": 2468022,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2474854": {
+    "eventId": "pv-2474854",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 15,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2474854",
+        "pvEventId": 2474854,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2478298": {
+    "eventId": "pv-2478298",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.57,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2478298",
+        "pvEventId": 2478298,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2483140": {
+    "eventId": "pv-2483140",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2483140",
+        "pvEventId": 2483140,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2496371": {
+    "eventId": "pv-2496371",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2496371",
+        "pvEventId": 2496371,
+        "itemName": "Weekday Half-Day",
+        "pricePerUnit": 450,
+        "quantity": 1,
+        "total": 450,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2269409": {
+    "eventId": "pv-2269409",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 8.67,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2269409",
+        "pvEventId": 2269409,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2510323": {
+    "eventId": "pv-2510323",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2510323",
+        "pvEventId": 2510323,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2521092": {
+    "eventId": "pv-2521092",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2521092",
+        "pvEventId": 2521092,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2554692": {
+    "eventId": "pv-2554692",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.57,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2554692",
+        "pvEventId": 2554692,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2504723": {
+    "eventId": "pv-2504723",
+    "lineCount": 1,
+    "subtotal": 750,
+    "discount": 0,
+    "total": 750,
+    "primaryPackage": "Weekday Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 11.54,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2504723",
+        "pvEventId": 2504723,
+        "itemName": "Weekday Full-Day",
+        "pricePerUnit": 750,
+        "quantity": 1,
+        "total": 750,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2561668": {
+    "eventId": "pv-2561668",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2561668",
+        "pvEventId": 2561668,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2416535": {
+    "eventId": "pv-2416535",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2416535",
+        "pvEventId": 2416535,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2572263": {
+    "eventId": "pv-2572263",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2572263",
+        "pvEventId": 2572263,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2388170": {
+    "eventId": "pv-2388170",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2388170",
+        "pvEventId": 2388170,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2558312": {
+    "eventId": "pv-2558312",
+    "lineCount": 2,
+    "subtotal": 750,
+    "discount": 0,
+    "total": 750,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2558312",
+        "pvEventId": 2558312,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      },
+      {
+        "eventId": "pv-2558312",
+        "pvEventId": 2558312,
+        "itemName": "Extra Pricing",
+        "pricePerUnit": 100,
+        "quantity": 1,
+        "total": 100,
+        "unit": "item",
+        "menuSection": "",
+        "details": "",
+        "category": "other"
+      }
+    ]
+  },
+  "pv-2510218": {
+    "eventId": "pv-2510218",
+    "lineCount": 1,
+    "subtotal": 150,
+    "discount": 0,
+    "total": 150,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 4.29,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2510218",
+        "pvEventId": 2510218,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 1,
+        "total": 150,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2578588": {
+    "eventId": "pv-2578588",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2578588",
+        "pvEventId": 2578588,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2585173": {
+    "eventId": "pv-2585173",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 21.67,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2585173",
+        "pvEventId": 2585173,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2578849": {
+    "eventId": "pv-2578849",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2578849",
+        "pvEventId": 2578849,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2469249": {
+    "eventId": "pv-2469249",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2469249",
+        "pvEventId": 2469249,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2480925": {
+    "eventId": "pv-2480925",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2480925",
+        "pvEventId": 2480925,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2593167": {
+    "eventId": "pv-2593167",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2593167",
+        "pvEventId": 2593167,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2593825": {
+    "eventId": "pv-2593825",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2593825",
+        "pvEventId": 2593825,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2593841": {
+    "eventId": "pv-2593841",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2593841",
+        "pvEventId": 2593841,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2606077": {
+    "eventId": "pv-2606077",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.57,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2606077",
+        "pvEventId": 2606077,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2605252": {
+    "eventId": "pv-2605252",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2605252",
+        "pvEventId": 2605252,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2601938": {
+    "eventId": "pv-2601938",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2601938",
+        "pvEventId": 2601938,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2601228": {
+    "eventId": "pv-2601228",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2601228",
+        "pvEventId": 2601228,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2608069": {
+    "eventId": "pv-2608069",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 26,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2608069",
+        "pvEventId": 2608069,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2566120": {
+    "eventId": "pv-2566120",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 4,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2566120",
+        "pvEventId": 2566120,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2564612": {
+    "eventId": "pv-2564612",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 16.25,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2564612",
+        "pvEventId": 2564612,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2396614": {
+    "eventId": "pv-2396614",
+    "lineCount": 1,
+    "subtotal": 400,
+    "discount": 0,
+    "total": 400,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 11.43,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2396614",
+        "pvEventId": 2396614,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 2,
+        "total": 400,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2611593": {
+    "eventId": "pv-2611593",
+    "lineCount": 1,
+    "subtotal": 600,
+    "discount": 0,
+    "total": 600,
+    "primaryPackage": "Weekend",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 20,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2611593",
+        "pvEventId": 2611593,
+        "itemName": "Weekend",
+        "pricePerUnit": 200,
+        "quantity": 3,
+        "total": 600,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2618736": {
+    "eventId": "pv-2618736",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2618736",
+        "pvEventId": 2618736,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2372753": {
+    "eventId": "pv-2372753",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-2372753",
+        "pvEventId": 2372753,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2623982": {
+    "eventId": "pv-2623982",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2623982",
+        "pvEventId": 2623982,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2631546": {
+    "eventId": "pv-2631546",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10.83,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2631546",
+        "pvEventId": 2631546,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2632115": {
+    "eventId": "pv-2632115",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.75,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2632115",
+        "pvEventId": 2632115,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2634186": {
+    "eventId": "pv-2634186",
+    "lineCount": 1,
+    "subtotal": 450,
+    "discount": 0,
+    "total": 450,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 4.55,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2634186",
+        "pvEventId": 2634186,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 3,
+        "total": 450,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2613483": {
+    "eventId": "pv-2613483",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 6.5,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 85,
+    "lines": [
+      {
+        "eventId": "pv-2613483",
+        "pvEventId": 2613483,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2643948": {
+    "eventId": "pv-2643948",
+    "lineCount": 1,
+    "subtotal": 300,
+    "discount": 0,
+    "total": 300,
+    "primaryPackage": "Weekday",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 10,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2643948",
+        "pvEventId": 2643948,
+        "itemName": "Weekday",
+        "pricePerUnit": 150,
+        "quantity": 2,
+        "total": 300,
+        "unit": "hour",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2652464": {
+    "eventId": "pv-2652464",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 13,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2652464",
+        "pvEventId": 2652464,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2651261": {
+    "eventId": "pv-2651261",
+    "lineCount": 1,
+    "subtotal": 975,
+    "discount": 0,
+    "total": 975,
+    "primaryPackage": "Weekend Full-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 12.19,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2651261",
+        "pvEventId": 2651261,
+        "itemName": "Weekend Full-Day",
+        "pricePerUnit": 975,
+        "quantity": 1,
+        "total": 975,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2652293": {
+    "eventId": "pv-2652293",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 9.29,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2652293",
+        "pvEventId": 2652293,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-2624908": {
+    "eventId": "pv-2624908",
+    "lineCount": 1,
+    "subtotal": 650,
+    "discount": 0,
+    "total": 650,
+    "primaryPackage": "Weekend Half-Day",
+    "menuSections": [
+      "Room Rental"
+    ],
+    "addonCandidates": [],
+    "avgPerGuest": 7.22,
+    "missingDepositRisk": true,
+    "upsellOpportunities": [],
+    "revenueConfidence": 55,
+    "lines": [
+      {
+        "eventId": "pv-2624908",
+        "pvEventId": 2624908,
+        "itemName": "Weekend Half-Day",
+        "pricePerUnit": 650,
+        "quantity": 1,
+        "total": 650,
+        "unit": "item",
+        "menuSection": "Room Rental",
+        "details": "",
+        "category": "venue"
+      }
+    ]
+  },
+  "pv-unknown": {
+    "eventId": "pv-unknown",
+    "lineCount": 1,
+    "subtotal": 0,
+    "discount": 0,
+    "total": 0,
+    "primaryPackage": "",
+    "menuSections": [],
+    "addonCandidates": [],
+    "avgPerGuest": 0,
+    "missingDepositRisk": false,
+    "upsellOpportunities": [],
+    "revenueConfidence": 40,
+    "lines": [
+      {
+        "eventId": "pv-unknown",
+        "pvEventId": "",
+        "itemName": "",
+        "pricePerUnit": 0,
+        "quantity": 1,
+        "total": 0,
+        "unit": "",
+        "menuSection": "",
+        "details": "",
+        "category": "other"
+      }
+    ]
+  }
+}

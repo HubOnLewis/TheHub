@@ -1,0 +1,64 @@
+{
+  "importedAt": "2026-05-20T22:56:18.308Z",
+  "sourceFiles": {
+    "events": "import\\Event Data Wed May 20 21-54-05 2026.xlsx",
+    "proposals": "import\\Proposal Data Wed May 20 21-56-15 2026.xlsx",
+    "contacts": "import\\Contact Data Wed May 20 21-56-27 2026.xlsx",
+    "payments": "import\\Payment Data Wed May 20 22-22-48 2026.xlsx",
+    "sales": "import\\sales_report_2026-05-20.csv"
+  },
+  "venue": "HuB on Lewis",
+  "rowCounts": {
+    "eventsRaw": 276,
+    "eventsNormalized": 275,
+    "proposalsRaw": 171,
+    "proposalLineItems": 171,
+    "contactsRaw": 237,
+    "contactsNormalized": 237,
+    "accounts": 234,
+    "paymentsRaw": 86,
+    "paymentsNormalized": 85,
+    "salesDays": 31
+  },
+  "joins": {
+    "eventsWithProposals": 165,
+    "eventsWithContacts": 271,
+    "contactsWithAccounts": 237,
+    "orphanedProposals": 5,
+    "paymentsWithEvents": 86,
+    "orphanedPayments": 0
+  },
+  "warnings": [
+    "duplicate contact email: jason@harmonyhomebuyer.com",
+    "duplicate contact email: gisselle.montoya18@gmail.com",
+    "duplicate contact email: aaron.clark@guildmortgage.net",
+    "duplicate contact email: neal.seiwert@harvesthouseks.com",
+    "duplicate contact email: neal.seiwert@harvesthouseks.com",
+    "duplicate contact email: lovelyfloralco@gmail.com",
+    "duplicate contact email: mescobar18@outlook.com"
+  ],
+  "quality": {
+    "missingEventDates": 1,
+    "missingContacts": 4,
+    "missingTotals": 108,
+    "duplicateContactEmails": 7,
+    "exampleEventsExcluded": 1,
+    "zeroDollarEvents": 110,
+    "lostArchived": 119,
+    "completed": 40,
+    "activePipeline": 116,
+    "confirmedFuture": 35,
+    "unmatchedPayments": 0
+  },
+  "financial": {
+    "paymentsCollected": 20925,
+    "paymentsFees": 591.1,
+    "paymentsRefunded": 275,
+    "salesSubtotal": 7350,
+    "salesGrandTotal": 4725,
+    "salesPaymentsTotal": 3562.5,
+    "eventOutstanding": 27667.5,
+    "eventOutstandingRaw": 28947.5,
+    "importHealthScore": 79
+  }
+}

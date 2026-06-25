@@ -1,0 +1,226 @@
+{
+  "snapshot": {
+    "importedAt": "2026-06-23T16:12:30.115Z",
+    "sourceFile": "data\\perfect-venue-import\\PFevents.txt",
+    "referenceDate": "2026-06-23",
+    "summary": {
+      "activeEvents": 98,
+      "activeEventsDollars": 32013,
+      "lead": 13,
+      "leadDollars": 0,
+      "qualified": 16,
+      "qualifiedDollars": 0,
+      "proposalSent": 29,
+      "proposalSentDollars": 16798,
+      "confirmed": 40,
+      "confirmedDollars": 15215,
+      "balanceDue": 0,
+      "balanceDueDollars": 0,
+      "completedYtd": 53,
+      "completedYtdDollars": 16283
+    },
+    "events": [
+      {
+        "id": "pfe-db19831e1a4f",
+        "sourceKey": "d47a645eb4d03cb65bb32d1de284a4b3aff3e1af77b91859668e973d869d5a64",
+        "title": "Family reunion",
+        "contact": "Kimberly Falke",
+        "pvStatus": "lead",
+        "eventDateIso": "2028-07-15",
+        "eventDateDisplay": "Sat, Jul 15, 2028",
+        "timeRange": "10:00am - 5:00pm",
+        "guests": 70,
+        "space": "Wedding",
+        "value": 0,
+        "lastContactedIso": null,
+        "lastContactedDisplay": "4 days ago",
+        "createdIso": null,
+        "createdDisplay": "Jun 19 · 4 days ago",
+        "owner": ""
+      },
+      {
+        "id": "pfe-450a22949065",
+        "sourceKey": "8df07e044423114262321ae5f649262cdd2382f75796586c08e4393eeb43d8d9",
+        "title": "Vaughn Engagement",
+        "contact": "Ciara Trass",
+        "pvStatus": "proposal_sent",
+        "eventDateIso": "2027-06-05",
+        "eventDateDisplay": "Sat, Jun 5, 2027",
+        "timeRange": "6:00pm - 11:00pm",
+        "guests": 50,
+        "space": "50th Birthday Party",
+        "value": 650,
+        "lastContactedIso": null,
+        "lastContactedDisplay": "a month ago",
+        "createdIso": null,
+        "createdDisplay": "May 18 · a month ago",
+        "owner": ""
+      },
+      {
+        "id": "pfe-192eac336e76",
+        "sourceKey": "035779a34b875d9f826ef0b8cfcee376e10a93cde14feed548c74ff3ce3d4410",
+        "title": "Fabiola",
+        "contact": "Fabioka Herrera",
+        "pvStatus": "confirmed",
+        "eventDateIso": "2027-02-13",
+        "eventDateDisplay": "Sat, Feb 13, 2027",
+        "timeRange": "5:30pm - 12:00am (next day)",
+        "guests": 50,
+        "space": "Birthday party",
+        "value": 550,
+        "lastContactedIso": null,
+        "lastContactedDisplay": "23 days ago",
+        "createdIso": null,
+        "createdDisplay": "May 31 · 23 days ago",
+        "owner": ""
+      },
+      {
+        "id": "pfe-5bbcabbc3a08",
+        "sourceKey": "9266b1b7cde0ed89c555acb60b273b6acc39dfbf9a4acd3e4b663a82640c2e34",
+        "title": "First birthday",
+        "contact": "Nalia McIntosh",
+        "pvStatus": "lead",
+        "eventDateIso": "2027-02-04",
+        "eventDateDisplay": "Thu, Feb 4, 2027",
+        "timeRange": "7:00am - 10:00am",
+        "guests": 60,
+        "space": "Investor Lunch",
+        "value": 0,
+        "lastContactedIso": null,
+        "lastContactedDisplay": "19 days ago",
+        "createdIso": null,
+        "createdDisplay": "Jun 4 · 19 days ago",
+        "owner": ""
+      },
+      {
+        "id": "pfe-9a9553314de7",
+        "sourceKey": "c002e148f834c0259c1fe91e6ea82f2f63f6afe49f22a85f09294cfd145d211e",
+        "title": "Baby’s 1st Birthday party",
+        "contact": "Samantha Thompson",
+        "pvStatus": "qualified",
+        "eventDateIso": "2026-12-12",
+        "eventDateDisplay": "Sat, Dec 12",
+        "timeRange": "1:00pm - 4:00pm",
+        "guests": 90,
+        "space": "WAREIA",
+        "value": 0,
+        "lastContactedIso": null,
+        "lastContactedDisplay": "2 months ago",
+        "createdIso": null,
+        "createdDisplay": "Apr 19 · 2 months ago",
+        "owner": "",
+        "importNotes": "Year 2026 inferred from reference date 2026-06-23"
+      }
+    ],
+    "importStatus": {
+      "completeness": "PARTIAL",
+      "authoritative": false,
+      "parsedRowCount": 5,
+      "expectedActiveEvents": 98,
+      "mismatchSummary": "PFevents.txt partial: 5 parsed row(s) vs 98 expected active events",
+      "safeToUseAsAuthoritative": false
+    }
+  },
+  "parsedSummary": {
+    "activeEvents": 5,
+    "activeEventsDollars": 1200,
+    "lead": 2,
+    "leadDollars": 0,
+    "qualified": 1,
+    "qualifiedDollars": 0,
+    "proposalSent": 1,
+    "proposalSentDollars": 650,
+    "confirmed": 1,
+    "confirmedDollars": 550,
+    "balanceDue": 0,
+    "balanceDueDollars": 0,
+    "completedYtd": 0,
+    "completedYtdDollars": 0
+  },
+  "mismatches": [
+    {
+      "field": "activeEvents",
+      "label": "Active Events",
+      "expected": 98,
+      "parsed": 5,
+      "reason": "Only 5 event row(s) parsed from text — export likely truncated (scroll full list in Perfect Venue)"
+    },
+    {
+      "field": "activeEventsDollars",
+      "label": "Active Events",
+      "expected": 32013,
+      "parsed": 1200,
+      "reason": "Parsed event dollar totals do not match file summary (partial row export)"
+    },
+    {
+      "field": "lead",
+      "label": "Lead",
+      "expected": 13,
+      "parsed": 2,
+      "reason": "Only 5 event row(s) parsed from text — export likely truncated (scroll full list in Perfect Venue)"
+    },
+    {
+      "field": "qualified",
+      "label": "Qualified",
+      "expected": 16,
+      "parsed": 1,
+      "reason": "Only 5 event row(s) parsed from text — export likely truncated (scroll full list in Perfect Venue)"
+    },
+    {
+      "field": "proposalSent",
+      "label": "Proposal Sent",
+      "expected": 29,
+      "parsed": 1,
+      "reason": "Only 5 event row(s) parsed from text — export likely truncated (scroll full list in Perfect Venue)"
+    },
+    {
+      "field": "proposalSentDollars",
+      "label": "Proposal Sent",
+      "expected": 16798,
+      "parsed": 650,
+      "reason": "Parsed event dollar totals do not match file summary (partial row export)"
+    },
+    {
+      "field": "confirmed",
+      "label": "Confirmed",
+      "expected": 40,
+      "parsed": 1,
+      "reason": "Only 5 event row(s) parsed from text — export likely truncated (scroll full list in Perfect Venue)"
+    },
+    {
+      "field": "confirmedDollars",
+      "label": "Confirmed",
+      "expected": 15215,
+      "parsed": 550,
+      "reason": "Parsed event dollar totals do not match file summary (partial row export)"
+    },
+    {
+      "field": "completedYtd",
+      "label": "Completed YTD",
+      "expected": 53,
+      "parsed": 0,
+      "reason": "Only 5 event row(s) parsed from text — export likely truncated (scroll full list in Perfect Venue)"
+    },
+    {
+      "field": "completedYtdDollars",
+      "label": "Completed YTD",
+      "expected": 16283,
+      "parsed": 0,
+      "reason": "Parsed event dollar totals do not match file summary (partial row export)"
+    }
+  ],
+  "importStatus": {
+    "completeness": "PARTIAL",
+    "authoritative": false,
+    "parsedRowCount": 5,
+    "expectedActiveEvents": 98,
+    "mismatchSummary": "PFevents.txt partial: 5 parsed row(s) vs 98 expected active events",
+    "safeToUseAsAuthoritative": false
+  },
+  "mongoStats": {
+    "created": 0,
+    "updated": 0,
+    "skipped": 0,
+    "failed": 0
+  }
+}
