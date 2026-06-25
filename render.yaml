@@ -80,8 +80,11 @@ services:
       - key: SEED_ADMIN_PASSWORD
         sync: false
 
-      # Optional — override auto-derived https://The-Hub.onrender.com
-      # Runtime derivation lowercases the onrender.com slug if Render normalizes it.
+      # Browser origins allowed for CORS (comma-separated, exact match on Origin header)
+      - key: CORS_ORIGINS
+        value: https://admin.hubonlewis.com,https://the-hub-qy8a.onrender.com,http://localhost:5173,http://127.0.0.1:5173
+
+      # Legacy — optional; merged with CORS_ORIGINS when set (supports comma-separated)
       # - key: CLIENT_URL
       #   sync: false
 

@@ -5,20 +5,48 @@
 // connect to an empty database and the app will look "blank."
 import { z } from 'zod';
 
-function resolveClientUrl(
-  direct: string | undefined,
-  serviceName: string,
-  root: string,
-): string {
-  const trimmed = direct?.trim();
-  if (trimmed) {
-    let url = trimmed;
-    if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
-    return url.replace(/\/$/, '');
-  }
+function normalizeOrigin(url: string): string {
+  let u = url.trim();
+  if (!u) return '';
+  if (!/^https?:\/\//i.test(u)) u = `https://${u}`;
+  return u.replace(/\/$/, '');
+}
+
+function parseOriginsList(raw: string | undefined): string[] {
+  if (!raw?.trim()) return [];
+  return raw
+    .split(',')
+    .map(s => normalizeOrigin(s))
+    .filter(Boolean);
+}
+
+function deriveWebServiceOrigin(serviceName: string, root: string): string {
   const domain = root.trim().replace(/^\./, '');
   const slug = serviceName.trim().toLowerCase();
   return `https://${slug}.${domain}`;
+}
+
+function resolveAllowedOrigins(opts: {
+  corsOrigins?: string;
+  clientUrl?: string;
+  webServiceName: string;
+  onrenderRoot: string;
+  nodeEnv: string;
+}): string[] {
+  const merged = [
+    ...parseOriginsList(opts.corsOrigins),
+    ...parseOriginsList(opts.clientUrl),
+  ];
+
+  if (merged.length === 0) {
+    merged.push(deriveWebServiceOrigin(opts.webServiceName, opts.onrenderRoot));
+  }
+
+  if (opts.nodeEnv === 'development') {
+    merged.push('http://localhost:5173', 'http://127.0.0.1:5173');
+  }
+
+  return [...new Set(merged)];
 }
 
 const EnvSchema = z.object({
@@ -28,7 +56,12 @@ const EnvSchema = z.object({
   /** Logical MongoDB database name; must match the database segment in MONGODB_URI. */
   DB_NAME:            z.string().default('hub_crm'),
   JWT_SECRET:         z.string().min(32, 'JWT_SECRET must be at least 32 characters'),
-  /** Explicit browser origin for CORS; optional on Render when HUB_WEB_SERVICE_NAME is set. */
+  /**
+   * Comma-separated browser origins for CORS (preferred).
+   * Example: https://admin.hubonlewis.com,https://the-hub-qy8a.onrender.com
+   */
+  CORS_ORIGINS:       z.string().optional(),
+  /** Legacy single or comma-separated origin(s); merged with CORS_ORIGINS when set. */
   CLIENT_URL:         z.string().optional(),
   HUB_WEB_SERVICE_NAME: z.string().default('The-Hub'),
   RENDER_ONRENDER_ROOT: z.string().default('onrender.com'),
@@ -48,11 +81,17 @@ if (!parsed.success) {
 
 const base = parsed.data;
 
+const corsOrigins = resolveAllowedOrigins({
+  corsOrigins: base.CORS_ORIGINS,
+  clientUrl: base.CLIENT_URL,
+  webServiceName: base.HUB_WEB_SERVICE_NAME,
+  onrenderRoot: base.RENDER_ONRENDER_ROOT,
+  nodeEnv: base.NODE_ENV,
+});
+
 export const env = {
   ...base,
-  CLIENT_URL: resolveClientUrl(
-    base.CLIENT_URL,
-    base.HUB_WEB_SERVICE_NAME,
-    base.RENDER_ONRENDER_ROOT,
-  ),
+  CORS_ORIGINS: corsOrigins,
+  /** First allowed origin — logging / legacy references only. */
+  CLIENT_URL: corsOrigins[0] ?? deriveWebServiceOrigin(base.HUB_WEB_SERVICE_NAME, base.RENDER_ONRENDER_ROOT),
 };

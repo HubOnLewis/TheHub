@@ -1,8 +1,8 @@
 // packages/api/src/server.ts
 import express from 'express';
-import cors from 'cors';
 import { connectDB } from './config/db.js';
 import { env } from './config/env.js';
+import { createCorsMiddleware } from './config/cors.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestAudit } from './middleware/requestAudit.js';
 import { registerJobs } from './jobs/index.js';
@@ -29,7 +29,7 @@ import integrationsRoutes from './routes/integrations.js';
 const app = express();
 
 // ── Middleware ────────────────────────────────────────────────────
-app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
+app.use(createCorsMiddleware(env.CORS_ORIGINS));
 app.use('/api/uploads', express.static(UPLOADS_ROOT));
 app.use(express.json({ limit: '2mb' }));
 app.use(requestAudit);
@@ -65,7 +65,9 @@ async function start() {
     const db = await connectDB();
     registerJobs(db);
     app.listen(env.PORT, '0.0.0.0', () => {
-      console.log(`[API] The Hub CRM listening on 0.0.0.0:${env.PORT} (CORS: ${env.CLIENT_URL})`);
+      console.log(
+        `[API] The Hub CRM listening on 0.0.0.0:${env.PORT} (CORS origins: ${env.CORS_ORIGINS.join(', ')})`,
+      );
     });
   } catch (err) {
     console.error('[API] Failed to start:', err);
