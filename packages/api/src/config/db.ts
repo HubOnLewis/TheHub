@@ -1,6 +1,7 @@
 // packages/api/src/config/db.ts
 import { MongoClient, type Db } from 'mongodb';
 import { env } from './env.js';
+import { parseMongoDbName, parseMongoHost } from './mongoTarget.js';
 
 let client: MongoClient | null = null;
 let database: Db | null = null;
@@ -165,7 +166,16 @@ export async function connectDB(): Promise<Db> {
     { name: 'account_plans_tenant_owner_status' },
   );
 
-  console.log(`[DB] Connected to MongoDB — ${env.DB_NAME}`);
+  console.log(
+    JSON.stringify({
+      type: 'db_connected',
+      nodeEnv: env.NODE_ENV,
+      configuredDbName: env.DB_NAME,
+      connectedDbName: database.databaseName,
+      mongoHost: parseMongoHost(env.MONGODB_URI),
+      uriDbSegment: parseMongoDbName(env.MONGODB_URI, ''),
+    }),
+  );
   return database;
 }
 

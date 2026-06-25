@@ -8,6 +8,36 @@ import { ConflictError, NotFoundError } from '../errors/index.js';
 import type { CreateUserPayload } from '@hub-crm/shared';
 import { buildTenantId, isHubVenueTenantId, normalizeEntity, normalizeLocation } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
+import { env } from '../config/env.js';
+import { parseMongoDbName, parseMongoHost } from '../config/mongoTarget.js';
+
+const HUB_VENUE_IDS = ['hub-wichita', 'hub-on-lewis'];
+const REFRESH_SOURCE_OR = [
+  { source: 'perfect_venue_refresh' },
+  { 'importMeta.source': 'perfect_venue_refresh' },
+] as const;
+const REFRESH_PAYMENT_OR = [
+  ...REFRESH_SOURCE_OR,
+  { importBatchId: { $regex: '^hub-refresh-' } },
+] as const;
+const ACTIVE_STATUSES = ['Draft', 'Pending Approval', 'Approved', 'Won', 'In Build'];
+
+async function countByField(
+  db: Db,
+  collection: string,
+  field: string,
+  match: Record<string, unknown> = {},
+): Promise<Record<string, number>> {
+  const rows = await db
+    .collection(collection)
+    .aggregate([
+      { $match: match },
+      { $group: { _id: `$${field}`, count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ])
+    .toArray();
+  return Object.fromEntries(rows.map(r => [String(r._id ?? '(null)'), r.count as number]));
+}
 
 export class AdminService {
   async listUsers(db: Db) {
@@ -72,9 +102,8 @@ export class AdminService {
 
   async hubRefreshStatus(
     db: Db,
-    opts: { tenantId: string | null; isSuperAdmin: boolean },
+    opts: { tenantId: string | null; isSuperAdmin: boolean; apiVersion?: string },
   ) {
-    const HUB_VENUE_IDS = ['hub-wichita', 'hub-on-lewis'];
     const authenticatedTenant = opts.tenantId ?? 'hub-wichita';
     const tenantScope =
       opts.isSuperAdmin || !opts.tenantId
@@ -83,60 +112,83 @@ export class AdminService {
           ? HUB_VENUE_IDS
           : [opts.tenantId];
 
-    const refreshOr = [
-      { source: 'perfect_venue_refresh' },
-      { 'importMeta.source': 'perfect_venue_refresh' },
-    ];
-    const baseMatch = { tenantId: { $in: tenantScope }, $or: refreshOr };
-    const activeStatuses = ['Draft', 'Pending Approval', 'Approved', 'Won', 'In Build'];
-
     const dealsCol = db.collection('deals');
     const paymentsCol = db.collection('hub_payments');
+    const tenantIn = { tenantId: { $in: tenantScope } };
+    const refreshMatch = { ...tenantIn, $or: [...REFRESH_SOURCE_OR] };
 
-    const [totalRefresh, activePipeline, byTenant, byStatus, lastImport, samples] =
-      await Promise.all([
-        dealsCol.countDocuments(baseMatch),
-        dealsCol.countDocuments({
-          ...baseMatch,
-          status: { $in: activeStatuses },
-        }),
-        dealsCol
-          .aggregate([
-            { $match: { $or: refreshOr } },
-            { $group: { _id: '$tenantId', count: { $sum: 1 } } },
-          ])
-          .toArray(),
-        dealsCol
-          .aggregate([
-            { $match: baseMatch },
-            { $group: { _id: '$status', count: { $sum: 1 } } },
-          ])
-          .toArray(),
-        dealsCol.findOne(
-          { ...baseMatch, 'importMeta.importBatchId': { $exists: true } },
-          { sort: { updatedAt: -1 }, projection: { 'importMeta.importBatchId': 1, updatedAt: 1 } },
-        ),
-        dealsCol
-          .find(baseMatch, { projection: { title: 1, status: 1, tenantId: 1, amount: 1 } })
-          .sort({ updatedAt: -1 })
-          .limit(10)
-          .toArray(),
-      ]);
-
-    const paymentCount = await paymentsCol.countDocuments({
-      tenantId: { $in: tenantScope },
-      $or: refreshOr,
-    });
+    const [
+      totalRefresh,
+      activePipeline,
+      byTenant,
+      byStatus,
+      lastImport,
+      samples,
+      paymentCount,
+      databaseProbe,
+    ] = await Promise.all([
+      dealsCol.countDocuments(refreshMatch),
+      dealsCol.countDocuments({
+        ...refreshMatch,
+        status: { $in: ACTIVE_STATUSES },
+      }),
+      dealsCol
+        .aggregate([
+          { $match: { $or: [...REFRESH_SOURCE_OR] } },
+          { $group: { _id: '$tenantId', count: { $sum: 1 } } },
+        ])
+        .toArray(),
+      dealsCol
+        .aggregate([
+          { $match: refreshMatch },
+          { $group: { _id: '$status', count: { $sum: 1 } } },
+        ])
+        .toArray(),
+      dealsCol.findOne(
+        {
+          ...tenantIn,
+          $or: [
+            { 'importMeta.importBatchId': { $exists: true } },
+            { importBatchId: { $regex: '^hub-refresh-' } },
+          ],
+        },
+        {
+          sort: { updatedAt: -1 },
+          projection: { 'importMeta.importBatchId': 1, importBatchId: 1, updatedAt: 1 },
+        },
+      ),
+      dealsCol
+        .find(refreshMatch, { projection: { title: 1, status: 1, tenantId: 1, amount: 1 } })
+        .sort({ updatedAt: -1 })
+        .limit(10)
+        .toArray(),
+      paymentsCol.countDocuments({
+        ...tenantIn,
+        $or: [...REFRESH_PAYMENT_OR],
+      }),
+      this.probeDatabase(db),
+    ]);
 
     return {
       authenticatedTenant,
       tenantScope,
+      database: {
+        ...databaseProbe,
+        configuredDbName: env.DB_NAME,
+        connectedDbName: db.databaseName,
+        mongoHost: parseMongoHost(env.MONGODB_URI),
+        nodeEnv: env.NODE_ENV,
+        apiVersion: opts.apiVersion,
+      },
       deals: {
         refreshTotal: totalRefresh,
         activePipeline,
         byTenant: Object.fromEntries(byTenant.map(r => [String(r._id), r.count])),
         byStatus: Object.fromEntries(byStatus.map(r => [String(r._id), r.count])),
-        lastImportBatchId: lastImport?.importMeta?.importBatchId ?? null,
+        lastImportBatchId:
+          (lastImport?.importMeta as { importBatchId?: string } | undefined)?.importBatchId ??
+          (lastImport as { importBatchId?: string } | null)?.importBatchId ??
+          null,
         lastImportUpdatedAt: lastImport?.updatedAt ?? null,
         sampleTitles: samples.map(d => ({
           title: d.title,
@@ -146,6 +198,89 @@ export class AdminService {
         })),
       },
       payments: { refreshTotal: paymentCount },
+    };
+  }
+
+  private async probeDatabase(db: Db) {
+    const dealsCol = db.collection('deals');
+    const paymentsCol = db.collection('hub_payments');
+    const hubTenantIn = { tenantId: { $in: HUB_VENUE_IDS } };
+
+    const collections = await db.listCollections().toArray();
+    const collectionCounts: Record<string, number> = {};
+    for (const c of collections) {
+      collectionCounts[c.name] = await db.collection(c.name).countDocuments();
+    }
+
+    const [
+      totalDeals,
+      hubTenantDeals,
+      refreshImportMeta,
+      refreshSource,
+      refreshSourceSystem,
+      refreshImportedFrom,
+      totalPayments,
+      hubPayments,
+      refreshPaymentsByBatch,
+      newestDeals,
+    ] = await Promise.all([
+      dealsCol.countDocuments({}),
+      dealsCol.countDocuments(hubTenantIn),
+      dealsCol.countDocuments({ 'importMeta.source': 'perfect_venue_refresh' }),
+      dealsCol.countDocuments({ source: 'perfect_venue_refresh' }),
+      dealsCol.countDocuments({ sourceSystem: 'perfect_venue_refresh' }),
+      dealsCol.countDocuments({ importedFrom: 'perfect_venue_refresh' }),
+      paymentsCol.countDocuments({}),
+      paymentsCol.countDocuments(hubTenantIn),
+      paymentsCol.countDocuments({ importBatchId: { $regex: '^hub-refresh-' } }),
+      dealsCol
+        .find(
+          {},
+          {
+            projection: {
+              title: 1,
+              name: 1,
+              tenantId: 1,
+              source: 1,
+              importMeta: 1,
+              status: 1,
+              createdAt: 1,
+              updatedAt: 1,
+            },
+          },
+        )
+        .sort({ updatedAt: -1 })
+        .limit(10)
+        .toArray(),
+    ]);
+
+    return {
+      collectionCounts,
+      deals: {
+        total: totalDeals,
+        hubTenantScope: hubTenantDeals,
+        refreshByImportMetaSource: refreshImportMeta,
+        refreshBySource: refreshSource,
+        refreshBySourceSystem: refreshSourceSystem,
+        refreshByImportedFrom: refreshImportedFrom,
+        newestSamples: newestDeals.map(d => ({
+          title: d.title ?? d.name ?? null,
+          tenantId: d.tenantId ?? null,
+          source: d.source ?? null,
+          importMetaSource:
+            d.importMeta && typeof d.importMeta === 'object' && 'source' in d.importMeta
+              ? String((d.importMeta as { source?: string }).source ?? '')
+              : null,
+          status: d.status ?? null,
+          updatedAt: d.updatedAt ?? null,
+        })),
+      },
+      payments: {
+        total: totalPayments,
+        hubTenantScope: hubPayments,
+        refreshByImportBatchId: refreshPaymentsByBatch,
+        byTenant: await countByField(db, 'hub_payments', 'tenantId'),
+      },
     };
   }
 }

@@ -45,10 +45,14 @@ router.get('/hub-refresh-status', async (req, res, next) => {
   try {
     const user = req.user;
     const isSuperAdmin = user.role === 'super_admin';
+    const apiVersion =
+      process.env.RENDER_GIT_COMMIT?.slice(0, 12) ??
+      process.env.npm_package_version;
     res.json(
       await adminService.hubRefreshStatus(getDB(), {
         tenantId: isSuperAdmin ? null : user.tenantId,
         isSuperAdmin,
+        apiVersion,
       }),
     );
   } catch (err) { next(err); }

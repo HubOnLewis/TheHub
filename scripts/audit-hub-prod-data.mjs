@@ -163,14 +163,38 @@ try {
   const paymentsByBatch = await countByField(paymentsCol, 'importBatchId', refreshMatch());
   console.log('Refresh payments by importBatchId:', paymentsByBatch);
 
+  const paymentCount = await paymentsCol.countDocuments({
+    tenantId: { $in: hubScope },
+    $or: [
+      { importBatchId: { $regex: '^hub-refresh-' } },
+      { source: 'perfect_venue_refresh' },
+      { 'importMeta.source': 'perfect_venue_refresh' },
+    ],
+  });
+  console.log(`Refresh payments (batch or source): ${paymentCount}`);
+
   const paymentSamples = await paymentsCol
-    .find(refreshMatch())
+    .find({
+      tenantId: { $in: hubScope },
+      $or: [
+        { importBatchId: { $regex: '^hub-refresh-' } },
+        { source: 'perfect_venue_refresh' },
+        { 'importMeta.source': 'perfect_venue_refresh' },
+      ],
+    })
     .sort({ updatedAt: -1 })
     .limit(10)
     .toArray();
   console.log('\nSample refresh payments (up to 10):');
   for (const p of paymentSamples) {
     console.log(' ', JSON.stringify(samplePayment(p)));
+  }
+
+  const collections = await db.listCollections().toArray();
+  console.log('\n--- Collections (non-zero) ---');
+  for (const c of collections) {
+    const n = await db.collection(c.name).countDocuments();
+    if (n > 0) console.log(`  ${c.name}: ${n}`);
   }
 
   const totalRefresh = Object.values(refreshDealsByTenant).reduce((a, b) => a + b, 0);
