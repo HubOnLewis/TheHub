@@ -13,9 +13,9 @@ import { MongoClient } from 'mongodb';
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { loadEnv, parseArgs, mapPvToDealStatus, ROOT } from './lib/hub-refresh-utils.mjs';
+import { loadEnv, parseArgs, mapPvToDealStatus, ROOT, getMongoDb, parseMongoTarget } from './lib/hub-refresh-utils.mjs';
 import { runRefreshPipeline } from './lib/hub-refresh-pipeline.mjs';
-import { resolveHubTenantIds } from './lib/hub-tenant-resolve.mjs';
+import { resolveHubTenantIds, resolvePrimaryHubTenant } from './lib/hub-tenant-resolve.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const OUT_DIR = resolve(ROOT, 'data/perfect-venue-processed/hub-refresh');
@@ -24,9 +24,9 @@ const WEB_EVENTS_TS = resolve(ROOT, 'packages/web/src/data/hubRefreshEvents.ts')
 
 loadEnv();
 
-const { root, tenant, apply, audit, dryRun } = parseArgs(process.argv.slice(2));
+const { root, tenant, apply, audit, dryRun, confirmProduction } = parseArgs(process.argv.slice(2));
 const tenantIds = resolveHubTenantIds(tenant);
-const primaryTenant = tenantIds[0];
+const primaryTenant = resolvePrimaryHubTenant(tenant);
 const importBatchId = `hub-refresh-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
 
 console.log('\n[hub-refresh] Perfect Venue refresh import');
@@ -160,6 +160,24 @@ if (!uri) {
   process.exit(1);
 }
 
+const mongoTarget = parseMongoTarget(uri);
+console.log(`\n[hub-refresh] Mongo target: host=${mongoTarget.host} db=${mongoTarget.dbName}`);
+console.log(`[hub-refresh] Upsert target tenant: ${primaryTenant}`);
+console.log(`[hub-refresh] Records to upsert: ${events.length} deal(s), ${payments.length} payment(s)`);
+
+if (!confirmProduction) {
+  console.error(
+    '[hub-refresh] APPLY blocked — re-run with --apply --confirm-production after verifying Mongo target above.',
+  );
+  process.exit(1);
+}
+
+if (mongoTarget.dbName !== 'hub_crm') {
+  console.warn(
+    `[hub-refresh] WARNING: DB name is "${mongoTarget.dbName}" — production Render API uses hub_crm.`,
+  );
+}
+
 const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
 const backupDir = resolve(ROOT, 'data/backups', `${primaryTenant}-pre-refresh-${stamp}`);
 mkdirSync(backupDir, { recursive: true });
@@ -171,7 +189,7 @@ let paymentsUpserted = 0;
 
 try {
   await client.connect();
-  const db = client.db();
+  const db = getMongoDb(client);
   const dealsCol = db.collection('deals');
   const paymentsCol = db.collection('hub_payments');
 

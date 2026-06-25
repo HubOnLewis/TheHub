@@ -30,8 +30,8 @@ export type HubRefreshManifest = {
 export const HUB_REFRESH_AVAILABLE = true;
 
 export const HUB_REFRESH_MANIFEST: HubRefreshManifest = {
-  "importBatchId": "hub-refresh-2026-06-25T20-30-12",
-  "importedAt": "2026-06-25T20:30:12.232Z",
+  "importBatchId": "hub-refresh-2026-06-25T21-45-04",
+  "importedAt": "2026-06-25T21:45:05.051Z",
   "sourceRoot": "C:\\Users\\Michaela\\Outside\\The Hub\\import",
   "eventsParsed": 317,
   "uniquePvIds": 317,

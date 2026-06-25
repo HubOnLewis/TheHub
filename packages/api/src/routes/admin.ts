@@ -41,6 +41,19 @@ router.get('/sync-status', async (_req, res, next) => {
   } catch (err) { next(err); }
 });
 
+router.get('/hub-refresh-status', async (req, res, next) => {
+  try {
+    const user = req.user;
+    const isSuperAdmin = user.role === 'super_admin';
+    res.json(
+      await adminService.hubRefreshStatus(getDB(), {
+        tenantId: isSuperAdmin ? null : user.tenantId,
+        isSuperAdmin,
+      }),
+    );
+  } catch (err) { next(err); }
+});
+
 router.get('/integrity-report', async (_req, res, next) => {
   try {
     res.json(await identityIntegrityService.integrityReport(getDB()));

@@ -44,11 +44,31 @@ export function parseArgs(argv) {
   const rootIdx = argv.indexOf('--root');
   const tenantIdx = argv.indexOf('--tenant');
   const root = rootIdx >= 0 ? argv[rootIdx + 1] : resolve(ROOT, 'import');
-  const tenant = tenantIdx >= 0 ? argv[tenantIdx + 1] : 'hub-on-lewis';
+  const tenant = tenantIdx >= 0 ? argv[tenantIdx + 1] : 'hub-wichita';
   const apply = argv.includes('--apply');
   const audit = argv.includes('--audit');
   const dryRun = argv.includes('--dry-run');
-  return { root, tenant, apply, audit, dryRun };
+  const confirmProduction = argv.includes('--confirm-production');
+  return { root, tenant, apply, audit, dryRun, confirmProduction };
+}
+
+/** Resolve Mongo database — matches API `client.db(env.DB_NAME)`. */
+export function getMongoDb(client) {
+  const name = process.env.DB_NAME?.trim();
+  return name ? client.db(name) : client.db();
+}
+
+/** Print-safe Mongo target (host + db name only). */
+export function parseMongoTarget(uri) {
+  const dbName =
+    process.env.DB_NAME?.trim() ||
+    uri.match(/\/([^/?]+)(\?|$)/)?.[1] ||
+    '(client default)';
+  const host =
+    uri.match(/@([^/?]+)/)?.[1] ||
+    uri.match(/mongodb(?:\+srv)?:\/\/([^/?]+)/)?.[1] ||
+    'unknown';
+  return { host, dbName };
 }
 
 export function excelSerialToIso(serial) {

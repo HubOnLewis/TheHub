@@ -28,7 +28,10 @@
     "reset:hub-data:apply": "node scripts/reset-hub-tenant-data.mjs --apply",
     "import:hub-refresh:audit": "node scripts/import-hub-refresh.mjs --audit",
     "import:hub-refresh:dry-run": "node scripts/import-hub-refresh.mjs --dry-run",
-    "import:hub-refresh:apply": "node scripts/import-hub-refresh.mjs --apply",
+    "import:hub-refresh:apply": "node scripts/import-hub-refresh.mjs --apply --confirm-production",
+    "audit:hub-prod-data": "node scripts/audit-hub-prod-data.mjs",
+    "repair:hub-refresh-tenant:dry-run": "node scripts/repair-hub-refresh-tenant.mjs",
+    "repair:hub-refresh-tenant:apply": "node scripts/repair-hub-refresh-tenant.mjs --apply",
     "validate:hub-refresh": "node scripts/validate-hub-refresh.mjs",
     "postinstall:playwright": "playwright install chromium"
   },

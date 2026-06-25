@@ -15,8 +15,10 @@
 //  4. All other roles → tenantId = user.tenantId (hard-scoped to their location)
 
 import type { Request, Response, NextFunction } from 'express';
-import { CROSS_TENANT_ROLES } from '@hub-crm/shared';
+import { CROSS_TENANT_ROLES, isHubVenueTenantId } from '@hub-crm/shared';
 import { env } from '../config/env.js';
+
+const HUB_VENUE_TENANT_IDS = ['hub-wichita', 'hub-on-lewis'];
 
 export interface TenantContext {
   /** null = no filter applied (management/admin viewing all) */
@@ -90,8 +92,12 @@ export function resolveTenant(req: Request, _res: Response, next: NextFunction):
 
 /**
  * Build the tenant filter for MongoDB queries.
- * Returns {} if no tenant scope (sees all), or { tenantId } if scoped.
+ * HuB venue aliases (hub-wichita / hub-on-lewis) share the same operational data.
  */
-export function tenantFilter(ctx: TenantContext): Record<string, string> {
-  return ctx.tenantId ? { tenantId: ctx.tenantId } : {};
+export function tenantFilter(ctx: TenantContext): Record<string, unknown> {
+  if (!ctx.tenantId) return {};
+  if (isHubVenueTenantId(ctx.tenantId)) {
+    return { tenantId: { $in: HUB_VENUE_TENANT_IDS } };
+  }
+  return { tenantId: ctx.tenantId };
 }

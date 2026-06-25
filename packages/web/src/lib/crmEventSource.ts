@@ -258,13 +258,13 @@ function buildManifest(
 }
 
 function resolveImportedSource(): CrmEventSourceManifest {
-  if (HUB_REFRESH_AVAILABLE) {
-    const rows = rowsFromHubRefresh();
-    return buildManifest('hub-refresh', rows, {
-      completeness: rows.length > 0 ? 'COMPLETE' : 'FAILED',
-      authoritative: rows.length > 0,
+  const staticRefreshRows = rowsFromHubRefresh();
+  if (HUB_REFRESH_AVAILABLE && staticRefreshRows.length > 0) {
+    return buildManifest('hub-refresh', staticRefreshRows, {
+      completeness: 'COMPLETE',
+      authoritative: true,
       importedAt: HUB_REFRESH_MANIFEST?.importedAt ?? null,
-      warningMessage: rows.length > 0 ? null : 'Refresh import manifest loaded but no event rows found.',
+      warningMessage: null,
       pfTextStatus: null,
       skippedFallbackFrom: null,
     });

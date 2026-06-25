@@ -14,8 +14,7 @@ import {
   mapDealToCrmRow,
   type CrmMetricCategory,
 } from '../../lib/crmEvents.js';
-import { isHubContaminatedRecord } from '@hub-crm/shared';
-import { HUB_REFRESH_AVAILABLE } from '../../data/hubRefreshManifest.js';
+import { isHubContaminatedRecord, isPerfectVenueRefreshDeal } from '@hub-crm/shared';
 import {
   logCrmEventSourceDiagnostics,
   resolveCrmEventSource,
@@ -48,29 +47,24 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
   const apiRows = useMemo(() => {
     const deals = (dealsPage?.data ?? []) as Array<Record<string, unknown>>;
     return deals
-      .filter(
-        d =>
-          !isHubContaminatedRecord({
-            title: String(d.title ?? ''),
-            company: String(d.company ?? ''),
-            contact: String(d.contact ?? ''),
-            notes: typeof d.notes === 'string' ? d.notes : undefined,
-            unitId: typeof d.unitId === 'string' ? d.unitId : undefined,
-            unitIds: Array.isArray(d.unitIds) ? (d.unitIds as string[]) : undefined,
-            importMeta:
-              d.importMeta && typeof d.importMeta === 'object'
-                ? (d.importMeta as { source?: string })
-                : undefined,
-          }),
-      )
       .filter(d => {
-        if (!HUB_REFRESH_AVAILABLE) return true;
-        const meta =
-          d.importMeta && typeof d.importMeta === 'object'
-            ? (d.importMeta as Record<string, unknown>)
-            : null;
-        const src = meta?.source ?? d.source;
-        return src === 'perfect_venue_refresh';
+        const fields = {
+          title: String(d.title ?? ''),
+          company: String(d.company ?? ''),
+          contact: String(d.contact ?? ''),
+          notes: typeof d.notes === 'string' ? d.notes : undefined,
+          unitId: typeof d.unitId === 'string' ? d.unitId : undefined,
+          unitIds: Array.isArray(d.unitIds) ? (d.unitIds as string[]) : undefined,
+          importMeta:
+            d.importMeta && typeof d.importMeta === 'object'
+              ? (d.importMeta as { source?: string })
+              : undefined,
+        };
+        if (isHubContaminatedRecord(fields)) return false;
+        return isPerfectVenueRefreshDeal({
+          source: typeof d.source === 'string' ? d.source : undefined,
+          importMeta: d.importMeta as { source?: string } | undefined,
+        });
       })
       .map(mapDealToCrmRow);
   }, [dealsPage]);
