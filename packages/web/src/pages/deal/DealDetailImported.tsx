@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '@hub-crm/shared';
 import { ROUTES } from '../../config/paths.js';
-import ImportedSourceNote from '../../components/live/ImportedSourceNote.js';
 import { getFullPvEventById, getFullPvProposal } from '../../data/pvDataLayer.js';
 import { pvStatusDisplay } from '../../data/perfectVenueSeed.js';
 
@@ -16,16 +15,14 @@ export default function DealDetailImported({ dealId }: Props) {
   const balanceDue = event.balanceDue ?? 0;
 
   return (
-    <div className="deal-flagship-page command-page">
+    <div className="deal-flagship-page command-page hub-demo-deal-page">
       <div style={{ marginBottom: 16 }}>
         <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12 }}>
           ← Events
         </Link>
       </div>
 
-      <ImportedSourceNote style={{ marginBottom: 12 }} />
-
-      <header className="flagship-hero flagship-hero--cinematic">
+      <header className="flagship-hero flagship-hero--cinematic hub-demo-deal-hero">
         <div>
           <span className="ai-chip">Event</span>
           <h1>{event.title}</h1>
@@ -57,8 +54,8 @@ export default function DealDetailImported({ dealId }: Props) {
         </div>
       </header>
 
-      <p className="text-sm text-muted" style={{ marginTop: 16 }}>
-        Imported operational record · {dealId}
+      <p className="text-sm text-muted deal-tech-meta" style={{ marginTop: 16 }}>
+        Event reference · {dealId}
       </p>
     </div>
   );

@@ -1,13 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { HUB_LABELS } from '@hub-crm/shared';
-import { ROUTES } from '../config/paths.js';
 import { type TaskAutomationBadge } from '../data/demoVenue.js';
-import LiveOperationsFeed from '../components/demo/LiveOperationsFeed.js';
 import EmbeddedAgentPanel from '../components/agents/EmbeddedAgentPanel.js';
 import { TASKS_INSIGHTS } from '../data/embeddedAgentInsights.js';
-import DemoFlowNav from '../components/demo/DemoFlowNav.js';
-import ContextAgentDock from '../components/agents/ContextAgentDock.js';
 import { useDemoOpsStore } from '../state/demoOpsStore.js';
 import { useAuditStore } from '../audit/auditStore.js';
 import { getEntityAttribution } from '../audit/entityAttribution.js';
@@ -71,17 +65,13 @@ export default function TasksCenter() {
   const autoCount = tasks.filter(t => t.title.includes('Kisi') || t.automationBadge === 'scheduled-sequence').length;
 
   return (
-    <div className="command-page">
-      <DemoFlowNav />
-      <ContextAgentDock context="tasks" compact />
-      <EmbeddedAgentPanel title="Task automation" insights={TASKS_INSIGHTS} compact />
-      <div className="page-header command-page-header">
+    <div className="command-page hub-tasks-page">
+      <header className="hub-admin-page__header">
         <div>
-          <span className="ai-chip">Workflow automation</span>
-          <h1 className="page-title">Tasks</h1>
-          <div className="page-subtitle">
-            Complete, assign, and prioritize — updates flow to the live operations feed.
-          </div>
+          <h1 className="hub-admin-page__title">Tasks</h1>
+          <p className="hub-admin-page__subtitle">
+            Workflow queue — assign owners, set priority, and complete follow-ups.
+          </p>
         </div>
         <button
           type="button"
@@ -103,9 +93,7 @@ export default function TasksCenter() {
         >
           + Add task
         </button>
-      </div>
-
-
+      </header>
       <div className="tasks-stat-strip command-stat-strip">
         <div className="tasks-stat-pill">
           <span className="tasks-stat-pill__label">Open</span>
@@ -116,7 +104,7 @@ export default function TasksCenter() {
           <strong>{overdueCount}</strong>
         </div>
         <div className="tasks-stat-pill">
-          <span className="tasks-stat-pill__label">Kisi / Autopilot</span>
+          <span className="tasks-stat-pill__label">Autopilot</span>
           <strong>{autoCount}</strong>
         </div>
       </div>
@@ -228,18 +216,15 @@ export default function TasksCenter() {
           </div>
         </div>
 
-        <aside className="command-side-rail">
-          <LiveOperationsFeed limit={8} compact />
-          <div className="ai-side-panel command-panel">
+        <aside className="command-side-rail hub-tasks-rail">
+          <EmbeddedAgentPanel title="Assistant insights" insights={TASKS_INSIGHTS} compact />
+          <div className="ai-side-panel command-panel hub-tasks-suggestions">
             <h3>Suggested next actions</h3>
             <ul className="command-bullet-list">
-              <li>Send Kisi Email · Dufferfest — approve in Autopilot queue</li>
-              <li>Miller/Harris proposal follow-up — deposit path</li>
+              <li>Send follow-up email — Dufferfest rehearsal dinner</li>
+              <li>Miller/Harris proposal — deposit reminder</li>
               <li>Final balance reminder · Villarreal grad party</li>
             </ul>
-            <Link className="btn btn-secondary" to={ROUTES.autopilot} style={{ width: '100%', textAlign: 'center', textDecoration: 'none', marginTop: 12 }}>
-              Open Autopilot
-            </Link>
           </div>
         </aside>
       </div>

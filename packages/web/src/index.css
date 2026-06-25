@@ -14,9 +14,16 @@
 @import './styles/brand-loader.css';
 @import './styles/visual-recomposition.css';
 @import './styles/venue-ops-intel.css';
+@import './styles/crm-simple.css';
+@import './styles/admin-polish.css';
+@import './styles/hub-admin-shell.css';
 @import './styles/hospitality-financial.css';
 @import './styles/premium-command-density.css';
 @import './portal/styles/portal.css';
+
+:root {
+  color-scheme: light;
+}
 
 :root,
 [data-theme="dark"] {

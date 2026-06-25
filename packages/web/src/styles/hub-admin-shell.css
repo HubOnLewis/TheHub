@@ -1,0 +1,848 @@
+/**
+ * Hub CRM — Perfect Venue–style client shell (light top nav, table-first workspace).
+ */
+
+.app-shell--hub-admin {
+  --hub-canvas: #f5f7fb;
+  --hub-card: #ffffff;
+  --hub-card-muted: #f8fafc;
+  --hub-border: #d9e1ec;
+  --hub-border-soft: #e5e7eb;
+  --hub-text: #172033;
+  --hub-text-secondary: #526174;
+  --hub-text-muted: #7b8794;
+  --hub-accent: #7c3aed;
+  --hub-accent-soft: rgba(124, 58, 237, 0.1);
+  --hub-accent-border: rgba(124, 58, 237, 0.28);
+  --hub-radius: 10px;
+  --hub-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --hub-row-hover: rgba(124, 58, 237, 0.04);
+  --hub-font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  background: var(--hub-canvas);
+  font-family: var(--hub-font);
+}
+
+.app-shell--hub-admin > .crm-pv-shell {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+[data-theme='dark'] .app-shell--hub-admin {
+  --hub-canvas: #0f1419;
+  --hub-card: #161b22;
+  --hub-card-muted: #1c2330;
+  --hub-border: rgba(255, 255, 255, 0.1);
+  --hub-border-soft: rgba(255, 255, 255, 0.08);
+  --hub-text: #f1f5f9;
+  --hub-text-secondary: #94a3b8;
+  --hub-text-muted: #64748b;
+  --hub-row-hover: rgba(168, 85, 247, 0.06);
+}
+
+.app-shell--hub-admin .sidebar,
+.app-shell--hub-admin .topbar,
+.app-shell--hub-admin .demo-flow-nav,
+.app-shell--hub-admin .operational-rail,
+.app-shell--hub-admin .client-review-banner,
+.app-shell--hub-admin .context-agent-dock,
+.app-shell--hub-admin .hub-admin-sidebar {
+  display: none !important;
+}
+
+/* ── PV shell layout ────────────────────────────────── */
+
+.crm-pv-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  min-height: 100vh;
+  background: var(--hub-canvas, #f5f7fb);
+}
+
+.crm-pv-shell__content {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+}
+
+.crm-pv-shell__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  border: none;
+  background: rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+}
+
+/* ── Light top navigation ───────────────────────────── */
+
+.app-shell--hub-admin .crm-topnav--light {
+  background: var(--hub-card);
+  color: var(--hub-text);
+  border-bottom: 1px solid var(--hub-border-soft);
+  box-shadow: var(--hub-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  width: 100%;
+  max-width: none;
+  min-height: 52px;
+  padding: 0 16px;
+  gap: 10px;
+}
+
+.app-shell--hub-admin .crm-topnav__menu-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--hub-border);
+  border-radius: 8px;
+  background: var(--hub-card);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.app-shell--hub-admin .crm-topnav__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.app-shell--hub-admin .crm-topnav__venue-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hub-text);
+  white-space: nowrap;
+}
+
+.app-shell--hub-admin .crm-topnav--light .crm-topnav__link {
+  color: var(--hub-text-secondary);
+}
+
+.app-shell--hub-admin .crm-topnav--light .crm-topnav__link:hover {
+  background: var(--hub-card-muted);
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .crm-topnav--light .crm-topnav__link--active {
+  background: var(--hub-accent-soft);
+  color: var(--hub-accent);
+  box-shadow: inset 0 0 0 1px var(--hub-accent-border);
+}
+
+.app-shell--hub-admin .crm-topnav__search-wrap {
+  position: relative;
+  flex: 0 1 200px;
+  min-width: 100px;
+}
+
+.app-shell--hub-admin .crm-topnav__search {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px 0 30px;
+  border: 1px solid var(--hub-border);
+  border-radius: 8px;
+  background: var(--hub-card-muted);
+  color: var(--hub-text);
+  font-size: 13px;
+}
+
+.app-shell--hub-admin .crm-topnav__search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.45;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+.app-shell--hub-admin .crm-topnav__user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px 3px 3px;
+  border: 1px solid var(--hub-border);
+  border-radius: 999px;
+  background: var(--hub-card-muted);
+  max-width: 160px;
+}
+
+.app-shell--hub-admin .crm-topnav__user-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-shell--hub-admin .crm-topnav__user-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hub-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell--hub-admin .crm-topnav--light .crm-topnav__icon {
+  color: var(--hub-text-secondary);
+  border: 1px solid transparent;
+}
+
+.app-shell--hub-admin .crm-topnav--light .crm-topnav__icon:hover {
+  background: var(--hub-card-muted);
+  border-color: var(--hub-border);
+  color: var(--hub-accent);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav--light {
+  background: var(--hub-card);
+  border-bottom-color: var(--hub-border);
+}
+
+/* ── Page content ───────────────────────────────────── */
+
+.app-shell--hub-admin .page-content {
+  padding: 0;
+  background: transparent;
+}
+
+.app-shell--hub-admin .crm-events-workspace,
+.app-shell--hub-admin .hub-reports-page,
+.app-shell--hub-admin .hub-admin-settings,
+.app-shell--hub-admin .command-page,
+.app-shell--hub-admin .page-simple {
+  padding: 16px 20px 28px;
+  background: transparent;
+  color: var(--hub-text);
+  min-height: auto;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.app-shell--hub-admin .page-title,
+.app-shell--hub-admin .crm-page-header__title,
+.app-shell--hub-admin .hub-admin-page__title {
+  font-family: var(--hub-font) !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--hub-text) !important;
+}
+
+.app-shell--hub-admin .card,
+.app-shell--hub-admin .crm-events-panel,
+.app-shell--hub-admin .monthly-scorecard,
+.app-shell--hub-admin .settings-panel {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  box-shadow: var(--hub-shadow);
+}
+
+/* ── Events / metrics ───────────────────────────────── */
+
+.app-shell--hub-admin .crm-events-workspace {
+  background: var(--hub-canvas);
+}
+
+.app-shell--hub-admin .crm-metric-strip {
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.app-shell--hub-admin .crm-metric-card {
+  padding: 10px 12px;
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  box-shadow: none;
+  min-height: 0;
+}
+
+.app-shell--hub-admin .crm-metric-card--selected {
+  background: linear-gradient(145deg, #6d28d9 0%, #5b21b6 100%);
+  border-color: #7c3aed;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.2);
+}
+
+.app-shell--hub-admin .crm-metric-card__badge {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.app-shell--hub-admin .crm-metric-card__label {
+  font-size: 10px;
+}
+
+.app-shell--hub-admin .crm-events-toolbar {
+  background: var(--hub-card-muted);
+  border-bottom: 1px solid var(--hub-border-soft);
+  padding: 12px 16px;
+}
+
+.app-shell--hub-admin .crm-events-table__head {
+  background: var(--hub-card-muted);
+}
+
+.app-shell--hub-admin .crm-source-banner {
+  padding: 10px 14px;
+  font-size: 13px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.app-shell--hub-admin .crm-source-banner--info,
+.app-shell--hub-admin .crm-source-banner--warn {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.app-shell--hub-admin .crm-page-header--compact {
+  margin-bottom: 12px;
+}
+
+.app-shell--hub-admin .crm-source-banner__link {
+  color: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ── Settings subnav only ───────────────────────────── */
+
+.app-shell--hub-admin .settings-shell {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 16px;
+  width: 100%;
+  max-width: none;
+}
+
+.app-shell--hub-admin .settings-nav {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  padding: 8px;
+  position: sticky;
+  top: 64px;
+}
+
+.app-shell--hub-admin .settings-nav a.active {
+  background: var(--hub-accent-soft);
+  color: var(--hub-accent);
+}
+
+.app-shell--hub-admin .settings-panel {
+  padding: 20px;
+}
+
+/* ── Inbox / Calendar / Tasks ───────────────────────── */
+
+.app-shell--hub-admin .inbox-command-list,
+.app-shell--hub-admin .inbox-command-detail,
+.app-shell--hub-admin .cal-shell,
+.app-shell--hub-admin .occupancy-heatmap,
+.app-shell--hub-admin .cal-intel-rail .exec-panel,
+.app-shell--hub-admin .tasks-table-wrap,
+.app-shell--hub-admin .command-side-rail .command-panel,
+.app-shell--hub-admin .embedded-agent-panel {
+  background: var(--hub-card) !important;
+  border: 1px solid var(--hub-border-soft) !important;
+  border-radius: var(--hub-radius) !important;
+  box-shadow: var(--hub-shadow) !important;
+}
+
+.app-shell--hub-admin .hub-admin-page__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.app-shell--hub-admin .inbox-detail__compose {
+  background: var(--hub-card-muted);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  padding: 14px;
+}
+
+.app-shell--hub-admin .cal-cell {
+  background: var(--hub-card);
+}
+
+.app-shell--hub-admin .cal-cell--stress {
+  background: #fef2f2;
+}
+
+.app-shell--hub-admin .occupancy-heatmap__cell--1 { background: #dcfce7; }
+.app-shell--hub-admin .occupancy-heatmap__cell--2 { background: #bbf7d0; }
+.app-shell--hub-admin .occupancy-heatmap__cell--3 { background: #fef3c7; }
+.app-shell--hub-admin .occupancy-heatmap__cell--4 { background: #fecdd3; }
+
+.app-shell--hub-admin .btn-primary {
+  background: var(--hub-accent);
+  border-color: var(--hub-accent);
+}
+
+.app-shell--hub-admin .live-operations-feed {
+  display: none;
+}
+
+/* ── Responsive ─────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .app-shell--hub-admin .crm-topnav__menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .app-shell--hub-admin .crm-topnav__links {
+    display: none;
+    position: absolute;
+    top: 52px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    background: var(--hub-card);
+    border-bottom: 1px solid var(--hub-border-soft);
+    padding: 8px;
+    box-shadow: var(--hub-shadow);
+    z-index: 29;
+  }
+
+  .app-shell--hub-admin .crm-topnav__links--open {
+    display: flex;
+  }
+
+  .app-shell--hub-admin .crm-topnav__search-wrap {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav__user-name {
+    display: none;
+  }
+
+  .app-shell--hub-admin .settings-shell {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell--hub-admin .crm-events-workspace,
+  .app-shell--hub-admin .command-page,
+  .app-shell--hub-admin .hub-reports-page,
+  .app-shell--hub-admin .page-simple {
+    padding: 12px 14px 20px;
+  }
+}
+
+/* ── Demo path polish (client meeting) ───────────────── */
+
+.app-shell--hub-admin .crm-pv-shell__content {
+  background: var(--hub-canvas);
+}
+
+.app-shell--hub-admin .crm-events-workspace {
+  width: 100%;
+  max-width: none;
+}
+
+.app-shell--hub-admin .crm-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  width: 100%;
+}
+
+.app-shell--hub-admin .crm-events-panel {
+  width: 100%;
+}
+
+.app-shell--hub-admin .crm-events-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-shell--hub-admin .crm-events-toolbar__right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.app-shell--hub-admin .crm-events-toolbar__search {
+  width: min(260px, 100%);
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--hub-border);
+  border-radius: 8px;
+  background: var(--hub-card);
+  font-size: 13px;
+}
+
+.app-shell--hub-admin .crm-source-banner {
+  padding: 8px 12px;
+  font-size: 12px;
+  margin-bottom: 8px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+.app-shell--hub-admin .crm-source-banner__primary {
+  margin: 0;
+  font-weight: 500;
+}
+
+.app-shell--hub-admin .crm-events-table__head,
+.app-shell--hub-admin .crm-events-table__row {
+  grid-template-columns:
+    minmax(180px, 1.5fr)
+    minmax(100px, 0.9fr)
+    minmax(120px, 1fr)
+    52px
+    minmax(90px, 0.8fr)
+    minmax(100px, 0.85fr)
+    minmax(110px, 0.85fr)
+    minmax(110px, 0.85fr)
+    52px
+    80px;
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+.app-shell--hub-admin .crm-events-table__col--actions {
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.app-shell--hub-admin .crm-status-pill {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* Command pages — shared demo canvas */
+.app-shell--hub-admin .command-page,
+.app-shell--hub-admin .hub-reports-page,
+.app-shell--hub-admin .hub-admin-settings {
+  background: var(--hub-canvas);
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .hub-admin-page__subtitle {
+  color: var(--hub-text-secondary);
+  font-size: 13px;
+}
+
+.app-shell--hub-admin .hub-admin-stat-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  color: var(--hub-text-secondary);
+}
+
+/* Inbox */
+.app-shell--hub-admin .inbox-command-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+.app-shell--hub-admin .inbox-row--active {
+  background: var(--hub-accent-soft);
+  border-left: 3px solid var(--hub-accent);
+}
+
+.app-shell--hub-admin .inbox-stat-pill--accent {
+  background: var(--hub-accent-soft);
+  color: var(--hub-accent);
+  border-color: var(--hub-accent-border);
+}
+
+.app-shell--hub-admin .inbox-detail__compose h3::before {
+  content: none;
+}
+
+/* Calendar */
+.app-shell--hub-admin .cal-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.app-shell--hub-admin .cal-summary-pill {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  padding: 14px 16px;
+  box-shadow: var(--hub-shadow);
+}
+
+.app-shell--hub-admin .cal-intel-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+  gap: 16px;
+  width: 100%;
+}
+
+.app-shell--hub-admin .cal-shell {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  padding: 16px;
+  box-shadow: var(--hub-shadow);
+}
+
+.app-shell--hub-admin .cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.app-shell--hub-admin .cal-dow {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--hub-text-muted);
+  text-align: center;
+  padding: 6px 0;
+}
+
+.app-shell--hub-admin .cal-cell {
+  min-height: 88px;
+  border: 1px solid var(--hub-border-soft);
+  border-radius: 8px;
+  padding: 6px;
+  background: var(--hub-card);
+}
+
+.app-shell--hub-admin .cal-cell--muted {
+  opacity: 0.45;
+  background: var(--hub-card-muted);
+}
+
+.app-shell--hub-admin .cal-intel-rail .exec-panel {
+  margin-bottom: 12px;
+  padding: 14px 16px;
+}
+
+.app-shell--hub-admin .cal-intel-rail .exec-panel__head h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.app-shell--hub-admin .occupancy-heatmap,
+.app-shell--hub-admin .cal-day-focus,
+.app-shell--hub-admin .operational-load-strip {
+  display: none !important;
+}
+
+/* Tasks */
+.app-shell--hub-admin .tasks-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.app-shell--hub-admin .tasks-stat-pill {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  padding: 12px 14px;
+}
+
+.app-shell--hub-admin .tasks-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
+  gap: 16px;
+  width: 100%;
+}
+
+.app-shell--hub-admin .tasks-table-wrap {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  overflow: hidden;
+}
+
+.app-shell--hub-admin .hub-tasks-suggestions h3 {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 10px;
+}
+
+/* Reports */
+.app-shell--hub-admin .hub-reports-section h2 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .hub-reports-placeholder__card {
+  background: var(--hub-card);
+  border: 1px dashed var(--hub-border);
+  color: var(--hub-text-muted);
+}
+
+.app-shell--hub-admin .monthly-scorecard__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+/* Event detail — light card shell */
+.app-shell--hub-admin .hub-demo-deal-page {
+  width: 100%;
+  max-width: none;
+}
+
+.app-shell--hub-admin .hub-demo-deal-page::before {
+  display: none;
+}
+
+.app-shell--hub-admin .hub-demo-deal-hero,
+.app-shell--hub-admin .hub-demo-deal-page .flagship-hero {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  box-shadow: var(--hub-shadow);
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.app-shell--hub-admin .hub-demo-deal-page .flagship-stat {
+  background: var(--hub-card-muted);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.app-shell--hub-admin .hub-demo-deal-page .ai-chip {
+  background: var(--hub-accent-soft);
+  color: var(--hub-accent);
+  border: 1px solid var(--hub-accent-border);
+}
+
+.app-shell--hub-admin .hub-demo-deal-page .deal-panel,
+.app-shell--hub-admin .hub-demo-deal-page .card {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  box-shadow: var(--hub-shadow);
+}
+
+.app-shell--hub-admin .hub-demo-deal-page .deal-tech-meta,
+.app-shell--hub-admin .hub-demo-deal-page .imported-source-note {
+  display: none;
+}
+
+.app-shell--hub-admin .hub-demo-deal-page .context-agent-dock,
+.app-shell--hub-admin .hub-demo-deal-page .deal-autopilot-rail {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+}
+
+/* Data import settings */
+.app-shell--hub-admin .data-import-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.app-shell--hub-admin .data-import-status-card--ok {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.app-shell--hub-admin .data-import-status-card--warn {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.app-shell--hub-admin .data-import-lede {
+  margin-bottom: 16px;
+}
+
+.app-shell--hub-admin .data-import-details {
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  background: var(--hub-card-muted);
+  font-size: 13px;
+}
+
+.app-shell--hub-admin .data-import-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .data-import-details--warn {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.app-shell--hub-admin .data-import-cleanup {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  background: var(--hub-card);
+}
+
+.app-shell--hub-admin .data-import-cleanup h4 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.app-shell--hub-admin .embedded-agent-panel--compact {
+  background: var(--hub-card) !important;
+  border: 1px solid var(--hub-border-soft) !important;
+}
+
+@media (max-width: 1100px) {
+  .app-shell--hub-admin .cal-intel-layout,
+  .app-shell--hub-admin .tasks-shell,
+  .app-shell--hub-admin .inbox-command-layout {
+    grid-template-columns: 1fr;
+  }
+}

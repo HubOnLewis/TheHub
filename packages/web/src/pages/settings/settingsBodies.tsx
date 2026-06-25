@@ -14,6 +14,8 @@ import {
   isFullPvExportAvailable,
 } from '../../data/perfectVenueSeed.js';
 import { getDataQualityStats } from '../../data/pvEventModel.js';
+import { HUB_RESET_MANIFEST } from '../../data/hubResetManifest.js';
+import { HUB_REFRESH_AVAILABLE, HUB_REFRESH_MANIFEST } from '../../data/hubRefreshManifest.js';
 import { DEMO_MANAGED_USERS } from '../../data/demoUsers.js';
 import {
   queueSmsDraft,
@@ -54,10 +56,156 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 }
 
 function DataImportQualityPanel() {
+  const resetManifest = HUB_RESET_MANIFEST;
+  const refresh = HUB_REFRESH_AVAILABLE ? HUB_REFRESH_MANIFEST : null;
+
+  if (refresh) {
+    return (
+      <div className="settings-deep data-import-panel">
+        <div className="data-import-summary-grid">
+          <div className="card settings-stat-card data-import-status-card data-import-status-card--ok">
+            <h4>Refresh import</h4>
+            <p className="settings-stat">Loaded</p>
+            <p className="settings-muted">
+              {new Date(refresh.importedAt).toLocaleString()}
+            </p>
+            <p className="settings-muted">Contamination audit: {refresh.contaminationAudit}</p>
+          </div>
+          <div className="card settings-stat-card">
+            <h4>Events</h4>
+            <p className="settings-stat">{refresh.eventsParsed}</p>
+            <p className="settings-muted">{refresh.uniquePvIds} PV IDs</p>
+          </div>
+          <div className="card settings-stat-card">
+            <h4>Contacts</h4>
+            <p className="settings-stat">{refresh.contactsParsed}</p>
+          </div>
+          <div className="card settings-stat-card">
+            <h4>Payments</h4>
+            <p className="settings-stat">{refresh.paymentsParsed}</p>
+            <p className="settings-muted">{refresh.paymentsMatched} matched to events</p>
+          </div>
+          <div className="card settings-stat-card">
+            <h4>Documents</h4>
+            <p className="settings-stat">{refresh.documentsMatched}</p>
+            <p className="settings-muted">
+              Inv {refresh.invoicesMatched} · BEO {refresh.beosMatched} · Agr {refresh.agreementsMatched} · Menu{' '}
+              {refresh.menusMatched}
+            </p>
+          </div>
+          <div className="card settings-stat-card">
+            <h4>Financial totals</h4>
+            <p className="settings-stat">${refresh.financialTotals.grandTotal.toLocaleString()}</p>
+            <p className="settings-muted">
+              Paid ${refresh.financialTotals.amountPaid.toLocaleString()} · Due $
+              {refresh.financialTotals.balanceDue.toLocaleString()}
+            </p>
+          </div>
+          <div className="card settings-stat-card">
+            <h4>Unmatched</h4>
+            <p className="settings-stat">{refresh.unmatchedCount}</p>
+            <p className="settings-muted">{refresh.warningsCount} warning(s)</p>
+          </div>
+        </div>
+
+        <p className="settings-lede">Perfect Venue refresh import · HuB on Lewis venue data only.</p>
+
+        <details className="data-import-details">
+          <summary>Source folder</summary>
+          <p className="settings-muted settings-list--mono">{refresh.sourceRoot}</p>
+        </details>
+
+        <details className="data-import-details">
+          <summary>Folder coverage</summary>
+          <ul className="settings-list">
+            {Object.entries(refresh.folders).map(([folder, info]) => (
+              <li key={folder}>
+                {folder}: {info.exists ? `${info.fileCount} file(s)` : 'missing'}
+              </li>
+            ))}
+          </ul>
+        </details>
+
+        <details className="data-import-details">
+          <summary>Re-import</summary>
+          <p className="settings-muted settings-list--mono">
+            npm run import:hub-refresh:dry-run
+            <br />
+            npm run import:hub-refresh:apply
+          </p>
+        </details>
+      </div>
+    );
+  }
+
   if (!isFullPvExportAvailable) {
     return (
-      <div className="settings-deep">
-        <p className="settings-lede">No full Perfect Venue export loaded.</p>
+      <div className="settings-deep data-import-panel">
+        <div className="card settings-stat-card data-import-status-card data-import-status-card--warn">
+          <h4>Import status</h4>
+          <p className="settings-stat">No current import loaded</p>
+          <p className="settings-muted">Ready for fresh Perfect Venue import</p>
+          {resetManifest?.resetAt ? (
+            <p className="settings-muted">
+              Last tenant reset: {new Date(resetManifest.resetAt).toLocaleString()}
+            </p>
+          ) : null}
+        </div>
+
+        <p className="settings-lede">
+          Drop Perfect Venue refresh files into <code>import/</code> (numbered folders), then run the refresh import.
+        </p>
+
+        <details className="data-import-details" open>
+          <summary>Expected folder structure</summary>
+          <ul className="settings-list settings-list--mono">
+            <li>import/01-events-master/Event Data *.xlsx</li>
+            <li>import/02-event-summaries/*.pdf</li>
+            <li>import/03-beos/*.pdf</li>
+            <li>import/04-staff-beos/*.pdf</li>
+            <li>import/05-invoices/*.pdf</li>
+            <li>import/06-agreements/*.pdf</li>
+            <li>import/07-menus/*.pdf</li>
+            <li>import/08-payments/Payment Data *.xlsx</li>
+          </ul>
+        </details>
+
+        <details className="data-import-details">
+          <summary>Import commands</summary>
+          <ul className="settings-list settings-list--mono">
+            <li>npm run import:hub-refresh:audit</li>
+            <li>npm run import:hub-refresh:dry-run</li>
+            <li>npm run validate:hub-refresh</li>
+            <li>npm run import:hub-refresh:apply</li>
+          </ul>
+        </details>
+
+        <details className="data-import-details" open>
+          <summary>Legacy expected files</summary>
+          <ul className="settings-list settings-list--mono">
+            {(resetManifest?.expectedFiles ?? [
+              'data/perfect-venue-import/Event Data *.xlsx',
+              'data/perfect-venue-import/Proposal Data *.xlsx',
+              'data/perfect-venue-import/Contact Data *.xlsx',
+              'data/perfect-venue-import/Payment Data *.xlsx (optional)',
+              'data/perfect-venue-import/PFevents.txt (optional)',
+            ]).map((f) => (
+              <li key={f}>{f}</li>
+            ))}
+          </ul>
+        </details>
+
+        <details className="data-import-details">
+          <summary>Import commands</summary>
+          <ul className="settings-list settings-list--mono">
+            {(resetManifest?.importCommands ?? ['npm run import:perfect-venue', 'npm run import:pfevents -- --apply']).map(
+              (c) => (
+                <li key={c}>{c}</li>
+              ),
+            )}
+          </ul>
+        </details>
+
         <p className="settings-muted">
           Place XLSX files in <code>data/perfect-venue-import/</code> or <code>import/</code>, then run{' '}
           <code>npm run import:perfect-venue</code>.
@@ -91,19 +239,14 @@ function DataImportQualityPanel() {
 
   return (
     <div className="settings-deep data-import-panel">
-      <div className={`data-import-trust${safeForReview ? ' data-import-trust--ok' : ' data-import-trust--warn'}`}>
-        <strong>{safeForReview ? 'Import quality looks good' : 'Review import quality before sharing'}</strong>
-        <span>
-          Join confidence {joinPct}% proposals · {contactPct}% contacts · PII masked in UI
-        </span>
-      </div>
-
-      <p className="settings-lede">
-        Perfect Venue XLSX import. Data freshness:{' '}
-        <strong>{ageHours < 48 ? 'Current' : 'Stale'}</strong> · imported {freshness.toLocaleString()}.
-      </p>
-
-      <div className="settings-grid-2 data-import-coverage" style={{ marginTop: 16 }}>
+      <div className="data-import-summary-grid">
+        <div className={`card settings-stat-card data-import-status-card${safeForReview ? ' data-import-status-card--ok' : ' data-import-status-card--warn'}`}>
+          <h4>Import status</h4>
+          <p className="settings-stat">{safeForReview ? 'Ready for review' : 'Needs attention'}</p>
+          <p className="settings-muted">
+            {ageHours < 48 ? 'Current' : 'Stale'} · imported {freshness.toLocaleDateString()}
+          </p>
+        </div>
         <div className="card settings-stat-card">
           <h4>Events</h4>
           <p className="settings-stat">{r.eventsNormalized}</p>
@@ -122,7 +265,7 @@ function DataImportQualityPanel() {
         <div className="card settings-stat-card">
           <h4>Relationship completeness</h4>
           <p className="settings-stat">{contactPct}%</p>
-          <p className="settings-muted">Events ↔ contacts</p>
+          <p className="settings-muted">Events ↔ contacts · proposals {joinPct}%</p>
         </div>
         {fin ? (
           <>
@@ -132,17 +275,9 @@ function DataImportQualityPanel() {
               <p className="settings-muted">{r.paymentsRaw ?? 0} ledger rows</p>
             </div>
             <div className="card settings-stat-card">
-              <h4>Sales report total</h4>
-              <p className="settings-stat">${fin.salesGrandTotal.toLocaleString()}</p>
-              <p className="settings-muted">{r.salesDays ?? 0} days · pacing CSV</p>
-            </div>
-            <div className="card settings-stat-card">
-              <h4>Outstanding (ops)</h4>
+              <h4>Outstanding</h4>
               <p className="settings-stat">${fin.eventOutstanding.toLocaleString()}</p>
-              <p className="settings-muted">
-                Raw export ${(fin as { eventOutstandingRaw?: number }).eventOutstandingRaw?.toLocaleString() ?? '—'} ·
-                lost/archived excluded
-              </p>
+              <p className="settings-muted">Active pipeline balance</p>
             </div>
             <div className="card settings-stat-card">
               <h4>Import health</h4>
@@ -153,78 +288,88 @@ function DataImportQualityPanel() {
         ) : null}
       </div>
 
-      <h4 style={{ marginTop: 24 }}>Source files</h4>
-      <ul className="settings-list settings-list--mono">
-        <li>Events · {meta.sourceFiles.events}</li>
-        <li>Proposals · {meta.sourceFiles.proposals}</li>
-        <li>Contacts · {meta.sourceFiles.contacts}</li>
-      </ul>
-
-      <h4 style={{ marginTop: 24 }}>Join coverage</h4>
-      <ul className="settings-list">
-        <li>Events with proposals: {j.eventsWithProposals} / {r.eventsNormalized}</li>
-        <li>Events with contacts: {j.eventsWithContacts} / {r.eventsNormalized}</li>
-        <li>Contacts with accounts: {j.contactsWithAccounts} / {r.contactsNormalized}</li>
-        <li>Orphaned proposal lines: {j.orphanedProposals}</li>
-        {j.paymentsWithEvents != null ? (
-          <li>
-            Payments matched to events: {j.paymentsWithEvents} / {r.paymentsRaw ?? 0}
-          </li>
-        ) : null}
-        {j.orphanedPayments != null ? <li>Orphaned payments: {j.orphanedPayments}</li> : null}
-      </ul>
-
-      <h4 style={{ marginTop: 24 }}>Quality signals</h4>
-      <ul className="settings-list">
-        <li>Missing event dates: {q.missingEventDates}</li>
-        <li>Missing contacts on events: {q.missingContacts}</li>
-        <li>Missing/zero totals: {q.missingTotals}</li>
-        <li>Duplicate contact emails: {q.duplicateContactEmails}</li>
-        <li>Zero-dollar events (&lt; $75): {q.zeroDollarEvents ?? canon.zeroDollar}</li>
-        {'lostArchived' in q ? <li>Lost / archived: {q.lostArchived as number}</li> : null}
-        {'completed' in q ? <li>Completed: {q.completed as number}</li> : null}
-        {'activePipeline' in q ? <li>Active pipeline: {q.activePipeline as number}</li> : null}
-        {'confirmedFuture' in q ? <li>Confirmed future: {q.confirmedFuture as number}</li> : null}
-        <li>Excluded from pressure scoring: {canon.excludedFromPressure}</li>
-        <li>Pressure-eligible signals: {canon.pressureEligible}</li>
-        <li>Unmatched proposal lines (orphan): {j.orphanedProposals}</li>
-      </ul>
-
-      <p className="settings-muted" style={{ marginTop: 12 }}>
-        Excluded rows are preserved for history but not used for active pressure scoring (lost, archived,
-        completed past events, office/test rows under $75, and zero-proposal noise).
+      <p className="settings-lede data-import-lede">
+        Perfect Venue spreadsheet import · PII masked in the client UI.
       </p>
 
-      {meta.warnings.length > 0 && (
-        <>
-          <h4 style={{ marginTop: 24 }}>Warnings ({meta.warnings.length})</h4>
+      <details className="data-import-details">
+        <summary>Source files</summary>
+        <ul className="settings-list settings-list--mono">
+          <li>Events · {meta.sourceFiles.events}</li>
+          <li>Proposals · {meta.sourceFiles.proposals}</li>
+          <li>Contacts · {meta.sourceFiles.contacts}</li>
+        </ul>
+      </details>
+
+      <details className="data-import-details">
+        <summary>Join coverage</summary>
+        <ul className="settings-list">
+          <li>Events with proposals: {j.eventsWithProposals} / {r.eventsNormalized}</li>
+          <li>Events with contacts: {j.eventsWithContacts} / {r.eventsNormalized}</li>
+          <li>Contacts with accounts: {j.contactsWithAccounts} / {r.contactsNormalized}</li>
+          <li>Orphaned proposal lines: {j.orphanedProposals}</li>
+          {j.paymentsWithEvents != null ? (
+            <li>
+              Payments matched to events: {j.paymentsWithEvents} / {r.paymentsRaw ?? 0}
+            </li>
+          ) : null}
+          {j.orphanedPayments != null ? <li>Orphaned payments: {j.orphanedPayments}</li> : null}
+        </ul>
+      </details>
+
+      <details className="data-import-details">
+        <summary>Quality signals</summary>
+        <ul className="settings-list">
+          <li>Missing event dates: {q.missingEventDates}</li>
+          <li>Missing contacts on events: {q.missingContacts}</li>
+          <li>Missing/zero totals: {q.missingTotals}</li>
+          <li>Duplicate contact emails: {q.duplicateContactEmails}</li>
+          <li>Zero-dollar events (&lt; $75): {q.zeroDollarEvents ?? canon.zeroDollar}</li>
+          {'lostArchived' in q ? <li>Lost / archived: {q.lostArchived as number}</li> : null}
+          {'completed' in q ? <li>Completed: {q.completed as number}</li> : null}
+          {'activePipeline' in q ? <li>Active pipeline: {q.activePipeline as number}</li> : null}
+          {'confirmedFuture' in q ? <li>Confirmed future: {q.confirmedFuture as number}</li> : null}
+          <li>Excluded from pressure scoring: {canon.excludedFromPressure}</li>
+          <li>Pressure-eligible signals: {canon.pressureEligible}</li>
+        </ul>
+        <p className="settings-muted">
+          Excluded rows are preserved for history but not used for active pressure scoring.
+        </p>
+      </details>
+
+      {meta.warnings.length > 0 ? (
+        <details className="data-import-details data-import-details--warn" open>
+          <summary>Warnings ({meta.warnings.length})</summary>
           <ul className="settings-list settings-list--warn">
             {meta.warnings.map((w, i) => (
               <li key={i}>{w}</li>
             ))}
           </ul>
-        </>
-      )}
+        </details>
+      ) : null}
 
-      {cleanup.length > 0 && (
-        <>
-          <h4 style={{ marginTop: 24 }}>Recommended cleanup</h4>
+      {cleanup.length > 0 ? (
+        <section className="data-import-cleanup">
+          <h4>Recommended cleanup</h4>
           <ul className="settings-list">
             {cleanup.map((c, i) => (
               <li key={i}>{c}</li>
             ))}
           </ul>
-        </>
-      )}
+        </section>
+      ) : null}
 
-      <p className="settings-muted" style={{ marginTop: 20 }}>
-        Re-import: <code>npm run import:perfect-venue</code>
-        {!isDeployedAlpha() && (
-          <>
-            {' '}· Debug JSON: <code>data/perfect-venue-processed/</code>
-          </>
-        )}
-      </p>
+      <details className="data-import-details">
+        <summary>Re-import instructions</summary>
+        <p className="settings-muted">
+          Re-import: <code>npm run import:perfect-venue</code>
+          {!isDeployedAlpha() ? (
+            <>
+              {' '}· Debug JSON: <code>data/perfect-venue-processed/</code>
+            </>
+          ) : null}
+        </p>
+      </details>
     </div>
   );
 }

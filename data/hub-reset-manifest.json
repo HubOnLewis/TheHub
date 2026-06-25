@@ -1,0 +1,18 @@
+{
+  "resetAt": "2026-06-25T17:28:50.490Z",
+  "tenantIds": [
+    "hub-wichita"
+  ],
+  "message": "HuB tenant data reset — ready for fresh Perfect Venue import",
+  "expectedFiles": [
+    "data/perfect-venue-import/Event Data *.xlsx",
+    "data/perfect-venue-import/Proposal Data *.xlsx",
+    "data/perfect-venue-import/Contact Data *.xlsx",
+    "data/perfect-venue-import/Payment Data *.xlsx (optional)",
+    "data/perfect-venue-import/PFevents.txt (optional text snapshot)"
+  ],
+  "importCommands": [
+    "npm run import:perfect-venue",
+    "npm run import:pfevents -- --apply"
+  ]
+}

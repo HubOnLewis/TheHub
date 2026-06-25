@@ -61,6 +61,8 @@ import MonthlyScorecardPage from './pages/MonthlyScorecardPage.js';
 import AnalyticsRouteTracker from './components/AnalyticsRouteTracker.js';
 import LegalFooterLinks from './components/LegalFooterLinks.js';
 import ClientReviewBanner from './components/ClientReviewBanner.js';
+import HubAdminShell from './components/layout/HubAdminShell.js';
+import { usesHubAdminShell } from './config/hubAdminPaths.js';
 
 type NavItem = { to: string; label: string; icon: ReactNode; aliasPrefixes?: string[]; matchPrefix?: string };
 
@@ -133,6 +135,7 @@ function Shell() {
   const [moreOpen, setMoreOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const isDashboard = pathname === ROUTES.dashboard || pathname === `${ROUTES.dashboard}/`;
+  const hubShell = usesHubAdminShell(pathname);
 
   useLayoutEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -158,9 +161,9 @@ function Shell() {
 
   return (
     <div
-      className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}${mobileNavOpen ? ' mobile-nav-open' : ''}${isDashboard ? ' app-shell--dashboard' : ''}`}
+      className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}${mobileNavOpen ? ' mobile-nav-open' : ''}${isDashboard ? ' app-shell--dashboard' : ''}${hubShell ? ' app-shell--hub-admin app-shell--crm-topnav' : ''}`}
     >
-      {mobileNavOpen ? (
+      {!hubShell && mobileNavOpen ? (
         <button
           type="button"
           className="sidebar-backdrop"
@@ -168,6 +171,7 @@ function Shell() {
           onClick={() => setMobileNavOpen(false)}
         />
       ) : null}
+      {!hubShell ? (
       <nav className="sidebar sidebar--premium" aria-label="Main navigation">
         <div className="sidebar-logo">
           <div className="sidebar-brand-block">
@@ -256,6 +260,51 @@ function Shell() {
           </button>
         </div>
       </nav>
+      ) : null}
+      {hubShell ? (
+        <HubAdminShell
+          mobileNavOpen={mobileNavOpen}
+          setMobileNavOpen={setMobileNavOpen}
+          onLogout={logout}
+        >
+          {!isDeployedAlpha() && <DemoOpsInit />}
+          {!isDeployedAlpha() && <DemoToastStack />}
+          <Routes>
+            <Route path={ROUTES.dashboard} element={<Dashboard />} />
+            <Route path={ROUTES.today} element={<ProductionModuleGate moduleLabel="Today"><TodayOperations /></ProductionModuleGate>} />
+            <Route path={ROUTES.ownerBriefing} element={<ProductionModuleGate moduleLabel="Owner briefing"><OwnerBriefing /></ProductionModuleGate>} />
+            <Route path={ROUTES.revenueLeaks} element={<ProductionModuleGate moduleLabel="Revenue leaks"><RevenueLeaks /></ProductionModuleGate>} />
+            <Route path={ROUTES.automationImpact} element={<ProductionModuleGate moduleLabel="Automation impact"><AutomationImpact /></ProductionModuleGate>} />
+            <Route path={ROUTES.autopilot} element={<ProductionModuleGate moduleLabel="Autopilot"><AutopilotPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.inbox} element={<ProductionModuleGate moduleLabel="Inbox"><InboxPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.calendar} element={<ProductionModuleGate moduleLabel="Calendar"><CalendarOccupancy /></ProductionModuleGate>} />
+            <Route path={ROUTES.tasks} element={<ProductionModuleGate moduleLabel="Tasks"><TasksCenter /></ProductionModuleGate>} />
+            <Route path={ROUTES.settings} element={<SettingsLayout />}>
+              <Route index element={<SettingsIndexRedirect />} />
+              <Route path=":moduleId" element={<SettingsModulePage />} />
+            </Route>
+            <Route path={ROUTES.leads} element={<Leads />} />
+            <Route path={`${ROUTES.opportunities}/:dealId`} element={<DealDetail />} />
+            <Route path={`${ROUTES.dealsAlias}/:dealId`} element={<DealDetail />} />
+            <Route path={ROUTES.dealsAlias} element={<Deals />} />
+            <Route path={ROUTES.opportunities} element={<Deals />} />
+            <Route path={ROUTES.userManagement} element={<UserManagement />} />
+            <Route path={ROUTES.audit} element={<ProductionModuleGate moduleLabel="Audit trail"><AuditTrail /></ProductionModuleGate>} />
+            <Route path={ROUTES.admin} element={<Admin />} />
+            <Route path={ROUTES.accounts} element={<ProductionModuleGate moduleLabel={HUB_LABELS.accounts}><Companies /></ProductionModuleGate>} />
+            <Route path={ROUTES.companiesAlias} element={<ProductionModuleGate moduleLabel={HUB_LABELS.accounts}><Companies /></ProductionModuleGate>} />
+            <Route path={`${ROUTES.accounts}/:id`} element={<CompanyDetail />} />
+            <Route path={`${ROUTES.companiesAlias}/:id`} element={<CompanyDetail />} />
+            <Route path={ROUTES.myWork} element={<ProductionModuleGate moduleLabel="My work"><MyWork /></ProductionModuleGate>} />
+            <Route path={ROUTES.followUps} element={<ProductionModuleGate moduleLabel={HUB_LABELS.followUps}><FollowUps /></ProductionModuleGate>} />
+            <Route path={ROUTES.prospects} element={<ProspectsPage />} />
+            <Route path={ROUTES.marketing} element={<ProductionModuleGate moduleLabel="Marketing"><MarketingPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.referrals} element={<ProductionModuleGate moduleLabel="Referrals"><ReferralsPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.monthlyScorecard} element={<ProductionModuleGate moduleLabel="Monthly scorecard"><MonthlyScorecardPage /></ProductionModuleGate>} />
+            <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
+          </Routes>
+        </HubAdminShell>
+      ) : (
       <div className="main-area">
         <header className={`topbar${isDashboard ? ' topbar--slim' : ''}`}>
           <button
@@ -329,6 +378,7 @@ function Shell() {
           </Routes>
         </main>
       </div>
+      )}
     </div>
   );
 }

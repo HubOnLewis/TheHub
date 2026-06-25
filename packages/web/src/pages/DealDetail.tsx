@@ -96,7 +96,7 @@ export default function DealDetail() {
   const paidPct = model.revenue > 0 ? Math.round((model.collected / model.revenue) * 100) : 0;
 
   return (
-    <div className="deal-flagship-page command-page">
+    <div className="deal-flagship-page command-page hub-demo-deal-page">
       <div style={{ marginBottom: 16 }}>
         <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12 }}>
           ← Events

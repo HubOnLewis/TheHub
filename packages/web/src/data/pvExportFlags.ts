@@ -1,7 +1,7 @@
 /**
- * Lightweight export availability flag (no dataset import).
- * Import script keeps this in sync with perfectVenueFullExport.ts.
+ * CLEARED by scripts/reset-hub-tenant-data.mjs — ready for fresh Perfect Venue import.
+ * Re-run: npm run import:perfect-venue
  */
-export const PV_FULL_EXPORT_AVAILABLE = true;
+export const PV_FULL_EXPORT_AVAILABLE = false;
 
 export const isFullPvExportAvailable = PV_FULL_EXPORT_AVAILABLE;

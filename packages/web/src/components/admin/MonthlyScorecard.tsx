@@ -64,10 +64,7 @@ export default function MonthlyScorecard() {
   }, [stats, isError, isLoading]);
 
   return (
-    <section className="card monthly-scorecard" style={{ padding: 20 }}>
-      <p className="text-sm text-muted" style={{ marginBottom: 16 }}>
-        Metrics update from live CRM data when available.
-      </p>
+    <section className="card monthly-scorecard">
       <div className="monthly-scorecard__grid">
         {metrics.map(m => (
           <div key={m.label} className={`monthly-scorecard__cell${m.available ? '' : ' monthly-scorecard__cell--na'}`}>

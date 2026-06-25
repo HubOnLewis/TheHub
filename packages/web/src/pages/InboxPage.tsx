@@ -1,12 +1,7 @@
 import { useEffect, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { HUB_LABELS } from '@hub-crm/shared';
-import { ROUTES } from '../config/paths.js';
 import { DEMO_INBOX_MESSAGES } from '../data/demoVenue.js';
 import EmbeddedAgentPanel from '../components/agents/EmbeddedAgentPanel.js';
 import { INBOX_INSIGHTS } from '../data/embeddedAgentInsights.js';
-import DemoFlowNav from '../components/demo/DemoFlowNav.js';
-import ContextAgentDock from '../components/agents/ContextAgentDock.js';
 import { useDemoOpsStore } from '../state/demoOpsStore.js';
 
 const TEMPLATES = [
@@ -47,24 +42,19 @@ export default function InboxPage() {
   const queued = selected ? inbox.draftQueued[selected.id] : false;
 
   return (
-    <div className="command-page">
-      <DemoFlowNav />
-      <ContextAgentDock context="inbox" compact />
-      <EmbeddedAgentPanel title="Inbox agents" insights={INBOX_INSIGHTS} compact />
-      <div className="page-header command-page-header">
+    <div className="command-page hub-inbox-page">
+      <header className="hub-admin-page__header">
         <div>
-          <span className="ai-chip">Unified inbox</span>
-          <h1 className="page-title">Inbox</h1>
-          <div className="page-subtitle">
-            AI reply drafts queue for approval — {unread} threads need attention.
-          </div>
+          <h1 className="hub-admin-page__title">Inbox</h1>
+          <p className="hub-admin-page__subtitle">
+            Client conversations and follow-ups — {unread} thread{unread === 1 ? '' : 's'} awaiting a reply.
+          </p>
         </div>
         <div className="inbox-toolbar">
           <span className="inbox-stat-pill">{DEMO_INBOX_MESSAGES.length} threads</span>
           <span className="inbox-stat-pill inbox-stat-pill--accent">{unread} need reply</span>
         </div>
-      </div>
-
+      </header>
 
       <div className="inbox-command-layout">
         <div className="inbox-command-list card">
@@ -115,10 +105,16 @@ export default function InboxPage() {
             </div>
             <div className="inbox-detail__thread">
               <p>{selected.preview}</p>
-              <p className="inbox-detail__note">Sanitized summary — full thread not shown in demo.</p>
+              <p className="inbox-detail__note">Message preview — full thread available when email is connected.</p>
             </div>
+
+            <EmbeddedAgentPanel title="Assistant insights" insights={INBOX_INSIGHTS} compact />
+
             <div className="inbox-detail__compose">
-              <h3>Generate AI reply</h3>
+              <h3>Draft response</h3>
+              <p className="inbox-detail__hint" style={{ marginTop: 0 }}>
+                Suggested next action — choose a template to generate a draft. Approval required before sending.
+              </p>
               <div className="inbox-template-row">
                 {TEMPLATES.map(t => (
                   <button
@@ -134,7 +130,7 @@ export default function InboxPage() {
               {draft ? (
                 <textarea className="form-textarea inbox-draft-area" rows={6} readOnly value={draft} />
               ) : (
-                <p className="inbox-detail__hint">Choose a template to generate a draft.</p>
+                <p className="inbox-detail__hint">Select a template above to generate a draft response.</p>
               )}
               <div className="inbox-detail__compose-actions">
                 <button
@@ -160,11 +156,6 @@ export default function InboxPage() {
           </aside>
         ) : null}
       </div>
-
-      <p style={{ marginTop: 16, fontSize: 12, color: 'var(--text-light)' }}>
-        Prefer CRM-native work? Jump to <Link to={ROUTES.myWork}>{HUB_LABELS.myWork}</Link> or{' '}
-        <Link to={ROUTES.followUps}>{HUB_LABELS.followUps}</Link>.
-      </p>
     </div>
   );
 }

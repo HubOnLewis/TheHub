@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { useDemoOpsStore } from '../../state/demoOpsStore.js';
 import { useAuditStore } from '../../audit/auditStore.js';
-import { DEMO_OPS_STORAGE_KEY } from '../../state/demoOpsStore.js';
-import { AUDIT_STORAGE_KEY } from '../../audit/auditStore.js';
-
-const REVIEW_NOTES_KEY = 'hub-crm-review-notes';
+import { resetHubLocalDemoCache } from '../../lib/hubLocalCacheCleanup.js';
 
 function confirmAction(message: string): boolean {
   return window.confirm(message);
@@ -22,7 +19,7 @@ export default function DemoControlsPanel() {
 
   const resetReviewNotes = () => {
     if (!confirmAction('Reset all review notes to seed defaults?')) return;
-    localStorage.removeItem(REVIEW_NOTES_KEY);
+    localStorage.removeItem('hub-crm-review-notes');
     notify('Review notes reset — reload Review notes page to see seed data.');
   };
 
@@ -45,12 +42,26 @@ export default function DemoControlsPanel() {
       )
     )
       return;
-    localStorage.removeItem(DEMO_OPS_STORAGE_KEY);
-    localStorage.removeItem(REVIEW_NOTES_KEY);
-    localStorage.removeItem(AUDIT_STORAGE_KEY);
+    localStorage.removeItem('hub-crm-demo-ops');
+    localStorage.removeItem('hub-crm-review-notes');
+    localStorage.removeItem('hub-crm-audit-trail');
     resetDemoOps();
     resetAuditTrail();
     notify('All demo state cleared. Reloading…');
+    window.setTimeout(() => window.location.reload(), 600);
+  };
+
+  const resetLocalCache = () => {
+    if (
+      !confirmAction(
+        'Reset local demo and cache data in this browser? Auth/session will be kept. The page will reload.',
+      )
+    )
+      return;
+    resetHubLocalDemoCache();
+    resetDemoOps();
+    resetAuditTrail();
+    notify('Local demo/cache cleared. Reloading…');
     window.setTimeout(() => window.location.reload(), 600);
   };
 
@@ -90,6 +101,16 @@ export default function DemoControlsPanel() {
           </button>
         </section>
 
+        <section className="card demo-controls__card">
+          <h4>Reset local demo/cache data</h4>
+          <p className="settings-muted">
+            Clears browser demo ops, audit trail, review notes, and stale imported cache. Keeps your login session.
+          </p>
+          <button type="button" className="btn btn-secondary" onClick={resetLocalCache}>
+            Reset local demo/cache data
+          </button>
+        </section>
+
         <section className="card demo-controls__card demo-controls__card--warn">
           <h4>Reset everything</h4>
           <p className="settings-muted">Clears all three local stores and reloads the app.</p>
@@ -101,7 +122,9 @@ export default function DemoControlsPanel() {
 
       <section className="demo-controls__console card">
         <h4>Console fallback</h4>
-        <pre className="demo-controls__pre">{`localStorage.removeItem('hub-crm-demo-ops');
+        <pre className="demo-controls__pre">{`hubDemoCacheReset()
+// or manually:
+localStorage.removeItem('hub-crm-demo-ops');
 localStorage.removeItem('hub-crm-review-notes');
 localStorage.removeItem('hub-crm-audit-trail');
 location.reload();`}</pre>

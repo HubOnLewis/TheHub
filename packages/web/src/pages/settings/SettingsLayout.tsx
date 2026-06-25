@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { NavLink, Outlet, Navigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../store/index.js';
 import PageIntro from '../../components/layout/PageIntro.js';
+import { usesHubAdminShell } from '../../config/hubAdminPaths.js';
 import { isDeployedAlpha } from '../../config/alphaPresentation.js';
 
 type SettingsGroup = {
@@ -58,6 +59,7 @@ export default function SettingsLayout() {
   const role = useAppStore(s => s.user?.role);
   const isAdmin = role === 'admin' || role === 'super_admin';
   const moduleId = activeModuleId(pathname);
+  const crmNav = usesHubAdminShell(pathname);
   const [systemOpen, setSystemOpen] = useState(() => SYSTEM_MODULE_IDS.has(moduleId));
   const visibleGroups = useMemo(
     () =>
@@ -73,11 +75,20 @@ export default function SettingsLayout() {
   );
 
   return (
-    <div className="page-simple">
-      <PageIntro
-        title="Settings"
-        subtitle="Team, integrations, and venue configuration."
-      />
+    <div className={`page-simple${crmNav ? ' hub-admin-settings' : ''}`}>
+      {!crmNav ? (
+        <PageIntro
+          title="Settings"
+          subtitle="Team, integrations, and venue configuration."
+        />
+      ) : (
+        <header className="hub-admin-page__header" style={{ padding: '0 24px', marginBottom: 0 }}>
+          <div>
+            <h1 className="hub-admin-page__title">Settings</h1>
+            <p className="hub-admin-page__subtitle">Team, integrations, and venue configuration.</p>
+          </div>
+        </header>
+      )}
       <div className="settings-shell">
         <nav className="settings-nav settings-nav--grouped" aria-label="Settings sections">
           {visibleGroups.filter(g => !g.adminOnly || isAdmin).map(group => {

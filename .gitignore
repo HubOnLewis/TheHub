@@ -21,6 +21,9 @@ data/perfect-venue-export/*
 data/perfect-venue-import/
 data/perfect-venue-processed/
 import/*.xlsx
+import/**/*.xlsx
+import/**/*.pdf
+packages/web/src/data/hubRefreshEvents.local.ts
 
 # Build artifacts and temp output
 mnt/

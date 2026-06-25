@@ -16,6 +16,18 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "extract:perfect-venue": "node scripts/extract-perfect-venue.mjs",
     "import:perfect-venue": "node scripts/import-perfect-venue-export.mjs",
+    "import:pfevents": "node scripts/import-pfevents-txt.mjs",
+    "import:pfevents:apply": "node scripts/import-pfevents-txt.mjs --apply",
+    "validate:crm-events": "node scripts/validate-crm-event-source.mjs",
+    "audit:hub-contamination": "node scripts/hub-contamination.mjs",
+    "cleanup:hub-contamination": "node scripts/hub-contamination.mjs --apply",
+    "reset:hub-data:audit": "node scripts/reset-hub-tenant-data.mjs --audit",
+    "reset:hub-data:dry-run": "node scripts/reset-hub-tenant-data.mjs --dry-run",
+    "reset:hub-data:apply": "node scripts/reset-hub-tenant-data.mjs --apply",
+    "import:hub-refresh:audit": "node scripts/import-hub-refresh.mjs --audit",
+    "import:hub-refresh:dry-run": "node scripts/import-hub-refresh.mjs --dry-run",
+    "import:hub-refresh:apply": "node scripts/import-hub-refresh.mjs --apply",
+    "validate:hub-refresh": "node scripts/validate-hub-refresh.mjs",
     "postinstall:playwright": "playwright install chromium"
   },
   "devDependencies": {

@@ -1,5 +1,6 @@
 import { getPvImportMeta } from '../data/perfectVenueSeed.js';
 import { PV_FULL_EXPORT_AVAILABLE } from '../data/pvExportFlags.js';
+import { HUB_REFRESH_AVAILABLE } from '../data/hubRefreshManifest.js';
 import { PV_VENUE_SUMMARY } from '../data/perfectVenueSeed.js';
 
 /** Neutral label for real client Perfect Venue export data — not live-synced. */
@@ -30,5 +31,9 @@ export function getOperationalSourceNote(): string {
 }
 
 export function hasImportedVenueRecords(): boolean {
-  return PV_FULL_EXPORT_AVAILABLE || Boolean(PV_VENUE_SUMMARY.lead || PV_VENUE_SUMMARY.proposalSent);
+  return (
+    HUB_REFRESH_AVAILABLE ||
+    PV_FULL_EXPORT_AVAILABLE ||
+    Boolean(PV_VENUE_SUMMARY.lead || PV_VENUE_SUMMARY.proposalSent)
+  );
 }

@@ -20,7 +20,7 @@ interface AppStore {
   user:           AppUser | null;
   token:          string | null;
   activeTenantId: string | null;
-  /** UI theme — default dark for operational demo; light optional. */
+  /** UI theme — default light for client demos; dark optional. */
   theme:          UiTheme;
   sidebarCollapsed: boolean;
 
@@ -37,7 +37,7 @@ export const useAppStore = create<AppStore>()(
       user:           null,
       token:          null,
       activeTenantId: null,
-      theme:          'dark',
+      theme:          'light',
       sidebarCollapsed: false,
 
       login: (user, token) => {
@@ -61,14 +61,8 @@ export const useAppStore = create<AppStore>()(
     }),
     {
       name: 'hub-crm-auth',
-      version: 1,
-      migrate: (persisted, version) => {
-        const state = persisted as { theme?: UiTheme } | undefined;
-        if (version === 0 && state) {
-          return { ...state, theme: 'dark' as UiTheme };
-        }
-        return persisted as typeof persisted;
-      },
+      version: 2,
+      migrate: (persisted) => persisted,
       partialize: (s) => ({
         user: s.user,
         token: s.token,

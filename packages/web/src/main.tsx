@@ -11,6 +11,7 @@ import RootErrorBoundary from './components/RootErrorBoundary.js';
 import BrandLoader from './components/BrandLoader.js';
 
 import './index.css';
+import { purgeHubContaminatedLocalCache, hubDemoCacheResetConsoleHelp } from './lib/hubLocalCacheCleanup.js';
 
 
 
@@ -18,32 +19,23 @@ const App = React.lazy(() => import('./App.js'));
 
 
 
-// Apply theme before first paint (default dark for operational demo)
+// Apply theme before first paint (default light for client demos)
 
 (() => {
-
   try {
-
+    purgeHubContaminatedLocalCache();
+    hubDemoCacheResetConsoleHelp();
     const raw = localStorage.getItem('hub-crm-auth');
-
-    let theme: 'light' | 'dark' = 'dark';
-
+    let theme: 'light' | 'dark' = 'light';
     if (raw) {
-
       const parsed = JSON.parse(raw) as { state?: { theme?: string } };
-
-      if (parsed?.state?.theme === 'light') theme = 'light';
-
+      if (parsed?.state?.theme === 'dark') theme = 'dark';
+      else if (parsed?.state?.theme === 'light') theme = 'light';
     }
-
     document.documentElement.setAttribute('data-theme', theme);
-
   } catch {
-
-    document.documentElement.setAttribute('data-theme', 'dark');
-
+    document.documentElement.setAttribute('data-theme', 'light');
   }
-
 })();
 
 

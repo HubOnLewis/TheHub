@@ -17,7 +17,7 @@ import { CloseoutChecklistRepository } from '../repositories/CloseoutChecklistRe
 import { identityIntegrityService } from './IdentityIntegrityService.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
 import type { CreateDealPayload, DealStatus, UnitStatus } from '@hub-crm/shared';
-import { buildTenantId } from '@hub-crm/shared';
+import { buildTenantId, filterHubVenueRecords, isHubContaminatedRecord, isHubVenueTenantId } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError, ValidationError, ConflictError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
@@ -242,8 +242,9 @@ export class DealService {
 
   async list(db: Db, ctx: TenantContext, filter: DealFilter, options: ListOptions) {
     const result = await DealRepository.listDeals(db, ctx, filter, options);
-    const dealIds = result.data.map(d => d._id);
-    const unitIds = result.data.flatMap(d => [d.unitId, ...(d.unitIds ?? [])].filter(Boolean) as string[]);
+    const visibleDeals = filterHubVenueRecords(ctx.tenantId, result.data);
+    const dealIds = visibleDeals.map(d => d._id);
+    const unitIds = visibleDeals.flatMap(d => [d.unitId, ...(d.unitIds ?? [])].filter(Boolean) as string[]);
     const linked = await InteractionRepository.listByRelatedDealIds(db, ctx, dealIds);
     const [dealBuilds, unitBuilds] = await Promise.all([
       BuildRepository.listByDealIds(db, ctx, dealIds),
@@ -272,7 +273,7 @@ export class DealService {
     const deliveryHandoffMaps = { packetByDeliveryId, followUpsByDeliveryId, closeoutByJobId };
     return {
       ...result,
-      data: result.data.map(d => this.enrichDeal(d, linked, builds, changeOrders as any, productionJobs as any, productionTasks as any, deliveryRecords as any, deliveryHandoffMaps)),
+      data: visibleDeals.map(d => this.enrichDeal(d, linked, builds, changeOrders as any, productionJobs as any, productionTasks as any, deliveryRecords as any, deliveryHandoffMaps)),
     };
   }
 
@@ -374,6 +375,7 @@ export class DealService {
   async getById(db: Db, ctx: TenantContext, id: string) {
     const deal = await DealRepository.findById(db, ctx, id);
     if (!deal) throw new NotFoundError('Deal');
+    if (isHubVenueTenantId(ctx.tenantId) && isHubContaminatedRecord(deal)) throw new NotFoundError('Deal');
     const linked = await InteractionRepository.listByRelatedDealIds(db, ctx, [id]);
     const [dealBuilds, unitBuilds] = await Promise.all([
       BuildRepository.listByDealIds(db, ctx, [id]),
