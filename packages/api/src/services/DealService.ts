@@ -16,7 +16,7 @@ import { PostDeliveryFollowUpRepository } from '../repositories/PostDeliveryFoll
 import { CloseoutChecklistRepository } from '../repositories/CloseoutChecklistRepository.js';
 import { identityIntegrityService } from './IdentityIntegrityService.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
-import type { CreateDealPayload, DealStatus, UnitStatus } from '@hub-crm/shared';
+import type { CreateDealPayload, PatchDealPayload, DealStatus, UnitStatus } from '@hub-crm/shared';
 import { buildTenantId, filterHubVenueRecords, isHubContaminatedRecord, isHubVenueTenantId } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError, ValidationError, ConflictError } from '../errors/index.js';
@@ -460,7 +460,7 @@ export class DealService {
     return deal;
   }
 
-  async update(db: Db, ctx: TenantContext, id: string, payload: Partial<CreateDealPayload>) {
+  async update(db: Db, ctx: TenantContext, id: string, payload: PatchDealPayload) {
     const before = await DealRepository.findById(db, ctx, id);
     if (!before) throw new NotFoundError('Deal');
 
@@ -530,8 +530,21 @@ export class DealService {
       }
     }
 
+    if (payload.importMeta && typeof payload.importMeta === 'object') {
+      const existing =
+        before.importMeta && typeof before.importMeta === 'object'
+          ? (before.importMeta as Record<string, unknown>)
+          : {};
+      payload.importMeta = { ...existing, ...payload.importMeta };
+      if (payload.amount === undefined && typeof payload.importMeta.grandTotal === 'number') {
+        payload.amount = payload.importMeta.grandTotal;
+      } else if (payload.amount !== undefined) {
+        payload.importMeta.grandTotal = payload.amount;
+      }
+    }
+
     // Set lastTouchedAt when any meaningful business field is being changed
-    const TOUCH_FIELDS = ['status', 'assignedTo', 'notes', 'amount', 'unitId', 'leadId'] as const;
+    const TOUCH_FIELDS = ['status', 'assignedTo', 'notes', 'amount', 'unitId', 'leadId', 'importMeta'] as const;
     const isTouched = TOUCH_FIELDS.some(f => f in payload);
     const stageChanged = payload.status !== undefined && payload.status !== before.status;
     const update = isTouched ? { ...payload, lastTouchedAt: new Date(), ...(stageChanged ? { lastStageChangeAt: new Date() } : {}) } : payload;

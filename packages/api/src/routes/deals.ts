@@ -9,7 +9,7 @@ import { buildService } from '../services/BuildService.js';
 import { unitService } from '../services/UnitService.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { getDB } from '../config/db.js';
-import { CreateBuildSchema, CreateDealSchema } from '@hub-crm/shared';
+import { CreateBuildSchema, CreateDealSchema, PatchDealSchema } from '@hub-crm/shared';
 
 const CreateDealBuildSchema = CreateBuildSchema.omit({ dealId: true, unitId: true }).extend({
   unitId: z.string().optional(),
@@ -143,7 +143,7 @@ router.post('/', validate(CreateDealSchema), async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', validate(PatchDealSchema), async (req, res, next) => {
   try {
     res.json(await dealService.update(getDB(), req.tenant, req.params['id']!, req.body));
   } catch (err) { next(err); }

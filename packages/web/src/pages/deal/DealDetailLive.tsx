@@ -1,145 +1,110 @@
+import { useMemo, useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { formatCurrency, dealStatusForDisplay, HUB_LABELS } from '@hub-crm/shared';
-import { pvStatusDisplay, type PvEventStatus } from '../../data/perfectVenueSeed.js';
+import { useQueryClient } from '@tanstack/react-query';
+import client from '../../api/client.js';
 import { ROUTES } from '../../config/paths.js';
 import { Spinner } from '../../components/ui/index.js';
 import LiveEmptyState from '../../components/live/LiveEmptyState.js';
 import { isHubContaminatedRecord } from '@hub-crm/shared';
-import { formatRelativeDate } from '../../config/productionData.js';
+import type { PatchDealPayload } from '@hub-crm/shared';
+import { getHubRefreshEventById } from '../../data/hubRefreshDataLayer.js';
 import { getFullPvEventById } from '../../data/pvDataLayer.js';
+import { useDeal } from '../../hooks/useDeal.js';
+import { useDealInteractions, useDealMutations } from '../../hooks/useDeals.js';
+import type { InteractionRow } from '../../hooks/useInteractions.js';
+import { mapDealToEventDetailViewModel } from '../../lib/eventDetail.js';
+import EventDetailCommandCenter from '../../components/deals/EventDetailCommandCenter.js';
 import DealDetailImported from './DealDetailImported.js';
 
-type Props = {
-  deal: Record<string, unknown>;
-};
+function parseApiError(err: unknown): string {
+  const ax = err as { response?: { data?: { error?: string } }; message?: string };
+  return ax.response?.data?.error ?? ax.message ?? 'Request failed';
+}
 
-export default function DealDetailLive({ deal }: Props) {
-  const id = String(deal._id ?? '');
-  const title = String(deal.title ?? 'Event');
-  const company = String(deal.company ?? '');
-  const contact = String(deal.contact ?? '');
-  const importMeta =
-    deal.importMeta && typeof deal.importMeta === 'object'
-      ? (deal.importMeta as Record<string, unknown>)
-      : null;
-  const grandTotal =
-    typeof importMeta?.grandTotal === 'number'
-      ? importMeta.grandTotal
-      : typeof deal.amount === 'number'
-        ? deal.amount
-        : 0;
-  const amountPaid = typeof importMeta?.amountPaid === 'number' ? importMeta.amountPaid : null;
-  const balanceDue = typeof importMeta?.balanceDue === 'number' ? importMeta.balanceDue : null;
-  const pvStatus = importMeta?.pvStatus ? String(importMeta.pvStatus) : null;
-  const status = String(deal.status ?? 'Draft');
-  const statusLabel = pvStatus
-    ? pvStatusDisplay(pvStatus as PvEventStatus)
-    : dealStatusForDisplay(status);
-  const assignedTo = String(deal.assignedTo ?? 'Unassigned');
-  const notes = typeof deal.notes === 'string' ? deal.notes : '';
-  const documents = importMeta?.documents as Record<string, boolean> | undefined;
-  const payments = Array.isArray(importMeta?.payments) ? importMeta.payments : [];
+function EventDetailLivePage({ dealId }: { dealId: string }) {
+  const qc = useQueryClient();
+  const { data: deal, isLoading, isError, refetch } = useDeal(dealId);
+  const { data: interactions = [], isLoading: ixLoading } = useDealInteractions(dealId);
+  const { update } = useDealMutations();
 
-  return (
-    <div className="deal-flagship-page command-page hub-demo-deal-page">
-      <div style={{ marginBottom: 16 }}>
-        <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12 }}>
+  const hubRefresh = useMemo(() => getHubRefreshEventById(dealId), [dealId]);
+
+  const model = useMemo(() => {
+    if (!deal) return null;
+    return mapDealToEventDetailViewModel(
+      deal,
+      hubRefresh,
+      interactions as InteractionRow[],
+    );
+  }, [deal, hubRefresh, interactions]);
+
+  const onPatch = useCallback(
+    async (data: PatchDealPayload) => {
+      try {
+        await update.mutateAsync({ id: dealId, data });
+        await refetch();
+      } catch (err) {
+        throw new Error(parseApiError(err));
+      }
+    },
+    [dealId, update, refetch],
+  );
+
+  const onAddNote = useCallback(
+    async (summary: string, body: string) => {
+      const companyId = model?.companyId;
+      if (!companyId) {
+        throw new Error('This event is not linked to an account yet, so notes cannot be saved.');
+      }
+      try {
+        await client.post('/interactions', {
+          companyId,
+          relatedDealId: dealId,
+          type: 'note',
+          direction: 'outbound',
+          summary,
+          body,
+          outcome: 'other',
+          status: 'completed',
+        });
+        await qc.invalidateQueries({ queryKey: ['deals', dealId, 'interactions'] });
+        await refetch();
+      } catch (err) {
+        throw new Error(parseApiError(err));
+      }
+    },
+    [model?.companyId, dealId, qc, refetch],
+  );
+
+  if (isLoading || ixLoading) {
+    return (
+      <div style={{ padding: 60, display: 'flex', justifyContent: 'center' }}>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (!model) {
+    return (
+      <div className="page-simple">
+        <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12, marginBottom: 16 }}>
           ← Events
         </Link>
+        <div className="card page-section">
+          <LiveEmptyState hint={isError ? 'This event was not found in CRM.' : undefined} />
+        </div>
       </div>
+    );
+  }
 
-      <header className="flagship-hero flagship-hero--cinematic hub-demo-deal-hero">
-        <div>
-          <span className="ai-chip">Event</span>
-          <h1>{title}</h1>
-          <div style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-            {HUB_LABELS.client}: <strong style={{ color: 'var(--text-primary)' }}>{company}</strong>
-            {contact ? ` · ${contact}` : ''}
-          </div>
-        </div>
-
-        <div className="flagship-grid" style={{ marginTop: 22 }}>
-          <div className="flagship-stat">
-            <div className="flagship-stat__label">Status</div>
-            <div className="flagship-stat__value" style={{ fontSize: 15 }}>
-              {statusLabel}
-            </div>
-          </div>
-          <div className="flagship-stat">
-            <div className="flagship-stat__label">Grand Total</div>
-            <div className="flagship-stat__value">{formatCurrency(grandTotal)}</div>
-          </div>
-          {amountPaid != null ? (
-            <div className="flagship-stat">
-              <div className="flagship-stat__label">Amount Paid</div>
-              <div className="flagship-stat__value">{formatCurrency(amountPaid)}</div>
-            </div>
-          ) : null}
-          {balanceDue != null ? (
-            <div className="flagship-stat">
-              <div className="flagship-stat__label">Balance Due</div>
-              <div className="flagship-stat__value">{formatCurrency(balanceDue)}</div>
-            </div>
-          ) : null}
-          <div className="flagship-stat">
-            <div className="flagship-stat__label">Owner</div>
-            <div className="flagship-stat__value" style={{ fontSize: 15 }}>
-              {assignedTo}
-            </div>
-          </div>
-          <div className="flagship-stat">
-            <div className="flagship-stat__label">Last updated</div>
-            <div className="flagship-stat__value" style={{ fontSize: 15 }}>
-              {formatRelativeDate(deal.updatedAt as string)}
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {documents ? (
-        <section className="card deal-panel" style={{ marginTop: 16 }}>
-          <div className="deal-panel__title">Documents</div>
-          <ul className="settings-list">
-            {documents.eventSummary ? <li>Event summary on file</li> : null}
-            {documents.beo ? <li>BEO on file</li> : null}
-            {documents.staffBeo ? <li>Staff BEO on file</li> : null}
-            {documents.invoice ? <li>Invoice on file</li> : null}
-            {documents.agreement ? <li>Agreement on file</li> : null}
-            {documents.menu ? <li>Menu on file</li> : null}
-            {!Object.values(documents).some(Boolean) ? (
-              <li className="settings-muted">No linked documents in refresh import</li>
-            ) : null}
-          </ul>
-        </section>
-      ) : null}
-
-      {payments.length > 0 ? (
-        <section className="card deal-panel" style={{ marginTop: 16 }}>
-          <div className="deal-panel__title">Payment history</div>
-          <ul className="settings-list">
-            {(payments as Array<Record<string, unknown>>).map((p, i) => (
-              <li key={i}>
-                {formatCurrency(typeof p.amount === 'number' ? p.amount : 0)}
-                {p.paymentDate ? ` · ${String(p.paymentDate).slice(0, 10)}` : ''}
-                {p.method ? ` · ${String(p.method)}` : ''}
-                {p.paymentType ? ` · ${String(p.paymentType)}` : ''}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {notes ? (
-        <section className="card deal-panel" style={{ marginTop: 16 }}>
-          <div className="deal-panel__title">Notes</div>
-          <p className="text-sm">{notes}</p>
-        </section>
-      ) : null}
-
-      <p className="text-sm text-muted deal-tech-meta" style={{ marginTop: 16 }}>
-        Event ID: {id}
-      </p>
-    </div>
+  return (
+    <EventDetailCommandCenter
+      model={model}
+      onPatch={onPatch}
+      onAddNote={model.companyId ? onAddNote : undefined}
+      patchPending={update.isPending}
+      patchError={update.isError ? parseApiError(update.error) : null}
+    />
   );
 }
 
@@ -153,6 +118,14 @@ export function DealDetailLiveShell({
   deal: Record<string, unknown> | undefined;
 }) {
   const { dealId } = useParams<{ dealId: string }>();
+
+  if (!dealId) {
+    return (
+      <div className="page-simple">
+        <LiveEmptyState hint="No event selected." />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -173,7 +146,7 @@ export function DealDetailLiveShell({
         unitIds: Array.isArray(deal.unitIds) ? (deal.unitIds as string[]) : undefined,
       })
     ) {
-      if (dealId && getFullPvEventById(dealId)) {
+      if (getFullPvEventById(dealId)) {
         return <DealDetailImported dealId={dealId} />;
       }
       return (
@@ -187,10 +160,10 @@ export function DealDetailLiveShell({
         </div>
       );
     }
-    return <DealDetailLive deal={deal} />;
+    return <EventDetailLivePage dealId={dealId} />;
   }
 
-  if (dealId && getFullPvEventById(dealId)) {
+  if (getFullPvEventById(dealId)) {
     return <DealDetailImported dealId={dealId} />;
   }
 
@@ -204,4 +177,10 @@ export function DealDetailLiveShell({
       </div>
     </div>
   );
+}
+
+/** @deprecated Use DealDetailLiveShell — kept for import compatibility */
+export default function DealDetailLive({ deal }: { deal: Record<string, unknown> }) {
+  const id = String(deal._id ?? '');
+  return <EventDetailLivePage dealId={id} />;
 }

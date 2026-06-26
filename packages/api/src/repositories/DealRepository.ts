@@ -38,6 +38,7 @@ export interface DealDoc extends Document {
   createdAt:     Date;
   updatedAt:     Date;
   lastTouchedAt?: Date;
+  importMeta?: Record<string, unknown>;
 }
 
 export interface DealFilter {

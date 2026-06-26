@@ -61,6 +61,12 @@ export const CreateDealSchema = z.object({
 });
 export type CreateDealPayload = z.infer<typeof CreateDealSchema>;
 
+/** PATCH /deals/:id — partial deal update; importMeta merges event metadata on the server. */
+export const PatchDealSchema = CreateDealSchema.partial().extend({
+  importMeta: z.record(z.unknown()).optional(),
+});
+export type PatchDealPayload = z.infer<typeof PatchDealSchema>;
+
 // ── Unit ──────────────────────────────────────────────────────────
 export const CreateUnitSchema = z.object({
   companyId:   z.string().min(1, 'Account required'),

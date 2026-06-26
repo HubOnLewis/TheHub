@@ -1,7 +1,7 @@
 // packages/web/src/hooks/useDeals.ts
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import client from '../api/client.js';
-import type { CreateDealPayload } from '@hub-crm/shared';
+import type { CreateDealPayload, PatchDealPayload } from '@hub-crm/shared';
 
 interface DealsQuery {
   search?:     string;
@@ -82,9 +82,12 @@ export function useDealMutations() {
   });
 
   const update = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<CreateDealPayload> }) =>
+    mutationFn: ({ id, data }: { id: string; data: PatchDealPayload }) =>
       client.patch(`/deals/${id}`, data).then(r => r.data),
-    onSuccess:  invalidate,
+    onSuccess: (_data, variables) => {
+      invalidate();
+      void qc.invalidateQueries({ queryKey: ['deal', variables.id] });
+    },
   });
 
   const remove = useMutation({
