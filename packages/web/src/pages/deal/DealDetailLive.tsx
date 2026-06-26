@@ -1,18 +1,19 @@
 import { useMemo, useCallback } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import client from '../../api/client.js';
-import { ROUTES } from '../../config/paths.js';
+import { ROUTES, leadDetailPath } from '../../config/paths.js';
 import { Spinner } from '../../components/ui/index.js';
-import LiveEmptyState from '../../components/live/LiveEmptyState.js';
+import RecordRecoveryState from '../../components/live/RecordRecoveryState.js';
 import { isHubContaminatedRecord } from '@hub-crm/shared';
 import type { PatchDealPayload } from '@hub-crm/shared';
 import { getHubRefreshEventById } from '../../data/hubRefreshDataLayer.js';
 import { getFullPvEventById } from '../../data/pvDataLayer.js';
 import { useDeal } from '../../hooks/useDeal.js';
+import { useLead } from '../../hooks/useLeads.js';
 import { useDealInteractions, useDealMutations } from '../../hooks/useDeals.js';
 import type { InteractionRow } from '../../hooks/useInteractions.js';
-import { mapDealToEventDetailViewModel } from '../../lib/eventDetail.js';
+import { mapDealToEventDetailViewModel, mapReferenceEventToEventDetailViewModel } from '../../lib/eventDetail.js';
 import EventDetailCommandCenter from '../../components/deals/EventDetailCommandCenter.js';
 import DealDetailImported from './DealDetailImported.js';
 
@@ -21,7 +22,7 @@ function parseApiError(err: unknown): string {
   return ax.response?.data?.error ?? ax.message ?? 'Request failed';
 }
 
-function EventDetailLivePage({ dealId }: { dealId: string }) {
+export function EventDetailLivePage({ dealId }: { dealId: string }) {
   const qc = useQueryClient();
   const { data: deal, isLoading, isError, refetch } = useDeal(dealId);
   const { data: interactions = [], isLoading: ixLoading } = useDealInteractions(dealId);
@@ -87,12 +88,13 @@ function EventDetailLivePage({ dealId }: { dealId: string }) {
   if (!model) {
     return (
       <div className="page-simple">
-        <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12, marginBottom: 16 }}>
-          ← Events
+        <Link to={ROUTES.opportunities} className="btn btn-ghost btn-sm" style={{ marginBottom: 16 }}>
+          ← Back to Events
         </Link>
-        <div className="card page-section">
-          <LiveEmptyState hint={isError ? 'This event was not found in CRM.' : undefined} />
-        </div>
+        <RecordRecoveryState
+          title="Event record unavailable"
+          explanation="This record is not currently linked to a live CRM item."
+        />
       </div>
     );
   }
@@ -108,9 +110,41 @@ function EventDetailLivePage({ dealId }: { dealId: string }) {
   );
 }
 
+function DealDetailRecordFallback({ dealId }: { dealId: string }) {
+  const { data: lead, isLoading: leadLoading } = useLead(dealId);
+
+  if (leadLoading) {
+    return (
+      <div style={{ padding: 60, display: 'flex', justifyContent: 'center' }}>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (lead) {
+    return <Navigate to={leadDetailPath(dealId)} replace />;
+  }
+
+  if (mapReferenceEventToEventDetailViewModel(dealId)) {
+    return <DealDetailImported dealId={dealId} />;
+  }
+
+  return (
+    <div className="page-simple">
+      <Link to={ROUTES.opportunities} className="btn btn-ghost btn-sm" style={{ marginBottom: 16 }}>
+        ← Back to Events
+      </Link>
+      <RecordRecoveryState
+        title="Event record unavailable"
+        explanation="This record is not currently linked to a live CRM item."
+      />
+    </div>
+  );
+}
+
 export function DealDetailLiveShell({
   isLoading,
-  isError,
+  isError: _isError,
   deal,
 }: {
   isLoading: boolean;
@@ -122,7 +156,10 @@ export function DealDetailLiveShell({
   if (!dealId) {
     return (
       <div className="page-simple">
-        <LiveEmptyState hint="No event selected." />
+        <RecordRecoveryState
+          title="Event record unavailable"
+          explanation="This record is not currently linked to a live CRM item."
+        />
       </div>
     );
   }
@@ -146,37 +183,29 @@ export function DealDetailLiveShell({
         unitIds: Array.isArray(deal.unitIds) ? (deal.unitIds as string[]) : undefined,
       })
     ) {
-      if (getFullPvEventById(dealId)) {
+      if (getFullPvEventById(dealId) || mapReferenceEventToEventDetailViewModel(dealId)) {
         return <DealDetailImported dealId={dealId} />;
       }
       return (
         <div className="page-simple hub-demo-deal-page">
-          <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12, marginBottom: 16 }}>
+          <Link to={ROUTES.opportunities} className="btn btn-ghost btn-sm" style={{ marginBottom: 16 }}>
             ← Events
           </Link>
-          <div className="card page-section">
-            <LiveEmptyState hint="This record is not part of the venue event CRM." />
-          </div>
+          <RecordRecoveryState
+            title="Event record unavailable"
+            explanation="This record is not currently linked to a live CRM item."
+          />
         </div>
       );
     }
     return <EventDetailLivePage dealId={dealId} />;
   }
 
-  if (getFullPvEventById(dealId)) {
+  if (mapReferenceEventToEventDetailViewModel(dealId)) {
     return <DealDetailImported dealId={dealId} />;
   }
 
-  return (
-    <div className="page-simple">
-      <Link to={ROUTES.opportunities} className="btn btn-ghost" style={{ fontSize: 12, marginBottom: 16 }}>
-        ← Events
-      </Link>
-      <div className="card page-section">
-        <LiveEmptyState hint={isError ? 'This event was not found in CRM.' : undefined} />
-      </div>
-    </div>
-  );
+  return <DealDetailRecordFallback dealId={dealId} />;
 }
 
 /** @deprecated Use DealDetailLiveShell — kept for import compatibility */

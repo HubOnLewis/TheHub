@@ -93,3 +93,7 @@ export function accountDetailPath(id: string): string {
 export function opportunityDetailPath(id: string): string {
   return `${ROUTES.opportunities}/${id}`;
 }
+
+export function leadDetailPath(id: string): string {
+  return `${ROUTES.leads}/${id}`;
+}

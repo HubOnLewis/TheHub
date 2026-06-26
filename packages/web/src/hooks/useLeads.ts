@@ -23,6 +23,15 @@ export function useLeads(params: LeadsQuery = {}) {
   });
 }
 
+export function useLead(id: string | undefined, options?: { enabled?: boolean }) {
+  return useQuery({
+    queryKey: ['lead', id],
+    queryFn: () => client.get<Record<string, unknown>>(`/leads/${id}`).then(r => r.data),
+    enabled: (options?.enabled ?? true) && !!id,
+    retry: false,
+  });
+}
+
 export function useLeadMutations() {
   const qc = useQueryClient();
   const invalidate = () => qc.invalidateQueries({ queryKey: ['leads'] });

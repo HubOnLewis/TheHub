@@ -1,5 +1,5 @@
 import { formatCurrency } from '@hub-crm/shared';
-import { ROUTES, opportunityDetailPath } from '../config/paths.js';
+import { ROUTES, opportunityDetailPath, leadDetailPath } from '../config/paths.js';
 import type { OperationalRow } from '../components/operations/intel/OperationalRowList.js';
 import type { DashboardStats } from '../hooks/useDashboard.js';
 import { daysSince, formatRelativeDate } from '../config/productionData.js';
@@ -121,6 +121,7 @@ export function mapLeadToOperationalRow(lead: Record<string, unknown>): Operatio
 
   return {
     id,
+    href: leadDetailPath(id),
     stage: status,
     stageTone: urgency === 'high' ? 'rose' : status === 'Quoted' ? 'violet' : 'amber',
     title: String(lead.contact ?? 'Contact'),

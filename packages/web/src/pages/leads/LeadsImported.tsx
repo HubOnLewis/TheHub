@@ -7,7 +7,7 @@ import OpsIntelShell from '../../components/operations/intel/OpsIntelShell.js';
 import OperationalRowList, { type OperationalRow } from '../../components/operations/intel/OperationalRowList.js';
 import ImportedSourceNote from '../../components/live/ImportedSourceNote.js';
 import { getLeadIntelligence, PV_VENUE_SUMMARY } from '../../data/operationalIntelligence.js';
-import { opportunityDetailPath, ROUTES } from '../../config/paths.js';
+import { opportunityDetailPath, leadDetailPath, ROUTES } from '../../config/paths.js';
 
 export default function LeadsImported() {
   const [filter, setFilter] = useState('all');
@@ -22,7 +22,7 @@ export default function LeadsImported() {
 
   const rows: OperationalRow[] = filtered.map(l => ({
     id: l.id,
-    href: l.linkId ? opportunityDetailPath(l.linkId) : undefined,
+    href: l.linkId ? opportunityDetailPath(l.linkId) : leadDetailPath(l.id),
     stage: l.source,
     stageTone: l.urgency === 'high' ? 'rose' : 'amber',
     title: l.client,

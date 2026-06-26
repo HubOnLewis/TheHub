@@ -27,6 +27,7 @@ import Delivery from './pages/Delivery.js';
 import TasksCenter from './pages/TasksCenter.js';
 import CalendarOccupancy from './pages/CalendarOccupancy.js';
 import DealDetail from './pages/DealDetail.js';
+import LeadDetail from './pages/LeadDetail.js';
 import InboxPage from './pages/InboxPage.js';
 import SettingsLayout, { SettingsIndexRedirect } from './pages/settings/SettingsLayout.js';
 import SettingsModulePage from './pages/settings/SettingsModulePage.js';
@@ -285,6 +286,7 @@ function Shell() {
               <Route index element={<SettingsIndexRedirect />} />
               <Route path=":moduleId" element={<SettingsModulePage />} />
             </Route>
+            <Route path={`${ROUTES.leads}/:leadId`} element={<LeadDetail />} />
             <Route path={ROUTES.leads} element={resolveHubRouteElement(ROUTES.leads, <Leads />)} />
             <Route path={`${ROUTES.opportunities}/:dealId`} element={<DealDetail />} />
             <Route path={`${ROUTES.dealsAlias}/:dealId`} element={<DealDetail />} />
@@ -342,6 +344,7 @@ function Shell() {
               <Route index element={<SettingsIndexRedirect />} />
               <Route path=":moduleId" element={<SettingsModulePage />} />
             </Route>
+            <Route path={`${ROUTES.leads}/:leadId`} element={<LeadDetail />} />
             <Route path={ROUTES.leads} element={<Leads />} />
             <Route path={`${ROUTES.opportunities}/:dealId`} element={<DealDetail />} />
             <Route path={`${ROUTES.dealsAlias}/:dealId`} element={<DealDetail />} />
