@@ -3,20 +3,23 @@
  */
 
 .app-shell--hub-admin {
-  --hub-canvas: #f5f7fb;
+  --hub-canvas: #f3f1ec;
   --hub-card: #ffffff;
-  --hub-card-muted: #f8fafc;
+  --hub-card-muted: #f8f6f2;
   --hub-border: #d9e1ec;
-  --hub-border-soft: #e5e7eb;
+  --hub-border-soft: #e8e4dc;
   --hub-text: #172033;
   --hub-text-secondary: #526174;
   --hub-text-muted: #7b8794;
   --hub-accent: #7c3aed;
   --hub-accent-soft: rgba(124, 58, 237, 0.1);
   --hub-accent-border: rgba(124, 58, 237, 0.28);
-  --hub-radius: 10px;
+  --hub-gold: #c4a574;
+  --hub-gold-soft: rgba(196, 165, 116, 0.14);
+  --hub-radius: 12px;
   --hub-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
-  --hub-row-hover: rgba(124, 58, 237, 0.04);
+  --hub-shadow-md: 0 4px 16px rgba(15, 23, 42, 0.07);
+  --hub-row-hover: rgba(124, 58, 237, 0.05);
   --hub-font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   display: flex;
   flex-direction: column;
@@ -87,18 +90,18 @@
 /* ── Light top navigation ───────────────────────────── */
 
 .app-shell--hub-admin .crm-topnav--light {
-  background: var(--hub-card);
+  background: linear-gradient(180deg, #ffffff 0%, #faf8fc 100%);
   color: var(--hub-text);
   border-bottom: 1px solid var(--hub-border-soft);
-  box-shadow: var(--hub-shadow);
+  box-shadow: 0 2px 16px rgba(124, 58, 237, 0.06);
   position: sticky;
   top: 0;
   z-index: 30;
   width: 100%;
   max-width: none;
-  min-height: 52px;
-  padding: 0 16px;
-  gap: 10px;
+  min-height: 64px;
+  padding: 0 20px;
+  gap: 12px;
 }
 
 .app-shell--hub-admin .crm-topnav__menu-btn {
@@ -115,19 +118,48 @@
 .app-shell--hub-admin .crm-topnav__brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
+  padding-right: 16px;
+  margin-right: 4px;
+  border-right: 1px solid var(--hub-border-soft);
+}
+
+.app-shell--hub-admin .crm-topnav__logo {
+  max-height: 46px;
+  width: auto;
+  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.08));
+}
+
+.app-shell--hub-admin .crm-topnav__venue {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.2;
 }
 
 .app-shell--hub-admin .crm-topnav__venue-name {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--hub-text);
+  white-space: nowrap;
+}
+
+.app-shell--hub-admin .crm-topnav__venue-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--hub-text-muted);
   white-space: nowrap;
 }
 
 .app-shell--hub-admin .crm-topnav--light .crm-topnav__link {
   color: var(--hub-text-secondary);
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 8px 14px;
+  transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .app-shell--hub-admin .crm-topnav--light .crm-topnav__link:hover {
@@ -136,7 +168,7 @@
 }
 
 .app-shell--hub-admin .crm-topnav--light .crm-topnav__link--active {
-  background: var(--hub-accent-soft);
+  background: linear-gradient(135deg, var(--hub-accent-soft) 0%, var(--hub-gold-soft) 100%);
   color: var(--hub-accent);
   box-shadow: inset 0 0 0 1px var(--hub-accent-border);
 }
@@ -1831,5 +1863,399 @@
   .event-detail-pill-row {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+/* ── CRM landing / Active Events polish ───────────────── */
+
+.app-shell--hub-admin .crm-events-intro {
+  margin-bottom: 22px;
+  padding: 22px 24px;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    var(--hub-card) 0%,
+    rgba(124, 58, 237, 0.04) 42%,
+    var(--hub-gold-soft) 100%
+  );
+  border: 1px solid var(--hub-accent-border);
+  box-shadow: var(--hub-shadow-md);
+}
+
+.app-shell--hub-admin .crm-events-intro .crm-page-header {
+  margin-bottom: 14px;
+}
+
+.app-shell--hub-admin .crm-events-intro .crm-page-header__title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .crm-events-intro .crm-page-header__subtitle {
+  margin: 6px 0 0;
+  max-width: 52ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--hub-text-secondary);
+}
+
+.app-shell--hub-admin .crm-events-intro .crm-source-banner {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+}
+
+.app-shell--hub-admin .crm-source-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 0;
+  font-size: 13px;
+}
+
+.app-shell--hub-admin .crm-source-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-shell--hub-admin .crm-source-banner__dot {
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  margin-top: 5px;
+  border-radius: 50%;
+}
+
+.app-shell--hub-admin .crm-source-banner__dot--live {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.22);
+}
+
+.app-shell--hub-admin .crm-source-banner__dot--import {
+  background: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+.app-shell--hub-admin .crm-source-banner__dot--empty {
+  background: var(--hub-text-muted);
+  box-shadow: 0 0 0 3px rgba(123, 135, 148, 0.15);
+}
+
+.app-shell--hub-admin .crm-source-banner__dot--error {
+  background: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
+}
+
+.app-shell--hub-admin .crm-source-banner--info {
+  background: linear-gradient(90deg, rgba(124, 58, 237, 0.07) 0%, var(--hub-gold-soft) 100%);
+  border: 1px solid var(--hub-accent-border);
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .crm-source-banner--info .crm-source-banner__primary {
+  color: var(--hub-text);
+  font-weight: 600;
+}
+
+.app-shell--hub-admin .crm-source-banner--warn {
+  background: linear-gradient(90deg, #fffbeb 0%, #fef9c3 100%);
+  border: 1px solid #fcd34d;
+  color: #92400e;
+}
+
+.app-shell--hub-admin .crm-source-banner--error {
+  background: linear-gradient(90deg, #fef2f2 0%, #fee2e2 100%);
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.app-shell--hub-admin .crm-source-banner__primary {
+  margin: 0;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.app-shell--hub-admin .crm-source-banner__secondary,
+.app-shell--hub-admin .crm-source-banner__meta {
+  margin: 4px 0 0;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.app-shell--hub-admin .crm-source-banner__link {
+  color: var(--hub-accent);
+  font-weight: 600;
+}
+
+/* Pipeline summary strip */
+.app-shell--hub-admin .crm-pipeline-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.app-shell--hub-admin .crm-pipeline-summary .tasks-stat-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 140px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: linear-gradient(160deg, var(--hub-card) 0%, var(--hub-card-muted) 100%);
+  border: 1px solid var(--hub-border-soft);
+  box-shadow: var(--hub-shadow);
+}
+
+.app-shell--hub-admin .crm-pipeline-summary .tasks-stat-pill__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hub-text-muted);
+}
+
+.app-shell--hub-admin .crm-pipeline-summary .tasks-stat-pill strong {
+  font-size: 1.625rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--hub-accent);
+  line-height: 1.1;
+}
+
+.app-shell--hub-admin .crm-pipeline-summary .tasks-stat-pill--urgent {
+  border-color: #fcd34d;
+  background: linear-gradient(160deg, #fffbeb 0%, #fff 100%);
+}
+
+.app-shell--hub-admin .crm-pipeline-summary .tasks-stat-pill--urgent strong {
+  color: #b45309;
+}
+
+/* KPI metric cards */
+.app-shell--hub-admin .crm-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.app-shell--hub-admin .crm-metric-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 92px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  box-shadow: var(--hub-shadow);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.12s ease;
+}
+
+.app-shell--hub-admin .crm-metric-card:hover {
+  box-shadow: var(--hub-shadow-md);
+  transform: translateY(-1px);
+}
+
+.app-shell--hub-admin .crm-metric-card--selected {
+  background: linear-gradient(145deg, #7c3aed 0%, #5b21b6 100%);
+  border-color: #7c3aed;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.35);
+  transform: none;
+}
+
+.app-shell--hub-admin .crm-metric-card[data-metric='active']:not(.crm-metric-card--selected) {
+  border-color: var(--hub-accent-border);
+  background: linear-gradient(165deg, rgba(124, 58, 237, 0.08) 0%, var(--hub-card) 100%);
+}
+
+.app-shell--hub-admin .crm-metric-card[data-metric='balance_due']:not(.crm-metric-card--selected) {
+  border-color: #fcd34d;
+  background: linear-gradient(165deg, #fffbeb 0%, var(--hub-card) 100%);
+}
+
+.app-shell--hub-admin .crm-metric-card[data-metric='balance_due']:not(.crm-metric-card--selected) .crm-metric-card__badge {
+  color: #b45309;
+}
+
+.app-shell--hub-admin .crm-metric-card[data-metric='completed_ytd']:not(.crm-metric-card--selected) {
+  border-color: #86efac;
+  background: linear-gradient(165deg, #f0fdf4 0%, var(--hub-card) 100%);
+}
+
+.app-shell--hub-admin .crm-metric-card[data-metric='completed_ytd']:not(.crm-metric-card--selected) .crm-metric-card__badge {
+  color: #15803d;
+}
+
+.app-shell--hub-admin .crm-metric-card[data-metric='proposal_sent']:not(.crm-metric-card--selected) {
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+.app-shell--hub-admin .crm-metric-card__badge {
+  font-size: 1.375rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  background: transparent;
+  color: inherit;
+}
+
+.app-shell--hub-admin .crm-metric-card__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  opacity: 0.88;
+}
+
+.app-shell--hub-admin .crm-metric-card__value {
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+.app-shell--hub-admin .crm-metric-card--selected .crm-metric-card__label,
+.app-shell--hub-admin .crm-metric-card--selected .crm-metric-card__value {
+  opacity: 0.95;
+}
+
+/* Events table panel */
+.app-shell--hub-admin .crm-events-panel {
+  border-radius: 14px;
+  border: 1px solid var(--hub-border-soft);
+  background: var(--hub-card);
+  box-shadow: var(--hub-shadow-md);
+  overflow: hidden;
+}
+
+.app-shell--hub-admin .crm-events-toolbar {
+  padding: 14px 18px;
+  background: linear-gradient(180deg, var(--hub-card-muted) 0%, var(--hub-card) 100%);
+  border-bottom: 1px solid var(--hub-border-soft);
+}
+
+.app-shell--hub-admin .crm-events-toolbar__meta {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hub-text-secondary);
+}
+
+.app-shell--hub-admin .crm-events-toolbar__search {
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--hub-border);
+  background: var(--hub-card);
+  box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+  font-size: 13px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.app-shell--hub-admin .crm-events-toolbar__search:focus {
+  outline: none;
+  border-color: var(--hub-accent-border);
+  box-shadow: 0 0 0 3px var(--hub-accent-soft);
+}
+
+.app-shell--hub-admin .crm-events-toolbar .btn-ghost {
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+.app-shell--hub-admin .crm-events-toolbar .btn-ghost.active {
+  background: var(--hub-accent-soft);
+  color: var(--hub-accent);
+  box-shadow: inset 0 0 0 1px var(--hub-accent-border);
+}
+
+.app-shell--hub-admin .crm-events-add-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 8px 16px !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.38) !important;
+  transition: box-shadow 0.15s ease, transform 0.12s ease !important;
+}
+
+.app-shell--hub-admin .crm-events-add-btn:hover {
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.48) !important;
+  transform: translateY(-1px);
+}
+
+.app-shell--hub-admin .crm-events-table__head {
+  background: linear-gradient(180deg, #f8f6f2 0%, #f1efe9 100%);
+  border-bottom: 1px solid var(--hub-border);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--hub-text-muted);
+}
+
+.app-shell--hub-admin .crm-events-table__row {
+  border-bottom: 1px solid var(--hub-border-soft);
+  transition: background 0.12s ease;
+  cursor: pointer;
+}
+
+.app-shell--hub-admin .crm-events-table__row:hover {
+  background: var(--hub-row-hover);
+}
+
+.app-shell--hub-admin .crm-events-table__row:last-child {
+  border-bottom: none;
+}
+
+.app-shell--hub-admin .crm-events-table__col--name strong {
+  font-weight: 600;
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .crm-status-pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  letter-spacing: 0.01em;
+}
+
+.app-shell--hub-admin .crm-status--proposal {
+  border-color: rgba(91, 33, 182, 0.2);
+}
+
+.app-shell--hub-admin .crm-status--confirmed {
+  border-color: rgba(22, 101, 52, 0.2);
+}
+
+.app-shell--hub-admin .crm-status--balance {
+  border-color: rgba(153, 27, 27, 0.15);
+}
+
+@media (max-width: 960px) {
+  .app-shell--hub-admin .crm-topnav__venue-sub {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav__brand {
+    border-right: none;
+    padding-right: 0;
+  }
+
+  .app-shell--hub-admin .crm-events-intro {
+    padding: 18px 16px;
   }
 }

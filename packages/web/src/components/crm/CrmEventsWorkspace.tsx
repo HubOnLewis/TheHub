@@ -107,11 +107,16 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
 
   return (
     <div className="crm-events-workspace">
-      <header className="crm-page-header crm-page-header--compact">
-        <h1 className="crm-page-header__title">{title}</h1>
-      </header>
+      <div className="crm-events-intro">
+        <header className="crm-page-header">
+          <h1 className="crm-page-header__title">{title}</h1>
+          <p className="crm-page-header__subtitle">
+            Live booking pipeline, balances, follow-ups, and upcoming event readiness.
+          </p>
+        </header>
 
-      <CrmEventSourceBanner manifest={manifest} apiError={isError} />
+        <CrmEventSourceBanner manifest={manifest} apiError={isError} />
+      </div>
       <CrmEventSourceDiagnostics manifest={manifest} />
 
       {manifest.sourceId === 'live-api' && dashStats ? (
@@ -166,7 +171,7 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
             >
               Filters
             </button>
-            <Link to={`${ROUTES.opportunities}?new=1`} className="btn btn-primary btn-sm">
+            <Link to={`${ROUTES.opportunities}?new=1`} className="btn btn-primary btn-sm crm-events-add-btn">
               + Add Event
             </Link>
           </div>
@@ -234,7 +239,7 @@ function WorkspaceKpiStrip({
   if (openLeads === 0 && pipelineDeals === 0) return null;
 
   return (
-    <div className="crm-kpi-strip command-stat-strip" role="status">
+    <div className="crm-kpi-strip crm-pipeline-summary command-stat-strip" role="status">
       {openLeads > 0 ? (
         <div className="tasks-stat-pill">
           <span className="tasks-stat-pill__label">Open leads</span>

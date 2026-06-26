@@ -79,9 +79,10 @@ export default function HubAdminShell({
           ☰
         </button>
         <div className="crm-topnav__brand">
-          <BrandLogo size="sm" />
+          <BrandLogo size="md" className="crm-topnav__logo" />
           <div className="crm-topnav__venue">
             <span className="crm-topnav__venue-name">{BRAND.venueName}</span>
+            <span className="crm-topnav__venue-sub">{BRAND.venueLocation} · {BRAND.productSubtitle}</span>
           </div>
         </div>
         <nav className={`crm-topnav__links${mobileNavOpen ? ' crm-topnav__links--open' : ''}`}>

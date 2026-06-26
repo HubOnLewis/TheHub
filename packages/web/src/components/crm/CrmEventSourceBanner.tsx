@@ -69,17 +69,20 @@ export default function CrmEventSourceBanner({ manifest, apiError }: Props) {
       role="status"
       aria-live="polite"
     >
-      <p className="crm-source-banner__primary">{banner.primary}</p>
-      {banner.secondary ? (
-        <p className="crm-source-banner__secondary">{banner.secondary}</p>
-      ) : null}
-      {banner.tone === 'import' || banner.tone === 'empty' ? (
-        <p className="crm-source-banner__meta">
-          <Link to={`${ROUTES.settings}/data-import`} className="crm-source-banner__link">
-            Data import settings
-          </Link>
-        </p>
-      ) : null}
+      <span className={`crm-source-banner__dot crm-source-banner__dot--${banner.tone}`} aria-hidden />
+      <div className="crm-source-banner__content">
+        <p className="crm-source-banner__primary">{banner.primary}</p>
+        {banner.secondary ? (
+          <p className="crm-source-banner__secondary">{banner.secondary}</p>
+        ) : null}
+        {banner.tone === 'import' || banner.tone === 'empty' ? (
+          <p className="crm-source-banner__meta">
+            <Link to={`${ROUTES.settings}/data-import`} className="crm-source-banner__link">
+              Data import settings
+            </Link>
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -12,6 +12,7 @@ export default function MetricCard({ card, selected, onSelect }: Props) {
     <button
       type="button"
       className={`crm-metric-card${selected ? ' crm-metric-card--selected' : ''}`}
+      data-metric={card.id}
       onClick={onSelect}
       aria-pressed={selected}
     >
