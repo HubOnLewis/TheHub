@@ -4,7 +4,7 @@ import { requireAuth, requireRole } from '../middleware/auth.js';
 import { validate } from '../middleware/validate.js';
 import { adminService } from '../services/AdminService.js';
 import { getDB } from '../config/db.js';
-import { CreateUserSchema } from '@hub-crm/shared';
+import { CreateUserSchema, PatchUserSchema } from '@hub-crm/shared';
 import { identityIntegrityService } from '../services/IdentityIntegrityService.js';
 
 const router = Router();
@@ -19,6 +19,12 @@ router.get('/users', async (_req, res, next) => {
 router.post('/users', validate(CreateUserSchema), async (req, res, next) => {
   try {
     res.status(201).json(await adminService.createUser(getDB(), req.body));
+  } catch (err) { next(err); }
+});
+
+router.patch('/users/:id', validate(PatchUserSchema), async (req, res, next) => {
+  try {
+    res.json(await adminService.updateUser(getDB(), req.params['id']!, req.body));
   } catch (err) { next(err); }
 });
 

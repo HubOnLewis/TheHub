@@ -341,6 +341,10 @@ function resolveImportedSource(): CrmEventSourceManifest {
 export interface ResolveCrmEventSourceInput {
   apiRows: CrmEventRow[];
   useApi: boolean;
+  /** True when GET /deals failed. */
+  apiError?: boolean;
+  /** True when GET /deals succeeded but returned zero visible rows. */
+  apiEmpty?: boolean;
 }
 
 export function resolveCrmEventSource(input: ResolveCrmEventSourceInput): CrmEventSourceManifest {
@@ -350,6 +354,37 @@ export function resolveCrmEventSource(input: ResolveCrmEventSourceInput): CrmEve
       authoritative: true,
       importedAt: null,
       warningMessage: null,
+      pfTextStatus: null,
+      skippedFallbackFrom: null,
+    });
+  }
+
+  if (input.apiEmpty && isProductionCRM()) {
+    return buildManifest('none', [], {
+      completeness: 'FAILED',
+      authoritative: true,
+      importedAt: null,
+      warningMessage: null,
+      pfTextStatus: null,
+      skippedFallbackFrom: null,
+    });
+  }
+
+  if (input.apiError) {
+    const imported = resolveImportedSource();
+    if (imported.rowCount > 0) {
+      return {
+        ...imported,
+        warningMessage:
+          imported.warningMessage ??
+          'Live data is temporarily unavailable — showing imported reference events.',
+      };
+    }
+    return buildManifest('none', [], {
+      completeness: 'FAILED',
+      authoritative: false,
+      importedAt: null,
+      warningMessage: 'Could not load events from the server.',
       pfTextStatus: null,
       skippedFallbackFrom: null,
     });

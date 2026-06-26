@@ -1,11 +1,11 @@
 // packages/api/src/services/AdminService.ts
 import type { Db } from 'mongodb';
 import bcrypt from 'bcryptjs';
-import { UserRepository } from '../repositories/UserRepository.js';
+import { UserRepository, type UserDoc } from '../repositories/UserRepository.js';
 import { LeadRepository } from '../repositories/LeadRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { ConflictError, NotFoundError } from '../errors/index.js';
-import type { CreateUserPayload } from '@hub-crm/shared';
+import type { CreateUserPayload, PatchUserPayload } from '@hub-crm/shared';
 import { buildTenantId, isHubVenueTenantId, normalizeEntity, normalizeLocation } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
 import { env } from '../config/env.js';
@@ -69,6 +69,34 @@ export class AdminService {
     // Never return the hash to the client
     const { passwordHash: _pw, ...safeUser } = inserted as typeof inserted & { passwordHash?: string };
     return safeUser;
+  }
+
+  async updateUser(db: Db, id: string, payload: PatchUserPayload) {
+    const existing = await UserRepository.findByIdAdmin(db, id);
+    if (!existing) throw new NotFoundError('User');
+
+    const entity = payload.entity != null ? normalizeEntity(payload.entity) : normalizeEntity(existing.entity);
+    const location =
+      payload.location != null ? normalizeLocation(payload.location) : normalizeLocation(existing.location);
+    const tenantId = buildTenantId(entity, location);
+
+    const update: Partial<UserDoc> = {
+      updatedAt: new Date(),
+    };
+    if (payload.name != null) update.name = payload.name;
+    if (payload.role != null) update.role = payload.role;
+    if (payload.entity != null || payload.location != null) {
+      update.entity = entity;
+      update.location = location;
+      update.tenantId = tenantId;
+    }
+    if (payload.password?.trim()) {
+      update.passwordHash = await bcrypt.hash(payload.password, 12);
+    }
+
+    const updated = await UserRepository.updateById(db, id, update);
+    if (!updated) throw new NotFoundError('User');
+    return updated;
   }
 
   async deactivateUser(db: Db, id: string) {

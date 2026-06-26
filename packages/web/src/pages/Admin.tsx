@@ -5,12 +5,13 @@ import { ROUTES } from '../config/paths.js';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import client from '../api/client.js';
 import { Modal, EmptyState, Spinner, KPICard, VenueContextFields } from '../components/ui/index.js';
 import { useAppStore } from '../store/index.js';
 import {
-  ROLES, CreateUserSchema, DEFAULT_ENTITY, DEFAULT_LOCATION, IS_SINGLE_VENUE,
-  type Entity, type Location, type UserRole, type CreateUserPayload,
+  ROLES, ENTITIES, LOCATIONS, CreateUserSchema, PatchUserSchema, DEFAULT_ENTITY, DEFAULT_LOCATION, IS_SINGLE_VENUE,
+  type Entity, type Location, type UserRole, type CreateUserPayload, type PatchUserPayload,
   formatCurrency, roleForDisplay, tenantForDisplay, HUB_LABELS,
   dealStatusForDisplay, leadStatusForDisplay, normalizeEntity, normalizeLocation,
 } from '@hub-crm/shared';
@@ -73,8 +74,33 @@ export default function Admin() {
     onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); setShowModal(false); setEditUser(null); },
   });
 
+  const update = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: PatchUserPayload }) =>
+      client.patch(`/admin/users/${id}`, data),
+    onSuccess:  () => { qc.invalidateQueries({ queryKey: ['admin', 'users'] }); setShowModal(false); setEditUser(null); },
+  });
+
   const openCreate = () => { setEditUser(null); setShowModal(true); };
   const openEdit   = (u: AdminUser) => { setEditUser(u); setShowModal(true); };
+
+  const handleUserSubmit = (payload: CreateUserPayload | PatchUserPayload) => {
+    if (editUser) {
+      const patch: PatchUserPayload = {};
+      if (payload.name && payload.name !== editUser.name) patch.name = payload.name;
+      if (payload.role && payload.role !== editUser.role) patch.role = payload.role;
+      if (payload.entity && payload.entity !== editUser.entity) patch.entity = payload.entity;
+      if (payload.location && payload.location !== editUser.location) patch.location = payload.location;
+      if (payload.password?.trim()) patch.password = payload.password.trim();
+      if (Object.keys(patch).length === 0) {
+        setShowModal(false);
+        setEditUser(null);
+        return;
+      }
+      update.mutate({ id: editUser._id, data: patch });
+      return;
+    }
+    create.mutate(payload as CreateUserPayload);
+  };
 
   const byTenant: Record<string, AdminUser[]> = {};
   users.forEach(u => { (byTenant[u.tenantId] ??= []).push(u); });
@@ -285,13 +311,13 @@ export default function Admin() {
           footer={
             <>
               <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); setEditUser(null); }}>Cancel</button>
-              <button type="submit" form="user-form" className="btn btn-primary" disabled={create.isPending}>
-                {create.isPending ? 'Saving…' : editUser ? 'Save Changes' : 'Create User'}
+              <button type="submit" form="user-form" className="btn btn-primary" disabled={create.isPending || update.isPending}>
+                {create.isPending || update.isPending ? 'Saving…' : editUser ? 'Save Changes' : 'Create User'}
               </button>
             </>
           }
         >
-          <UserForm existingUser={editUser} onSubmit={d => create.mutate(d)} />
+          <UserForm existingUser={editUser} onSubmit={handleUserSubmit} />
         </Modal>
       )}
     </div>
@@ -299,9 +325,25 @@ export default function Admin() {
 }
 
 // ── UserForm ──────────────────────────────────────────────────────
-function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; onSubmit: (d: CreateUserPayload) => void }) {
+const EditUserFormSchema = z.object({
+  name:     z.string().min(1, 'Name required'),
+  email:    z.string().email('Valid email required'),
+  password: z.string().min(8, 'Minimum 8 characters').optional().or(z.literal('')),
+  role:     z.enum(ROLES),
+  entity:   z.enum(ENTITIES),
+  location: z.enum(LOCATIONS),
+});
+
+function UserForm({
+  existingUser,
+  onSubmit,
+}: {
+  existingUser: AdminUser | null;
+  onSubmit: (d: CreateUserPayload | PatchUserPayload) => void;
+}) {
+  const isEdit = existingUser != null;
   const { register, handleSubmit, formState: { errors } } = useForm<CreateUserPayload>({
-    resolver: zodResolver(CreateUserSchema),
+    resolver: zodResolver(isEdit ? EditUserFormSchema : CreateUserSchema),
     defaultValues: {
       name:     existingUser?.name     ?? '',
       email:    existingUser?.email    ?? '',
@@ -322,7 +364,16 @@ function UserForm({ existingUser, onSubmit }: { existingUser: AdminUser | null; 
         </div>
         <div className="form-group">
           <label className="form-label">Email *</label>
-          <input {...register('email')} type="email" className={`form-input${errors.email ? ' error' : ''}`} placeholder="admin@yourcompany.com" />
+          <input
+            {...register('email')}
+            type="email"
+            readOnly={isEdit}
+            className={`form-input${errors.email ? ' error' : ''}${isEdit ? ' form-input--readonly' : ''}`}
+            placeholder="admin@yourcompany.com"
+          />
+          {isEdit ? (
+            <span className="form-hint">Email cannot be changed here.</span>
+          ) : null}
           {errors.email && <span className="form-error">{errors.email.message}</span>}
         </div>
         <div className="form-group">

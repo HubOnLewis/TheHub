@@ -312,6 +312,25 @@ export const CreateUserSchema = z.object({
 });
 export type CreateUserPayload = z.infer<typeof CreateUserSchema>;
 
+export const PatchUserSchema = z
+  .object({
+    name:     z.string().min(1, 'Name required').optional(),
+    password: z.string().min(8, 'Minimum 8 characters').optional(),
+    role:     z.enum(ROLES).optional(),
+    entity:   z.enum(ENTITIES).optional(),
+    location: z.enum(LOCATIONS).optional(),
+  })
+  .refine(
+    data =>
+      data.name != null ||
+      data.password != null ||
+      data.role != null ||
+      data.entity != null ||
+      data.location != null,
+    { message: 'At least one field is required' },
+  );
+export type PatchUserPayload = z.infer<typeof PatchUserSchema>;
+
 // ── Company ───────────────────────────────────────────────────────
 export const AddressSchema = z.object({
   street:     z.string().optional(),

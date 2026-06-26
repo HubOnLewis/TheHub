@@ -3,7 +3,8 @@
  * Source resolution lives in crmEventSource.ts.
  */
 
-import { formatCurrency } from '@hub-crm/shared';
+import { formatCurrency, isHubContaminatedRecord } from '@hub-crm/shared';
+import { mapDealToCrmRow } from './crmEventRowMappers.js';
 import { ROUTES } from '../config/paths.js';
 import { pvStatusDisplay, type PvEventStatus } from '../data/perfectVenueSeed.js';
 
@@ -173,6 +174,27 @@ export function filterCrmRows(
 
 export function formatMetricDollars(n: number): string {
   return formatCurrency(n);
+}
+
+/** Exclude cross-tenant equipment/truck contamination; all other tenant deals are visible. */
+export function isDealVisibleInWorkspace(d: Record<string, unknown>): boolean {
+  const fields = {
+    title: String(d.title ?? ''),
+    company: String(d.company ?? ''),
+    contact: String(d.contact ?? ''),
+    notes: typeof d.notes === 'string' ? d.notes : undefined,
+    unitId: typeof d.unitId === 'string' ? d.unitId : undefined,
+    unitIds: Array.isArray(d.unitIds) ? (d.unitIds as string[]) : undefined,
+    importMeta:
+      d.importMeta && typeof d.importMeta === 'object'
+        ? (d.importMeta as { source?: string })
+        : undefined,
+  };
+  return !isHubContaminatedRecord(fields);
+}
+
+export function mapApiDealsToWorkspaceRows(deals: Array<Record<string, unknown>>): CrmEventRow[] {
+  return deals.filter(isDealVisibleInWorkspace).map(mapDealToCrmRow);
 }
 
 export { METRIC_LABELS, ROUTES };

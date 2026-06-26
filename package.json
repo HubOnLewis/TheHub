@@ -35,6 +35,8 @@
     "copy:hub-refresh-data:apply": "node scripts/copy-hub-refresh-data.mjs --apply",
     "repair:hub-refresh-tenant:dry-run": "node scripts/repair-hub-refresh-tenant.mjs",
     "repair:hub-refresh-tenant:apply": "node scripts/repair-hub-refresh-tenant.mjs --apply",
+    "reset:all-passwords:dry-run": "node scripts/reset-all-user-passwords.mjs",
+    "reset:all-passwords:apply": "node scripts/reset-all-user-passwords.mjs --apply --confirm",
     "validate:hub-refresh": "node scripts/validate-hub-refresh.mjs",
     "postinstall:playwright": "playwright install chromium"
   },

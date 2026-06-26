@@ -6,6 +6,7 @@ import {
   resolveApiBaseUrl,
 } from '../config/apiBaseUrl.js';
 import { createScreenshotMockAdapter } from './screenshotApiMock.js';
+import { useAppStore } from '../store/index.js';
 
 const AUTH_TOKEN_KEY = 'hub_crm_token';
 
@@ -40,7 +41,7 @@ client.interceptors.response.use(
   r => r,
   err => {
     if (err.response?.status === 401) {
-      localStorage.removeItem(AUTH_TOKEN_KEY);
+      useAppStore.getState().logout();
       window.location.href = '/login';
     }
     return Promise.reject(err);

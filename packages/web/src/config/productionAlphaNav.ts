@@ -38,7 +38,6 @@ export const PRODUCTION_ALPHA_REDIRECT_ROUTES: readonly string[] = [
   ROUTES.audit,
   ROUTES.accounts,
   ROUTES.companiesAlias,
-  ROUTES.leads,
   ROUTES.prospects,
   ROUTES.marketing,
   ROUTES.marketingBlasts,
@@ -59,7 +58,9 @@ export function isProductionAlphaRedirectPath(routePath: string): boolean {
     routePath === ROUTES.inbox ||
     routePath === ROUTES.calendar ||
     routePath === ROUTES.tasks ||
-    routePath === ROUTES.monthlyScorecard
+    routePath === ROUTES.monthlyScorecard ||
+    routePath === ROUTES.leads ||
+    routePath.startsWith(`${ROUTES.leads}/`)
   ) {
     return false;
   }
@@ -77,6 +78,11 @@ const FULL_HUB_TOP_NAV: HubTopNavItem[] = [
     to: ROUTES.dashboard,
     label: 'Home',
     match: isHubHomePath,
+  },
+  {
+    to: ROUTES.leads,
+    label: 'Leads',
+    match: p => p === ROUTES.leads || p.startsWith(`${ROUTES.leads}/`),
   },
   { to: ROUTES.inbox, label: 'Inbox' },
   { to: ROUTES.calendar, label: 'Calendar' },
@@ -110,6 +116,7 @@ export function getHubTopNavItems(opts?: {
 
 export const CRM_TOPNAV_PATHS: readonly string[] = [
   ROUTES.dashboard,
+  ROUTES.leads,
   ROUTES.opportunities,
   ROUTES.dealsAlias,
   ROUTES.inbox,

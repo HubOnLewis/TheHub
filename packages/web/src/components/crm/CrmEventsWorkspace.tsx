@@ -11,10 +11,10 @@ import CrmEventSourceBanner from './CrmEventSourceBanner.js';
 import CrmEventSourceDiagnostics from './CrmEventSourceDiagnostics.js';
 import {
   filterCrmRows,
-  mapDealToCrmRow,
+  mapApiDealsToWorkspaceRows,
   type CrmMetricCategory,
 } from '../../lib/crmEvents.js';
-import { isHubContaminatedRecord, isPerfectVenueRefreshDeal } from '@hub-crm/shared';
+import { useDashboardStats } from '../../hooks/useDashboard.js';
 import {
   logCrmEventSourceDiagnostics,
   resolveCrmEventSource,
@@ -46,35 +46,19 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
 
   const apiRows = useMemo(() => {
     const deals = (dealsPage?.data ?? []) as Array<Record<string, unknown>>;
-    return deals
-      .filter(d => {
-        const fields = {
-          title: String(d.title ?? ''),
-          company: String(d.company ?? ''),
-          contact: String(d.contact ?? ''),
-          notes: typeof d.notes === 'string' ? d.notes : undefined,
-          unitId: typeof d.unitId === 'string' ? d.unitId : undefined,
-          unitIds: Array.isArray(d.unitIds) ? (d.unitIds as string[]) : undefined,
-          importMeta:
-            d.importMeta && typeof d.importMeta === 'object'
-              ? (d.importMeta as { source?: string })
-              : undefined,
-        };
-        if (isHubContaminatedRecord(fields)) return false;
-        return isPerfectVenueRefreshDeal({
-          source: typeof d.source === 'string' ? d.source : undefined,
-          importMeta: d.importMeta as { source?: string } | undefined,
-        });
-      })
-      .map(mapDealToCrmRow);
+    return mapApiDealsToWorkspaceRows(deals);
   }, [dealsPage]);
 
-  const useApi = !isError && apiRows.length > 0;
+  const apiLoaded = !isLoading && !isError;
+  const apiEmpty = apiLoaded && apiRows.length === 0;
+  const useApi = apiLoaded && apiRows.length > 0;
 
   const manifest = useMemo(
-    () => resolveCrmEventSource({ apiRows, useApi }),
-    [apiRows, useApi],
+    () => resolveCrmEventSource({ apiRows, useApi, apiError: isError, apiEmpty }),
+    [apiRows, useApi, isError, apiEmpty],
   );
+
+  const { data: dashStats } = useDashboardStats();
 
   useEffect(() => {
     logCrmEventSourceDiagnostics(manifest);
@@ -127,8 +111,12 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
         <h1 className="crm-page-header__title">{title}</h1>
       </header>
 
-      <CrmEventSourceBanner manifest={manifest} />
+      <CrmEventSourceBanner manifest={manifest} apiError={isError} />
       <CrmEventSourceDiagnostics manifest={manifest} />
+
+      {manifest.sourceId === 'live-api' && dashStats ? (
+        <WorkspaceKpiStrip stats={dashStats} />
+      ) : null}
 
       <div className="crm-metric-strip" role="tablist" aria-label="Event summary">
         <MetricCard
@@ -227,6 +215,44 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
         advancedFilter={advancedFilter}
         onAdvancedFilterChange={setAdvancedFilter}
       />
+    </div>
+  );
+}
+
+function WorkspaceKpiStrip({
+  stats,
+}: {
+  stats: NonNullable<ReturnType<typeof useDashboardStats>['data']>;
+}) {
+  const openLeads = (stats.leadsByStatus ?? [])
+    .filter(s => !['Converted', 'Lost'].includes(s._id))
+    .reduce((n, s) => n + s.count, 0);
+  const pipelineDeals = (stats.dealsByStatus ?? [])
+    .filter(s => !['Lost', 'Delivered'].includes(s._id))
+    .reduce((n, s) => n + s.count, 0);
+
+  if (openLeads === 0 && pipelineDeals === 0) return null;
+
+  return (
+    <div className="crm-kpi-strip command-stat-strip" role="status">
+      {openLeads > 0 ? (
+        <div className="tasks-stat-pill">
+          <span className="tasks-stat-pill__label">Open leads</span>
+          <strong>{openLeads}</strong>
+        </div>
+      ) : null}
+      {pipelineDeals > 0 ? (
+        <div className="tasks-stat-pill">
+          <span className="tasks-stat-pill__label">Pipeline events</span>
+          <strong>{pipelineDeals}</strong>
+        </div>
+      ) : null}
+      {(stats.followUpOverdueOpen ?? 0) > 0 ? (
+        <div className="tasks-stat-pill tasks-stat-pill--urgent">
+          <span className="tasks-stat-pill__label">Overdue follow-ups</span>
+          <strong>{stats.followUpOverdueOpen}</strong>
+        </div>
+      ) : null}
     </div>
   );
 }
