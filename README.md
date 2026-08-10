@@ -115,6 +115,18 @@ Same URLs: API **3001**, web **5173**.
 
 ---
 
+## Production unlock
+
+If live login fails, see [`docs/HUB_PRODUCTION_UNLOCK.md`](docs/HUB_PRODUCTION_UNLOCK.md) (password reset, portal event links, Ollama).
+
+```bash
+node scripts/probe-prod-health.mjs
+```
+
+Client portal for a CRM booking: `/portal/login?event=<dealId>` (or **Client portal** on event detail).
+
+---
+
 ## Local model PC (AI drafts)
 
 **Always-on Ollama on Hub LAN (recommended):** run the Hub API on that LAN and keep Ollama private.
