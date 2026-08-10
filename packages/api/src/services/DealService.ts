@@ -59,8 +59,11 @@ function validateTransition(before: DealDoc & { _id: string }, payload: Partial<
     );
   }
 
-  // Skip forward (must advance exactly one stage)
-  if (toIdx > fromIdx + 1) {
+  const productMode = getAiRuntimeConfig().productMode;
+
+  // Venue operators jump by pipeline milestone (e.g. Lead → Proposal).
+  // Equipment mode keeps strict one-step stage walks.
+  if (productMode === 'equipment' && toIdx > fromIdx + 1) {
     const expected = DEAL_STAGE_ORDER[fromIdx + 1];
     throw new ValidationError(
       `Cannot skip from "${before.status}" to "${next}" — next stage is "${expected}"`,
@@ -70,7 +73,6 @@ function validateTransition(before: DealDoc & { _id: string }, payload: Partial<
   // Field-level gates for specific forward transitions
   const amount = payload.amount ?? before.amount;
   const unitId = payload.unitId ?? before.unitId;
-  const productMode = getAiRuntimeConfig().productMode;
 
   if (next === 'Pending Approval' && !(amount > 0) && productMode === 'equipment') {
     throw new ValidationError('Amount must be greater than 0 before submitting for approval');
@@ -439,6 +441,22 @@ export class DealService {
       companyId: (payload as any).companyId,
       companyName: payload.company,
     });
+    const importMeta =
+      payload.importMeta && typeof payload.importMeta === 'object'
+        ? { ...payload.importMeta }
+        : undefined;
+    if (importMeta && payload.amount != null && typeof importMeta.grandTotal !== 'number') {
+      importMeta.grandTotal = payload.amount;
+    }
+    if (
+      importMeta &&
+      typeof importMeta.grandTotal === 'number' &&
+      typeof importMeta.amountPaid === 'number' &&
+      typeof importMeta.balanceDue !== 'number'
+    ) {
+      importMeta.balanceDue = Math.max(0, importMeta.grandTotal - importMeta.amountPaid);
+    }
+
     const deal = await DealRepository.insertOne(db, { ...ctx, tenantId }, {
       ...payload,
       companyId: company._id,
@@ -447,6 +465,7 @@ export class DealService {
       primaryUnitId: payload.primaryUnitId ?? payload.unitId,
       assignedTo,
       ownerUserId: payload.ownerUserId ?? ctx.userId,
+      importMeta,
       lastStageChangeAt: new Date(),
       tenantId,
       createdAt:     new Date(),

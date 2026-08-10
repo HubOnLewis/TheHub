@@ -1,5 +1,23 @@
 import axios, { AxiosError, type AxiosAdapter, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { getScreenshotDemoUser, SCREENSHOT_DEMO_TOKEN } from '../config/screenshotSession.js';
+import {
+  createScreenshotDeal,
+  deleteScreenshotDeal,
+  getScreenshotDeal,
+  listScreenshotDeals,
+  updateScreenshotDeal,
+} from './screenshotDealsStore.js';
+
+function parseBody(config: InternalAxiosRequestConfig): Record<string, unknown> {
+  const data = config.data;
+  if (!data) return {};
+  if (typeof data === 'object' && !Array.isArray(data)) return data as Record<string, unknown>;
+  try {
+    return JSON.parse(String(data)) as Record<string, unknown>;
+  } catch {
+    return {};
+  }
+}
 
 function stripApiPrefix(pathname: string): string {
   let p = pathname;
@@ -124,10 +142,15 @@ function mockResponse(config: InternalAxiosRequestConfig): AxiosResponse | Promi
   }
 
   if (method === 'get' && path === '/dashboard/stats') {
+    const deals = listScreenshotDeals();
+    const dealsByStatusMap = new Map<string, number>();
+    for (const d of deals) {
+      dealsByStatusMap.set(d.status, (dealsByStatusMap.get(d.status) ?? 0) + 1);
+    }
     return ok(config, {
       leadsByStatus: [],
-      dealsByStatus: [],
-      forecastAmounts: { commit: 0, best_case: 0, pipeline: 0, excluded: 0 },
+      dealsByStatus: [...dealsByStatusMap.entries()].map(([_id, count]) => ({ _id, count })),
+      forecastAmounts: { commit: 0, best_case: 0, pipeline: deals.reduce((n, d) => n + (d.amount || 0), 0), excluded: 0 },
       commitAmount: 0,
       bestCaseAmount: 0,
       dealsNeedingManagementReview: 0,
@@ -149,12 +172,78 @@ function mockResponse(config: InternalAxiosRequestConfig): AxiosResponse | Promi
     return ok(config, []);
   }
 
-  if (method === 'get' && /^\/deals\/[^/]+$/.test(path)) {
-    return rejectNotFound(config);
+  if (method === 'post' && path === '/deals') {
+    const body = parseBody(config);
+    const deal = createScreenshotDeal({
+      title: String(body.title ?? 'Untitled event'),
+      company: String(body.company ?? 'Client'),
+      contact: String(body.contact ?? 'Contact'),
+      amount: typeof body.amount === 'number' ? body.amount : Number(body.amount) || 0,
+      assignedTo: typeof body.assignedTo === 'string' ? body.assignedTo : demoUser.name,
+      notes: typeof body.notes === 'string' ? body.notes : undefined,
+      status: typeof body.status === 'string' ? body.status : 'Draft',
+      importMeta:
+        body.importMeta && typeof body.importMeta === 'object'
+          ? (body.importMeta as Record<string, unknown>)
+          : undefined,
+      ownerUserId: demoUser.id,
+    });
+    return ok(config, deal, 201);
+  }
+
+  const dealById = /^\/deals\/([^/]+)$/.exec(path);
+  if (dealById) {
+    const dealId = dealById[1]!;
+    if (method === 'get') {
+      const deal = getScreenshotDeal(dealId);
+      if (!deal) return rejectNotFound(config);
+      return ok(config, deal);
+    }
+    if (method === 'patch') {
+      const body = parseBody(config);
+      const updated = updateScreenshotDeal(dealId, body as never);
+      if (!updated) return rejectNotFound(config);
+      return ok(config, updated);
+    }
+    if (method === 'delete') {
+      if (!deleteScreenshotDeal(dealId)) return rejectNotFound(config);
+      return ok(config, { ok: true });
+    }
   }
 
   if (method === 'get' && path === '/deals') {
-    return ok(config, { ...paginatedEmpty });
+    const deals = listScreenshotDeals();
+    return ok(config, {
+      data: deals,
+      total: deals.length,
+      page: 1,
+      pages: 1,
+      limit: 500,
+    });
+  }
+
+  if (method === 'post' && path === '/interactions') {
+    return ok(config, {
+      _id: `ss-ix-${Date.now().toString(36)}`,
+      ok: true,
+      createdAt: new Date().toISOString(),
+    }, 201);
+  }
+
+  if (method === 'get' && path === '/ai/status') {
+    return ok(config, {
+      enabled: false,
+      configured: false,
+      reachable: null,
+      provider: 'none',
+      mode: 'off',
+      model: null,
+      baseUrlHost: null,
+      message: 'Screenshot mode — wire Ollama on the always-on host for live AI drafts.',
+      lastProbeAt: null,
+      lastProbeError: null,
+      productMode: 'venue',
+    });
   }
 
   if (method === 'get' && path === '/leads') {

@@ -1,16 +1,17 @@
 import { formatCurrency } from '@hub-crm/shared';
-import { PORTAL_DEMO_EVENT } from '../demoData.js';
 import { usePortalStore } from '../portalStore.js';
 
 export default function PaymentProgress({ showActions = false }: { showActions?: boolean }) {
   const payments = usePortalStore(s => s.event.payments);
+  const packageTotal = usePortalStore(s => s.profile.packageTotal);
   const payDeposit = usePortalStore(s => s.payDeposit);
   const payBalance = usePortalStore(s => s.payBalance);
   const queueLink = usePortalStore(s => s.queuePaymentLink);
 
   const paid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
-  const pct = Math.round((paid / PORTAL_DEMO_EVENT.packageTotal) * 100);
-  const remaining = PORTAL_DEMO_EVENT.packageTotal - paid;
+  const total = packageTotal > 0 ? packageTotal : 1;
+  const pct = Math.min(100, Math.round((paid / total) * 100));
+  const remaining = Math.max(0, packageTotal - paid);
 
   return (
     <div className="portal-card portal-card--flat">

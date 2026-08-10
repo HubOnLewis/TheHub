@@ -58,6 +58,8 @@ export const CreateDealSchema = z.object({
     notes: z.string().optional(),
   }).optional(),
   status:     z.enum(DEAL_STATUSES).default('Draft'),
+  /** Venue event metadata (date, guests, space, PV status, payments) */
+  importMeta: z.record(z.unknown()).optional(),
 });
 export type CreateDealPayload = z.infer<typeof CreateDealSchema>;
 

@@ -2,9 +2,15 @@ import { useMemo, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { formatCurrency, DEAL_STATUSES, type DealStatus, type PatchDealPayload } from '@hub-crm/shared';
 import { ROUTES, accountDetailPath } from '../../config/paths.js';
+import { PORTAL_ROUTES } from '../../portal/paths.js';
 import { Modal, Spinner } from '../ui/index.js';
 import type { EventDetailViewModel, EventDetailEditForm } from '../../lib/eventDetail.js';
-import { buildEventDetailPatch, displayOrEmpty, eventDetailEditFormFromModel } from '../../lib/eventDetail.js';
+import {
+  buildEventDetailPatch,
+  CRM_STATUS_TO_PV,
+  displayOrEmpty,
+  eventDetailEditFormFromModel,
+} from '../../lib/eventDetail.js';
 
 type Props = {
   model: EventDetailViewModel;
@@ -161,7 +167,19 @@ export default function EventDetailCommandCenter({
     }
     setLocalError(null);
     try {
-      await onPatch({ status: patchStatus });
+      const pvStatus = CRM_STATUS_TO_PV[patchStatus];
+      await onPatch({
+        status: patchStatus,
+        importMeta: pvStatus
+          ? {
+              pvStatus,
+              // Keep display pipeline honest after operator advances stage
+              ...(patchStatus === 'Won' || patchStatus === 'In Build' || patchStatus === 'Delivered'
+                ? { amountPaid: model.amountPaid, balanceDue: model.balanceDue, grandTotal: model.grandTotal }
+                : {}),
+            }
+          : undefined,
+      });
     } catch (e) {
       setLocalError(e instanceof Error ? e.message : 'Could not update status');
     }
@@ -252,6 +270,28 @@ export default function EventDetailCommandCenter({
                     Add Note
                   </button>
                 ) : null}
+                <a
+                  className="btn btn-ghost event-detail-hero__btn-ghost"
+                  href={`${PORTAL_ROUTES.login}?event=${encodeURIComponent(model.id)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  title="Open client portal for this booking"
+                >
+                  Client portal
+                </a>
+                <button
+                  type="button"
+                  className="btn btn-ghost event-detail-hero__btn-ghost"
+                  onClick={() => {
+                    const url = `${window.location.origin}${PORTAL_ROUTES.login}?event=${encodeURIComponent(model.id)}`;
+                    void navigator.clipboard?.writeText(url).then(
+                      () => window.alert('Client portal link copied — share with the guest.'),
+                      () => window.prompt('Copy portal link:', url),
+                    );
+                  }}
+                >
+                  Copy portal link
+                </button>
               </>
             ) : null}
           </div>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { isProductionCRM } from '../config/productionData.js';
+import { isScreenshotMode } from '../config/screenshotMode.js';
 import LiveCalendarPage from './live/LiveCalendarPage.js';
 import { Link } from 'react-router-dom';
 import { formatCurrency, HUB_LABELS } from '@hub-crm/shared';
@@ -19,7 +20,7 @@ const calChipClass: Record<string, string> = {
 };
 
 export default function CalendarOccupancy() {
-  if (isProductionCRM()) return <LiveCalendarPage />;
+  if (isProductionCRM() || isScreenshotMode()) return <LiveCalendarPage />;
   return <CalendarOccupancyDemo />;
 }
 

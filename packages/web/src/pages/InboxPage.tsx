@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { isProductionCRM } from '../config/productionData.js';
+import { isScreenshotMode } from '../config/screenshotMode.js';
 import LiveInboxPage from './live/LiveInboxPage.js';
 import { DEMO_INBOX_MESSAGES } from '../data/demoVenue.js';
 import EmbeddedAgentPanel from '../components/agents/EmbeddedAgentPanel.js';
@@ -15,7 +16,8 @@ const TEMPLATES = [
 ] as const;
 
 export default function InboxPage() {
-  if (isProductionCRM()) return <LiveInboxPage />;
+  // Live activity derived from CRM events in production and screenshot walkthroughs
+  if (isProductionCRM() || isScreenshotMode()) return <LiveInboxPage />;
   return <InboxPageDemo />;
 }
 

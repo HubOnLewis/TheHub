@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { usePortalStore } from '../portalStore.js';
-import { PORTAL_DEMO_EVENT } from '../demoData.js';
 
 export default function PortalMessages() {
   const messages = usePortalStore(s => s.event.messages);
+  const coordinator = usePortalStore(s => s.profile.coordinator.name);
   const sendMessage = usePortalStore(s => s.sendMessage);
   const [draft, setDraft] = useState('');
 
@@ -11,7 +11,7 @@ export default function PortalMessages() {
     <>
       <h1 style={{ fontFamily: 'var(--portal-display)', fontSize: 28, margin: '0 0 8px' }}>Messages</h1>
       <p style={{ color: 'var(--portal-muted)', margin: '0 0 16px' }}>
-        Thread with {PORTAL_DEMO_EVENT.coordinator.name}
+        Thread with {coordinator}
       </p>
       <div className="portal-card" style={{ minHeight: 280 }}>
         {messages.map(m => (

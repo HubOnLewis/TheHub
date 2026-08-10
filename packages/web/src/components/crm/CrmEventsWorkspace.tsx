@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAppStore } from '../../store/index.js';
 import { useDeals, useDealMutations } from '../../hooks/useDeals.js';
 import MetricCard from './MetricCard.js';
@@ -9,6 +9,7 @@ import EmptyState from './EmptyState.js';
 import LoadingState from './LoadingState.js';
 import CrmEventSourceBanner from './CrmEventSourceBanner.js';
 import CrmEventSourceDiagnostics from './CrmEventSourceDiagnostics.js';
+import AddEventModal from './AddEventModal.js';
 import {
   filterCrmRows,
   mapApiDealsToWorkspaceRows,
@@ -30,12 +31,29 @@ type Props = {
 
 export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
   const user = useAppStore(s => s.user);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [statusFilter, setStatusFilter] = useState<CrmMetricCategory | 'all'>('active');
   const [mineOnly, setMineOnly] = useState(false);
   const [search, setSearch] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
   const [advancedFilter, setAdvancedFilter] = useState<EventListFilter>('all');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [addOpen, setAddOpen] = useState(() => searchParams.get('new') === '1');
+
+  useEffect(() => {
+    if (searchParams.get('new') === '1') {
+      setAddOpen(true);
+    }
+  }, [searchParams]);
+
+  const closeAdd = () => {
+    setAddOpen(false);
+    if (searchParams.get('new') === '1') {
+      const next = new URLSearchParams(searchParams);
+      next.delete('new');
+      setSearchParams(next, { replace: true });
+    }
+  };
 
   const { data: dealsPage, isLoading, isError } = useDeals({
     limit: 500,
@@ -171,9 +189,13 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
             >
               Filters
             </button>
-            <Link to={`${ROUTES.opportunities}?new=1`} className="btn btn-primary btn-sm crm-events-add-btn">
+            <button
+              type="button"
+              className="btn btn-primary btn-sm crm-events-add-btn"
+              onClick={() => setAddOpen(true)}
+            >
               + Add Event
-            </Link>
+            </button>
           </div>
         </header>
 
@@ -197,7 +219,7 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
                   : 'Try another status card or clear filters.'
             }
             actionLabel="Add Event"
-            actionTo={`${ROUTES.opportunities}?new=1`}
+            onAction={() => setAddOpen(true)}
             secondaryActionLabel={manifest.rowCount === 0 ? 'Import Events' : undefined}
             secondaryActionTo={manifest.rowCount === 0 ? `${ROUTES.settings}/data-import` : undefined}
           />
@@ -220,6 +242,8 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
         advancedFilter={advancedFilter}
         onAdvancedFilterChange={setAdvancedFilter}
       />
+
+      <AddEventModal open={addOpen} onClose={closeAdd} />
     </div>
   );
 }

@@ -1,12 +1,12 @@
 import PaymentProgress from '../components/PaymentProgress.js';
-import { PORTAL_DEMO_EVENT, PORTAL_PAYMENT_HISTORY } from '../demoData.js';
+import { PORTAL_PAYMENT_HISTORY } from '../demoData.js';
 import { formatCurrency } from '@hub-crm/shared';
 import { computeReadiness } from '../readiness.js';
 import { usePortalStore } from '../portalStore.js';
 
 export default function PortalPayments() {
   const event = usePortalStore(s => s.event);
-  const payBalance = usePortalStore(s => s.payBalance);
+  const profile = usePortalStore(s => s.profile);
   const payDeposit = usePortalStore(s => s.payDeposit);
   const { score } = computeReadiness(event);
 
@@ -42,9 +42,9 @@ export default function PortalPayments() {
         </ul>
       </div>
 
-      {PORTAL_PAYMENT_HISTORY.length > 0 ? (
+      {profile.source === 'demo' && PORTAL_PAYMENT_HISTORY.length > 0 ? (
         <div className="portal-card portal-card--flat" style={{ marginTop: 16 }}>
-          <h3>Ledger · Perfect Venue</h3>
+          <h3>Ledger · Perfect Venue (demo)</h3>
           <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 13 }}>
             {PORTAL_PAYMENT_HISTORY.map(p => (
               <li key={p.id} style={{ padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
@@ -59,7 +59,7 @@ export default function PortalPayments() {
       ) : null}
 
       <p style={{ fontSize: 12, color: 'var(--portal-muted)', marginTop: 16 }}>
-        Package total {PORTAL_DEMO_EVENT.packageTotal} · reminders sent before due dates (demo — no live processor).
+        Package total {formatCurrency(profile.packageTotal)} · no live card charges in this build.
       </p>
 
       {event.payments.some(p => p.label.toLowerCase().includes('deposit') && p.status !== 'paid') ? (

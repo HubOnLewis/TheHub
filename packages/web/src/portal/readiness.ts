@@ -1,6 +1,6 @@
 import type { PortalEventState } from './types.js';
-import { PORTAL_DEMO_EVENT } from './demoData.js';
 import { computeClientReadinessIntel } from '../intelligence/readiness/clientReadiness.js';
+import { usePortalStore } from './portalStore.js';
 
 export interface ReadinessBreakdown {
   score: number;
@@ -23,7 +23,8 @@ export function computeReadiness(state: PortalEventState): ReadinessBreakdown {
     state.agreementStatus === 'signed' ? 100 : state.agreementStatus === 'viewed' ? 55 : 20;
 
   const paid = state.payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
-  const paymentPct = Math.min(100, Math.round((paid / PORTAL_DEMO_EVENT.packageTotal) * 100));
+  const packageTotal = usePortalStore.getState().profile.packageTotal || 1;
+  const paymentPct = Math.min(100, Math.round((paid / packageTotal) * 100));
 
   const guestPct = state.guestEstimateLocked ? 100 : state.guestCount > 0 ? 70 : 30;
 

@@ -145,8 +145,22 @@ function relativeWhen(iso: string | null | undefined): string {
   return formatRelativeDate(iso);
 }
 
-function crmStatusToPipeline(status: string, balanceDue: number | null, pvStatus: string | null): EventPipelineStage {
-  if (pvStatus) return normalizePvStage(pvStatus);
+const PIPELINE_ORDER: EventPipelineStage[] = [
+  'lead',
+  'qualified',
+  'proposal_sent',
+  'confirmed',
+  'balance_due',
+  'completed',
+];
+
+function pipelineRank(stage: EventPipelineStage): number {
+  if (stage === 'lost') return -1;
+  const i = PIPELINE_ORDER.indexOf(stage);
+  return i >= 0 ? i : 0;
+}
+
+function crmOnlyToPipeline(status: string, balanceDue: number | null): EventPipelineStage {
   switch (status) {
     case 'Draft':
       return 'lead';
@@ -155,8 +169,9 @@ function crmStatusToPipeline(status: string, balanceDue: number | null, pvStatus
     case 'Approved':
       return 'proposal_sent';
     case 'Won':
-    case 'In Build':
       return balanceDue != null && balanceDue > 0 ? 'balance_due' : 'confirmed';
+    case 'In Build':
+      return 'balance_due';
     case 'Delivered':
       return 'completed';
     case 'Lost':
@@ -164,6 +179,20 @@ function crmStatusToPipeline(status: string, balanceDue: number | null, pvStatus
     default:
       return 'lead';
   }
+}
+
+/**
+ * Prefer the more advanced of CRM status vs Perfect Venue status so stage
+ * advances never get stuck when importMeta.pvStatus lags a CRM patch.
+ */
+function crmStatusToPipeline(status: string, balanceDue: number | null, pvStatus: string | null): EventPipelineStage {
+  const fromCrm = crmOnlyToPipeline(status, balanceDue);
+  if (!pvStatus) return fromCrm;
+  const fromPv = normalizePvStage(pvStatus);
+  if (fromCrm === 'lost' || fromPv === 'lost') {
+    return status === 'Lost' || fromPv === 'lost' ? 'lost' : fromCrm;
+  }
+  return pipelineRank(fromCrm) >= pipelineRank(fromPv) ? fromCrm : fromPv;
 }
 
 function normalizePvStage(raw: string): EventPipelineStage {
@@ -262,9 +291,24 @@ function primaryActionForStage(stage: EventPipelineStage): string {
   }
 }
 
+/** Venue pipeline stages mapped onto equipment-era deal status values. */
 const CRM_NEXT_STATUS: Partial<Record<EventPipelineStage, DealStatus>> = {
   lead: 'Pending Approval',
   qualified: 'Approved',
+  proposal_sent: 'Won',
+  confirmed: 'In Build',
+  balance_due: 'Delivered',
+};
+
+/** Keep importMeta.pvStatus aligned when operators advance stage. */
+export const CRM_STATUS_TO_PV: Record<DealStatus, PvEventStatus> = {
+  Draft: 'lead',
+  'Pending Approval': 'qualified',
+  Approved: 'proposal_sent',
+  Won: 'confirmed',
+  'In Build': 'balance_due',
+  Delivered: 'completed',
+  Lost: 'lost',
 };
 
 export function getStatusQuickActions(
@@ -274,8 +318,15 @@ export function getStatusQuickActions(
   const actions: Array<{ label: string; patchStatus?: DealStatus; description?: string }> = [];
   const next = CRM_NEXT_STATUS[stage];
   if (next && next !== crmStatus) {
+    const labels: Partial<Record<EventPipelineStage, string>> = {
+      lead: 'Move to Qualified',
+      qualified: 'Mark Proposal Sent',
+      proposal_sent: 'Mark Confirmed (deposit secured)',
+      confirmed: 'Mark Balance Due',
+      balance_due: 'Mark Event Completed',
+    };
     actions.push({
-      label: stage === 'lead' ? 'Move to Qualified' : 'Mark Proposal Sent',
+      label: labels[stage] ?? `Advance to ${next}`,
       patchStatus: next,
     });
   }
@@ -319,7 +370,10 @@ export function mapDealToEventDetailViewModel(
   const crmStatus = String(deal.status ?? 'Draft');
 
   const eventDateIso =
-    (meta?.eventDateIso as string) ?? hubRefresh?.eventDateIso ?? null;
+    (meta?.eventDateIso as string) ??
+    (meta?.eventDate as string) ??
+    hubRefresh?.eventDateIso ??
+    null;
   const startTime = (meta?.startTime as string) ?? hubRefresh?.startTime ?? null;
   const endTime = (meta?.endTime as string) ?? hubRefresh?.endTime ?? null;
   const guests =
@@ -352,9 +406,27 @@ export function mapDealToEventDetailViewModel(
   const updatedAt = (deal.updatedAt as string) ?? null;
 
   const pipelineStage = crmStatusToPipeline(crmStatus, balanceDue, pvStatus);
-  const statusLabel = pvStatus
-    ? pvStatusDisplay(pvStatus as PvEventStatus)
-    : dealStatusForDisplay(crmStatus);
+  // Display label follows resolved pipeline (not a stale importMeta.pvStatus)
+  const statusLabel =
+    pipelineStage === 'lead' ||
+    pipelineStage === 'qualified' ||
+    pipelineStage === 'proposal_sent' ||
+    pipelineStage === 'confirmed' ||
+    pipelineStage === 'balance_due' ||
+    pipelineStage === 'completed' ||
+    pipelineStage === 'lost'
+      ? pvStatusDisplay(
+          (pipelineStage === 'proposal_sent'
+            ? 'proposal_sent'
+            : pipelineStage === 'balance_due'
+              ? 'balance_due'
+              : pipelineStage === 'completed'
+                ? 'completed'
+                : pipelineStage === 'lost'
+                  ? 'lost'
+                  : pipelineStage) as PvEventStatus,
+        )
+      : dealStatusForDisplay(crmStatus);
 
   const paymentStatus = getPaymentStatus(grandTotal, amountPaid, balanceDue);
   const paidInFull = paymentStatus === 'Paid in full';

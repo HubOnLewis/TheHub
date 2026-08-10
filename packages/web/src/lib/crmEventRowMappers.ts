@@ -157,7 +157,11 @@ export function mapDealToCrmRow(deal: Record<string, unknown>): CrmEventRow {
       ? (deal.importMeta as Record<string, unknown>)
       : null;
   const pvStatus = importMeta?.pvStatus ? String(importMeta.pvStatus) : undefined;
-  const eventDateIso = importMeta?.eventDateIso ? String(importMeta.eventDateIso) : null;
+  const eventDateIso = importMeta?.eventDateIso
+    ? String(importMeta.eventDateIso)
+    : importMeta?.eventDate
+      ? String(importMeta.eventDate)
+      : null;
   const startTime = importMeta?.startTime ? String(importMeta.startTime) : '';
   const endTime = importMeta?.endTime ? String(importMeta.endTime) : '';
   const guests = typeof importMeta?.guests === 'number' ? importMeta.guests : 0;

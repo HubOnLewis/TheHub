@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { isProductionCRM } from '../config/productionData.js';
+import { isScreenshotMode } from '../config/screenshotMode.js';
 import LiveTasksPage from './live/LiveTasksPage.js';
 import { type TaskAutomationBadge } from '../data/demoVenue.js';
 import EmbeddedAgentPanel from '../components/agents/EmbeddedAgentPanel.js';
@@ -39,7 +40,7 @@ const OWNERS = [
 ];
 
 export default function TasksCenter() {
-  if (isProductionCRM()) return <LiveTasksPage />;
+  if (isProductionCRM() || isScreenshotMode()) return <LiveTasksPage />;
   return <TasksCenterDemo />;
 }
 

@@ -311,20 +311,20 @@ function resolveImportedSource(): CrmEventSourceManifest {
     });
   }
 
+  // Dev / screenshot: always allow demo seed so operators can walk the product
+  // without a Perfect Venue re-import. Production never uses this path.
   if (!isProductionCRM()) {
-    const hasVenueImport = PV_FULL_EXPORT_AVAILABLE || PF_EVENTS_SNAPSHOT_AVAILABLE;
-    if (hasVenueImport) {
-      const demoRows = rowsFromDemoSeed();
-      if (demoRows.length > 0) {
-        return buildManifest('demo-seed', demoRows, {
-          completeness: 'FALLBACK',
-          authoritative: true,
-          importedAt: null,
-          warningMessage: 'No complete Perfect Venue import available. Using demo seed data.',
-          pfTextStatus: pf.completeness !== 'FAILED' ? pf : null,
-          skippedFallbackFrom: 'pfevents-txt',
-        });
-      }
+    const demoRows = rowsFromDemoSeed();
+    if (demoRows.length > 0) {
+      return buildManifest('demo-seed', demoRows, {
+        completeness: 'FALLBACK',
+        authoritative: true,
+        importedAt: null,
+        warningMessage:
+          'No complete Perfect Venue import loaded. Showing demo venue seed for local walkthrough.',
+        pfTextStatus: pf.completeness !== 'FAILED' ? pf : null,
+        skippedFallbackFrom: 'pfevents-txt',
+      });
     }
   }
 

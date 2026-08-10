@@ -6,6 +6,7 @@ type Props = {
   hint?: string;
   actionLabel?: string;
   actionTo?: string;
+  onAction?: () => void;
   secondaryActionLabel?: string;
   secondaryActionTo?: string;
 };
@@ -15,6 +16,7 @@ export default function EmptyState({
   hint = 'Try another status card or clear filters.',
   actionLabel = 'Add event',
   actionTo = ROUTES.opportunities,
+  onAction,
   secondaryActionLabel,
   secondaryActionTo,
 }: Props) {
@@ -28,9 +30,15 @@ export default function EmptyState({
             {secondaryActionLabel}
           </Link>
         ) : null}
-        <Link to={actionTo} className="btn btn-primary btn-sm">
-          {actionLabel}
-        </Link>
+        {onAction ? (
+          <button type="button" className="btn btn-primary btn-sm" onClick={onAction}>
+            {actionLabel}
+          </button>
+        ) : (
+          <Link to={actionTo} className="btn btn-primary btn-sm">
+            {actionLabel}
+          </Link>
+        )}
       </div>
     </div>
   );

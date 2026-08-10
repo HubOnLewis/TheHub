@@ -1,7 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/BrandLogo.js';
 import { PORTAL_ROUTES } from '../paths.js';
-import { PORTAL_DEMO_EVENT } from '../demoData.js';
 import { usePortalStore } from '../portalStore.js';
 
 const NAV = [
@@ -23,6 +22,7 @@ export default function PortalShell() {
   const logout = usePortalStore(s => s.logout);
   const navigate = useNavigate();
   const user = usePortalStore(s => s.session?.user);
+  const profile = usePortalStore(s => s.profile);
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `portal-nav-link${isActive ? ' active' : ''}`;
@@ -33,7 +33,7 @@ export default function PortalShell() {
         <div className="portal-top__brand">
           <BrandLogo size="sm" />
         </div>
-        <span className="portal-top__event">{PORTAL_DEMO_EVENT.title}</span>
+        <span className="portal-top__event">{profile.title}</span>
         <button
           type="button"
           className="portal-btn portal-btn--ghost"
@@ -60,7 +60,7 @@ export default function PortalShell() {
               {n.label}
             </NavLink>
           ))}
-          <NavLink to={PORTAL_ROUTES.event(PORTAL_DEMO_EVENT.id)} className={linkClass} style={{ marginTop: 12 }}>
+          <NavLink to={PORTAL_ROUTES.event(profile.id)} className={linkClass} style={{ marginTop: 12 }}>
             Event workspace
           </NavLink>
           {user ? (
