@@ -51,6 +51,14 @@ services:
       JWT_SECRET: ${JWT_SECRET:-local_dev_secret_change_in_production_minimum_32_chars}
       CLIENT_URL: http://localhost:5173
       SUPER_ADMIN_EMAILS: admin@hubonlewis.com
+      HUB_PRODUCT_MODE: venue
+      # Point at model PC (host.docker.internal = your Windows host Ollama)
+      AI_PROVIDER: ${AI_PROVIDER:-local}
+      AI_MODE: ${AI_MODE:-draft_only}
+      AI_BASE_URL: ${AI_BASE_URL:-http://host.docker.internal:11434/v1}
+      AI_MODEL: ${AI_MODEL:-llama3.2}
+      AI_TIMEOUT_MS: ${AI_TIMEOUT_MS:-90000}
+      AI_API_KEY: ${AI_API_KEY:-ollama}
     volumes:
       - ./packages/api/src:/app/packages/api/src:ro
       - ./packages/shared/src:/app/packages/shared/src:ro
@@ -69,6 +77,8 @@ services:
       - "5173:5173"
     environment:
       VITE_API_URL: http://localhost:3001/api
+      VITE_AI_PROVIDER: local
+      VITE_AI_MODE: draft_only
     volumes:
       - ./packages/web/src:/app/packages/web/src:ro
       - ./packages/shared/src:/app/packages/shared/src:ro

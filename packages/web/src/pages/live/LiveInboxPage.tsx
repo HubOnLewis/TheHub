@@ -1,15 +1,44 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingState from '../../components/crm/LoadingState.js';
 import LiveModuleTable, { EventLink, MoneyCell, StatusCell } from '../../components/live/LiveModuleTable.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { generateInboxActivity, type InboxActivityItem } from '../../lib/liveEventHelpers.js';
+import { enhanceWithLlm } from '../../intelligence/ai/provider.js';
+import { isAiClientHintEnabled } from '../../intelligence/ai/config.js';
 
 export default function LiveInboxPage() {
   const navigate = useNavigate();
   const { rows, isLoading, isError } = useLiveCrmEvents();
+  const [draftingId, setDraftingId] = useState<string | null>(null);
+  const [draftById, setDraftById] = useState<Record<string, string>>({});
+  const [draftError, setDraftError] = useState<string | null>(null);
 
   const items = useMemo(() => generateInboxActivity(rows), [rows]);
+
+  const handleDraft = async (item: InboxActivityItem) => {
+    if (!isAiClientHintEnabled()) return;
+    setDraftingId(item.id);
+    setDraftError(null);
+    try {
+      const result = await enhanceWithLlm({
+        kind: 'inbox_reply',
+        input: `Draft a short follow-up for this venue activity.\nReason: ${item.reason}\nEvent: ${item.eventTitle}\nContact: ${item.contact}\nStatus: ${item.statusLabel}\nValue: ${item.value}\nBalance due: ${item.balanceDue}`,
+        context: `HuB on Lewis operational inbox. Date: ${item.dateDisplay}`,
+      });
+      if (result.error && !result.enhanced) {
+        setDraftError(result.error);
+      }
+      setDraftById(prev => ({
+        ...prev,
+        [item.id]: result.enhanced ? result.output : result.error
+          ? `Could not enhance: ${result.error}`
+          : result.output,
+      }));
+    } finally {
+      setDraftingId(null);
+    }
+  };
 
   if (isLoading) return <LoadingState message="Loading activity…" />;
 
@@ -20,10 +49,19 @@ export default function LiveInboxPage() {
           <h1 className="hub-admin-page__title">Activity Inbox</h1>
           <p className="hub-admin-page__subtitle">
             Event activity and follow-ups from your live pipeline — not email messages.
+            {isAiClientHintEnabled()
+              ? ' Draft replies can be generated via the model bridge (Settings → Integrations).'
+              : null}
           </p>
         </div>
         <span className="hub-admin-stat-pill">{items.length} item{items.length === 1 ? '' : 's'}</span>
       </header>
+
+      {draftError ? (
+        <p className="text-muted text-sm" style={{ marginBottom: 12 }}>
+          AI draft issue: {draftError}
+        </p>
+      ) : null}
 
       {isError ? (
         <div className="card hub-live-empty">
@@ -44,6 +82,22 @@ export default function LiveInboxPage() {
                 <div>
                   <strong>{r.reason}</strong>
                   <div className="text-muted text-sm">{r.dateDisplay}</div>
+                  {draftById[r.id] ? (
+                    <pre
+                      className="text-sm"
+                      style={{
+                        marginTop: 8,
+                        whiteSpace: 'pre-wrap',
+                        fontFamily: 'inherit',
+                        background: 'var(--surface-2, #f6f5f2)',
+                        padding: 8,
+                        borderRadius: 6,
+                        maxWidth: 420,
+                      }}
+                    >
+                      {draftById[r.id]}
+                    </pre>
+                  ) : null}
                 </div>
               ),
             },
@@ -74,9 +128,21 @@ export default function LiveInboxPage() {
               header: '',
               className: 'crm-events-table__col--actions',
               render: (r: InboxActivityItem) => (
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => navigate(r.href)}>
-                  Open
-                </button>
+                <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                  {isAiClientHintEnabled() ? (
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      disabled={draftingId === r.id}
+                      onClick={() => void handleDraft(r)}
+                    >
+                      {draftingId === r.id ? 'Drafting…' : 'AI draft'}
+                    </button>
+                  ) : null}
+                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => navigate(r.href)}>
+                    Open
+                  </button>
+                </div>
               ),
             },
           ]}

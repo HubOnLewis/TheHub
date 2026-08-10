@@ -52,6 +52,6 @@ COPY --from=builder /app/packages/api/dist    ./packages/api/dist
 
 EXPOSE 3001
 
-# Do NOT use `npm start` — that script includes --env-file=../../.env
-# which crashes if .env doesn't exist (env vars injected by host/Render instead)
-CMD ["node", "packages/api/dist/server.js"]
+# Compiled layout: packages/api/dist/api/src/server.js (matches packages/api "start" script)
+# Env is injected by host / compose / Render — do not require a local .env file.
+CMD ["node", "packages/api/dist/api/src/server.js"]

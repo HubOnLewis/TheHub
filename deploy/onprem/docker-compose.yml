@@ -1,0 +1,86 @@
+# Hub CRM — always-on on-prem API (Hub LAN) + public HTTPS edge
+#
+# Target architecture (recommended when Ollama is always-on on Hub LAN):
+#
+#   Internet → Caddy :443 (api.hubonlewis.com)
+#                → Hub API :3001
+#                     → MongoDB Atlas (or LAN Mongo)
+#                     → Ollama on LAN (NEVER published to internet)
+#
+# Web UI can stay on Render static hosting; only the API moves on-prem.
+#
+# Usage (from repo root):
+#   cp deploy/onprem/.env.example deploy/onprem/.env
+#   # edit secrets + AI_BASE_URL
+#   docker compose -f deploy/onprem/docker-compose.yml --env-file deploy/onprem/.env up -d --build
+#
+# Prerequisites on the host:
+#   - Docker Desktop / Docker Engine
+#   - Ollama installed and set to always-on (OLLAMA_HOST=0.0.0.0:11434 if remote container)
+#   - DNS A/AAAA for api.hubonlewis.com → this host (or Cloudflare orange-cloud)
+
+name: hub-onprem
+
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: packages/api/Dockerfile
+    container_name: hub-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      HUB_PRODUCT_MODE: venue
+      # Ollama on the same Windows host as Docker Desktop:
+      # AI_BASE_URL=http://host.docker.internal:11434/v1
+      # Ollama on another LAN machine:
+      # AI_BASE_URL=http://192.168.x.x:11434/v1
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Bind API only to localhost — public traffic goes through Caddy
+    ports:
+      - "127.0.0.1:3001:3001"
+    volumes:
+      - hub_api_uploads:/app/packages/api/uploads
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: hub-caddy
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      # Used by Caddyfile {$API_PUBLIC_HOST}
+      API_PUBLIC_HOST: ${API_PUBLIC_HOST:-api.hubonlewis.com}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  hub_api_uploads:
+    name: hub_api_uploads
+  caddy_data:
+    name: hub_caddy_data
+  caddy_config:
+    name: hub_caddy_config

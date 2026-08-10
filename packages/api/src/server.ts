@@ -29,6 +29,8 @@ import buildRoutes from './routes/builds.js';
 import productionRoutes from './routes/production.js';
 import deliveryRoutes from './routes/delivery.js';
 import integrationsRoutes from './routes/integrations.js';
+import aiRoutes from './routes/ai.js';
+import { getAiRuntimeConfig } from './config/ai.js';
 
 const app = express();
 
@@ -46,7 +48,21 @@ app.use(express.json({ limit: '2mb' }));
 app.use(requestAudit);
 
 // ── Health check ──────────────────────────────────────────────────
-app.get('/health', (_req, res) => res.json({ status: 'ok', env: env.NODE_ENV }));
+app.get('/health', (_req, res) => {
+  const ai = getAiRuntimeConfig();
+  res.json({
+    status: 'ok',
+    env: env.NODE_ENV,
+    productMode: ai.productMode,
+    ai: {
+      provider: ai.provider,
+      mode: ai.mode,
+      configured: ai.configured,
+      model: ai.model,
+      baseUrlHost: ai.baseUrlHost,
+    },
+  });
+});
 
 // ── Routes ────────────────────────────────────────────────────────
 app.use('/api/auth',      authRoutes);
@@ -66,6 +82,7 @@ app.use('/api/builds', buildRoutes);
 app.use('/api/production', productionRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/integrations', integrationsRoutes);
+app.use('/api/ai', aiRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -85,6 +102,7 @@ function readApiVersion(): string {
 }
 
 function logBootConfig(): void {
+  const ai = getAiRuntimeConfig();
   console.log(
     JSON.stringify({
       type: 'api_boot',
@@ -94,6 +112,14 @@ function logBootConfig(): void {
       corsAllowedOrigins: env.CORS_ORIGINS_LIST,
       version: readApiVersion(),
       manualCorsPreflight: true,
+      productMode: ai.productMode,
+      ai: {
+        provider: ai.provider,
+        mode: ai.mode,
+        configured: ai.configured,
+        model: ai.model,
+        baseUrlHost: ai.baseUrlHost,
+      },
     }),
   );
 }

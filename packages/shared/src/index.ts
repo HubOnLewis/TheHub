@@ -9,3 +9,4 @@ export * from './types/prospect.js';
 export * from './types/referral.js';
 export * from './types/marketingBlast.js';
 export * from './types/eventFinalization.js';
+export * from './types/ai.js';

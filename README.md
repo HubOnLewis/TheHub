@@ -115,6 +115,29 @@ Same URLs: API **3001**, web **5173**.
 
 ---
 
+## Local model PC (AI drafts)
+
+**Always-on Ollama on Hub LAN (recommended):** run the Hub API on that LAN and keep Ollama private.
+
+- Architecture: [`docs/HUB_ONPREM_API_OLLAMA.md`](docs/HUB_ONPREM_API_OLLAMA.md)
+- Deploy kit: [`deploy/onprem/`](deploy/onprem/) (Caddy + API compose)
+- Link notes: [`docs/HUB_LOCAL_MODEL_LINK.md`](docs/HUB_LOCAL_MODEL_LINK.md)
+
+```env
+AI_PROVIDER=local
+AI_MODE=draft_only
+AI_BASE_URL=http://host.docker.internal:11434/v1   # or LAN IP of Ollama
+AI_MODEL=llama3.2
+HUB_PRODUCT_MODE=venue
+```
+
+- Settings → **Integrations** → **Local model / AI bridge** → Probe  
+- Live **Inbox** → **AI draft**  
+
+Users access AI **only** through the Hub API from anywhere — never by talking to Ollama directly.
+
+---
+
 ## Deploy (Render)
 
 **Runbook:** [`docs/HUB_RENDER_DEPLOY_RUNBOOK.md`](docs/HUB_RENDER_DEPLOY_RUNBOOK.md)

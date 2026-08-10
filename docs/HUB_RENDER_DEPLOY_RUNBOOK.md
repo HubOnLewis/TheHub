@@ -130,6 +130,21 @@ When `app.hubonlewis.com` is ready:
 
 ---
 
+## Local model PC (after core deploy)
+
+1. On the model PC: run Ollama/LM Studio (OpenAI-compatible `/v1`).
+2. If API is on Render: expose the model with Cloudflare Tunnel or ngrok (LAN IPs will not work).
+3. On **The-Hub-Api** set:
+   - `AI_PROVIDER=local`
+   - `AI_MODE=draft_only`
+   - `AI_BASE_URL=https://<tunnel>/v1`
+   - `AI_MODEL=llama3.2` (or your model name)
+   - `HUB_PRODUCT_MODE=venue`
+4. Redeploy API → Settings → Integrations → **Probe model PC**.
+5. Full guide: [`HUB_LOCAL_MODEL_LINK.md`](./HUB_LOCAL_MODEL_LINK.md)
+
+---
+
 ## Troubleshooting
 
 | Symptom | Fix |
@@ -139,6 +154,7 @@ When `app.hubonlewis.com` is ready:
 | Empty data | `DB_NAME` and URI path both `hub_crm`; wrong DB → empty collections |
 | Invalid credentials | API logs: bootstrap ran? Re-set `SEED_ADMIN_PASSWORD`, clear users collection once, redeploy API |
 | 502 on health | Mongo unreachable — check Atlas IP allowlist and URI credentials |
+| AI probe fails | Model PC offline, wrong `AI_BASE_URL`, firewall, or tunnel not running — see local model doc |
 
 ---
 

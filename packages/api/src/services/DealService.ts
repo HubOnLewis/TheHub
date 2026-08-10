@@ -24,6 +24,7 @@ import { eventBus } from '../jobs/index.js';
 import { dealPressureService } from './DealPressureService.js';
 import { forecastConfidenceService } from './ForecastConfidenceService.js';
 import { buildMarginService } from './BuildMarginService.js';
+import { getAiRuntimeConfig } from '../config/ai.js';
 
 /** Ordered deal stages — index = position in the forward progression */
 const DEAL_STAGE_ORDER: DealStatus[] = [
@@ -69,11 +70,13 @@ function validateTransition(before: DealDoc & { _id: string }, payload: Partial<
   // Field-level gates for specific forward transitions
   const amount = payload.amount ?? before.amount;
   const unitId = payload.unitId ?? before.unitId;
+  const productMode = getAiRuntimeConfig().productMode;
 
-  if (next === 'Pending Approval' && !(amount > 0)) {
+  if (next === 'Pending Approval' && !(amount > 0) && productMode === 'equipment') {
     throw new ValidationError('Amount must be greater than 0 before submitting for approval');
   }
-  if (next === 'Won' && !unitId) {
+  // Equipment lineage required a unit at Won; venue events do not have units.
+  if (next === 'Won' && !unitId && productMode === 'equipment') {
     throw new ValidationError('A unit must be linked before marking a deal as Won');
   }
 }

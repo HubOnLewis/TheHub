@@ -1,9 +1,11 @@
 import MailchimpSettingsPanel from './MailchimpSettingsPanel.js';
+import AiModelSettingsPanel from './AiModelSettingsPanel.js';
 import { SMS_PROVIDER_STATUS, SMS_TEMPLATES } from '../../integrations/sms/smsDemoAdapter.js';
 
 export default function IntegrationsSettingsPanel() {
   return (
     <div className="settings-deep settings-integrations-stack">
+      <AiModelSettingsPanel />
       <MailchimpSettingsPanel />
 
       <section className="card settings-provider-card" style={{ marginTop: 20 }}>

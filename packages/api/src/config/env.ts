@@ -84,6 +84,21 @@ const EnvSchema = z.object({
   ATTACHMENT_S3_BUCKET: z.string().optional(),
   ATTACHMENT_S3_REGION: z.string().optional(),
   ATTACHMENT_S3_BASE_URL: z.string().optional(),
+
+  // ── AI / local model (optional — API boots without these) ──
+  /** none | local | openai | xai | groq | gemini */
+  AI_PROVIDER: z.string().optional(),
+  /** off | draft_only | approval_required | full_assist */
+  AI_MODE: z.string().optional(),
+  /** OpenAI-compatible base URL, e.g. http://192.168.1.50:11434/v1 or https://tunnel.example/v1 */
+  AI_BASE_URL: z.string().optional(),
+  AI_MODEL: z.string().optional(),
+  AI_API_KEY: z.string().optional(),
+  XAI_API_KEY: z.string().optional(),
+  OPENAI_API_KEY: z.string().optional(),
+  AI_TIMEOUT_MS: z.coerce.number().optional(),
+  /** venue (default HuB) | equipment (legacy unit gates) */
+  HUB_PRODUCT_MODE: z.enum(['venue', 'equipment']).optional(),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

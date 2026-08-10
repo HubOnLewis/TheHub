@@ -1,0 +1,29 @@
+# Public edge for Hub API on Hub LAN.
+# Only this reverse proxy should be reachable from the internet.
+# Ollama port 11434 must remain private (LAN or localhost only).
+
+{$API_PUBLIC_HOST:api.hubonlewis.com} {
+	encode gzip
+
+	# Optional: tighten later with Cloudflare Access or IP allowlists
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+
+	reverse_proxy api:3001 {
+		health_uri /health
+		health_interval 30s
+		transport http {
+			read_timeout 120s
+			write_timeout 120s
+		}
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

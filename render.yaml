@@ -97,6 +97,25 @@ services:
       - key: MAILCHIMP_AUDIENCE_ID
         sync: false
 
+      # AI / local model PC bridge (OpenAI-compatible). No-op when provider=none.
+      # For a home/office model PC behind NAT, set AI_BASE_URL to a Cloudflare Tunnel / ngrok URL ending in /v1
+      - key: HUB_PRODUCT_MODE
+        value: venue
+      - key: AI_PROVIDER
+        value: none
+      - key: AI_MODE
+        value: off
+      - key: AI_BASE_URL
+        sync: false
+      - key: AI_MODEL
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: XAI_API_KEY
+        sync: false
+      - key: AI_TIMEOUT_MS
+        value: "120000"
+
   - type: web
     name: The-Hub
     runtime: static
@@ -127,6 +146,12 @@ services:
         value: "false"
       - key: VITE_FEATURE_LEGACY_IMPORTS_UI
         value: "false"
+
+      # UI affordances for AI drafts (server AI_* is authoritative)
+      - key: VITE_AI_PROVIDER
+        value: "local"
+      - key: VITE_AI_MODE
+        value: "draft_only"
 
     routes:
       - type: rewrite
