@@ -144,6 +144,18 @@ export const ApplyPlaybookSchema = z.object({
 });
 export type ApplyPlaybookPayload = z.infer<typeof ApplyPlaybookSchema>;
 
+export const PatchPlaybookTaskSchema = z.object({
+  taskId: z.string().min(1).max(80),
+  status: z.enum(['open', 'done']),
+});
+export type PatchPlaybookTaskPayload = z.infer<typeof PatchPlaybookTaskSchema>;
+
+export const PatchPlaybookDocumentSchema = z.object({
+  key: z.string().min(1).max(80),
+  onFile: z.boolean(),
+});
+export type PatchPlaybookDocumentPayload = z.infer<typeof PatchPlaybookDocumentSchema>;
+
 export const GuestPortalDetailsSchema = z.object({
   guestCount: z.number().int().min(0).max(5000).optional(),
   layout: z.string().max(120).optional(),

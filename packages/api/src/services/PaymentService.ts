@@ -1,5 +1,6 @@
 import type { Db } from 'mongodb';
-import type { CreatePaymentLinkPayload, PatchPaymentLinkPayload, PaymentLinkRecord } from '@hub-crm/shared';
+import type { CreatePaymentLinkPayload, PatchPaymentLinkPayload, PaymentLinkRecord, PlaybookPayment } from '@hub-crm/shared';
+import { playbookScheduleToLedger, planPlaybookPaymentUpserts } from '@hub-crm/shared';
 import { NotFoundError, ValidationError } from '../errors/index.js';
 import { PaymentRepository, serializePayment, type PaymentLinkDoc } from '../repositories/PaymentRepository.js';
 import { DealRepository } from '../repositories/DealRepository.js';
@@ -99,6 +100,53 @@ export class PaymentService {
       await this.applyPaidToDeal(db, ctx, updated);
     }
     return serializePayment(updated);
+  }
+
+
+  /** Seed/update Mongo payment_links from a playbook schedule. Never calls Stripe. */
+  async upsertPlaybookSchedule(
+    db: Db,
+    ctx: TenantContext,
+    eventId: string,
+    input: { eventTitle: string; schedule: PlaybookPayment[]; grandTotal: number },
+  ): Promise<PaymentLinkRecord[]> {
+    const desired = playbookScheduleToLedger(input.schedule, input.grandTotal);
+    const existing = await PaymentRepository.listByEvent(db, ctx, eventId);
+    const plan = planPlaybookPaymentUpserts(desired, existing);
+    const out: PaymentLinkRecord[] = [];
+    const now = new Date();
+    for (const step of plan) {
+      if (step.action === 'create') {
+        const doc = await PaymentRepository.insertOne(db, ctx, {
+          tenantId: ctx.tenantId ?? 'hub-wichita',
+          eventId,
+          eventTitle: input.eventTitle,
+          kind: step.row.kind,
+          amount: step.row.amount,
+          currency: 'USD',
+          status: 'created',
+          token: token(),
+          note: 'Playbook: ' + step.row.label,
+          dueDate: step.row.dueDate ?? undefined,
+          source: 'playbook',
+          playbookPaymentId: step.row.playbookPaymentId,
+          createdAt: now,
+          updatedAt: now,
+          createdBy: ctx.userName,
+        });
+        out.push(serializePayment(doc));
+      } else {
+        const updated = await PaymentRepository.updateOne(db, ctx, step.id, {
+          amount: step.row.amount,
+          dueDate: step.row.dueDate ?? undefined,
+          note: 'Playbook: ' + step.row.label,
+          source: 'playbook',
+          playbookPaymentId: step.row.playbookPaymentId,
+        });
+        if (updated) out.push(serializePayment(updated));
+      }
+    }
+    return out;
   }
 
   private async applyPaidToDeal(

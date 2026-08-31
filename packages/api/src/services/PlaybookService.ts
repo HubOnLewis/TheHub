@@ -3,12 +3,17 @@ import {
   applyPlaybookToImportMeta,
   applyClientDetailsToImportMeta,
   parseClientDetails,
+  playbookFromImportMeta,
   resolveEventType,
+  setDocumentOnFile,
+  setPlaybookTaskStatus,
   type ClientDetails,
+  type PlaybookTask,
 } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
+import { paymentService } from './PaymentService.js';
 
 function metaOf(deal: { importMeta?: Record<string, unknown> }): Record<string, unknown> {
   return deal.importMeta && typeof deal.importMeta === 'object'
@@ -44,6 +49,49 @@ export class PlaybookService {
     if (!deal) throw new NotFoundError('Event');
     const type = eventType ? resolveEventType(eventType) : undefined;
     const importMeta = applyPlaybookToDealMeta(deal, type);
+    const updated = await DealRepository.updateOne(db, ctx, dealId, { importMeta } as never);
+    if (!updated) throw new NotFoundError('Event');
+
+    const playbook = playbookFromImportMeta(importMeta);
+    const grandTotal =
+      (typeof importMeta.grandTotal === 'number' && importMeta.grandTotal) ||
+      (typeof deal.amount === 'number' ? deal.amount : 0);
+    if (playbook) {
+      await paymentService.upsertPlaybookSchedule(db, ctx, dealId, {
+        eventTitle: String(deal.title ?? 'Event'),
+        schedule: playbook.paymentSchedule,
+        grandTotal,
+      });
+    }
+    return updated;
+  }
+
+  /**
+   * Staff check-off for playbook tasks lives on the deal (importMeta.playbook.tasks).
+   * Venue events are not production_jobs (those require a unit/build).
+   */
+  async setTaskStatus(
+    db: Db,
+    ctx: TenantContext,
+    dealId: string,
+    taskId: string,
+    status: PlaybookTask['status'],
+  ) {
+    const deal = await DealRepository.findById(db, ctx, dealId);
+    if (!deal) throw new NotFoundError('Event');
+    const importMeta = setPlaybookTaskStatus(metaOf(deal), taskId, status);
+    if (!importMeta) throw new NotFoundError('Playbook task');
+    const updated = await DealRepository.updateOne(db, ctx, dealId, { importMeta } as never);
+    if (!updated) throw new NotFoundError('Event');
+    return updated;
+  }
+
+  /** Seeded playbook docs use the existing importMeta.documents on-file flags. */
+  async setDocumentFlag(db: Db, ctx: TenantContext, dealId: string, key: string, onFile: boolean) {
+    const deal = await DealRepository.findById(db, ctx, dealId);
+    if (!deal) throw new NotFoundError('Event');
+    const importMeta = setDocumentOnFile(metaOf(deal), key, onFile);
+    if (!importMeta) throw new NotFoundError('Playbook document');
     const updated = await DealRepository.updateOne(db, ctx, dealId, { importMeta } as never);
     if (!updated) throw new NotFoundError('Event');
     return updated;

@@ -114,6 +114,8 @@ export type PaymentLinkRecord = {
   updatedAt: string;
   paidAt?: string;
   createdBy?: string;
+  source?: 'playbook' | 'staff';
+  playbookPaymentId?: string;
 };
 
 

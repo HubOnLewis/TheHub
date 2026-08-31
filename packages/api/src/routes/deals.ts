@@ -9,7 +9,7 @@ import { buildService } from '../services/BuildService.js';
 import { unitService } from '../services/UnitService.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { getDB } from '../config/db.js';
-import { ApplyPlaybookSchema, CreateBuildSchema, CreateDealSchema, PatchDealSchema } from '@hub-crm/shared';
+import { ApplyPlaybookSchema, CreateBuildSchema, CreateDealSchema, PatchDealSchema, PatchPlaybookDocumentSchema, PatchPlaybookTaskSchema } from '@hub-crm/shared';
 import { playbookService } from '../services/PlaybookService.js';
 
 const CreateDealBuildSchema = CreateBuildSchema.omit({ dealId: true, unitId: true }).extend({
@@ -162,6 +162,19 @@ router.post('/:id/playbook', validate(ApplyPlaybookSchema), async (req, res, nex
     res.json(await playbookService.apply(getDB(), req.tenant, req.params['id']!, req.body.eventType));
   } catch (err) { next(err); }
 });
+
+router.patch('/:id/playbook/tasks', validate(PatchPlaybookTaskSchema), async (req, res, next) => {
+  try {
+    res.json(await playbookService.setTaskStatus(getDB(), req.tenant, req.params['id']!, req.body.taskId, req.body.status));
+  } catch (err) { next(err); }
+});
+
+router.patch('/:id/playbook/documents', validate(PatchPlaybookDocumentSchema), async (req, res, next) => {
+  try {
+    res.json(await playbookService.setDocumentFlag(getDB(), req.tenant, req.params['id']!, req.body.key, req.body.onFile));
+  } catch (err) { next(err); }
+});
+
 
 router.patch('/:id', validate(PatchDealSchema), async (req, res, next) => {
   try {

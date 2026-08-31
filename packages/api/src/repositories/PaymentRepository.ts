@@ -19,6 +19,8 @@ export interface PaymentLinkDoc extends Document {
   updatedAt: Date;
   paidAt?: Date;
   createdBy?: string;
+  source?: 'playbook' | 'staff';
+  playbookPaymentId?: string;
 }
 
 function toIso(d: Date | string | undefined): string | undefined {
@@ -43,6 +45,8 @@ export function serializePayment(doc: PaymentLinkDoc & { _id: string }): Payment
     updatedAt: toIso(doc.updatedAt) ?? new Date().toISOString(),
     paidAt: toIso(doc.paidAt),
     createdBy: doc.createdBy,
+    source: doc.source,
+    playbookPaymentId: doc.playbookPaymentId,
   };
 }
 

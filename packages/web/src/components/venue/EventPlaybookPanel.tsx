@@ -5,6 +5,7 @@ import {
   EVENT_TYPE_LABELS,
   extraContacts,
   barPackageLabel,
+  formatCurrency,
   type EventType,
 } from '@hub-crm/shared';
 import type { EventDetailViewModel } from '../../lib/eventDetail.js';
@@ -13,6 +14,11 @@ import client from '../../api/client.js';
 type Props = {
   model: EventDetailViewModel;
 };
+
+function parseErr(e: unknown): string {
+  const ax = e as { response?: { data?: { error?: string } }; message?: string };
+  return ax.response?.data?.error ?? ax.message ?? 'Request failed';
+}
 
 export default function EventPlaybookPanel({ model }: Props) {
   const qc = useQueryClient();
@@ -28,17 +34,37 @@ export default function EventPlaybookPanel({ model }: Props) {
       client.post(`/deals/${model.id}/playbook`, { eventType }).then(r => r.data),
     onSuccess: async () => {
       await qc.invalidateQueries({ queryKey: ['deal', model.id] });
-      setMsg(`${EVENT_TYPE_LABELS[eventType]} playbook applied — tasks, payments, docs, and client dates are on this event.`);
+      await qc.invalidateQueries({ queryKey: ['payments', model.id] });
+      setMsg(`${EVENT_TYPE_LABELS[eventType]} playbook applied — tasks, payment rows, docs, and client dates are on this event.`);
     },
-    onError: (e: unknown) => {
-      const ax = e as { response?: { data?: { error?: string } }; message?: string };
-      setMsg(ax.response?.data?.error ?? ax.message ?? 'Could not apply playbook');
+    onError: (e: unknown) => setMsg(parseErr(e) || 'Could not apply playbook'),
+  });
+
+  const taskMut = useMutation({
+    mutationFn: (input: { taskId: string; status: 'open' | 'done' }) =>
+      client.patch(`/deals/${model.id}/playbook/tasks`, input).then(r => r.data),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['deal', model.id] });
+      setMsg(null);
     },
+    onError: (e: unknown) => setMsg(parseErr(e)),
+  });
+
+  const docMut = useMutation({
+    mutationFn: (input: { key: string; onFile: boolean }) =>
+      client.patch(`/deals/${model.id}/playbook/documents`, input).then(r => r.data),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ['deal', model.id] });
+      setMsg(null);
+    },
+    onError: (e: unknown) => setMsg(parseErr(e)),
   });
 
   const playbook = model.playbook;
   const details = model.clientDetails;
   const extras = extraContacts(details);
+  const busy = applyMut.isPending || taskMut.isPending || docMut.isPending || model.isReferenceOnly;
+  const grandTotal = model.grandTotal ?? 0;
 
   return (
     <section className="event-docs-panel">
@@ -70,7 +96,7 @@ export default function EventPlaybookPanel({ model }: Props) {
             </p>
           ) : (
             <p className="text-muted text-sm" style={{ marginTop: 8 }}>
-              No playbook yet. Apply to seed tasks and client dates.
+              No playbook yet. Apply to seed tasks, payment rows, and client dates.
             </p>
           )}
         </div>
@@ -90,40 +116,67 @@ export default function EventPlaybookPanel({ model }: Props) {
       {playbook ? (
         <>
           <h3 className="event-docs-panel__sub">Staff tasks</h3>
+          <p className="text-muted text-sm">Mark done or undo. Saved on this event.</p>
           <ul className="event-docs-checklist">
             {playbook.tasks.map(t => (
-              <li key={t.id}>
-                <span className="event-docs-check" aria-hidden>
-                  {t.status === 'done' ? '✓' : '○'}
-                </span>
-                {t.label}
-                <span className="text-muted"> · {t.owner} · {t.dueLabel}</span>
+              <li key={t.id} className={t.status === 'done' ? 'is-onfile' : ''}>
+                <button
+                  type="button"
+                  className="event-docs-checkbtn"
+                  disabled={busy}
+                  aria-pressed={t.status === 'done'}
+                  onClick={() =>
+                    taskMut.mutate({ taskId: t.id, status: t.status === 'done' ? 'open' : 'done' })
+                  }
+                >
+                  <span className="event-docs-check" aria-hidden>
+                    {t.status === 'done' ? '✓' : '○'}
+                  </span>
+                  {t.label}
+                  <span className="text-muted"> · {t.owner} · {t.dueLabel}</span>
+                </button>
               </li>
             ))}
           </ul>
           <h3 className="event-docs-panel__sub">Milestone payments</h3>
+          <p className="text-muted text-sm">
+            Apply writes deposit and balance as Hub payment rows (Money tab). Not Stripe charges.
+          </p>
           <ul className="event-docs-checklist">
-            {playbook.paymentSchedule.map(p => (
-              <li key={p.id}>
-                <span className="event-docs-check" aria-hidden>
-                  ○
-                </span>
-                {p.label} ({Math.round(p.percent * 100)}%)
-                <span className="text-muted"> · due {p.dueLabel}</span>
-              </li>
-            ))}
+            {playbook.paymentSchedule.map(p => {
+              const amount = grandTotal > 0 ? Math.round(grandTotal * p.percent * 100) / 100 : null;
+              return (
+                <li key={p.id}>
+                  <span className="event-docs-check" aria-hidden>
+                    ○
+                  </span>
+                  {p.label} ({Math.round(p.percent * 100)}%)
+                  {amount != null ? <span> · {formatCurrency(amount)}</span> : null}
+                  <span className="text-muted"> · due {p.dueLabel}</span>
+                </li>
+              );
+            })}
           </ul>
           <h3 className="event-docs-panel__sub">Document set</h3>
+          <p className="text-muted text-sm">Mark on-file using the same flags as Docs. Does not upload a second copy.</p>
           <ul className="event-docs-checklist">
             {playbook.documents.map(d => {
-              const onFile = model.documents.find(x => x.key === d.key)?.onFile;
+              const onFile = Boolean(model.documents.find(x => x.key === d.key)?.onFile);
               return (
                 <li key={d.key} className={onFile ? 'is-onfile' : ''}>
-                  <span className="event-docs-check" aria-hidden>
-                    {onFile ? '✓' : '○'}
-                  </span>
-                  {d.label}
-                  <span className="text-muted"> · {d.audience}{d.required ? ' · required' : ''}</span>
+                  <button
+                    type="button"
+                    className="event-docs-checkbtn"
+                    disabled={busy}
+                    aria-pressed={onFile}
+                    onClick={() => docMut.mutate({ key: d.key, onFile: !onFile })}
+                  >
+                    <span className="event-docs-check" aria-hidden>
+                      {onFile ? '✓' : '○'}
+                    </span>
+                    {d.label}
+                    <span className="text-muted"> · {d.audience}{d.required ? ' · required' : ''}{onFile ? ' · on file' : ''}</span>
+                  </button>
                 </li>
               );
             })}

@@ -17,6 +17,10 @@ const {
   clientDetailsAreComplete,
   extraContacts,
   parseClientDetails,
+  setPlaybookTaskStatus,
+  setDocumentOnFile,
+  playbookScheduleToLedger,
+  planPlaybookPaymentUpserts,
 } = await import('@hub-crm/shared');
 const { applyPlaybookToDealMeta, persistClientDetailsOnDealMeta } = await import('./PlaybookService.js');
 
@@ -205,4 +209,94 @@ test('resolveContractTerms reads importMeta.contractTerms when present', () => {
   assert.equal(terms.depositPercent, 0.3);
   assert.equal(terms.finalCountDaysBeforeEvent, 10);
   assert.equal(terms.balanceDaysBeforeEvent, DEFAULT_HUB_CONTRACT_TERMS.balanceDaysBeforeEvent);
+});
+
+test('check-off persist: staff can mark a playbook task done and undo on the deal meta', () => {
+  const applied = applyPlaybookToImportMeta({ eventDateIso: EVENT, grandTotal: 8000 }, 'wedding', NOW);
+  const taskId = playbookFromImportMeta(applied)?.tasks.find(t => t.id === 'task-deposit')?.id;
+  assert.ok(taskId);
+  assert.equal(playbookFromImportMeta(applied)?.tasks.find(t => t.id === taskId)?.status, 'open');
+
+  const done = setPlaybookTaskStatus(applied, taskId, 'done');
+  assert.ok(done);
+  assert.equal(playbookFromImportMeta(done)?.tasks.find(t => t.id === taskId)?.status, 'done');
+  assert.equal(done.portalAccessToken, applied.portalAccessToken);
+  assert.equal(playbookFromImportMeta(done)?.tasks.filter(t => t.status === 'done').length, 1);
+
+  const undone = setPlaybookTaskStatus(done, taskId, 'open');
+  assert.ok(undone);
+  assert.equal(playbookFromImportMeta(undone)?.tasks.find(t => t.id === taskId)?.status, 'open');
+});
+
+test('check-off persist: re-apply keeps done tasks and unknown task ids return null', () => {
+  const first = applyPlaybookToImportMeta({ eventDateIso: EVENT }, 'wedding', NOW);
+  const marked = setPlaybookTaskStatus(first, 'task-deposit', 'done');
+  assert.ok(marked);
+  const reapplied = applyPlaybookToImportMeta(marked, 'wedding', NOW);
+  assert.equal(playbookFromImportMeta(reapplied)?.tasks.find(t => t.id === 'task-deposit')?.status, 'done');
+  assert.equal(playbookFromImportMeta(reapplied)?.tasks.find(t => t.id === 'task-balance')?.status, 'open');
+  assert.equal(setPlaybookTaskStatus(reapplied, 'task-does-not-exist', 'done'), null);
+});
+
+test('payment_links created from playbook apply: deposit+balance amounts and upsert plan', () => {
+  const { playbook } = applyEventPlaybook({
+    eventType: 'wedding',
+    eventDateIso: EVENT,
+    grandTotal: 8000,
+    now: NOW,
+  });
+  const rows = playbookScheduleToLedger(playbook.paymentSchedule, 8000);
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0]?.kind, 'deposit');
+  assert.equal(rows[0]?.amount, 2000);
+  assert.equal(rows[0]?.playbookPaymentId, 'pay-deposit');
+  assert.equal(rows[1]?.kind, 'balance');
+  assert.equal(rows[1]?.amount, 6000);
+  assert.equal(rows[1]?.dueDate, '2026-10-03');
+
+  const createPlan = planPlaybookPaymentUpserts(rows, []);
+  assert.equal(createPlan.length, 2);
+  assert.equal(createPlan[0]?.action, 'create');
+  assert.equal(createPlan[1]?.action, 'create');
+
+  const existing = [
+    { id: 'plink_dep', kind: 'deposit', status: 'created', amount: 1500, playbookPaymentId: 'pay-deposit' },
+  ];
+  const updatePlan = planPlaybookPaymentUpserts(rows, existing);
+  assert.equal(updatePlan.length, 2);
+  assert.equal(updatePlan[0]?.action, 'update');
+  if (updatePlan[0]?.action === 'update') {
+    assert.equal(updatePlan[0].id, 'plink_dep');
+    assert.equal(updatePlan[0].row.amount, 2000);
+  }
+  assert.equal(updatePlan[1]?.action, 'create');
+
+  const paid = [
+    { id: 'plink_paid', kind: 'deposit', status: 'paid', amount: 2000, playbookPaymentId: 'pay-deposit' },
+  ];
+  const skipPaid = planPlaybookPaymentUpserts(rows, paid);
+  assert.equal(skipPaid.some(s => s.row.kind === 'deposit'), false);
+  assert.equal(skipPaid.length, 1);
+  assert.equal(skipPaid[0]?.row.kind, 'balance');
+
+  assert.equal(playbookScheduleToLedger(playbook.paymentSchedule, 0).length, 0);
+});
+
+test('doc flag persist: seeded playbook docs toggle on-file on importMeta.documents', () => {
+  const applied = applyPlaybookToImportMeta({ eventDateIso: EVENT }, 'wedding', NOW);
+  assert.equal((applied.documents as Record<string, boolean>).alcoholDocs, false);
+
+  const onFile = setDocumentOnFile(applied, 'alcoholDocs', true);
+  assert.ok(onFile);
+  assert.equal((onFile.documents as Record<string, boolean>).alcoholDocs, true);
+  assert.equal((onFile.documents as Record<string, boolean>).agreement, false);
+
+  const off = setDocumentOnFile(onFile, 'alcoholDocs', false);
+  assert.ok(off);
+  assert.equal((off.documents as Record<string, boolean>).alcoholDocs, false);
+
+  const reapplied = applyPlaybookToImportMeta(onFile, 'wedding', NOW);
+  assert.equal((reapplied.documents as Record<string, boolean>).alcoholDocs, true);
+
+  assert.equal(setDocumentOnFile(applied, 'not-a-doc', true), null);
 });

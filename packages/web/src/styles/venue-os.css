@@ -930,6 +930,24 @@
   color: #a8a29e;
 }
 
+.event-docs-checkbtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.event-docs-checkbtn:disabled {
+  cursor: default;
+  opacity: 0.75;
+}
 .event-docs-checklist li.is-onfile .event-docs-check {
   color: #15803d;
   font-weight: 700;

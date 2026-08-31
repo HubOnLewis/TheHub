@@ -279,6 +279,13 @@ function tasksFor(
   ];
 }
 
+
+function preserveTaskStatus(tasks: PlaybookTask[], previous: AppliedPlaybook | null): PlaybookTask[] {
+  if (!previous?.tasks?.length) return tasks;
+  const prevStatus = new Map(previous.tasks.map(t => [t.id, t.status]));
+  return tasks.map(t => (prevStatus.get(t.id) === "done" ? { ...t, status: "done" as const } : t));
+}
+
 export type ApplyPlaybookInput = {
   eventType?: unknown;
   eventDateIso?: string | null;
@@ -355,7 +362,10 @@ export function applyEventPlaybook(input: ApplyPlaybookInput): ApplyPlaybookResu
     eventTypeLabel: EVENT_TYPE_LABELS[type],
     appliedAt: now.toISOString(),
     terms,
-    tasks: tasksFor(type, eventKey, terms, depositDue, finalCountDue, balanceDue, alcoholDue),
+    tasks: preserveTaskStatus(
+      tasksFor(type, eventKey, terms, depositDue, finalCountDue, balanceDue, alcoholDue),
+      playbookFromImportMeta(input.existingMeta ?? null),
+    ),
     paymentSchedule,
     documents: docs,
     clientTimeline,
@@ -400,4 +410,106 @@ export function applyPlaybookToImportMeta(
     now,
   });
   return { ...meta, ...importMetaPatch };
+}
+
+export function setPlaybookTaskStatus(
+  meta: Record<string, unknown>,
+  taskId: string,
+  status: PlaybookTask["status"],
+): Record<string, unknown> | null {
+  const playbook = playbookFromImportMeta(meta);
+  if (!playbook) return null;
+  if (!playbook.tasks.some(t => t.id === taskId)) return null;
+  const tasks = playbook.tasks.map(t => (t.id === taskId ? { ...t, status } : t));
+  return { ...meta, playbook: { ...playbook, tasks } };
+}
+
+export function setDocumentOnFile(
+  meta: Record<string, unknown>,
+  key: string,
+  onFile: boolean,
+): Record<string, unknown> | null {
+  const playbook = playbookFromImportMeta(meta);
+  if (!playbook) return null;
+  if (!playbook.documents.some(d => d.key === key)) return null;
+  const existing =
+    meta.documents && typeof meta.documents === "object"
+      ? { ...(meta.documents as Record<string, boolean>) }
+      : {};
+  return { ...meta, documents: { ...existing, [key]: onFile } };
+}
+
+export type PlaybookLedgerRow = {
+  kind: "deposit" | "balance";
+  amount: number;
+  dueDate: string | null;
+  label: string;
+  playbookPaymentId: string;
+};
+
+/** Map playbook deposit+balance percents onto dollar amounts for Hub payment_links. */
+export function playbookScheduleToLedger(
+  schedule: PlaybookPayment[],
+  grandTotal: number,
+): PlaybookLedgerRow[] {
+  const total = typeof grandTotal === "number" && Number.isFinite(grandTotal) ? grandTotal : 0;
+  if (!(total > 0)) return [];
+  const rows: PlaybookLedgerRow[] = [];
+  for (const p of schedule) {
+    if (p.kind !== "deposit" && p.kind !== "balance") continue;
+    const amount = Math.round(total * p.percent * 100) / 100;
+    if (!(amount > 0)) continue;
+    rows.push({
+      kind: p.kind,
+      amount,
+      dueDate: p.dueDate,
+      label: p.label,
+      playbookPaymentId: p.id,
+    });
+  }
+  return rows;
+}
+
+export type PlaybookPaymentLinkMatch = {
+  id: string;
+  kind: string;
+  status: string;
+  amount: number;
+  dueDate?: string;
+  playbookPaymentId?: string;
+};
+
+export type PlaybookPaymentUpsertPlan =
+  | { action: "create"; row: PlaybookLedgerRow }
+  | { action: "update"; id: string; row: PlaybookLedgerRow };
+
+/**
+ * Create or update unpaid deposit/balance rows. Never clones a paid row. No Stripe.
+ */
+export function planPlaybookPaymentUpserts(
+  desired: PlaybookLedgerRow[],
+  existing: PlaybookPaymentLinkMatch[],
+): PlaybookPaymentUpsertPlan[] {
+  const plan: PlaybookPaymentUpsertPlan[] = [];
+  for (const row of desired) {
+    const candidates = existing.filter(
+      l => l.kind === row.kind && l.status !== "void" && l.status !== "expired",
+    );
+    const paid = candidates.find(l => l.status === "paid");
+    if (paid) continue;
+    const open =
+      candidates.find(l => l.playbookPaymentId === row.playbookPaymentId) ??
+      candidates.find(l => l.status === "created" || l.status === "sent");
+    if (open) {
+      const due = row.dueDate ?? undefined;
+      const needs =
+        open.amount !== row.amount ||
+        (open.dueDate ?? undefined) !== due ||
+        open.playbookPaymentId !== row.playbookPaymentId;
+      if (needs) plan.push({ action: "update", id: open.id, row });
+      continue;
+    }
+    plan.push({ action: "create", row });
+  }
+  return plan;
 }

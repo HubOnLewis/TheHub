@@ -466,7 +466,7 @@ export function mapDealToEventDetailViewModel(
   const docFlags =
     (meta?.documents as Record<string, boolean> | undefined) ??
     (hubRefresh?.documents as Record<string, boolean> | undefined);
-  const documentDefs = [
+  const documentDefs: Array<{ key: string; label: string }> = [
     { key: 'agreement', label: 'Agreement' },
     { key: 'eventSummary', label: 'Event summary' },
     { key: 'beo', label: 'Banquet event order' },
@@ -474,6 +474,13 @@ export function mapDealToEventDetailViewModel(
     { key: 'invoice', label: 'Invoice' },
     { key: 'menu', label: 'Menu' },
   ];
+  if (playbook?.documents) {
+    for (const d of playbook.documents) {
+      const i = documentDefs.findIndex(x => x.key === d.key);
+      if (i >= 0) documentDefs[i] = { key: d.key, label: d.label };
+      else documentDefs.push({ key: d.key, label: d.label });
+    }
+  }
   const documents = documentDefs.map(d => ({
     ...d,
     onFile: Boolean(docFlags?.[d.key]),
