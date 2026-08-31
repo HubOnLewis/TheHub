@@ -6,7 +6,14 @@ import LegalFooterLinks from '../components/LegalFooterLinks.js';
 import { BRAND } from '../branding/tokens.js';
 import { resolveApiBaseUrl, getApiNetworkErrorMessage } from '../config/apiBaseUrl.js';
 import { getApiConfigError } from '../api/client.js';
-import { bookInquiryPayload, validateBookInquiry, type BookFieldErrors } from '../lib/bookInquiry.js';
+import {
+  bookAvailabilityPayload,
+  bookInquiryPayload,
+  isRoomTakenResponse,
+  ROOM_TAKEN_MESSAGE,
+  validateBookInquiry,
+  type BookFieldErrors,
+} from '../lib/bookInquiry.js';
 
 const BOOKING_SPACES = VENUE_SPACES.filter(s => s !== 'TBD');
 const BOOK_TITLE = 'Book your event · HuB on Lewis';
@@ -25,12 +32,15 @@ function publicInquiryUrl(): { url: string; configError: string | null } {
   return { url: `${baseUrl.replace(/\/$/, '')}/public/inquiry`, configError: null };
 }
 
+function publicAvailabilityUrl(): { url: string; configError: string | null } {
+  const { url, configError } = publicInquiryUrl();
+  if (configError || !url) return { url: '', configError };
+  return { url: `${url.replace(/\/$/, '')}/availability`, configError: null };
+}
+
 function guestConflictMessage(status: number, apiError: string | undefined): string | null {
-  if (status === 409) {
-    return 'That date is taken for this space. Please pick another.';
-  }
-  if (apiError && /taken|double-book|already booked|overlaps/i.test(apiError)) {
-    return 'That date is taken for this space. Please pick another.';
+  if (isRoomTakenResponse(status, { error: apiError })) {
+    return ROOM_TAKEN_MESSAGE;
   }
   return null;
 }
@@ -41,8 +51,8 @@ export default function BookPage() {
   const [phone, setPhone] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [startTime, setStartTime] = useState('');
-  const [space, setSpace] = useState<string>(BOOKING_SPACES[0] ?? 'Main Hall');
-  const [eventType, setEventType] = useState<string>(VENUE_EVENT_TYPES[0] ?? 'Wedding');
+  const [space, setSpace] = useState('');
+  const [eventType, setEventType] = useState('');
   const [guests, setGuests] = useState('');
   const [notes, setNotes] = useState('');
   const [fieldErrors, setFieldErrors] = useState<BookFieldErrors>({});
@@ -71,6 +81,58 @@ export default function BookPage() {
     return () => window.clearTimeout(t);
   }, [result]);
 
+  useEffect(() => {
+    if (!eventDate || !space) {
+      setFieldErrors(prev => {
+        if (prev.space !== ROOM_TAKEN_MESSAGE) return prev;
+        const next = { ...prev };
+        delete next.space;
+        return next;
+      });
+      setError(prev => (prev === ROOM_TAKEN_MESSAGE ? '' : prev));
+      return;
+    }
+    const { url, configError } = publicAvailabilityUrl();
+    if (configError || !url) return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookAvailabilityPayload({ eventDate, space })),
+          });
+          let body: { error?: string; available?: boolean } = {};
+          try {
+            body = (await res.json()) as { error?: string; available?: boolean };
+          } catch {
+            body = {};
+          }
+          if (cancelled) return;
+          if (isRoomTakenResponse(res.status, body)) {
+            setFieldErrors(prev => ({ ...prev, space: ROOM_TAKEN_MESSAGE }));
+            setError(ROOM_TAKEN_MESSAGE);
+          } else {
+            setFieldErrors(prev => {
+              if (prev.space !== ROOM_TAKEN_MESSAGE) return prev;
+              const next = { ...prev };
+              delete next.space;
+              return next;
+            });
+            setError(prev => (prev === ROOM_TAKEN_MESSAGE ? '' : prev));
+          }
+        } catch {
+          /* live check is best-effort; submit still checks before create */
+        }
+      })();
+    }, 280);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [eventDate, space]);
+
   const copyPortal = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
@@ -78,6 +140,32 @@ export default function BookPage() {
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
+    }
+  };
+
+  const checkAvailabilityBeforeCreate = async (): Promise<boolean> => {
+    const { url, configError } = publicAvailabilityUrl();
+    if (configError || !url) return true;
+    try {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookAvailabilityPayload({ eventDate, space })),
+      });
+      let body: { error?: string; available?: boolean } = {};
+      try {
+        body = (await res.json()) as { error?: string; available?: boolean };
+      } catch {
+        body = {};
+      }
+      if (isRoomTakenResponse(res.status, body)) {
+        setFieldErrors(prev => ({ ...prev, space: ROOM_TAKEN_MESSAGE }));
+        setError(ROOM_TAKEN_MESSAGE);
+        return false;
+      }
+      return true;
+    } catch {
+      return true;
     }
   };
 
@@ -101,6 +189,9 @@ export default function BookPage() {
     }
     setLoading(true);
     try {
+      const available = await checkAvailabilityBeforeCreate();
+      if (!available) return;
+
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -115,7 +206,8 @@ export default function BookPage() {
         body = {};
       }
       if (res.status === 409 || guestConflictMessage(res.status, body.error)) {
-        setError(guestConflictMessage(res.status, body.error) ?? 'That date is taken for this space. Please pick another.');
+        setFieldErrors(prev => ({ ...prev, space: ROOM_TAKEN_MESSAGE }));
+        setError(guestConflictMessage(res.status, body.error) ?? ROOM_TAKEN_MESSAGE);
         return;
       }
       if (!res.ok) {
@@ -212,6 +304,7 @@ export default function BookPage() {
                     value={eventDate}
                     onChange={e => setEventDate(e.target.value)}
                     aria-invalid={Boolean(fieldErrors.eventDate)}
+                    aria-required="true"
                   />
                   {fieldErr('eventDate')}
                 </div>
@@ -225,7 +318,9 @@ export default function BookPage() {
                     value={space}
                     onChange={e => setSpace(e.target.value)}
                     aria-invalid={Boolean(fieldErrors.space)}
+                    aria-required="true"
                   >
+                    <option value="">Choose a room</option>
                     {BOOKING_SPACES.map(s => (
                       <option key={s} value={s}>
                         {s}
@@ -244,7 +339,9 @@ export default function BookPage() {
                     value={eventType}
                     onChange={e => setEventType(e.target.value)}
                     aria-invalid={Boolean(fieldErrors.eventType)}
+                    aria-required="true"
                   >
+                    <option value="">Choose event type</option>
                     {VENUE_EVENT_TYPES.map(t => (
                       <option key={t} value={t}>
                         {t}
@@ -267,12 +364,13 @@ export default function BookPage() {
                     placeholder="e.g. 80"
                     onChange={e => setGuests(e.target.value)}
                     aria-invalid={Boolean(fieldErrors.guests)}
+                    aria-required="true"
                   />
                   {fieldErr('guests')}
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-time">
-                    Start time
+                    Start time (optional)
                   </label>
                   <input
                     id="book-time"
@@ -284,7 +382,7 @@ export default function BookPage() {
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-phone">
-                    Phone
+                    Phone (optional)
                   </label>
                   <input
                     id="book-phone"
@@ -294,7 +392,9 @@ export default function BookPage() {
                     onChange={e => setPhone(e.target.value)}
                     autoComplete="tel"
                     placeholder="Optional"
+                    aria-invalid={Boolean(fieldErrors.phone)}
                   />
+                  {fieldErr('phone')}
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-name">
@@ -308,6 +408,7 @@ export default function BookPage() {
                     onChange={e => setName(e.target.value)}
                     autoComplete="name"
                     aria-invalid={Boolean(fieldErrors.name)}
+                    aria-required="true"
                   />
                   {fieldErr('name')}
                 </div>
@@ -323,6 +424,7 @@ export default function BookPage() {
                     onChange={e => setEmail(e.target.value)}
                     autoComplete="email"
                     aria-invalid={Boolean(fieldErrors.email)}
+                    aria-required="true"
                   />
                   {fieldErr('email')}
                 </div>

@@ -14,6 +14,18 @@ export type BookFieldErrors = Partial<
   Record<'name' | 'email' | 'eventDate' | 'space' | 'eventType' | 'guests' | 'phone' | 'form', string>
 >;
 
+export const ROOM_TAKEN_MESSAGE = 'That room is taken that day';
+
+/** Optional phone: empty is fine; if present, 10 US digits or 11 with leading 1. */
+export function isUsFriendlyPhone(raw: string | undefined): boolean {
+  const trimmed = (raw ?? '').trim();
+  if (!trimmed) return true;
+  const digits = trimmed.replace(/\D/g, '');
+  if (digits.length === 10) return true;
+  if (digits.length === 11 && digits.startsWith('1')) return true;
+  return false;
+}
+
 export function validateBookInquiry(fields: BookInquiryFields): BookFieldErrors {
   const next: BookFieldErrors = {};
   if (!fields.name.trim()) next.name = 'Please enter your name.';
@@ -25,6 +37,7 @@ export function validateBookInquiry(fields: BookInquiryFields): BookFieldErrors 
   const guestCount = Number(fields.guests);
   if (!fields.guests.trim()) next.guests = 'Please enter a guest count.';
   else if (!Number.isFinite(guestCount) || guestCount < 1) next.guests = 'Please enter a guest count.';
+  if (!isUsFriendlyPhone(fields.phone)) next.phone = 'Please enter a valid phone number.';
   return next;
 }
 
@@ -40,4 +53,18 @@ export function bookInquiryPayload(fields: BookInquiryFields) {
     startTime: fields.startTime || undefined,
     notes: fields.notes?.trim() || undefined,
   };
+}
+
+export function bookAvailabilityPayload(fields: Pick<BookInquiryFields, 'eventDate' | 'space'>) {
+  return { eventDate: fields.eventDate, space: fields.space };
+}
+
+export function isRoomTakenResponse(
+  status: number,
+  body: { error?: string; available?: boolean } | null | undefined,
+): boolean {
+  if (status === 409) return true;
+  if (body?.available === false) return true;
+  if (body?.error && /taken|double-book|already booked|overlaps/i.test(body.error)) return true;
+  return false;
 }

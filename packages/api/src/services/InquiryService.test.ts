@@ -5,8 +5,14 @@ process.env.MONGODB_URI ??= 'mongodb://localhost:27017/hub_crm';
 process.env.JWT_SECRET ??= 'this_is_a_very_long_test_secret_value_12345';
 process.env.SUPER_ADMIN_EMAILS ??= 'admin@hubonlewis.com';
 
-const { PublicInquirySchema, isAssignedSpace } = await import('@hub-crm/shared');
-const { mapPublicInquiryToRecords, inquiryService, SPACE_TAKEN_MESSAGE } = await import('./InquiryService.js');
+const { PublicInquirySchema, PublicInquiryAvailabilitySchema, isAssignedSpace } = await import('@hub-crm/shared');
+const {
+  mapPublicInquiryToRecords,
+  inquiryService,
+  SPACE_TAKEN_MESSAGE,
+  ROOM_TAKEN_MESSAGE,
+  availabilityImportMeta,
+} = await import('./InquiryService.js');
 const { knownEventTypeFromCreate } = await import('./PlaybookService.js');
 const { dealService } = await import('./DealService.js');
 const { leadService } = await import('./LeadService.js');
@@ -29,6 +35,19 @@ test('public inquiry schema requires name and email', () => {
     guests: 80,
   });
   assert.equal(ok.success, true);
+});
+
+test('availability schema requires date and space', () => {
+  const missing = PublicInquiryAvailabilitySchema.safeParse({ eventDate: '', space: '' });
+  assert.equal(missing.success, false);
+  const ok = PublicInquiryAvailabilitySchema.safeParse({
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+  });
+  assert.equal(ok.success, true);
+  const meta = availabilityImportMeta(ok.data);
+  assert.equal(meta.startTime, '00:00');
+  assert.equal(meta.endTime, '23:59');
 });
 
 test('public inquiry maps to lead+deal and known event type for playbook', () => {
@@ -75,7 +94,7 @@ const inquiryBody = {
   guests: 80,
 };
 
-test('conflict rejection does not create a lead or deal', async () => {
+function mockTakenMainHall() {
   mock.method(DealRepository, 'listOccupancyForDate', async () => ({
     data: [{
       _id: 'existing',
@@ -90,6 +109,10 @@ test('conflict rejection does not create a lead or deal', async () => {
     }],
     total: 1,
   }));
+}
+
+test('conflict rejection does not create a lead or deal', async () => {
+  mockTakenMainHall();
   let leadCalls = 0;
   let dealCalls = 0;
   mock.method(leadService, 'create', async () => {
@@ -107,6 +130,45 @@ test('conflict rejection does not create a lead or deal', async () => {
   );
   assert.equal(leadCalls, 0);
   assert.equal(dealCalls, 0);
+});
+
+test('availability conflict does not create a lead', async () => {
+  mockTakenMainHall();
+  let leadCalls = 0;
+  let dealCalls = 0;
+  mock.method(leadService, 'create', async () => {
+    leadCalls += 1;
+    return { _id: 'lead_should_not' };
+  });
+  mock.method(dealService, 'create', async () => {
+    dealCalls += 1;
+    return { _id: 'deal_should_not' };
+  });
+
+  await assert.rejects(
+    () => inquiryService.checkAvailability({} as never, { eventDate: '2026-10-17', space: 'Main Hall' }),
+    (err: unknown) => err instanceof ConflictError && (err as Error).message === ROOM_TAKEN_MESSAGE,
+  );
+  assert.equal(leadCalls, 0);
+  assert.equal(dealCalls, 0);
+});
+
+test('availability ok returns available true without creating a lead', async () => {
+  mock.method(dealService, 'assertSpaceAvailability', async () => undefined);
+  let leadCalls = 0;
+  mock.method(leadService, 'create', async () => {
+    leadCalls += 1;
+    return { _id: 'lead_should_not' };
+  });
+
+  const result = await inquiryService.checkAvailability({} as never, {
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+  });
+  assert.equal(result.available, true);
+  assert.equal(result.eventDate, '2026-10-17');
+  assert.equal(result.space, 'Main Hall');
+  assert.equal(leadCalls, 0);
 });
 
 test('successful inquiry returns portalUrl', async () => {

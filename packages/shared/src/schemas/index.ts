@@ -94,6 +94,13 @@ export const PublicInquirySchema = z.object({
 });
 export type PublicInquiryPayload = z.infer<typeof PublicInquirySchema>;
 
+/** GET/POST /public/inquiry/availability — date + space, no lead create. */
+export const PublicInquiryAvailabilitySchema = z.object({
+  eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date required'),
+  space: z.string().min(1, 'Space required').max(80),
+});
+export type PublicInquiryAvailabilityPayload = z.infer<typeof PublicInquiryAvailabilitySchema>;
+
 // ── Payments (staff ledger — not Stripe charges) ──────────────────
 export const PAYMENT_LINK_KINDS = ['deposit', 'balance', 'custom', 'schedule'] as const;
 export const PAYMENT_LINK_STATUSES = ['created', 'sent', 'paid', 'void', 'expired'] as const;

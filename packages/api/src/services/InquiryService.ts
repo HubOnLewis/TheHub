@@ -5,6 +5,7 @@ import {
   isAssignedSpace,
   type CreateDealPayload,
   type CreateLeadPayload,
+  type PublicInquiryAvailabilityPayload,
   type PublicInquiryPayload,
 } from '@hub-crm/shared';
 import type { TenantContext } from '../tenancy/index.js';
@@ -18,9 +19,12 @@ import { ConflictError } from '../errors/index.js';
 export const SPACE_TAKEN_MESSAGE =
   'That date is taken for this space. Please pick another.';
 
-function rethrowGuestConflict(err: unknown): never {
+/** Guest-facing day-level copy used by /availability before create. */
+export const ROOM_TAKEN_MESSAGE = 'That room is taken that day';
+
+function rethrowGuestConflict(err: unknown, message = SPACE_TAKEN_MESSAGE): never {
   if (err instanceof ConflictError) {
-    throw new ConflictError(SPACE_TAKEN_MESSAGE);
+    throw new ConflictError(message);
   }
   throw err;
 }
@@ -100,9 +104,39 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
   };
 }
 
+/** Full-day window so any occupancy that calendar day is a hard conflict. */
+export function availabilityImportMeta(input: PublicInquiryAvailabilityPayload): Record<string, unknown> {
+  const eventDate = input.eventDate.trim().slice(0, 10);
+  return {
+    eventDateIso: eventDate,
+    eventDate,
+    space: input.space.trim(),
+    startTime: '00:00',
+    endTime: '23:59',
+  };
+}
+
 export class InquiryService {
   async mintPortal(db: Db, ctx: TenantContext, eventId: string) {
     return reuseOrMintPortalToken(db, ctx, eventId);
+  }
+
+  async checkAvailability(db: Db, input: PublicInquiryAvailabilityPayload) {
+    const ctx = publicInquiryTenantContext();
+    const eventDate = input.eventDate.trim().slice(0, 10);
+    const space = input.space.trim();
+    try {
+      await dealService.assertSpaceAvailability(
+        db,
+        ctx,
+        availabilityImportMeta({ eventDate, space }),
+        'Public availability',
+        'Draft',
+      );
+    } catch (err) {
+      rethrowGuestConflict(err, ROOM_TAKEN_MESSAGE);
+    }
+    return { available: true as const, eventDate, space };
   }
 
   async create(db: Db, body: PublicInquiryPayload) {
