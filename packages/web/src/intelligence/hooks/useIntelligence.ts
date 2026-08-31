@@ -3,6 +3,10 @@ import type { IntelligenceSnapshot } from '@hub-crm/shared';
 import { runIntelligenceEngine } from '../engine.js';
 import { summarizeOperationalRisk } from '../risk/operationalRisk.js';
 
+/**
+ * Perfect Venue seed engine — Autopilot / demo pages only.
+ * Production Home, Tasks, and Briefing use `useVenueAttention` (CRM rows + GET /agents/snapshot).
+ */
 export function useIntelligenceSnapshot(): IntelligenceSnapshot {
   return useMemo(() => runIntelligenceEngine(), []);
 }

@@ -40,8 +40,7 @@ const OWNERS = [
 ];
 
 export default function TasksCenter() {
-  if (isProductionCRM() || isScreenshotMode()) return <LiveTasksPage />;
-  return <TasksCenterDemo />;
+  return <LiveTasksPage />;
 }
 
 function TasksCenterDemo() {

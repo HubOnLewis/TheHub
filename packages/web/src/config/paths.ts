@@ -67,6 +67,7 @@ export const CLIENT_SIMPLE_PATHS: readonly string[] = [
   ROUTES.inbox,
   ROUTES.calendar,
   ROUTES.tasks,
+  ROUTES.ownerBriefing,
   ROUTES.marketing,
   ROUTES.marketingBlasts,
   ROUTES.referrals,
@@ -75,7 +76,6 @@ export const CLIENT_SIMPLE_PATHS: readonly string[] = [
   ROUTES.privacy,
   ROUTES.terms,
 ];
-
 export const PUBLIC_ROUTES = {
   privacy: '/privacy',
   terms: '/terms',

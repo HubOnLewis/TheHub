@@ -46,12 +46,12 @@ export default function LiveInboxPage() {
     <div className="hub-live-page">
       <header className="hub-admin-page__header">
         <div>
-          <h1 className="hub-admin-page__title">Activity Inbox</h1>
+          <h1 className="hub-admin-page__title">Activity</h1>
           <p className="hub-admin-page__subtitle">
-            Event activity and follow-ups from your live pipeline — not email messages.
+            What needs follow-up from your pipeline — balances, proposals, upcoming prep.
             {isAiClientHintEnabled()
-              ? ' Draft replies can be generated via the model bridge (Settings → Integrations).'
-              : null}
+              ? ' AI can draft replies (Settings → Integrations). Nothing sends without you.'
+              : ' Connect AI in Settings for one-click drafts.'}
           </p>
         </div>
         <span className="hub-admin-stat-pill">{items.length} item{items.length === 1 ? '' : 's'}</span>

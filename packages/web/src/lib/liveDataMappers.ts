@@ -119,6 +119,17 @@ export function mapLeadToOperationalRow(lead: Record<string, unknown>): Operatio
   const urgency =
     status === 'New' && stale ? 'high' : status === 'Quoted' ? 'medium' : stale ? 'medium' : 'low';
 
+  const eventDate = typeof lead.eventDate === 'string' && lead.eventDate.trim() ? lead.eventDate.trim() : '';
+  const guests = typeof lead.guestCount === 'number' ? lead.guestCount : null;
+  const estimated =
+    typeof lead.estimatedValue === 'number' && Number.isFinite(lead.estimatedValue) ? lead.estimatedValue : null;
+  const metaBits = [
+    lead.source ? String(lead.source) : '',
+    eventDate,
+    guests != null ? `${guests} guests` : '',
+    `Updated ${formatRelativeDate(updatedAt)}`,
+  ].filter(Boolean);
+
   return {
     id,
     href: leadDetailPath(id),
@@ -126,8 +137,8 @@ export function mapLeadToOperationalRow(lead: Record<string, unknown>): Operatio
     stageTone: urgency === 'high' ? 'rose' : status === 'Quoted' ? 'violet' : 'amber',
     title: String(lead.contact ?? 'Contact'),
     subtitle: String(lead.company ?? ''),
-    meta: `${lead.source ? `${String(lead.source)} · ` : ''}Updated ${formatRelativeDate(updatedAt)}`,
-    value: status,
+    meta: metaBits.join(' · '),
+    value: estimated != null ? formatCurrency(estimated) : status,
     progress: status === 'Quoted' ? 55 : status === 'New' ? 30 : 65,
     urgency,
     live: urgency === 'high',

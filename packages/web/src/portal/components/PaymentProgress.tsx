@@ -7,6 +7,7 @@ export default function PaymentProgress({ showActions = false }: { showActions?:
   const payDeposit = usePortalStore(s => s.payDeposit);
   const payBalance = usePortalStore(s => s.payBalance);
   const queueLink = usePortalStore(s => s.queuePaymentLink);
+  const remainingDue = payments.find(p => p.status === 'due' || p.status === 'scheduled');
 
   const paid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
   const total = packageTotal > 0 ? packageTotal : 1;
@@ -34,27 +35,28 @@ export default function PaymentProgress({ showActions = false }: { showActions?:
               {p.dueDate ? ` · due ${p.dueDate}` : ''}
             </span>
             <span>
-              {formatCurrency(p.amount)} · <strong>{p.status}</strong>
+              {formatCurrency(p.amount)} · <strong>{p.status === 'paid' ? 'Paid' : p.status === 'due' ? 'Due' : 'Scheduled'}</strong>
             </span>
           </li>
         ))}
       </ul>
-      {showActions ? (
+      {showActions && remaining > 0 ? (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
-          <button type="button" className="portal-btn portal-btn--primary" onClick={() => payBalance()}>
-            Pay remaining balance
+          <button
+            type="button"
+            className="portal-btn portal-btn--primary"
+            onClick={() => (remainingDue?.label.toLowerCase().includes('deposit') ? payDeposit() : payBalance())}
+          >
+            {remainingDue?.label.toLowerCase().includes('deposit') ? 'Record deposit received' : 'Record remaining as received'}
           </button>
           <button type="button" className="portal-btn portal-btn--secondary" onClick={() => queueLink()}>
-            Send payment link
-          </button>
-          <button type="button" className="portal-btn portal-btn--ghost" onClick={() => window.alert('Split payment schedule — coordinator will confirm (demo).')}>
-            Split payment
+            Ask coordinator to record a payment
           </button>
         </div>
       ) : null}
       {pct >= 100 ? (
         <p style={{ marginTop: 12, fontSize: 13, color: 'var(--portal-success)', fontWeight: 600 }}>
-          Event financially confirmed — planning milestones unlocked.
+          Fully paid — thank you. Planning details stay available here anytime.
         </p>
       ) : null}
     </div>

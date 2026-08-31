@@ -5,7 +5,7 @@ import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
 import { leadService } from '../services/LeadService.js';
 import { getDB } from '../config/db.js';
-import { CreateLeadSchema } from '@hub-crm/shared';
+import { CreateLeadSchema, PatchLeadSchema } from '@hub-crm/shared';
 
 const router = Router();
 router.use(requireAuth, resolveTenant);
@@ -32,7 +32,7 @@ router.post('/', validate(CreateLeadSchema), async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', validate(PatchLeadSchema), async (req, res, next) => {
   try {
     res.json(await leadService.update(getDB(), req.tenant, req.params['id']!, req.body));
   } catch (err) { next(err); }

@@ -12,6 +12,7 @@ import {
   type PortalEventProfile,
 } from './fromCrmEvent.js';
 import client from '../api/client.js';
+import publicClient from '../api/publicClient.js';
 import { getScreenshotDeal } from '../api/screenshotDealsStore.js';
 import { isScreenshotMode } from '../config/screenshotMode.js';
 
@@ -29,8 +30,10 @@ interface PortalStore {
   login: (user: PortalUser) => void;
   logout: () => void;
   resetPortalDemo: () => void;
-  /** Bind portal to a CRM deal id (API or screenshot store). Falls back to demo. */
+  /** Bind portal to a CRM deal id (API or screenshot store). Staff preview — requires session for live API. */
   openEvent: (eventId: string) => Promise<{ ok: boolean; message: string }>;
+  /** Guest signed-link open — public endpoint, no staff login. */
+  openAccessToken: (token: string) => Promise<{ ok: boolean; message: string }>;
   signAgreement: () => void;
   viewAgreement: () => void;
   payDeposit: () => void;
@@ -142,6 +145,45 @@ export const usePortalStore = create<PortalStore>()(
           timelineKind: 'system',
         });
         return { ok: true, message: `Opened portal for ${profile.title}` };
+      },
+
+      openAccessToken: async token => {
+        const access = token.trim();
+        if (!access) {
+          return { ok: false, message: 'Missing guest access link. Ask your coordinator for a new one.' };
+        }
+        try {
+          const { data } = await publicClient.get<{
+            eventId: string;
+            profile: PortalEventProfile;
+          }>(`/public/portal/bookings/${encodeURIComponent(access)}`, { timeout: 12_000 });
+          if (!data?.profile?.id) {
+            return { ok: false, message: 'This guest link could not be opened.' };
+          }
+          const profile: PortalEventProfile = { ...data.profile, source: 'crm' };
+          const event = portalStateFromProfile(profile);
+          const user = portalUserFromProfile(profile);
+          set({
+            profile,
+            event,
+            session: { user, token: `portal-access-${profile.id}` },
+          });
+          logPortalAudit({
+            action: 'updated',
+            entityType: 'opportunity',
+            entityId: profile.id,
+            entityName: profile.title,
+            afterSummary: 'Client opened signed guest portal',
+            timelineTitle: 'Client portal opened',
+            timelineKind: 'system',
+          });
+          return { ok: true, message: `Opened portal for ${profile.title}` };
+        } catch {
+          return {
+            ok: false,
+            message: 'This guest link is invalid or expired. Ask your coordinator for a new one.',
+          };
+        }
       },
 
       signAgreement: () => {

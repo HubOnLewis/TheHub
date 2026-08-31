@@ -5,6 +5,7 @@ import OpsFilterChips from '../../components/operations/intel/OpsFilterChips.js'
 import OpsIntelShell from '../../components/operations/intel/OpsIntelShell.js';
 import OperationalRowList from '../../components/operations/intel/OperationalRowList.js';
 import LiveEmptyState from '../../components/live/LiveEmptyState.js';
+import AddLeadModal from '../../components/leads/AddLeadModal.js';
 import { Spinner } from '../../components/ui/index.js';
 import { ROUTES } from '../../config/paths.js';
 import { useLeads } from '../../hooks/useLeads.js';
@@ -18,6 +19,7 @@ import LeadsImported from './LeadsImported.js';
 
 export default function LeadsLive() {
   const [filter, setFilter] = useState('all');
+  const [addOpen, setAddOpen] = useState(false);
   const { data, isLoading, isError } = useLeads({ active: true, limit: 100, sort: 'updatedAt', order: 'desc' });
   const leads = (data?.data ?? []) as Array<Record<string, unknown>>;
   const total = data?.total ?? leads.length;
@@ -56,6 +58,11 @@ export default function LeadsLive() {
                 { label: 'Quoted', value: String(quotedCount), hint: 'Proposal stage' },
                 { label: 'Showing', value: String(filtered.length), hint: 'In current filter' },
               ]}
+              actions={
+                <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>
+                  + New lead
+                </button>
+              }
             />
           }
           filters={
@@ -92,17 +99,34 @@ export default function LeadsLive() {
             dominant
           />
         </CommandPageFrame>
+        <AddLeadModal open={addOpen} onClose={() => setAddOpen(false)} />
       </>
     );
   }
 
   if (hasImportedVenueRecords()) {
-    return <LeadsImported />;
+    return (
+      <>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
+          <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>
+            + New lead
+          </button>
+        </div>
+        <LeadsImported />
+        <AddLeadModal open={addOpen} onClose={() => setAddOpen(false)} />
+      </>
+    );
   }
 
   return (
-    <div className="card page-section">
-      <LiveEmptyState hint={isError ? 'Could not load leads from the API.' : undefined} />
-    </div>
+    <>
+      <div className="card page-section" style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+        <LiveEmptyState hint={isError ? 'Could not load leads from the API.' : 'No open leads yet — capture your first inquiry.'} />
+        <button type="button" className="btn btn-primary" onClick={() => setAddOpen(true)}>
+          + New lead
+        </button>
+      </div>
+      <AddLeadModal open={addOpen} onClose={() => setAddOpen(false)} />
+    </>
   );
 }

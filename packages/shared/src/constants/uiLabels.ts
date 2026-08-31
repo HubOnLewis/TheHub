@@ -61,15 +61,15 @@ export function deliveryRecordStatusForDisplay(status: string): string {
   return DELIVERY_RECORD_STATUS_DISPLAY[status] ?? status.replace(/_/g, ' ');
 }
 
-/** Maps stored deal status strings to Hub pipeline language. */
+/** Maps stored deal status strings to venue pipeline language. */
 export const DEAL_STATUS_DISPLAY: Record<string, string> = {
-  Draft: 'New lead / intake',
-  'Pending Approval': 'Discovery / needs review',
-  Approved: 'Proposal / quote sent',
-  Won: 'Booked / won',
-  'In Build': 'Fulfillment',
+  Draft: 'Inquiry',
+  'Pending Approval': 'Qualified',
+  Approved: 'Proposal sent',
+  Won: 'Confirmed',
+  'In Build': 'Event prep',
   Delivered: 'Completed',
-  Lost: 'Lost / inactive',
+  Lost: 'Lost',
 };
 
 export function dealStatusForDisplay(status: string): string {

@@ -20,8 +20,12 @@ const calChipClass: Record<string, string> = {
 };
 
 export default function CalendarOccupancy() {
-  if (isProductionCRM() || isScreenshotMode()) return <LiveCalendarPage />;
-  return <CalendarOccupancyDemo />;
+  // Always prefer the real week/day calendar with conflict detection.
+  // Demo month grid remains available only when forced via ?demoCal=1
+  if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('demoCal') === '1') {
+    if (!isProductionCRM() && !isScreenshotMode()) return <CalendarOccupancyDemo />;
+  }
+  return <LiveCalendarPage />;
 }
 
 function CalendarOccupancyDemo() {

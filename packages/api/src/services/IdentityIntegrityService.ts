@@ -7,6 +7,14 @@ import { UnitRepository } from '../repositories/UnitRepository.js';
 import { BuildRepository } from '../repositories/BuildRepository.js';
 import { ProductionJobRepository } from '../repositories/ProductionJobRepository.js';
 
+function normalizeCompanyName(name: string): string {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'company';
+}
+
 export class IdentityIntegrityService {
   async resolveCanonicalCompany(
     db: Db,
@@ -20,11 +28,32 @@ export class IdentityIntegrityService {
     }
     const name = input.companyName?.trim();
     if (!name) throw new ValidationError('companyId is required');
+
     const matches = await CompanyRepository.search(db, ctx, name, 5);
     const exact = matches.filter(c => c.name.trim().toLowerCase() === name.toLowerCase());
     if (exact.length === 1) return exact[0]!;
     if (exact.length > 1) throw new ValidationError('Ambiguous company match; provide companyId');
-    throw new ValidationError('Unable to resolve company by name; provide companyId');
+
+    const normalized = normalizeCompanyName(name);
+    const byNormalized = await CompanyRepository.findByNameNormalized(db, ctx.tenantId ?? '', normalized);
+    if (byNormalized) return byNormalized;
+
+    const tenantId = ctx.tenantId ?? 'unknown-tenant';
+    const sourceId = `manual:${normalized}`;
+    const createdId = await CompanyRepository.upsertBySourceId(db, tenantId, 'manual', sourceId, {
+      tenantId,
+      name,
+      nameNormalized: normalized,
+      source: 'manual',
+      sourceId,
+      isStub: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+
+    const company = await CompanyRepository.findById(db, ctx, createdId);
+    if (!company) throw new ValidationError('Unable to resolve company by name; provide companyId');
+    return company;
   }
 
   async validateInteractionContext(

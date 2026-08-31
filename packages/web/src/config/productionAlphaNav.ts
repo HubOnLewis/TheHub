@@ -30,7 +30,6 @@ function isHubSettingsPath(pathname: string): boolean {
 export const PRODUCTION_ALPHA_REDIRECT_ROUTES: readonly string[] = [
   ROUTES.today,
   ROUTES.autopilot,
-  ROUTES.ownerBriefing,
   ROUTES.revenueLeaks,
   ROUTES.automationImpact,
   ROUTES.myWork,
@@ -58,6 +57,7 @@ export function isProductionAlphaRedirectPath(routePath: string): boolean {
     routePath === ROUTES.inbox ||
     routePath === ROUTES.calendar ||
     routePath === ROUTES.tasks ||
+    routePath === ROUTES.ownerBriefing ||
     routePath === ROUTES.monthlyScorecard ||
     routePath === ROUTES.leads ||
     routePath.startsWith(`${ROUTES.leads}/`)
@@ -84,9 +84,10 @@ const FULL_HUB_TOP_NAV: HubTopNavItem[] = [
     label: 'Leads',
     match: p => p === ROUTES.leads || p.startsWith(`${ROUTES.leads}/`),
   },
-  { to: ROUTES.inbox, label: 'Inbox' },
+  { to: ROUTES.inbox, label: 'Activity' },
   { to: ROUTES.calendar, label: 'Calendar' },
   { to: ROUTES.tasks, label: 'Tasks' },
+  { to: ROUTES.ownerBriefing, label: 'Briefing' },
   { to: ROUTES.monthlyScorecard, label: 'Reports' },
   {
     to: ROUTES.settings,
@@ -122,6 +123,7 @@ export const CRM_TOPNAV_PATHS: readonly string[] = [
   ROUTES.inbox,
   ROUTES.calendar,
   ROUTES.tasks,
+  ROUTES.ownerBriefing,
   ROUTES.monthlyScorecard,
   ROUTES.settings,
 ];

@@ -13,6 +13,8 @@ export interface LeadDoc extends Document {
   source?:    string;
   notes?:     string;
   assignedTo?: string;
+  convertedDealId?: string;
+  dealId?: string;
   status:        LeadStatus;
   createdAt:     Date;
   updatedAt:     Date;

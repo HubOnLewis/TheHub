@@ -26,8 +26,18 @@ export const CreateLeadSchema = z.object({
   notes:      z.string().optional(),
   assignedTo: z.string().optional(),
   status:     z.enum(LEAD_STATUSES).default('New'),
+  /** Desired event date (ISO date or display string) */
+  eventDate:  z.string().optional(),
+  guestCount: z.number().int().min(0).optional(),
+  eventType:  z.string().optional(),
+  spacePreference: z.string().optional(),
+  estimatedValue: z.number().min(0).optional(),
 });
 export type CreateLeadPayload = z.infer<typeof CreateLeadSchema>;
+
+/** PATCH /leads/:id — partial lead update including inquiry fields. */
+export const PatchLeadSchema = CreateLeadSchema.partial();
+export type PatchLeadPayload = z.infer<typeof PatchLeadSchema>;
 
 // ── Deal ──────────────────────────────────────────────────────────
 export const CreateDealSchema = z.object({

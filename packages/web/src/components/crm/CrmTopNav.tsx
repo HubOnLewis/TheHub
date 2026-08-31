@@ -7,6 +7,7 @@ import { getHubTopNavItems } from '../../config/productionAlphaNav.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { generateInboxActivity, generateLiveTasks } from '../../lib/liveEventHelpers.js';
 import { useAppStore } from '../../store/index.js';
+import GlobalSearch from '../venue/GlobalSearch.js';
 
 type NavItem = {
   to: string;
@@ -77,21 +78,9 @@ export default function CrmTopNav() {
         ))}
       </nav>
       <div className="crm-topnav__search-wrap">
-        <span className="crm-topnav__search-icon" aria-hidden>
-          ⌕
-        </span>
-        <input
-          type="search"
-          className="crm-topnav__search"
-          placeholder="Search events, contacts, tasks, or navigate…"
-          aria-label="Global search"
-          readOnly
-        />
+        <GlobalSearch />
       </div>
       <div className="crm-topnav__tools">
-        <button type="button" className="crm-topnav__icon" title="Help" aria-label="Help">
-          ?
-        </button>
         <div className="crm-topnav__user" title={user?.email ?? undefined}>
           <span className="crm-topnav__user-avatar" aria-hidden>
             {userInitials(user?.name, user?.email)}

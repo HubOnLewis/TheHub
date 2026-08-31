@@ -76,6 +76,18 @@ router.get('/forecast-review', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+router.get('/calendar', async (req, res, next) => {
+  try {
+    const { page = '1', limit = '500', sort = 'updatedAt', order = 'desc' } = req.query as Record<string, string>;
+    res.json(await dealService.listCalendar(getDB(), req.tenant, {
+      page: +page,
+      limit: Math.min(+limit, 500),
+      sort,
+      order: order as 'asc' | 'desc',
+    }));
+  } catch (err) { next(err); }
+});
+
 router.get('/', async (req, res, next) => {
   try {
     const { status, assignedTo, search, active, ownerUserId, stage, company, page = '1', limit = '25', sort = 'updatedAt', order = 'desc' } = req.query as Record<string, string>;

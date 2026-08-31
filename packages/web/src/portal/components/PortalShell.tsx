@@ -33,7 +33,12 @@ export default function PortalShell() {
         <div className="portal-top__brand">
           <BrandLogo size="sm" />
         </div>
-        <span className="portal-top__event">{profile.title}</span>
+        <div className="portal-top__event-wrap">
+          <span className="portal-top__event">{profile.title}</span>
+          {profile.displayDate ? (
+            <span className="portal-top__date">{profile.displayDate}</span>
+          ) : null}
+        </div>
         <button
           type="button"
           className="portal-btn portal-btn--ghost"

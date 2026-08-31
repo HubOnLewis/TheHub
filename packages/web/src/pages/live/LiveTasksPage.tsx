@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LoadingState from '../../components/crm/LoadingState.js';
 import LiveModuleTable, { EventLink, MoneyCell } from '../../components/live/LiveModuleTable.js';
+import AttentionRail from '../../components/venue/AttentionRail.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { generateLiveTasks, type LiveTask, type LiveTaskPriority } from '../../lib/liveEventHelpers.js';
+import { useVenueAttention } from '../../hooks/useAgentSnapshot.js';
 
 const PRIORITY_LABEL: Record<LiveTaskPriority, string> = {
   high: 'High',
@@ -26,6 +28,7 @@ export default function LiveTasksPage() {
   const { rows, isLoading, isError } = useLiveCrmEvents();
   const tasks = useMemo(() => generateLiveTasks(rows), [rows]);
   const groups = useMemo(() => groupByPriority(tasks), [tasks]);
+  const { items: attention } = useVenueAttention(rows);
 
   if (isLoading) return <LoadingState message="Loading tasks…" />;
 
@@ -35,11 +38,13 @@ export default function LiveTasksPage() {
         <div>
           <h1 className="hub-admin-page__title">Tasks</h1>
           <p className="hub-admin-page__subtitle">
-            Operational follow-ups generated from live event status, balances, and dates.
+            Agent-driven operational follow-ups from live CRM events and leads — balances, proposals, prep, and conflicts.
           </p>
         </div>
         <span className="hub-admin-stat-pill">{tasks.length} task{tasks.length === 1 ? '' : 's'}</span>
       </header>
+
+      <AttentionRail items={attention} title="Agent queue" max={4} />
 
       {isError ? (
         <div className="card hub-live-empty">

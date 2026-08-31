@@ -42,19 +42,15 @@ export const PRODUCTION_HIDDEN_MAIN_NAV = new Set([
   '/marketing',
   '/marketing-blasts',
   '/referrals',
-  '/monthly-scorecard',
 ]);
 
 /** Routes that should show an honest empty gate instead of demo intel. */
+/** Demo-only intel surfaces — not live venue ops. Calendar/inbox/tasks/briefing are live. */
 export const PRODUCTION_GATED_ROUTE_PREFIXES = [
   '/today',
-  '/owner-briefing',
   '/revenue-leaks',
   '/automation-impact',
   '/autopilot',
-  '/inbox',
-  '/calendar',
-  '/tasks',
   '/my-work',
   '/follow-ups',
   '/pipeline-pressure',
@@ -69,7 +65,6 @@ export const PRODUCTION_GATED_ROUTE_PREFIXES = [
   '/marketing',
   '/marketing-blasts',
   '/referrals',
-  '/monthly-scorecard',
 ] as const;
 
 export function isProductionGatedRoute(pathname: string): boolean {

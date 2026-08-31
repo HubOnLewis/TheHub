@@ -10,6 +10,7 @@ import LoadingState from './LoadingState.js';
 import CrmEventSourceBanner from './CrmEventSourceBanner.js';
 import CrmEventSourceDiagnostics from './CrmEventSourceDiagnostics.js';
 import AddEventModal from './AddEventModal.js';
+import AttentionRail from '../venue/AttentionRail.js';
 import {
   filterCrmRows,
   mapApiDealsToWorkspaceRows,
@@ -24,6 +25,8 @@ import { matchesDealFilter } from '../../lib/liveDataMappers.js';
 import type { EventListFilter } from '../opportunities/opportunityLiveTypes.js';
 import { hasImportedVenueRecords } from '../../lib/operationalSource.js';
 import { ROUTES } from '../../config/paths.js';
+import { useVenueAttention } from '../../hooks/useAgentSnapshot.js';
+import { formatCurrency } from '@hub-crm/shared';
 
 type Props = {
   title?: string;
@@ -103,6 +106,18 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
     return rows;
   }, [manifest.rows, statusFilter, mineOnly, user, search, useApi, advancedFilter, dealsPage]);
 
+  const { items: attention, source: attentionSource } = useVenueAttention(manifest.rows);
+
+  const nextActionStats = useMemo(() => {
+    const balance = manifest.rows.reduce((s, r) => s + (r.balanceDue ?? 0), 0);
+    const thisWeek = attention.filter(a => a.priority === 'critical' || a.priority === 'high').length;
+    return {
+      attention: attention.length,
+      balance,
+      highPriority: thisWeek,
+    };
+  }, [manifest.rows, attention]);
+
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev);
@@ -129,13 +144,57 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
         <header className="crm-page-header">
           <h1 className="crm-page-header__title">{title}</h1>
           <p className="crm-page-header__subtitle">
-            Live booking pipeline, balances, follow-ups, and upcoming event readiness.
+            What needs worked · what is booked · what is at risk — your venue command home.
           </p>
         </header>
 
         <CrmEventSourceBanner manifest={manifest} apiError={isError} />
       </div>
       <CrmEventSourceDiagnostics manifest={manifest} />
+
+      <div className="crm-home-next-strip" role="status">
+        <div className="crm-home-next-pill">
+          <span>Needs attention</span>
+          <strong>{nextActionStats.attention}</strong>
+        </div>
+        <div className={`crm-home-next-pill${nextActionStats.balance > 0 ? ' crm-home-next-pill--warn' : ''}`}>
+          <span>Balances due</span>
+          <strong>{formatCurrency(nextActionStats.balance)}</strong>
+        </div>
+        <div className={`crm-home-next-pill${nextActionStats.highPriority > 0 ? ' crm-home-next-pill--urgent' : ''}`}>
+          <span>High priority</span>
+          <strong>{nextActionStats.highPriority}</strong>
+        </div>
+        <Link to={ROUTES.calendar} className="crm-home-next-link">
+          Open calendar →
+        </Link>
+        <Link to={ROUTES.tasks} className="crm-home-next-link">
+          Open tasks →
+        </Link>
+        <Link to={ROUTES.ownerBriefing} className="crm-home-next-link">
+          Owner briefing →
+        </Link>
+      </div>
+
+      {attention[0] ? (
+        <div className="crm-start-here">
+          <div>
+            <span className="crm-start-here__kicker">Start here</span>
+            <strong>{attention[0].title}</strong>
+            <p>{attention[0].detail}</p>
+          </div>
+          <Link to={attention[0].href} className="btn btn-primary">
+            {attention[0].actionLabel}
+          </Link>
+        </div>
+      ) : null}
+
+      <AttentionRail items={attention} title="Do this next" max={5} />
+      <p className="text-muted text-sm" style={{ margin: '-8px 0 16px' }}>
+        {attentionSource === 'api-agents'
+          ? 'Live agent snapshot from CRM events and leads — not Perfect Venue seed.'
+          : 'Live rules on current CRM rows. Open Briefing to refresh the stored agent run.'}
+      </p>
 
       {manifest.sourceId === 'live-api' && dashStats ? (
         <WorkspaceKpiStrip stats={dashStats} />
@@ -213,7 +272,7 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
             title={manifest.rowCount === 0 ? 'No events loaded yet' : 'No events match this filter'}
             hint={
               manifest.rowCount === 0
-                ? 'Import Perfect Venue events or add a new event to begin.'
+                ? 'Add a new event or capture a lead to begin.'
                 : isError
                   ? 'Could not load events from the API.'
                   : 'Try another status card or clear filters.'

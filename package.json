@@ -9,6 +9,7 @@
     "dev": "docker-compose up",
     "dev:api": "npm run dev --workspace=packages/api",
     "dev:web": "npm run dev --workspace=packages/web",
+    "test": "npm run test --workspace=packages/api",
     "build": "npm run build --workspaces --if-present",
     "build:render:web": "node scripts/render-prepare-web-build.mjs",
     "verify:web-env": "node scripts/verify-web-env.mjs --strict",

@@ -64,7 +64,8 @@ export interface JwtPayload {
  */
 export function resolveTenant(req: Request, _res: Response, next: NextFunction): void {
   const user = req.user;
-  const isSuperAdmin = env.SUPER_ADMIN_EMAILS.includes(user.email);
+  const normalizedEmails = env.SUPER_ADMIN_EMAILS.map(email => email.trim().toLowerCase());
+  const isSuperAdmin = normalizedEmails.includes((user.email ?? '').trim().toLowerCase());
   const isCrossTenant = isSuperAdmin || CROSS_TENANT_ROLES.includes(user.role as never);
 
   let tenantId: string | null = user.tenantId;

@@ -107,6 +107,17 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
     return this.list(db, ctx, query as never, options);
   }
 
+  async listCalendarDeals(db: Db, ctx: TenantContext, options: ListOptions) {
+    const query = {
+      status: { $ne: 'Lost' },
+      $or: [
+        { 'importMeta.eventDateIso': { $exists: true, $nin: [null, ''] } },
+        { 'importMeta.eventDate': { $exists: true, $nin: [null, ''] } },
+      ],
+    };
+    return this.list(db, ctx, query as never, options);
+  }
+
   /**
    * Returns the first active (non-terminal) deal linked to the given unitId,
    * optionally excluding one deal by ID (used during updates to skip self).
@@ -212,6 +223,15 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
       .sort({ createdAt: -1 })
       .toArray();
     return docs.map(d => this.serialize(d as DealDoc & { _id: ObjectId }));
+  }
+
+  async findByLeadId(
+    db: Db,
+    ctx: TenantContext,
+    leadId: string,
+  ): Promise<(DealDoc & { _id: string }) | null> {
+    const doc = await this.col(db).findOne(this.scope(ctx, { leadId } as never));
+    return doc ? this.serialize(doc as DealDoc & { _id: ObjectId }) : null;
   }
 }
 

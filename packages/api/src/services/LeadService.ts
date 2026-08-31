@@ -4,9 +4,10 @@ import type { TenantContext } from '../tenancy/index.js';
 import { LeadRepository, type LeadFilter } from '../repositories/LeadRepository.js';
 import type { ListOptions } from '../repositories/BaseRepository.js';
 import type { CreateLeadPayload } from '@hub-crm/shared';
-import { NotFoundError } from '../errors/index.js';
+import { NotFoundError, ValidationError } from '../errors/index.js';
 import { buildTenantId } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
+import { DealRepository } from '../repositories/DealRepository.js';
 
 export class LeadService {
   async list(db: Db, ctx: TenantContext, filter: LeadFilter, options: ListOptions) {
@@ -37,9 +38,28 @@ export class LeadService {
     });
   }
 
-  async update(db: Db, ctx: TenantContext, id: string, payload: Partial<CreateLeadPayload>) {
+  async update(db: Db, ctx: TenantContext, id: string, payload: Partial<CreateLeadPayload> & { convertedDealId?: string; dealId?: string }) {
+    const current = await LeadRepository.findById(db, ctx, id);
+    if (!current) throw new NotFoundError('Lead');
+
+    if (payload.status === 'Converted') {
+      const dealId = payload.convertedDealId ?? current.convertedDealId ?? current.dealId;
+      if (!dealId) {
+        throw new ValidationError('Lead cannot be marked Converted without a valid deal');
+      }
+      const deal = await DealRepository.findById(db, ctx, dealId);
+      if (!deal || deal.leadId !== id) {
+        throw new ValidationError('Lead conversion references an invalid or mismatched deal');
+      }
+      payload.convertedDealId = String(deal._id);
+      payload.dealId = String(deal._id);
+    }
+
     // Set lastTouchedAt when any meaningful business field is being changed
-    const TOUCH_FIELDS = ['status', 'assignedTo', 'notes', 'company', 'contact'] as const;
+    const TOUCH_FIELDS = [
+      'status', 'assignedTo', 'notes', 'company', 'contact',
+      'email', 'phone', 'eventDate', 'guestCount', 'eventType', 'spacePreference', 'estimatedValue',
+    ] as const;
     const isTouched = TOUCH_FIELDS.some(f => f in payload);
     const update = isTouched ? { ...payload, lastTouchedAt: new Date() } : payload;
     const lead = await LeadRepository.updateOne(db, ctx, id, update as never);

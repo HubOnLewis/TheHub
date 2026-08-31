@@ -27,7 +27,6 @@ export const HUB_ADMIN_PATH_PREFIXES: readonly string[] = [
   ROUTES.revenueLeaks,
   ROUTES.automationImpact,
 ];
-
 const DETAIL_PATTERNS = [
   /^\/opportunities\/[^/]+/,
   /^\/deals\/[^/]+/,

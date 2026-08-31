@@ -106,6 +106,10 @@ function closeoutHandoffComplete(co: {
 }
 
 export class DealService {
+  async listCalendar(db: Db, ctx: TenantContext, options: ListOptions) {
+    return DealRepository.listCalendarDeals(db, ctx, options);
+  }
+
   private enrichDeal(
     deal: DealDoc & { _id: string },
     interactions: Awaited<ReturnType<typeof InteractionRepository.listByRelatedDealIds>>,
@@ -426,18 +430,31 @@ export class DealService {
       ctx.defaultEntity  as Entity,
       ctx.defaultLocation as Location,
     );
+    const tenantCtx = { ...ctx, tenantId } as TenantContext;
     // Default to the authenticated user's name if no assignedTo provided
     const assignedTo = payload.assignedTo?.trim() || ctx.userName;
 
+    if (payload.leadId) {
+      const existingLeadDeal = await DealRepository.findByLeadId(db, tenantCtx, payload.leadId);
+      if (existingLeadDeal) {
+        await LeadRepository.updateOne(db, tenantCtx, payload.leadId, {
+          status: 'Converted',
+          convertedDealId: String(existingLeadDeal._id),
+        } as never)
+          .catch(err => console.error(`[DealService] Failed to mark existing lead conversion ${payload.leadId}:`, err));
+        return existingLeadDeal;
+      }
+    }
+
     // Unit-deal uniqueness guard: block if another active deal already claims this unit
     if (payload.unitId) {
-      const conflict = await DealRepository.findActiveByUnitId(db, { ...ctx, tenantId } as typeof ctx, payload.unitId);
+      const conflict = await DealRepository.findActiveByUnitId(db, tenantCtx, payload.unitId);
       if (conflict) {
         throw new ConflictError(`Unit is already attached to an active deal: "${conflict.title}"`);
       }
     }
 
-    const company = await identityIntegrityService.resolveCanonicalCompany(db, { ...ctx, tenantId }, {
+    const company = await identityIntegrityService.resolveCanonicalCompany(db, tenantCtx, {
       companyId: (payload as any).companyId,
       companyName: payload.company,
     });
@@ -457,7 +474,7 @@ export class DealService {
       importMeta.balanceDue = Math.max(0, importMeta.grandTotal - importMeta.amountPaid);
     }
 
-    const deal = await DealRepository.insertOne(db, { ...ctx, tenantId }, {
+    const deal = await DealRepository.insertOne(db, tenantCtx, {
       ...payload,
       companyId: company._id,
       company: company.name,
@@ -475,9 +492,15 @@ export class DealService {
 
     // Auto-convert the originating lead when a deal is created from one
     if (payload.leadId) {
-      await LeadRepository.updateOne(db, ctx, payload.leadId, { status: 'Converted' } as never)
+      await LeadRepository.updateOne(db, tenantCtx, payload.leadId, {
+        status: 'Converted',
+        convertedDealId: String(deal._id),
+        dealId: String(deal._id),
+      } as never)
         .catch(err => console.error(`[DealService] Failed to convert lead ${payload.leadId}:`, err));
     }
+
+      void eventBus.emit({ type: 'deal.created', dealId: String(deal._id), tenantId }, db);
 
     return deal;
   }
@@ -584,15 +607,21 @@ export class DealService {
           .catch(err => console.error(`[DealService] Failed to sync unit ${unitId} status:`, err));
       }
 
-      // Fire domain events
+      // Fire venue domain events
+      void eventBus.emit(
+        {
+          type: 'event.stage_changed',
+          dealId: id,
+          from: String(before.status),
+          to: payload.status,
+          tenantId,
+        },
+        db,
+      );
       if (payload.status === 'Won') {
-        void eventBus.emit({ type: 'deal.won', dealId: id, tenantId, amount: deal['amount'] as number }, db);
-      } else if (payload.status === 'Approved') {
-        void eventBus.emit({ type: 'deal.approved', dealId: id, approver: ctx.defaultEntity, tenantId }, db);
-      } else if (payload.status === 'In Build') {
-        void eventBus.emit({ type: 'deal.in_build', dealId: id, tenantId }, db);
+        void eventBus.emit({ type: 'event.confirmed', dealId: id, tenantId }, db);
       } else if (payload.status === 'Delivered') {
-        void eventBus.emit({ type: 'deal.delivered', dealId: id, tenantId }, db);
+        void eventBus.emit({ type: 'event.completed', dealId: id, tenantId }, db);
       }
     }
 

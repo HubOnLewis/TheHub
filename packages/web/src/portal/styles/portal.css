@@ -533,3 +533,178 @@
   color: var(--portal-warn);
   margin-top: 8px;
 }
+
+.portal-login__title {
+  font-family: var(--portal-display);
+  font-size: 26px;
+  margin: 0 0 8px;
+}
+
+.portal-login__lede,
+.portal-login__hint,
+.portal-login__status {
+  color: var(--portal-muted);
+  font-size: 14px;
+  margin: 0 0 20px;
+}
+
+.portal-login__hint {
+  font-size: 12px;
+  margin: 16px 0 0;
+}
+
+.portal-login__status {
+  margin: 8px 0 0;
+}
+
+.portal-login__error {
+  color: #b42318;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.portal-login__staff {
+  display: block;
+  margin-top: 20px;
+  font-size: 12px;
+  color: var(--portal-muted);
+}
+
+.portal-page-title {
+  font-family: var(--portal-display);
+  font-size: 28px;
+  margin: 0 0 8px;
+}
+
+.portal-page-lede {
+  color: var(--portal-muted);
+  margin: 0 0 20px;
+}
+
+.portal-next-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 720px) {
+  .portal-next-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.portal-next-card {
+  padding: 18px 18px 16px;
+  border-radius: var(--portal-radius);
+  background: var(--portal-surface);
+  border: 1px solid rgba(42, 53, 72, 0.08);
+  box-shadow: 0 8px 24px rgba(28, 25, 23, 0.04);
+}
+
+.portal-next-card h2 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.portal-next-card p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  color: var(--portal-muted);
+}
+
+.portal-next-card__kicker {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--portal-gold);
+  margin-bottom: 6px;
+}
+
+.portal-next-card--pay {
+  background: linear-gradient(160deg, #fffdf9 0%, #f3ead8 100%);
+  border-color: var(--portal-gold-soft);
+}
+
+.portal-next-card--ok {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.portal-coord-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border-radius: var(--portal-radius);
+  background: var(--portal-surface);
+  border: 1px solid rgba(42, 53, 72, 0.08);
+}
+
+.portal-coord-card strong {
+  display: block;
+  margin: 2px 0 4px;
+}
+
+.portal-coord-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--portal-muted);
+}
+
+.portal-hero-countdown__meta {
+  margin: 8px 0 0;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.portal-risk-line {
+  font-size: 13px;
+  color: var(--portal-warn);
+  margin: 0 0 16px;
+}
+
+.portal-pay-schedule {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.portal-pay-schedule li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 14px;
+}
+
+.portal-pay-schedule__meta {
+  display: block;
+  font-size: 12px;
+  color: var(--portal-muted);
+  font-weight: 400;
+}
+
+.portal-pay-footnote {
+  font-size: 12px;
+  color: var(--portal-muted);
+  margin-top: 16px;
+}
+
+.portal-top__event-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.portal-top__date {
+  font-size: 11px;
+  color: var(--portal-muted);
+}

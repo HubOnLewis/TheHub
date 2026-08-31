@@ -275,7 +275,7 @@ function Shell() {
           <Routes>
             <Route path={ROUTES.dashboard} element={resolveHubRouteElement(ROUTES.dashboard, withLiveModuleBoundary('Home', <Dashboard />))} />
             <Route path={ROUTES.today} element={resolveHubRouteElement(ROUTES.today, <TodayOperations />, 'Today')} />
-            <Route path={ROUTES.ownerBriefing} element={resolveHubRouteElement(ROUTES.ownerBriefing, <OwnerBriefing />, 'Owner briefing')} />
+            <Route path={ROUTES.ownerBriefing} element={resolveHubRouteElement(ROUTES.ownerBriefing, withLiveModuleBoundary('Owner briefing', <OwnerBriefing />))} />
             <Route path={ROUTES.revenueLeaks} element={resolveHubRouteElement(ROUTES.revenueLeaks, <RevenueLeaks />, 'Revenue leaks')} />
             <Route path={ROUTES.automationImpact} element={resolveHubRouteElement(ROUTES.automationImpact, <AutomationImpact />, 'Automation impact')} />
             <Route path={ROUTES.autopilot} element={resolveHubRouteElement(ROUTES.autopilot, <AutopilotPage />, 'Autopilot')} />
@@ -333,13 +333,13 @@ function Shell() {
           <Routes>
             <Route path={ROUTES.dashboard} element={<Dashboard />} />
             <Route path={ROUTES.today} element={<ProductionModuleGate moduleLabel="Today"><TodayOperations /></ProductionModuleGate>} />
-            <Route path={ROUTES.ownerBriefing} element={<ProductionModuleGate moduleLabel="Owner briefing"><OwnerBriefing /></ProductionModuleGate>} />
+            <Route path={ROUTES.ownerBriefing} element={withLiveModuleBoundary('Owner briefing', <OwnerBriefing />)} />
             <Route path={ROUTES.revenueLeaks} element={<ProductionModuleGate moduleLabel="Revenue leaks"><RevenueLeaks /></ProductionModuleGate>} />
             <Route path={ROUTES.automationImpact} element={<ProductionModuleGate moduleLabel="Automation impact"><AutomationImpact /></ProductionModuleGate>} />
             <Route path={ROUTES.autopilot} element={<ProductionModuleGate moduleLabel="Autopilot"><AutopilotPage /></ProductionModuleGate>} />
-            <Route path={ROUTES.inbox} element={<ProductionModuleGate moduleLabel="Inbox"><InboxPage /></ProductionModuleGate>} />
-            <Route path={ROUTES.calendar} element={<ProductionModuleGate moduleLabel="Calendar"><CalendarOccupancy /></ProductionModuleGate>} />
-            <Route path={ROUTES.tasks} element={<ProductionModuleGate moduleLabel="Tasks"><TasksCenter /></ProductionModuleGate>} />
+            <Route path={ROUTES.inbox} element={withLiveModuleBoundary('Activity', <InboxPage />)} />
+            <Route path={ROUTES.calendar} element={withLiveModuleBoundary('Calendar', <CalendarOccupancy />)} />
+            <Route path={ROUTES.tasks} element={withLiveModuleBoundary('Tasks', <TasksCenter />)} />
             <Route path={ROUTES.settings} element={<SettingsLayout />}>
               <Route index element={<SettingsIndexRedirect />} />
               <Route path=":moduleId" element={<SettingsModulePage />} />
@@ -378,7 +378,7 @@ function Shell() {
             <Route path={ROUTES.marketing} element={<ProductionModuleGate moduleLabel="Marketing"><MarketingPage /></ProductionModuleGate>} />
             <Route path={ROUTES.marketingBlasts} element={<Navigate to={ROUTES.marketing} replace />} />
             <Route path={ROUTES.referrals} element={<ProductionModuleGate moduleLabel="Referrals"><ReferralsPage /></ProductionModuleGate>} />
-            <Route path={ROUTES.monthlyScorecard} element={<ProductionModuleGate moduleLabel="Monthly scorecard"><MonthlyScorecardPage /></ProductionModuleGate>} />
+            <Route path={ROUTES.monthlyScorecard} element={withLiveModuleBoundary('Reports', <MonthlyScorecardPage />)} />
             <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
           </Routes>
         </main>

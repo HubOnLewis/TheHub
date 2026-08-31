@@ -35,6 +35,5 @@ function MonthlyScorecardDemo() {
 }
 
 export default function MonthlyScorecardPage() {
-  if (isProductionCRM()) return <LiveReportsPage />;
-  return <MonthlyScorecardDemo />;
+  return <LiveReportsPage />;
 }

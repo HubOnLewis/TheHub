@@ -16,9 +16,10 @@ const TEMPLATES = [
 ] as const;
 
 export default function InboxPage() {
-  // Live activity derived from CRM events in production and screenshot walkthroughs
+  // Live activity from CRM events is the product surface (not a fake email client).
   if (isProductionCRM() || isScreenshotMode()) return <LiveInboxPage />;
-  return <InboxPageDemo />;
+  // Dev: still prefer live pipeline activity so intelligence is real
+  return <LiveInboxPage />;
 }
 
 function InboxPageDemo() {

@@ -1,5 +1,4 @@
 import PaymentProgress from '../components/PaymentProgress.js';
-import { PORTAL_PAYMENT_HISTORY } from '../demoData.js';
 import { formatCurrency } from '@hub-crm/shared';
 import { computeReadiness } from '../readiness.js';
 import { usePortalStore } from '../portalStore.js';
@@ -9,62 +8,56 @@ export default function PortalPayments() {
   const profile = usePortalStore(s => s.profile);
   const payDeposit = usePortalStore(s => s.payDeposit);
   const { score } = computeReadiness(event);
+  const remaining = Math.max(0, profile.balanceDue);
+  const depositDue = event.payments.some(p => p.label.toLowerCase().includes('deposit') && p.status !== 'paid');
 
   return (
     <>
-      <h1 style={{ fontFamily: 'var(--portal-display)', fontSize: 28, margin: '0 0 8px' }}>Payments</h1>
-      <p style={{ color: 'var(--portal-muted)', margin: '0 0 20px' }}>
-        Progress toward your event — not accounting software.
+      <h1 className="portal-page-title">Payments</h1>
+      <p className="portal-page-lede">
+        {remaining > 0
+          ? `${formatCurrency(remaining)} remaining to fully secure ${profile.title}.`
+          : `Your package for ${profile.title} is paid in full.`}
       </p>
 
       <PaymentProgress showActions />
 
-      {score >= 50 && event.payments.some(p => p.status === 'paid') ? (
+      {score >= 50 && event.payments.some(p => p.status === 'paid') && remaining > 0 ? (
         <div className="portal-peace" style={{ marginTop: 20 }}>
-          <h2>Milestone unlocked</h2>
+          <h2>Deposit received</h2>
           <p style={{ margin: 0, fontSize: 14 }}>
-            Deposit received — your coordinator is preparing day-of logistics and Kisi access.
+            Thank you — your coordinator is holding the date and preparing day-of details.
           </p>
         </div>
       ) : null}
 
       <div className="portal-card portal-card--flat" style={{ marginTop: 20 }}>
         <h3>Payment schedule</h3>
-        <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 13 }}>
+        <ul className="portal-pay-schedule">
           {event.payments.map(p => (
-            <li key={p.id} style={{ padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-              {p.label} — {p.status}
-              {p.dueDate ? ` · due ${p.dueDate}` : ''}
-              {p.paidAt ? ` · paid ${p.paidAt}` : ''}
-              <span style={{ float: 'right' }}>{formatCurrency(p.amount)}</span>
+            <li key={p.id}>
+              <span>
+                <strong>{p.label}</strong>
+                <span className="portal-pay-schedule__meta">
+                  {p.status === 'paid' ? 'Paid' : p.status === 'due' ? 'Due now' : 'Scheduled'}
+                  {p.dueDate && p.status !== 'paid' ? ` · ${p.dueDate}` : ''}
+                  {p.paidAt ? ` · ${p.paidAt}` : ''}
+                </span>
+              </span>
+              <span>{formatCurrency(p.amount)}</span>
             </li>
           ))}
         </ul>
       </div>
 
-      {profile.source === 'demo' && PORTAL_PAYMENT_HISTORY.length > 0 ? (
-        <div className="portal-card portal-card--flat" style={{ marginTop: 16 }}>
-          <h3>Ledger · Perfect Venue (demo)</h3>
-          <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 13 }}>
-            {PORTAL_PAYMENT_HISTORY.map(p => (
-              <li key={p.id} style={{ padding: '10px 0', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
-                {p.label} · {formatCurrency(p.amount)}
-                <span style={{ display: 'block', fontSize: 11, color: 'var(--portal-muted)' }}>
-                  {p.paidOn} · {p.method}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-
-      <p style={{ fontSize: 12, color: 'var(--portal-muted)', marginTop: 16 }}>
-        Package total {formatCurrency(profile.packageTotal)} · no live card charges in this build.
+      <p className="portal-pay-footnote">
+        Package total {formatCurrency(profile.packageTotal)}. Card checkout is not live yet — these
+        buttons record a payment received another way (check, Venmo, coordinator). Nothing is charged.
       </p>
 
-      {event.payments.some(p => p.label.toLowerCase().includes('deposit') && p.status !== 'paid') ? (
+      {depositDue ? (
         <button type="button" className="portal-btn portal-btn--secondary" style={{ marginTop: 12 }} onClick={() => payDeposit()}>
-          Pay deposit (demo)
+          Record deposit received (not a card charge)
         </button>
       ) : null}
     </>

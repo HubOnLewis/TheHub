@@ -1,4 +1,5 @@
 import axios, { AxiosError, type AxiosAdapter, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { evaluateLiveVenueAgents, type LiveAgentEvent } from '@hub-crm/shared';
 import { getScreenshotDemoUser, SCREENSHOT_DEMO_TOKEN } from '../config/screenshotSession.js';
 import {
   createScreenshotDeal,
@@ -244,6 +245,97 @@ function mockResponse(config: InternalAxiosRequestConfig): AxiosResponse | Promi
       lastProbeError: null,
       productMode: 'venue',
     });
+  }
+
+  if (method === 'post' && path === '/ai/enhance') {
+    return ok(config, {
+      output: '',
+      enhanced: false,
+      provider: 'none',
+      model: null,
+      mode: 'off',
+      error: 'Screenshot mode — local model is not connected.',
+    });
+  }
+
+  const portalLink = /^\/portal\/links\/([^/]+)$/.exec(path);
+  if (method === 'post' && portalLink) {
+    const dealId = decodeURIComponent(portalLink[1] ?? '');
+    const deal = getScreenshotDeal(dealId);
+    if (!deal) return rejectNotFound(config);
+    const token = `ss.${dealId}`;
+    return ok(config, {
+      token,
+      eventId: dealId,
+      path: `/portal/login?access=${encodeURIComponent(token)}`,
+    });
+  }
+
+  const publicBooking = /^\/public\/portal\/bookings\/([^/]+)$/.exec(path);
+  if (method === 'get' && publicBooking) {
+    const token = decodeURIComponent(publicBooking[1] ?? '');
+    const dealId = token.startsWith('ss.') ? token.slice(3) : token;
+    const deal = getScreenshotDeal(dealId);
+    if (!deal) return rejectNotFound(config);
+    const meta = deal.importMeta ?? {};
+    const grandTotal = typeof meta.grandTotal === 'number' ? meta.grandTotal : deal.amount;
+    const amountPaid = typeof meta.amountPaid === 'number' ? meta.amountPaid : 0;
+    return ok(config, {
+      eventId: dealId,
+      profile: {
+        id: deal._id,
+        title: deal.title,
+        clientName: deal.company,
+        contactName: deal.contact,
+        contactEmail: typeof meta.contactEmail === 'string' ? meta.contactEmail : null,
+        displayDate: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : 'Date TBD',
+        eventStartIso: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : null,
+        venueName: 'HuB on Lewis',
+        venueAddress: '1400 N Lewis St · Wichita, KS',
+        coordinator: { name: deal.assignedTo ?? 'Your coordinator', email: 'coordinator@hubonlewis.com', phone: '' },
+        packageTotal: grandTotal,
+        paidTotal: amountPaid,
+        balanceDue: typeof meta.balanceDue === 'number' ? meta.balanceDue : Math.max(0, grandTotal - amountPaid),
+        guests: typeof meta.guests === 'number' ? meta.guests : 0,
+        space: typeof meta.space === 'string' ? meta.space : 'Event Space',
+        notes: deal.notes ?? '',
+        source: 'crm',
+      },
+    });
+  }
+
+  if ((method === 'get' && path === '/agents/snapshot') || (method === 'post' && path === '/agents/evaluate')) {
+    const events: LiveAgentEvent[] = listScreenshotDeals().map(d => {
+      const meta = d.importMeta ?? {};
+      const value = typeof meta.grandTotal === 'number' ? meta.grandTotal : d.amount;
+      const amountPaid = typeof meta.amountPaid === 'number' ? meta.amountPaid : 0;
+      return {
+        id: d._id,
+        title: d.title,
+        contact: d.contact,
+        status: d.status,
+        pvStatus: typeof meta.pvStatus === 'string' ? meta.pvStatus : null,
+        eventDateIso: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : null,
+        value,
+        amountPaid,
+        balanceDue: typeof meta.balanceDue === 'number' ? meta.balanceDue : Math.max(0, value - amountPaid),
+        guests: typeof meta.guests === 'number' ? meta.guests : 0,
+        space: typeof meta.space === 'string' ? meta.space : null,
+        updatedAt: d.updatedAt,
+      };
+    });
+    const evaluation = evaluateLiveVenueAgents(events, []);
+    return ok(config, {
+      _id: 'ss-agent-run',
+      generatedAt: evaluation.generatedAt,
+      evaluation,
+      llmBriefing: null,
+      decisions: [],
+    });
+  }
+
+  if (method === 'post' && path === '/agents/approvals') {
+    return ok(config, { ok: true });
   }
 
   if (method === 'get' && path === '/leads') {

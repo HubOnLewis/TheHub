@@ -25,6 +25,14 @@ export function useDeals(params: DealsQuery = {}) {
   });
 }
 
+  export function useCalendarDeals() {
+    return useQuery({
+      queryKey: ['deals', 'calendar'],
+      queryFn: () => client.get('/deals/calendar', { params: { limit: 500, sort: 'updatedAt', order: 'desc' } }).then(r => r.data),
+      staleTime: 30_000,
+    });
+  }
+
 export function usePipelinePressure(params: {
   ownerUserId?: string;
   stage?: string;

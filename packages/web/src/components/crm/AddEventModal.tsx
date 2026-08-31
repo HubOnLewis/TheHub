@@ -1,9 +1,15 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Modal } from '../ui/index.js';
 import { useDealMutations } from '../../hooks/useDeals.js';
 import { useAppStore } from '../../store/index.js';
 import { opportunityDetailPath } from '../../config/paths.js';
+import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
+import {
+  findConflictsForProposal,
+  parseTimeToMinutes,
+  rowsToCalendarBlocks,
+} from '../../venue/calendarEngine.js';
 
 type Props = {
   open: boolean;
@@ -27,6 +33,8 @@ export default function AddEventModal({ open, onClose }: Props) {
   const navigate = useNavigate();
   const user = useAppStore(s => s.user);
   const { create } = useDealMutations();
+  const { rows } = useLiveCrmEvents();
+  const existingBlocks = useMemo(() => rowsToCalendarBlocks(rows), [rows]);
 
   const [title, setTitle] = useState('');
   const [company, setCompany] = useState('');
@@ -88,6 +96,25 @@ export default function AddEventModal({ open, onClose }: Props) {
     const grandTotal = Math.max(0, Number(amount) || 0);
     const amountPaid = Math.max(0, Number(deposit) || 0);
     const guestCount = Math.max(0, Math.floor(Number(guests) || 0));
+
+    if (eventDate) {
+      const startMin = parseTimeToMinutes(startTime) ?? 17 * 60;
+      let endMin = parseTimeToMinutes(endTime) ?? 22 * 60;
+      if (endMin <= startMin) endMin += 24 * 60;
+      const conflicts = findConflictsForProposal({
+        dateKey: eventDate,
+        startMin,
+        endMin,
+        space,
+        blocks: existingBlocks,
+      }).filter(c => c.severity === 'hard');
+      if (conflicts.length > 0) {
+        const ok = window.confirm(
+          `Schedule conflict detected:\n${conflicts.map(c => c.reason).join('\n')}\n\nCreate event anyway?`,
+        );
+        if (!ok) return;
+      }
+    }
 
     try {
       const created = (await create.mutateAsync({

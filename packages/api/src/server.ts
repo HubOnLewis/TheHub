@@ -10,6 +10,7 @@ import { createManualCorsMiddleware } from './middleware/manualCors.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { requestAudit } from './middleware/requestAudit.js';
 import { registerJobs } from './jobs/index.js';
+import { AgentRunRepository } from './repositories/AgentRunRepository.js';
 import { UPLOADS_ROOT } from './config/paths.js';
 
 import authRoutes      from './routes/auth.js';
@@ -30,6 +31,8 @@ import productionRoutes from './routes/production.js';
 import deliveryRoutes from './routes/delivery.js';
 import integrationsRoutes from './routes/integrations.js';
 import aiRoutes from './routes/ai.js';
+import agentRoutes from './routes/agents.js';
+import { portalStaffRoutes, portalPublicRoutes } from './routes/portal.js';
 import { getAiRuntimeConfig } from './config/ai.js';
 
 const app = express();
@@ -83,6 +86,9 @@ app.use('/api/production', productionRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/agents', agentRoutes);
+app.use('/api/portal', portalStaffRoutes);
+app.use('/api/public/portal', portalPublicRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -129,6 +135,9 @@ async function start() {
   try {
     logBootConfig();
     const db = await connectDB();
+    await AgentRunRepository.ensureIndexes(db).catch(err =>
+      console.error('[API] agent_runs index failed:', err),
+    );
     registerJobs(db);
     app.listen(env.PORT, '0.0.0.0', () => {
       console.log(`[API] The Hub CRM listening on 0.0.0.0:${env.PORT}`);

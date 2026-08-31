@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BrandLogo from '../../components/BrandLogo.js';
 import { isScreenshotMode } from '../../config/screenshotMode.js';
@@ -10,9 +10,24 @@ export default function PortalLogin() {
   const [searchParams] = useSearchParams();
   const session = usePortalStore(s => s.session);
   const openEvent = usePortalStore(s => s.openEvent);
+  const openAccessToken = usePortalStore(s => s.openAccessToken);
   const [eventId, setEventId] = useState(() => searchParams.get('event') ?? '');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const autoTried = useRef(false);
+
+  const invitedEventId = searchParams.get('event');
+  const accessToken = searchParams.get('access');
+  const payToken = searchParams.get('pay');
+
+  const finish = (ok: boolean, message?: string) => {
+    if (!ok) {
+      setError(message ?? 'This event could not be opened.');
+      setBusy(false);
+      return;
+    }
+    navigate(payToken ? PORTAL_ROUTES.payments : PORTAL_ROUTES.dashboard, { replace: true });
+  };
 
   useEffect(() => {
     const q = searchParams.get('event');
@@ -20,32 +35,39 @@ export default function PortalLogin() {
   }, [searchParams]);
 
   useEffect(() => {
-    if (session) {
-      navigate(PORTAL_ROUTES.dashboard, { replace: true });
+    if (autoTried.current) return;
+    if (accessToken) {
+      autoTried.current = true;
+      setBusy(true);
+      void openAccessToken(accessToken).then(r => finish(r.ok, r.message));
+      return;
     }
-  }, [session, navigate]);
-
-  // Screenshot auto-open: prefer ?event=, else demo
-  useEffect(() => {
-    if (!isScreenshotMode() || session) return;
-    const q = searchParams.get('event') || 'demo';
-    void openEvent(q).then(r => {
-      if (r.ok) navigate(PORTAL_ROUTES.dashboard, { replace: true });
-    });
-  }, [session, openEvent, navigate, searchParams]);
+    const q = invitedEventId || (isScreenshotMode() ? 'demo' : '');
+    if (!q) {
+      if (session && !invitedEventId) {
+        navigate(PORTAL_ROUTES.dashboard, { replace: true });
+      }
+      return;
+    }
+    autoTried.current = true;
+    setBusy(true);
+    void openEvent(q).then(r => finish(r.ok, r.message));
+    // Auto-open shared coordinator links once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invitedEventId, accessToken]);
 
   const enterPortal = async () => {
     setBusy(true);
     setError(null);
     try {
-      const r = await openEvent(eventId.trim() || 'demo');
-      if (!r.ok) {
-        setError(r.message);
-        return;
-      }
-      navigate(PORTAL_ROUTES.dashboard);
+      const raw = eventId.trim() || 'demo';
+      const r =
+        raw.includes('.') && raw.length > 24
+          ? await openAccessToken(raw)
+          : await openEvent(raw);
+      finish(r.ok, r.message);
     } finally {
-      setBusy(false);
+      if (!autoTried.current) setBusy(false);
     }
   };
 
@@ -53,42 +75,69 @@ export default function PortalLogin() {
     <div className="portal-login">
       <div className="portal-login__card">
         <BrandLogo size="lg" />
-        <h1 style={{ fontFamily: 'var(--portal-display)', fontSize: 24, margin: '0 0 8px' }}>
-          Your event portal
-        </h1>
-        <p style={{ color: 'var(--portal-muted)', fontSize: 14, margin: '0 0 24px' }}>
-          HuB on Lewis · plan, pay, and prepare with confidence
+        <h1 className="portal-login__title">Your event portal</h1>
+        <p className="portal-login__lede">
+          {accessToken || invitedEventId
+            ? payToken
+              ? 'Opening your payment page…'
+              : 'Opening your event — plan, pay, and prepare with confidence.'
+            : 'HuB on Lewis · plan, pay, and prepare with confidence'}
         </p>
 
-        <label className="form-label" style={{ display: 'block', textAlign: 'left', marginBottom: 6 }}>
-          Event access code / ID
-        </label>
-        <input
-          className="form-input"
-          style={{ marginBottom: 12, width: '100%' }}
-          value={eventId}
-          onChange={e => setEventId(e.target.value)}
-          placeholder="Paste link code from your coordinator (or leave blank for demo)"
-          autoComplete="off"
-        />
+        {(accessToken || invitedEventId) && busy && !error ? (
+          <p className="portal-login__status">Connecting you to your booking…</p>
+        ) : (
+          <>
+            <label className="form-label" style={{ display: 'block', textAlign: 'left', marginBottom: 6 }}>
+              Event access
+            </label>
+            <input
+              className="form-input"
+              style={{ marginBottom: 12, width: '100%' }}
+              value={eventId}
+              onChange={e => setEventId(e.target.value)}
+              placeholder="Access code from your coordinator"
+              autoComplete="off"
+            />
 
-        {error ? (
-          <p style={{ color: 'var(--status-lost, #b42318)', fontSize: 13, marginBottom: 12 }}>{error}</p>
+            {error ? <p className="portal-login__error">{error}</p> : null}
+
+            <button
+              type="button"
+              className="portal-btn portal-btn--primary"
+              style={{ width: '100%' }}
+              disabled={busy}
+              onClick={() => void enterPortal()}
+            >
+              {busy ? 'Opening…' : 'Open my event'}
+            </button>
+            <p className="portal-login__hint">
+              Your coordinator sends a private link. You can also enter the access code they shared.
+            </p>
+          </>
+        )}
+
+        {error && (accessToken || invitedEventId) ? (
+          <button
+            type="button"
+            className="portal-btn portal-btn--secondary"
+            style={{ width: '100%', marginTop: 12 }}
+            onClick={() => {
+              autoTried.current = false;
+              setError(null);
+              setBusy(true);
+              if (accessToken) {
+                void openAccessToken(accessToken).then(r => finish(r.ok, r.message));
+              } else {
+                void enterPortal();
+              }
+            }}
+          >
+            Try again
+          </button>
         ) : null}
 
-        <button
-          type="button"
-          className="portal-btn portal-btn--primary"
-          style={{ width: '100%' }}
-          disabled={busy}
-          onClick={() => void enterPortal()}
-        >
-          {busy ? 'Opening…' : 'Open my event'}
-        </button>
-        <p style={{ fontSize: 11, color: 'var(--portal-muted)', marginTop: 16 }}>
-          Production uses secure email links. For now, your coordinator shares an event access code.
-        </p>
-        <a href="/dashboard" style={{ display: 'block', marginTop: 20, fontSize: 12, color: 'var(--portal-muted)' }}>
+        <a href="/dashboard" className="portal-login__staff">
           ← Venue team login
         </a>
       </div>
