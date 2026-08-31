@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/BrandLogo.js';
 import { PORTAL_ROUTES } from '../paths.js';
@@ -23,6 +24,11 @@ export default function PortalShell() {
   const navigate = useNavigate();
   const user = usePortalStore(s => s.session?.user);
   const profile = usePortalStore(s => s.profile);
+  const refreshSnapshot = usePortalStore(s => s.refreshSnapshot);
+
+  useEffect(() => {
+    void refreshSnapshot();
+  }, [refreshSnapshot]);
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `portal-nav-link${isActive ? ' active' : ''}`;

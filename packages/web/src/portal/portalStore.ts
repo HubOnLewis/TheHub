@@ -13,6 +13,8 @@ import {
 } from './fromCrmEvent.js';
 import client from '../api/client.js';
 import publicClient from '../api/publicClient.js';
+import type { GuestPortalSnapshot, ProposalRecord, ProposalSignPayload } from '@hub-crm/shared';
+import { eventStateFromSnapshot, profileFromSnapshot } from './applyGuestSnapshot.js';
 import { getScreenshotDeal } from '../api/screenshotDealsStore.js';
 import { isScreenshotMode } from '../config/screenshotMode.js';
 
@@ -27,9 +29,15 @@ interface PortalStore {
   session: PortalSession | null;
   event: PortalEventState;
   profile: PortalEventProfile;
+  accessToken: string | null;
+  proposal: ProposalRecord | null;
+  snapshot: GuestPortalSnapshot | null;
   login: (user: PortalUser) => void;
   logout: () => void;
   resetPortalDemo: () => void;
+  refreshSnapshot: () => Promise<void>;
+  viewProposal: () => Promise<void>;
+  signProposal: (input: ProposalSignPayload) => Promise<void>;
   /** Bind portal to a CRM deal id (API or screenshot store). Staff preview — requires session for live API. */
   openEvent: (eventId: string) => Promise<{ ok: boolean; message: string }>;
   /** Guest signed-link open — public endpoint, no staff login. */
@@ -92,16 +100,22 @@ export const usePortalStore = create<PortalStore>()(
       session: null,
       event: createInitialPortalEventState(),
       profile: demoPortalProfile(),
+      accessToken: null,
+      proposal: null,
+      snapshot: null,
 
       login: user => set({ session: { user, token: `portal-${user.id}` } }),
 
-      logout: () => set({ session: null }),
+      logout: () => set({ session: null, accessToken: null, proposal: null, snapshot: null }),
 
       resetPortalDemo: () =>
         set({
           session: PORTAL_DEMO_SESSION,
           event: createInitialPortalEventState(),
           profile: demoPortalProfile(),
+          accessToken: null,
+          proposal: null,
+          snapshot: null,
         }),
 
       openEvent: async eventId => {
@@ -153,20 +167,26 @@ export const usePortalStore = create<PortalStore>()(
           return { ok: false, message: 'Missing guest access link. Ask your coordinator for a new one.' };
         }
         try {
-          const { data } = await publicClient.get<{
-            eventId: string;
-            profile: PortalEventProfile;
-          }>(`/public/portal/bookings/${encodeURIComponent(access)}`, { timeout: 12_000 });
+          const { data } = await publicClient.get<GuestPortalSnapshot & { profile?: PortalEventProfile }>(
+            `/public/portal/bookings/${encodeURIComponent(access)}`,
+            { timeout: 12_000 },
+          );
           if (!data?.profile?.id) {
             return { ok: false, message: 'This guest link could not be opened.' };
           }
-          const profile: PortalEventProfile = { ...data.profile, source: 'crm' };
-          const event = portalStateFromProfile(profile);
+          const snapshot = data.timeline ? (data as GuestPortalSnapshot) : null;
+          const profile: PortalEventProfile = snapshot
+            ? profileFromSnapshot(snapshot)
+            : { ...data.profile, source: 'crm' };
+          const event = snapshot ? eventStateFromSnapshot(snapshot) : portalStateFromProfile(profile);
           const user = portalUserFromProfile(profile);
           set({
             profile,
             event,
-            session: { user, token: `portal-access-${profile.id}` },
+            accessToken: access,
+            proposal: snapshot?.proposal ?? null,
+            snapshot,
+            session: { user, token: access },
           });
           logPortalAudit({
             action: 'updated',
@@ -318,6 +338,13 @@ export const usePortalStore = create<PortalStore>()(
       sendMessage: body => {
         const text = body.trim();
         if (!text) return;
+        const access = get().accessToken;
+        if (access) {
+          void publicClient
+            .post(`/public/portal/bookings/${encodeURIComponent(access)}/messages`, { body: text })
+            .then(() => get().refreshSnapshot())
+            .catch(() => undefined);
+        }
         const ev = get().event;
         const user = get().session?.user;
         const msg = {
@@ -357,6 +384,55 @@ export const usePortalStore = create<PortalStore>()(
         });
       },
 
+      refreshSnapshot: async () => {
+        const access = get().accessToken;
+        if (!access) return;
+        try {
+          const { data } = await publicClient.get<GuestPortalSnapshot>(
+            `/public/portal/bookings/${encodeURIComponent(access)}`,
+            { timeout: 12_000 },
+          );
+          if (!data?.profile?.id) return;
+          set({
+            snapshot: data,
+            proposal: data.proposal,
+            profile: profileFromSnapshot(data),
+            event: eventStateFromSnapshot(data, get().event),
+          });
+        } catch {
+          /* keep local */
+        }
+      },
+
+      viewProposal: async () => {
+        const access = get().accessToken;
+        const proposal = get().proposal;
+        get().viewAgreement();
+        if (!access || !proposal) return;
+        try {
+          await publicClient.post(`/public/portal/bookings/${encodeURIComponent(access)}/proposals/${proposal.id}/view`);
+          await get().refreshSnapshot();
+        } catch {
+          /* local viewed already recorded */
+        }
+      },
+
+      signProposal: async input => {
+        const access = get().accessToken;
+        const proposal = get().proposal;
+        get().signAgreement();
+        if (!access || !proposal) return;
+        try {
+          await publicClient.post(
+            `/public/portal/bookings/${encodeURIComponent(access)}/proposals/${proposal.id}/accept`,
+            input,
+          );
+          await get().refreshSnapshot();
+        } catch {
+          /* local signed already recorded */
+        }
+      },
+
       appendTimeline: entry => {
         const ev = get().event;
         set({
@@ -380,6 +456,8 @@ export const usePortalStore = create<PortalStore>()(
         session: s.session,
         event: s.event,
         profile: s.profile,
+        accessToken: s.accessToken,
+        proposal: s.proposal,
       }),
     },
   ),

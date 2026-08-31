@@ -11,6 +11,7 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { requestAudit } from './middleware/requestAudit.js';
 import { registerJobs } from './jobs/index.js';
 import { AgentRunRepository } from './repositories/AgentRunRepository.js';
+import { ProposalRepository } from './repositories/ProposalRepository.js';
 import { UPLOADS_ROOT } from './config/paths.js';
 
 import authRoutes      from './routes/auth.js';
@@ -34,6 +35,8 @@ import aiRoutes from './routes/ai.js';
 import agentRoutes from './routes/agents.js';
 import { portalStaffRoutes, portalPublicRoutes } from './routes/portal.js';
 import paymentRoutes from './routes/payments.js';
+import proposalRoutes from './routes/proposals.js';
+import commsRoutes from './routes/comms.js';
 import { getAiRuntimeConfig } from './config/ai.js';
 
 const app = express();
@@ -89,6 +92,8 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/agents', agentRoutes);
 app.use('/api/payments', paymentRoutes);
+app.use('/api/proposals', proposalRoutes);
+app.use('/api/comms', commsRoutes);
 app.use('/api/portal', portalStaffRoutes);
 app.use('/api/public/portal', portalPublicRoutes);
 
@@ -139,6 +144,9 @@ async function start() {
     const db = await connectDB();
     await AgentRunRepository.ensureIndexes(db).catch(err =>
       console.error('[API] agent_runs index failed:', err),
+    );
+    await ProposalRepository.ensureIndexes(db).catch(err =>
+      console.error('[API] proposals index failed:', err),
     );
     registerJobs(db);
     app.listen(env.PORT, '0.0.0.0', () => {

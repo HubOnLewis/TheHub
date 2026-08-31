@@ -1,11 +1,21 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import LoadingState from '../../components/crm/LoadingState.js';
 import LiveModuleTable, { EventLink, MoneyCell, StatusCell } from '../../components/live/LiveModuleTable.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { generateInboxActivity, type InboxActivityItem } from '../../lib/liveEventHelpers.js';
 import { enhanceWithLlm, fetchAiStatus } from '../../intelligence/ai/provider.js';
-import { useQuery } from '@tanstack/react-query';
+import client from '../../api/client.js';
+
+type Triage = {
+  unansweredMessages: Array<{ eventId: string; eventTitle: string; preview: string; at: string }>;
+  unsignedProposals: Array<{ eventId: string; eventTitle: string; version: number; status: string }>;
+  unpaidDeposits: Array<{ eventId: string; eventTitle: string; balanceDue: number }>;
+  drafts: unknown[];
+  scheduled: unknown[];
+  templates: Array<{ key: string; label: string }>;
+};
 
 export default function LiveInboxPage() {
   const navigate = useNavigate();
@@ -16,12 +26,19 @@ export default function LiveInboxPage() {
     staleTime: 30_000,
     retry: false,
   });
+  const { data: triage } = useQuery({
+    queryKey: ['comms', 'inbox'],
+    queryFn: () => client.get<Triage>('/comms/inbox').then(r => r.data),
+    retry: false,
+    staleTime: 15_000,
+  });
   const aiOnline = Boolean(aiStatus?.enabled && aiStatus?.configured && !aiStatus.offline);
   const [draftingId, setDraftingId] = useState<string | null>(null);
   const [draftById, setDraftById] = useState<Record<string, string>>({});
   const [draftError, setDraftError] = useState<string | null>(null);
 
   const items = useMemo(() => generateInboxActivity(rows), [rows]);
+  const go = (eventId: string) => navigate(`/deals/${eventId}`);
 
   const handleDraft = async (item: InboxActivityItem) => {
     if (!aiOnline) return;
@@ -33,14 +50,10 @@ export default function LiveInboxPage() {
         input: `Draft a short follow-up for this venue activity.\nReason: ${item.reason}\nEvent: ${item.eventTitle}\nContact: ${item.contact}\nStatus: ${item.statusLabel}\nValue: ${item.value}\nBalance due: ${item.balanceDue}`,
         context: `HuB on Lewis operational inbox. Date: ${item.dateDisplay}`,
       });
-      if (result.error && !result.enhanced) {
-        setDraftError(result.error);
-      }
+      if (result.error && !result.enhanced) setDraftError(result.error);
       setDraftById(prev => ({
         ...prev,
-        [item.id]: result.enhanced ? result.output : result.error
-          ? `Could not enhance: ${result.error}`
-          : result.output,
+        [item.id]: result.enhanced ? result.output : result.error ? `Could not enhance: ${result.error}` : result.output,
       }));
     } finally {
       setDraftingId(null);
@@ -53,16 +66,38 @@ export default function LiveInboxPage() {
     <div className="hub-live-page">
       <header className="hub-admin-page__header">
         <div>
-          <h1 className="hub-admin-page__title">Activity</h1>
+          <h1 className="hub-admin-page__title">Inbox</h1>
           <p className="hub-admin-page__subtitle">
-            What needs follow-up from your pipeline — balances, proposals, upcoming prep.
-            {aiOnline
-              ? ' AI can draft replies (Settings → Integrations). Nothing sends without you.'
-              : ' Onsite model offline — activity still loads. Link the venue model PC when it is built.'}
+            Event-linked triage — unanswered portal messages, unsigned proposals, unpaid deposits.
+            Same objects as the guest portal. Email send is stubbed until hubonlewis.com is connected.
           </p>
         </div>
-        <span className="hub-admin-stat-pill">{items.length} item{items.length === 1 ? '' : 's'}</span>
       </header>
+
+      {triage ? (
+        <div className="inbox-triage-grid">
+          <button type="button" className="inbox-triage-card" onClick={() => triage.unansweredMessages[0] && go(triage.unansweredMessages[0].eventId)}>
+            <span>Unanswered messages</span>
+            <strong>{triage.unansweredMessages.length}</strong>
+            <em>{triage.unansweredMessages[0]?.preview ?? 'All threads have a staff reply'}</em>
+          </button>
+          <button type="button" className="inbox-triage-card" onClick={() => triage.unsignedProposals[0] && go(triage.unsignedProposals[0].eventId)}>
+            <span>Unsigned proposals</span>
+            <strong>{triage.unsignedProposals.length}</strong>
+            <em>{triage.unsignedProposals[0] ? `${triage.unsignedProposals[0].eventTitle} v${triage.unsignedProposals[0].version}` : 'No proposals waiting'}</em>
+          </button>
+          <button type="button" className="inbox-triage-card" onClick={() => triage.unpaidDeposits[0] && go(triage.unpaidDeposits[0].eventId)}>
+            <span>Unpaid deposits</span>
+            <strong>{triage.unpaidDeposits.length}</strong>
+            <em>{triage.unpaidDeposits[0]?.eventTitle ?? 'No deposits outstanding'}</em>
+          </button>
+          <div className="inbox-triage-card">
+            <span>Outbox</span>
+            <strong>{(triage.drafts?.length ?? 0) + (triage.scheduled?.length ?? 0)}</strong>
+            <em>Drafts + scheduled — provider stub, nothing sends</em>
+          </div>
+        </div>
+      ) : null}
 
       {draftError ? (
         <p className="text-muted text-sm" style={{ marginBottom: 12 }}>
@@ -90,18 +125,7 @@ export default function LiveInboxPage() {
                   <strong>{r.reason}</strong>
                   <div className="text-muted text-sm">{r.dateDisplay}</div>
                   {draftById[r.id] ? (
-                    <pre
-                      className="text-sm"
-                      style={{
-                        marginTop: 8,
-                        whiteSpace: 'pre-wrap',
-                        fontFamily: 'inherit',
-                        background: 'var(--surface-2, #f6f5f2)',
-                        padding: 8,
-                        borderRadius: 6,
-                        maxWidth: 420,
-                      }}
-                    >
+                    <pre className="text-sm" style={{ marginTop: 8, whiteSpace: 'pre-wrap', fontFamily: 'inherit', background: 'var(--surface-2, #f6f5f2)', padding: 8, borderRadius: 6, maxWidth: 420 }}>
                       {draftById[r.id]}
                     </pre>
                   ) : null}
@@ -137,12 +161,7 @@ export default function LiveInboxPage() {
               render: (r: InboxActivityItem) => (
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
                   {aiOnline ? (
-                    <button
-                      type="button"
-                      className="btn btn-ghost btn-sm"
-                      disabled={draftingId === r.id}
-                      onClick={() => void handleDraft(r)}
-                    >
+                    <button type="button" className="btn btn-ghost btn-sm" disabled={draftingId === r.id} onClick={() => void handleDraft(r)}>
                       {draftingId === r.id ? 'Drafting…' : 'AI draft'}
                     </button>
                   ) : null}

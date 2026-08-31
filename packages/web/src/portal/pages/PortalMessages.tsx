@@ -6,12 +6,13 @@ export default function PortalMessages() {
   const coordinator = usePortalStore(s => s.profile.coordinator.name);
   const sendMessage = usePortalStore(s => s.sendMessage);
   const [draft, setDraft] = useState('');
+  const [busy, setBusy] = useState(false);
 
   return (
     <>
       <h1 style={{ fontFamily: 'var(--portal-display)', fontSize: 28, margin: '0 0 8px' }}>Messages</h1>
       <p style={{ color: 'var(--portal-muted)', margin: '0 0 16px' }}>
-        Thread with {coordinator}
+        One thread with {coordinator}. Staff see the same conversation on your event.
       </p>
       <div className="portal-card" style={{ minHeight: 280 }}>
         {messages.map(m => (
@@ -26,8 +27,12 @@ export default function PortalMessages() {
         style={{ display: 'flex', gap: 8, marginTop: 12 }}
         onSubmit={e => {
           e.preventDefault();
-          sendMessage(draft);
-          setDraft('');
+          const text = draft;
+          setBusy(true);
+          void Promise.resolve(sendMessage(text)).finally(() => {
+            setDraft('');
+            setBusy(false);
+          });
         }}
       >
         <input
@@ -36,9 +41,10 @@ export default function PortalMessages() {
           placeholder="Ask your coordinator…"
           value={draft}
           onChange={e => setDraft(e.target.value)}
+          disabled={busy}
         />
-        <button type="submit" className="portal-btn portal-btn--primary">
-          Send
+        <button type="submit" className="portal-btn portal-btn--primary" disabled={busy || !draft.trim()}>
+          {busy ? 'Sending…' : 'Send'}
         </button>
       </form>
     </>

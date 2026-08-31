@@ -21,6 +21,7 @@ import {
 } from '../../lib/eventDetail.js';
 import EventMoneyPanel from '../venue/EventMoneyPanel.js';
 import EventDocsPanel from '../venue/EventDocsPanel.js';
+import EventThreadPanel from '../venue/EventThreadPanel.js';
 import VenueStageStepper from '../venue/VenueStageStepper.js';
 import EventAiAssist from '../venue/EventAiAssist.js';
 import { openVenueDocument } from '../../venue/documentGenerator.js';
@@ -524,6 +525,9 @@ export default function EventDetailCommandCenter({
 
           {tab === 'activity' ? (
             <>
+            <Section title="Guest thread" subtitle="Same conversation the client sees in the portal">
+              <EventThreadPanel eventId={model.id} coordinatorName={model.owner} disabled={model.isReferenceOnly} />
+            </Section>
             <Section title="Activity timeline" subtitle="Milestones, payments, and team activity">
               {model.timeline.length === 0 ? (
                 <div className="event-detail-empty-state">

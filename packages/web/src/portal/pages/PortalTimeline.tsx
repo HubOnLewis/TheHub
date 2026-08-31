@@ -1,14 +1,30 @@
+import GuestStatusTimeline from '../components/GuestStatusTimeline.js';
 import { usePortalStore } from '../portalStore.js';
 
 export default function PortalTimeline() {
   const timeline = usePortalStore(s => s.event.timeline);
+  const nextDates = usePortalStore(s => s.snapshot?.nextDates ?? []);
 
   return (
     <>
-      <h1 style={{ fontFamily: 'var(--portal-display)', fontSize: 28, margin: '0 0 8px' }}>Timeline memory</h1>
+      <h1 style={{ fontFamily: 'var(--portal-display)', fontSize: 28, margin: '0 0 8px' }}>Timeline</h1>
       <p style={{ color: 'var(--portal-muted)', margin: '0 0 20px' }}>
-        Every update, payment, approval, and recommendation in one place.
+        Inquiry through day-of — live as staff update your event.
       </p>
+      <GuestStatusTimeline />
+      {nextDates.length > 0 ? (
+        <div className="portal-card portal-card--flat" style={{ margin: '16px 0' }}>
+          <h3>Next dates</h3>
+          <ul>
+            {nextDates.map(d => (
+              <li key={d.label}>
+                <strong>{d.label}</strong>
+                {d.date ? ` · ${d.date}` : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       <ul className="portal-timeline">
         {timeline.map(t => (
           <li key={t.id}>

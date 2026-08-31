@@ -26,8 +26,8 @@ Status
 | P1-CRM-04 | Revenue-path canonical linkage | Lead conversion could create duplicate deals because the code was not authoritative about whether a deal already existed for a lead, and stage changes could be applied without ensuring the canonical company/lead linkage remained intact. | P1 | COMPLETE | Enforce canonical lead-to-deal resolution, keep lead conversion state authoritative, and prove tenant-scoped company dedup. | COMPLETE | Regression tests covering canonical conversion, stage persistence, and tenant-scoped dedup pass |
 | P1-CRM-05 | Calendar event query | Live calendar previously downloaded all deals and filtered dates only in the browser, allowing lost/undated records into the calendar source path. | P1 | COMPLETE | Expose a tenant-scoped calendar query over deal importMeta event fields and wire the live calendar hook to it. | COMPLETE | Calendar repository regression passes; web hook uses /deals/calendar; workspace typecheck/build pass |
 | P1-CRM-06 | Tasks / activity / communication convergence | Interaction is the live CRM record for task follow-ups, activity history, and communication metadata; production tasks are a separate shop-execution model requiring a production job. | P1 | IN_PROGRESS | Prove Interaction create/assign/due/complete persistence against Mongo and keep production task linkage through production jobs. | IN_PROGRESS | Deal creation and stage changes now persist Interaction history; Mongo-backed task completion proof remains blocked by unavailable local Mongo |
-| P1-CRM-07 | Proposal workflow | No proposal repository, service, route, or live persistence model exists in the current API. | P1 | OPEN | Implement a proposal workflow only after product requirements and pricing/document ownership are defined; do not claim the current UI metadata is a persisted proposal. | OPEN | Repository search found no live proposal backend; current proposal surfaces are build/document related |
-| P1-CRM-08 | Communication provider boundary | Interactions support persisted email/text/meeting/note records, but no external email/SMS delivery route is present in the live API. | P1 | IN_PROGRESS | Prove internal communication persistence and document provider delivery as an external dependency. | IN_PROGRESS | Interaction routes and relatedDealId provide internal persistence; external delivery not executed |
+| P1-CRM-07 | Proposal workflow | No proposal repository, service, route, or live persistence model exists in the current API. | P1 | COMPLETE | Persist versioned proposals in Mongo; guest view/accept (typed or drawn e-sign) in the portal; staff sees sent/viewed/accepted. | COMPLETE | ProposalService tests cover draft→sent→viewed→accepted and version increment |
+| P1-CRM-08 | Communication provider boundary | Interactions support persisted email/text/meeting/note records, but no external email/SMS delivery route is present in the live API. | P1 | COMPLETE | One event thread persisted as Interaction records; EmailProvider stub queues send without SMTP. Gmail/domain send later. | COMPLETE | CommunicationsService tests: ordered portal thread, stub send still persists, inbox triage |
 | P2-TEST-01 | Quality / Release safety | No repo-native regression suite existed before this pass. | P2 | MISSING | Add Node-based tests for auth + tenant logic and expose a project test command. | COMPLETE | Test script exists and passes |
 | P2-DOC-01 | Product documentation | The repository had implementation intent docs but not a single completion register tying audit findings to work status. | P2 | MISSING | Create a working completion register and update it as work completes. | COMPLETE | File exists in docs/ |
 | P3-OPS-01 | Operational readiness | The repo requires proof-grade verification before calling the product complete. | P3 | PARTIAL | Add smoke-level validation commands and keep actual output evidence. | COMPLETE | Commands executed with fresh output |
@@ -42,7 +42,7 @@ Status
 - The authoritative venue event is a deal with importMeta.eventDateIso/eventDate, startTime, endTime, space, guests, and pvStatus; deal status remains the CRM lifecycle state.
 - The live calendar now queries dated, non-lost deals through /api/deals/calendar with tenant scoping before frontend mapping.
 - Deal creation and stage changes write completed Interaction notes for durable lifecycle history. Interaction records are also the existing follow-up/task and internal communication model through relatedDealId, followUpAt, ownerUserId, and status.
-- No proposal backend was found. Proposal-like UI state is not treated as persisted proposal truth.
+- Proposals persist in Mongo (`proposals`) with versioning and portal e-sign. Guest portal snapshot is the client source of truth for thread, proposal, money, and timeline. EmailProvider is a stub — nothing sends until hubonlewis.com SMTP/Gmail is wired.
 
 ## Key evidence from the deep audit
 
@@ -55,6 +55,6 @@ Status
 ## Remaining counts
 
 - P0: 0
-- P1: 5
+- P1: 3
 - P2: 0
 - P3: 0

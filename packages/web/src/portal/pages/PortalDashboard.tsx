@@ -6,6 +6,7 @@ import ConciergePanel from '../components/ConciergePanel.js';
 import PeaceOfMindBanner from '../components/PeaceOfMindBanner.js';
 import ReadinessScore from '../components/ReadinessScore.js';
 import { usePortalStore } from '../portalStore.js';
+import GuestStatusTimeline from '../components/GuestStatusTimeline.js';
 
 function daysUntilEvent(iso: string | null): number {
   if (!iso) return 0;
@@ -47,6 +48,7 @@ export default function PortalDashboard() {
       </section>
 
       <PeaceOfMindBanner />
+      <GuestStatusTimeline />
       <ReadinessScore />
 
       <div className="portal-next-grid">

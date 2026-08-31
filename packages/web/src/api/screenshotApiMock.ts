@@ -280,28 +280,68 @@ function mockResponse(config: InternalAxiosRequestConfig): AxiosResponse | Promi
     const meta = deal.importMeta ?? {};
     const grandTotal = typeof meta.grandTotal === 'number' ? meta.grandTotal : deal.amount;
     const amountPaid = typeof meta.amountPaid === 'number' ? meta.amountPaid : 0;
+    const balanceDue = typeof meta.balanceDue === 'number' ? meta.balanceDue : Math.max(0, grandTotal - amountPaid);
+    const profile = {
+      id: deal._id,
+      title: deal.title,
+      clientName: deal.company,
+      contactName: deal.contact,
+      contactEmail: typeof meta.contactEmail === 'string' ? meta.contactEmail : null,
+      displayDate: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : 'Date TBD',
+      eventStartIso: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : null,
+      venueName: 'HuB on Lewis',
+      venueAddress: '1400 N Lewis St · Wichita, KS',
+      coordinator: { name: deal.assignedTo ?? 'Your coordinator', email: 'coordinator@hubonlewis.com', phone: '' },
+      packageTotal: grandTotal,
+      paidTotal: amountPaid,
+      balanceDue,
+      guests: typeof meta.guests === 'number' ? meta.guests : 0,
+      space: typeof meta.space === 'string' ? meta.space : 'Event Space',
+      notes: deal.notes ?? '',
+      source: 'crm' as const,
+    };
     return ok(config, {
       eventId: dealId,
-      profile: {
-        id: deal._id,
-        title: deal.title,
-        clientName: deal.company,
-        contactName: deal.contact,
-        contactEmail: typeof meta.contactEmail === 'string' ? meta.contactEmail : null,
-        displayDate: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : 'Date TBD',
-        eventStartIso: typeof meta.eventDateIso === 'string' ? meta.eventDateIso : null,
-        venueName: 'HuB on Lewis',
-        venueAddress: '1400 N Lewis St · Wichita, KS',
-        coordinator: { name: deal.assignedTo ?? 'Your coordinator', email: 'coordinator@hubonlewis.com', phone: '' },
-        packageTotal: grandTotal,
-        paidTotal: amountPaid,
-        balanceDue: typeof meta.balanceDue === 'number' ? meta.balanceDue : Math.max(0, grandTotal - amountPaid),
-        guests: typeof meta.guests === 'number' ? meta.guests : 0,
-        space: typeof meta.space === 'string' ? meta.space : 'Event Space',
-        notes: deal.notes ?? '',
-        source: 'crm',
-      },
+      profile,
+      proposal: null,
+      payments: [],
+      messages: [],
+      timeline: [
+        { key: 'inquiry', label: 'Inquiry', state: 'complete' },
+        { key: 'proposal', label: 'Proposal', state: 'current', detail: 'Not sent yet' },
+        { key: 'signed', label: 'Signed', state: 'upcoming' },
+        { key: 'deposit', label: 'Deposit', state: 'upcoming' },
+        { key: 'details', label: 'Details', state: 'upcoming' },
+        { key: 'final_pay', label: 'Final pay', state: 'upcoming' },
+        { key: 'day_of', label: 'Day-of', state: 'upcoming' },
+      ],
+      nextDates: profile.eventStartIso ? [{ label: 'Event date', date: profile.eventStartIso }] : [],
+      documents: [
+        { kind: 'proposal', label: 'Proposal & agreement', audience: 'guest', available: false },
+        { kind: 'beo_guest', label: 'Event details / BEO (guest)', audience: 'guest', available: true },
+        { kind: 'payment_summary', label: 'Payment summary', audience: 'guest', available: true },
+      ],
     });
+  }
+
+  if (method === 'get' && path === '/proposals') {
+    return ok(config, { data: [] });
+  }
+  if (method === 'get' && path === '/comms') {
+    return ok(config, { data: [] });
+  }
+  if (method === 'get' && path === '/comms/inbox') {
+    return ok(config, {
+      unansweredMessages: [],
+      unsignedProposals: [],
+      unpaidDeposits: [],
+      drafts: [],
+      scheduled: [],
+      templates: [],
+    });
+  }
+  if (method === 'get' && path === '/comms/templates') {
+    return ok(config, { data: [] });
   }
 
   if ((method === 'get' && path === '/agents/snapshot') || (method === 'post' && path === '/agents/evaluate')) {
