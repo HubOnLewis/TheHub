@@ -61,3 +61,6 @@ Settings → Payments / Billing:
 ## Hannah / audit alignment
 
 Show on opportunity: deposit received (who logged / system), balance link created (actor + timestamp) — sourced from audit trail once API exists.
+
+## Staff ledger (shipped)
+Payment links persist in Mongo collection payment_links via /api/payments. Recording paid updates deal.importMeta amounts. Browser localStorage is not the source of truth. Stripe is not connected yet.

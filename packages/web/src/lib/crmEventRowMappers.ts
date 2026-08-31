@@ -10,6 +10,7 @@ import { pvStatusDisplay, type PvEventStatus, type PvSeedEvent } from '../data/p
 import type { PfParsedEvent } from '../data/pfEventsTypes.js';
 import type { HubRefreshEvent } from '../data/hubRefreshTypes.js';
 import type { CrmEventRow } from './crmEvents.js';
+import { pickSpaceFromRecord } from '@hub-crm/shared';
 
 function formatEventDate(iso: string | null | undefined, fallback = ''): string {
   if (!iso) return fallback;
@@ -165,7 +166,7 @@ export function mapDealToCrmRow(deal: Record<string, unknown>): CrmEventRow {
   const startTime = importMeta?.startTime ? String(importMeta.startTime) : '';
   const endTime = importMeta?.endTime ? String(importMeta.endTime) : '';
   const guests = typeof importMeta?.guests === 'number' ? importMeta.guests : 0;
-  const space = importMeta?.space ? String(importMeta.space) : '';
+  const space = importMeta ? pickSpaceFromRecord(importMeta) || (importMeta.space ? String(importMeta.space) : '') : '';
   const grandTotal =
     typeof importMeta?.grandTotal === 'number'
       ? importMeta.grandTotal

@@ -23,6 +23,7 @@ import {
 
 type Props = {
   rows: CrmEventRow[];
+  hideLostDefault?: boolean;
 };
 
 function dayLabel(dateKey: string): { weekday: string; date: string; isToday: boolean } {
@@ -85,12 +86,21 @@ function EventChip({
   );
 }
 
-export default function VenueCalendar({ rows }: Props) {
+export default function VenueCalendar({ rows, hideLostDefault = true }: Props) {
   const [mode, setMode] = useState<CalendarViewMode>('week');
   const [anchor, setAnchor] = useState(() => new Date());
   const [spaceFilter, setSpaceFilter] = useState<string>('all');
+  const [hideLost, setHideLost] = useState(hideLostDefault);
 
-  const blocks = useMemo(() => rowsToCalendarBlocks(rows), [rows]);
+  const visibleRows = useMemo(() => {
+    if (!hideLost) return rows;
+    return rows.filter(r => {
+      const st = (r.pvStatus || r.status || '').toLowerCase();
+      return st !== 'lost' && r.status !== 'Lost';
+    });
+  }, [rows, hideLost]);
+
+  const blocks = useMemo(() => rowsToCalendarBlocks(visibleRows), [visibleRows]);
   const conflicts = useMemo(() => detectConflicts(blocks), [blocks]);
   const conflictBlockIds = useMemo(() => {
     const set = new Set<string>();
@@ -166,6 +176,10 @@ export default function VenueCalendar({ rows }: Props) {
           </h2>
         </div>
         <div className="venue-cal-toolbar__right">
+          <label className="venue-cal-lost-toggle">
+            <input type="checkbox" checked={hideLost} onChange={e => setHideLost(e.target.checked)} />
+            Hide Lost
+          </label>
           <select
             className="venue-cal-space-select"
             value={spaceFilter}

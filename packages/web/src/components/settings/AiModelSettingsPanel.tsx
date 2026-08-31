@@ -34,8 +34,10 @@ export default function AiModelSettingsPanel() {
     <section className="card settings-provider-card" style={{ marginTop: 20 }}>
       <h4>Local model / AI bridge</h4>
       <p className="settings-muted">
-        The Hub API proxies drafts to your model PC (Ollama, LM Studio, or any OpenAI-compatible
-        server). Browser never talks to the model host directly.
+        Onsite box talks to the Hub API. Hub talks to a local OpenAI-compatible model only when
+        AI_PROVIDER=local. Production stays on AI_PROVIDER=none until the model PC is built.
+        Roles: assistant, lead generator, accounting manager, booking assistant — draft only, human
+        approve outbound. Browser never talks to the model host.
       </p>
 
       {isLoading ? (
@@ -43,7 +45,9 @@ export default function AiModelSettingsPanel() {
       ) : (
         <>
           <p>
-            Status: <strong style={{ color: connected ? 'var(--status-won, #1a7f37)' : undefined }}>{statusLabel}</strong>
+            Status: <strong style={{ color: connected ? 'var(--status-won, #1a7f37)' : undefined }}>
+              {status?.offline || status?.provider === 'none' ? 'Onsite model offline' : statusLabel}
+            </strong>
             {isFetching ? ' · refreshing…' : null}
           </p>
           {status ? (

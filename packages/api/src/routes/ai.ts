@@ -50,6 +50,15 @@ const ChatSchema = z.object({
 
 router.use(requireAuth, resolveTenant);
 
+/** Staff AI roles + outbound policy (always safe when provider=none). */
+router.get('/roles', async (_req, res, next) => {
+  try {
+    res.json(aiService.listRoles());
+  } catch (err) {
+    next(err);
+  }
+});
+
 /** Connection status — no probe by default (fast for Settings UI). */
 router.get('/status', async (req, res, next) => {
   try {

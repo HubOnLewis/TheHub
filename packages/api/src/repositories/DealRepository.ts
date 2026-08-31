@@ -107,6 +107,19 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
     return this.list(db, ctx, query as never, options);
   }
 
+
+  async listOccupancyForDate(db: Db, ctx: TenantContext, dateKey: string) {
+    const query = {
+      status: { $ne: 'Lost' },
+      $or: [
+        { 'importMeta.eventDateIso': dateKey },
+        { 'importMeta.eventDate': dateKey },
+        { 'importMeta.eventDateIso': { $regex: `^${dateKey}` } },
+      ],
+    };
+    return this.list(db, ctx, query as never, { page: 1, limit: 200, sort: 'updatedAt', order: 'desc' });
+  }
+
   async listCalendarDeals(db: Db, ctx: TenantContext, options: ListOptions) {
     const query = {
       status: { $ne: 'Lost' },

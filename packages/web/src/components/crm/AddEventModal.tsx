@@ -7,9 +7,11 @@ import { opportunityDetailPath } from '../../config/paths.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import {
   findConflictsForProposal,
+  isAssignedSpace,
   parseTimeToMinutes,
   rowsToCalendarBlocks,
 } from '../../venue/calendarEngine.js';
+import { VENUE_SPACES } from '@hub-crm/shared';
 
 type Props = {
   open: boolean;
@@ -27,7 +29,7 @@ const EVENT_TYPES = [
   'Other',
 ] as const;
 
-const SPACES = ['Main Hall', 'Gallery', 'Patio', 'Full venue', 'TBD'] as const;
+const SPACES = VENUE_SPACES.filter(s => s !== 'TBD');
 
 export default function AddEventModal({ open, onClose }: Props) {
   const navigate = useNavigate();
@@ -92,6 +94,14 @@ export default function AddEventModal({ open, onClose }: Props) {
       setError('Contact name is required.');
       return;
     }
+    if (!eventDate) {
+      setError('Event date is required.');
+      return;
+    }
+    if (!isAssignedSpace(space)) {
+      setError('Space is required. Pick a room so Hub can block double-books.');
+      return;
+    }
 
     const grandTotal = Math.max(0, Number(amount) || 0);
     const amountPaid = Math.max(0, Number(deposit) || 0);
@@ -109,10 +119,8 @@ export default function AddEventModal({ open, onClose }: Props) {
         blocks: existingBlocks,
       }).filter(c => c.severity === 'hard');
       if (conflicts.length > 0) {
-        const ok = window.confirm(
-          `Schedule conflict detected:\n${conflicts.map(c => c.reason).join('\n')}\n\nCreate event anyway?`,
-        );
-        if (!ok) return;
+        setError(`Cannot create: ${conflicts.map(c => c.reason).join(' ')}`);
+        return;
       }
     }
 
@@ -229,7 +237,7 @@ export default function AddEventModal({ open, onClose }: Props) {
             </select>
           </div>
           <div className="form-group">
-            <label className="form-label">Space</label>
+            <label className="form-label">Space *</label>
             <select className="form-input" value={space} onChange={e => setSpace(e.target.value)}>
               {SPACES.map(s => (
                 <option key={s} value={s}>
@@ -239,7 +247,7 @@ export default function AddEventModal({ open, onClose }: Props) {
             </select>
           </div>
           <div className="form-group">
-            <label className="form-label">Event date</label>
+            <label className="form-label">Event date *</label>
             <input
               className="form-input"
               type="date"

@@ -38,7 +38,8 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
   const [busy, setBusy] = useState<Kind | null>(null);
   const [draft, setDraft] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const enabled = Boolean(status?.enabled && status?.configured);
+  const offline = !status || status.offline || status.provider === 'none' || !status.configured || !status.enabled;
+  const enabled = !offline;
 
   const run = useCallback(
     async (kind: Kind) => {
@@ -74,7 +75,7 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
           <p className="event-detail-section__subtitle">
             {enabled
               ? `Drafts via ${status?.provider ?? 'local'} · ${status?.model ?? 'model'} — nothing sends`
-              : 'Connect the Hub PC model in Settings → Integrations to draft from this event'}
+              : 'Onsite model offline. Screens stay up; drafts return when the venue model PC is linked (Settings → Integrations).'}
           </p>
         </div>
       </header>
@@ -115,7 +116,9 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
           </>
         ) : (
           <p className="text-muted text-sm" style={{ marginTop: 8 }}>
-            Uses the Hub API → local model on the venue PC. Staff review every draft.
+            {offline
+              ? 'Production AI stays off until AI_PROVIDER=local on the on-prem API. Outbound always needs a human.'
+              : 'Uses the Hub API → local model on the venue PC. Staff review every draft.'}
           </p>
         )}
       </div>

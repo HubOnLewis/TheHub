@@ -3,11 +3,11 @@ import LoadingState from '../../components/crm/LoadingState.js';
 import VenueCalendar from '../../components/calendar/VenueCalendar.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { ROUTES } from '../../config/paths.js';
-import { datedRows } from '../../lib/liveEventHelpers.js';
+import { datedRows, isLost } from '../../lib/liveEventHelpers.js';
 
 export default function LiveCalendarPage() {
   const { rows, isLoading, isError, sourceId } = useLiveCrmEvents({ calendarOnly: true });
-  const dated = datedRows(rows);
+  const dated = datedRows(rows).filter(r => !isLost(r));
 
   if (isLoading) return <LoadingState message="Loading calendar…" />;
 
@@ -49,7 +49,7 @@ export default function LiveCalendarPage() {
           </Link>
         </div>
       ) : (
-        <VenueCalendar rows={rows} />
+        <VenueCalendar rows={dated} hideLostDefault />
       )}
     </div>
   );

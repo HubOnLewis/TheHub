@@ -4,14 +4,16 @@
  */
 
 import { getAiRuntimeConfig, type AiRuntimeConfig } from '../config/ai.js';
-import type {
-  AiChatMessage,
-  AiChatRequest,
-  AiChatResult,
-  AiEnhanceKind,
-  AiEnhanceRequest,
-  AiEnhanceResult,
-  AiStatusResponse,
+import {
+  AI_ROLE_DESCRIPTORS,
+  type AiChatMessage,
+  type AiChatRequest,
+  type AiChatResult,
+  type AiEnhanceKind,
+  type AiEnhanceRequest,
+  type AiEnhanceResult,
+  type AiStaffRole,
+  type AiStatusResponse,
 } from '@hub-crm/shared';
 
 type ProbeState = {
@@ -133,6 +135,8 @@ export class AiService {
       lastProbeAt: probe.lastProbeAt,
       lastProbeError: probe.lastProbeError,
       productMode: c.productMode,
+      offline: c.provider === 'none' || c.mode === 'off' || !c.configured,
+      roles: AI_ROLE_DESCRIPTORS,
     };
 
     if (!opts?.probe || !c.configured) {
@@ -150,7 +154,7 @@ export class AiService {
 
   private statusMessage(c: AiRuntimeConfig): string {
     if (c.provider === 'none' || c.mode === 'off') {
-      return 'AI is off. Set AI_PROVIDER and AI_MODE on the API to connect a model.';
+      return 'Onsite model offline. Hub will talk to the local OpenAI-compatible model when AI_PROVIDER=local on the API host.';
     }
     if (!c.baseUrl || !c.model) {
       return 'AI provider selected but AI_BASE_URL / AI_MODEL incomplete.';
@@ -329,6 +333,32 @@ export class AiService {
         mode: c.mode,
         error: message,
       };
+    }
+  }
+
+  listRoles() {
+    const c = cfg();
+    return {
+      offline: c.provider === 'none' || c.mode === 'off' || !c.configured,
+      mode: c.mode,
+      provider: c.provider,
+      outboundPolicy: 'draft_only' as const,
+      humanApproveOutbound: true,
+      roles: AI_ROLE_DESCRIPTORS,
+      message: this.statusMessage(c),
+    };
+  }
+
+  roleSystemPrompt(role: AiStaffRole): string {
+    switch (role) {
+      case 'lead_generator':
+        return 'You are the Hub lead generator for HuB on Lewis. Suggest qualification questions and follow-ups. Do not invent inquiries. Output is a draft for staff; never send outbound.';
+      case 'accounting_manager':
+        return 'You are the Hub accounting manager for HuB on Lewis. Explain deposits, balances, and payment schedules from provided figures only. Never invent amounts. Drafts require human approval before outbound.';
+      case 'booking_assistant':
+        return 'You are the Hub booking assistant for HuB on Lewis. Help staff capture date, space, guests, and next steps. Do not override calendar conflict rules. Output drafts only.';
+      default:
+        return 'You are The Hub CRM assistant for HuB on Lewis (event venue). Drafts only — staff review every outbound message.';
     }
   }
 }

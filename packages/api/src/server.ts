@@ -33,6 +33,7 @@ import integrationsRoutes from './routes/integrations.js';
 import aiRoutes from './routes/ai.js';
 import agentRoutes from './routes/agents.js';
 import { portalStaffRoutes, portalPublicRoutes } from './routes/portal.js';
+import paymentRoutes from './routes/payments.js';
 import { getAiRuntimeConfig } from './config/ai.js';
 
 const app = express();
@@ -87,6 +88,7 @@ app.use('/api/delivery', deliveryRoutes);
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/api/agents', agentRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/portal', portalStaffRoutes);
 app.use('/api/public/portal', portalPublicRoutes);
 

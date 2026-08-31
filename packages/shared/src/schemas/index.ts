@@ -79,6 +79,44 @@ export const PatchDealSchema = CreateDealSchema.partial().extend({
 });
 export type PatchDealPayload = z.infer<typeof PatchDealSchema>;
 
+// ── Payments (staff ledger — not Stripe charges) ──────────────────
+export const PAYMENT_LINK_KINDS = ['deposit', 'balance', 'custom', 'schedule'] as const;
+export const PAYMENT_LINK_STATUSES = ['created', 'sent', 'paid', 'void', 'expired'] as const;
+
+export const CreatePaymentLinkSchema = z.object({
+  eventId: z.string().min(1),
+  eventTitle: z.string().optional(),
+  kind: z.enum(PAYMENT_LINK_KINDS),
+  amount: z.number().min(0.01),
+  note: z.string().max(500).optional(),
+  dueDate: z.string().optional(),
+});
+export type CreatePaymentLinkPayload = z.infer<typeof CreatePaymentLinkSchema>;
+
+export const PatchPaymentLinkSchema = z.object({
+  status: z.enum(PAYMENT_LINK_STATUSES).optional(),
+  note: z.string().max(500).optional(),
+});
+export type PatchPaymentLinkPayload = z.infer<typeof PatchPaymentLinkSchema>;
+
+export type PaymentLinkRecord = {
+  id: string;
+  eventId: string;
+  eventTitle: string;
+  kind: (typeof PAYMENT_LINK_KINDS)[number];
+  amount: number;
+  currency: string;
+  status: (typeof PAYMENT_LINK_STATUSES)[number];
+  token: string;
+  note?: string;
+  dueDate?: string;
+  createdAt: string;
+  updatedAt: string;
+  paidAt?: string;
+  createdBy?: string;
+};
+
+
 // ── Unit ──────────────────────────────────────────────────────────
 export const CreateUnitSchema = z.object({
   companyId:   z.string().min(1, 'Account required'),

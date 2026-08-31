@@ -1,5 +1,5 @@
-import CrmEventsWorkspace from '../../components/crm/CrmEventsWorkspace.js';
+import OpsHome from '../../components/crm/OpsHome.js';
 
 export default function DashboardLive() {
-  return <CrmEventsWorkspace title="Active Events" />;
+  return <OpsHome />;
 }

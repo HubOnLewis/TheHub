@@ -6,6 +6,8 @@ import {
   dealStatusForDisplay,
   type DealStatus,
   type PatchDealPayload,
+  VENUE_SPACES,
+  isAssignedSpace,
 } from '@hub-crm/shared';
 import { ROUTES, accountDetailPath } from '../../config/paths.js';
 import { PORTAL_ROUTES } from '../../portal/paths.js';
@@ -192,6 +194,10 @@ export default function EventDetailCommandCenter({
   const saveEdit = async () => {
     if (!onPatch) return;
     setLocalError(null);
+    if (editForm.eventDateIso && !isAssignedSpace(editForm.space)) {
+      setLocalError('Space is required for dated events. Pick a room so Hub can block double-books.');
+      return;
+    }
     try {
       await onPatch(buildEventDetailPatch(editForm));
       setEditOpen(false);
@@ -735,12 +741,20 @@ export default function EventDetailCommandCenter({
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Space / room</label>
-              <input
-                className="form-input"
+              <label className="form-label">Space / room *</label>
+              <select
+                className="form-select"
                 value={editForm.space}
                 onChange={e => setEditForm(f => ({ ...f, space: e.target.value }))}
-              />
+              >
+                <option value="">Select space</option>
+                {VENUE_SPACES.filter(s => s !== 'TBD').map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+                {editForm.space && !(VENUE_SPACES as readonly string[]).includes(editForm.space) ? (
+                  <option value={editForm.space}>{editForm.space}</option>
+                ) : null}
+              </select>
             </div>
             <div className="form-group">
               <label className="form-label">Amount paid</label>

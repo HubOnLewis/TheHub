@@ -25,6 +25,14 @@ import { dealPressureService } from './DealPressureService.js';
 import { forecastConfidenceService } from './ForecastConfidenceService.js';
 import { buildMarginService } from './BuildMarginService.js';
 import { getAiRuntimeConfig } from '../config/ai.js';
+import {
+  findHardConflictsForProposal,
+  occupancyFromImportMeta,
+  parseEventTimeRange,
+  parseTimeToMinutes,
+  requiredSpaceError,
+  type OccupancySlot,
+} from '@hub-crm/shared';
 
 /** Ordered deal stages — index = position in the forward progression */
 const DEAL_STAGE_ORDER: DealStatus[] = [
@@ -106,6 +114,65 @@ function closeoutHandoffComplete(co: {
 }
 
 export class DealService {
+
+  private occupancySlotFromDeal(deal: { _id?: string; title?: string; status?: string; importMeta?: Record<string, unknown> }): OccupancySlot | null {
+    return occupancyFromImportMeta({
+      id: String(deal._id ?? ''),
+      title: String(deal.title ?? 'Event'),
+      status: deal.status ?? null,
+      importMeta: deal.importMeta ?? null,
+    });
+  }
+
+  private async assertSpaceAvailability(
+    db: Db,
+    ctx: TenantContext,
+    importMeta: Record<string, unknown> | undefined,
+    title: string,
+    status: string | undefined,
+    excludeId?: string,
+  ): Promise<void> {
+    if (!importMeta) return;
+    const dateRaw =
+      (typeof importMeta.eventDateIso === 'string' && importMeta.eventDateIso) ||
+      (typeof importMeta.eventDate === 'string' && importMeta.eventDate) ||
+      '';
+    const dateKey = dateRaw.slice(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return;
+
+    const space = typeof importMeta.space === 'string' ? importMeta.space : '';
+    const spaceErr = requiredSpaceError(space, true);
+    if (spaceErr) throw new ValidationError(spaceErr);
+
+    const startTime = typeof importMeta.startTime === 'string' ? importMeta.startTime : '';
+    const endTime = typeof importMeta.endTime === 'string' ? importMeta.endTime : '';
+    const range = parseEventTimeRange(
+      startTime && endTime ? `${startTime} - ${endTime}` : startTime || endTime,
+    );
+    const startMin = parseTimeToMinutes(startTime) ?? range.startMin;
+    let endMin = parseTimeToMinutes(endTime) ?? range.endMin;
+    if (endMin <= startMin) endMin += 24 * 60;
+
+    const others = await DealRepository.listOccupancyForDate(db, ctx, dateKey);
+    const slots: OccupancySlot[] = [];
+    for (const d of others.data as Array<{ _id: string; title?: string; status?: string; importMeta?: Record<string, unknown> }>) {
+      if (excludeId && String(d._id) === excludeId) continue;
+      const slot = this.occupancySlotFromDeal(d);
+      if (slot) slots.push(slot);
+    }
+    const conflicts = findHardConflictsForProposal({
+      dateKey,
+      startMin,
+      endMin,
+      space,
+      excludeId,
+      slots,
+    });
+    if (conflicts.length > 0) {
+      throw new ConflictError(conflicts[0]!.reason);
+    }
+  }
+
   async listCalendar(db: Db, ctx: TenantContext, options: ListOptions) {
     return DealRepository.listCalendarDeals(db, ctx, options);
   }
@@ -474,6 +541,8 @@ export class DealService {
       importMeta.balanceDue = Math.max(0, importMeta.grandTotal - importMeta.amountPaid);
     }
 
+    await this.assertSpaceAvailability(db, tenantCtx, importMeta as Record<string, unknown> | undefined, payload.title, payload.status);
+
     const deal = await DealRepository.insertOne(db, tenantCtx, {
       ...payload,
       companyId: company._id,
@@ -586,6 +655,26 @@ export class DealService {
       } else if (payload.amount !== undefined) {
         payload.importMeta.grandTotal = payload.amount;
       }
+    }
+
+    const mergedMeta = (payload.importMeta ?? before.importMeta) as Record<string, unknown> | undefined;
+    const occupancyFieldsTouched = Boolean(
+      payload.importMeta &&
+        ('eventDateIso' in payload.importMeta ||
+          'eventDate' in payload.importMeta ||
+          'startTime' in payload.importMeta ||
+          'endTime' in payload.importMeta ||
+          'space' in payload.importMeta),
+    );
+    if (occupancyFieldsTouched) {
+      await this.assertSpaceAvailability(
+        db,
+        ctx,
+        mergedMeta,
+        payload.title ?? before.title,
+        payload.status ?? before.status,
+        id,
+      );
     }
 
     // Set lastTouchedAt when any meaningful business field is being changed

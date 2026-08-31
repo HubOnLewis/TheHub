@@ -134,6 +134,7 @@ test('lead conversion reuses the canonical deal and keeps the lead authoritative
 test('deal stage changes persist without dropping lead/company linkage', async () => {
   const originalFindById = DealRepository.findById;
   const originalUpdateOne = DealRepository.updateOne;
+  const originalOccupancy = DealRepository.listOccupancyForDate;
 
   try {
     const existingDeal = {
@@ -152,6 +153,7 @@ test('deal stage changes persist without dropping lead/company linkage', async (
     };
 
     DealRepository.findById = async () => existingDeal as any;
+    DealRepository.listOccupancyForDate = async () => ({ data: [], total: 0, page: 1, pages: 0, limit: 200 }) as any;
     DealRepository.updateOne = async (_db, _ctx, id, update) => {
       assert.equal(id, 'deal-789');
       assert.equal(update.status, 'Pending Approval');
@@ -180,6 +182,7 @@ test('deal stage changes persist without dropping lead/company linkage', async (
   } finally {
     DealRepository.findById = originalFindById;
     DealRepository.updateOne = originalUpdateOne;
+    DealRepository.listOccupancyForDate = originalOccupancy;
   }
 });
 

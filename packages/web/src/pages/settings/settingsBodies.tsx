@@ -153,7 +153,7 @@ function DataImportQualityPanel() {
         </div>
 
         <p className="settings-lede">
-          Drop Perfect Venue refresh files into <code>import/</code> (numbered folders), then run the refresh import.
+          First-class path: export Perfect Venue Reports into <code>import/</code> numbered folders, then run the hub-refresh audit / dry-run / apply scripts. Full runbook: docs/HUB_PV_REPORT_IMPORT.md.
         </p>
 
         <details className="data-import-details" open>

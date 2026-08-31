@@ -34,3 +34,5 @@ packages/api/uploads/
 # OS artefacts
 .DS_Store
 *.log
+
+.playwright-mcp/

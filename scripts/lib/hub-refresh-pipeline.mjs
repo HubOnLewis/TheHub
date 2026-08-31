@@ -81,7 +81,17 @@ function parseEventsMaster(files) {
         startTime: String(row['Start Time'] ?? '').trim(),
         endTime: String(row['End Time'] ?? '').trim(),
         guests: parseIntSafe(row['Group Size']),
-        space: String(row.Space ?? '').trim(),
+        space: String(
+          row.Space ||
+            row.Spaces ||
+            row['Selected Spaces'] ||
+            row['Selected Space'] ||
+            row.Room ||
+            row.Rooms ||
+            row['Venue Space'] ||
+            row['Event Space'] ||
+            '',
+        ).trim(),
         subtotal: parseMoney(row['Proposal Subtotal']),
         discount: parseMoney(row['Proposal Discount']),
         grandTotal: proposalTotal,

@@ -4,12 +4,19 @@ import LoadingState from '../../components/crm/LoadingState.js';
 import LiveModuleTable, { EventLink, MoneyCell, StatusCell } from '../../components/live/LiveModuleTable.js';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { generateInboxActivity, type InboxActivityItem } from '../../lib/liveEventHelpers.js';
-import { enhanceWithLlm } from '../../intelligence/ai/provider.js';
-import { isAiClientHintEnabled } from '../../intelligence/ai/config.js';
+import { enhanceWithLlm, fetchAiStatus } from '../../intelligence/ai/provider.js';
+import { useQuery } from '@tanstack/react-query';
 
 export default function LiveInboxPage() {
   const navigate = useNavigate();
   const { rows, isLoading, isError } = useLiveCrmEvents();
+  const { data: aiStatus } = useQuery({
+    queryKey: ['ai', 'status'],
+    queryFn: () => fetchAiStatus(false),
+    staleTime: 30_000,
+    retry: false,
+  });
+  const aiOnline = Boolean(aiStatus?.enabled && aiStatus?.configured && !aiStatus.offline);
   const [draftingId, setDraftingId] = useState<string | null>(null);
   const [draftById, setDraftById] = useState<Record<string, string>>({});
   const [draftError, setDraftError] = useState<string | null>(null);
@@ -17,7 +24,7 @@ export default function LiveInboxPage() {
   const items = useMemo(() => generateInboxActivity(rows), [rows]);
 
   const handleDraft = async (item: InboxActivityItem) => {
-    if (!isAiClientHintEnabled()) return;
+    if (!aiOnline) return;
     setDraftingId(item.id);
     setDraftError(null);
     try {
@@ -49,9 +56,9 @@ export default function LiveInboxPage() {
           <h1 className="hub-admin-page__title">Activity</h1>
           <p className="hub-admin-page__subtitle">
             What needs follow-up from your pipeline — balances, proposals, upcoming prep.
-            {isAiClientHintEnabled()
+            {aiOnline
               ? ' AI can draft replies (Settings → Integrations). Nothing sends without you.'
-              : ' Connect AI in Settings for one-click drafts.'}
+              : ' Onsite model offline — activity still loads. Link the venue model PC when it is built.'}
           </p>
         </div>
         <span className="hub-admin-stat-pill">{items.length} item{items.length === 1 ? '' : 's'}</span>
@@ -129,7 +136,7 @@ export default function LiveInboxPage() {
               className: 'crm-events-table__col--actions',
               render: (r: InboxActivityItem) => (
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                  {isAiClientHintEnabled() ? (
+                  {aiOnline ? (
                     <button
                       type="button"
                       className="btn btn-ghost btn-sm"

@@ -152,3 +152,6 @@ See [`HUB_LOCAL_MODEL_LINK.md`](./HUB_LOCAL_MODEL_LINK.md) § tunnel notes.
 | Empty CRM | `MONGODB_URI` / `DB_NAME` wrong cluster or name |
 | Cert errors | DNS A record, ports 80/443 open for Caddy ACME |
 | Slow drafts | Model size / GPU; raise `AI_TIMEOUT_MS` |
+
+## Onsite model PC contract (hardware not required yet)
+Onsite box talks to Hub API only. Hub talks to a local OpenAI-compatible model only when AI_PROVIDER=local. Production stays AI_PROVIDER=none until the model PC is built. UI says Onsite model offline and must not crash. Roles: assistant, lead generator, accounting manager, booking assistant. Outbound is draft_only / human approve. GET /api/ai/roles works while offline. Do not install Ollama as part of this work.

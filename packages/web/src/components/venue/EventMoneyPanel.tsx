@@ -1,18 +1,9 @@
 import { useMemo, useState } from 'react';
-import { formatCurrency, type PatchDealPayload } from '@hub-crm/shared';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { formatCurrency, type PatchDealPayload, type PaymentLinkRecord } from '@hub-crm/shared';
 import type { EventDetailViewModel } from '../../lib/eventDetail.js';
 import client from '../../api/client.js';
-import {
-  createPaymentLink,
-  listPaymentLinks,
-  markPaymentLinkPaid,
-  markPaymentLinkSent,
-  paymentImportMetaPatch,
-  paymentLinkUrl,
-  suggestedDeposit,
-  voidPaymentLink,
-  type PaymentLinkRecord,
-} from '../../venue/paymentStore.js';
+import { suggestedDeposit } from '../../venue/paymentStore.js';
 
 type Props = {
   model: EventDetailViewModel;
@@ -20,98 +11,101 @@ type Props = {
   patchPending?: boolean;
 };
 
-export default function EventMoneyPanel({ model, onPatch, patchPending }: Props) {
-  const [links, setLinks] = useState(() => listPaymentLinks(model.id));
-  const [busy, setBusy] = useState(false);
+type ApiPayment = PaymentLinkRecord & { _id?: string };
+
+function guestPayUrl(record: { eventId: string; token: string }): string {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  return origin + '/portal/login?event=' + encodeURIComponent(record.eventId) + '&pay=' + encodeURIComponent(record.token);
+}
+
+
+export default function EventMoneyPanel({ model, patchPending }: Props) {
+  const qc = useQueryClient();
   const [msg, setMsg] = useState<string | null>(null);
   const [customAmount, setCustomAmount] = useState('');
 
-  const deposit = useMemo(
-    () => suggestedDeposit(model.grandTotal ?? 0),
-    [model.grandTotal],
-  );
+  const deposit = useMemo(() => suggestedDeposit(model.grandTotal ?? 0), [model.grandTotal]);
   const balance = model.balanceDue ?? Math.max(0, (model.grandTotal ?? 0) - (model.amountPaid ?? 0));
 
-  const refresh = () => setLinks(listPaymentLinks(model.id));
+  const { data: links = [], isFetching } = useQuery({
+    queryKey: ['payments', model.id],
+    queryFn: async () => {
+      const { data } = await client.get<{ data: ApiPayment[] }>('/payments', { params: { eventId: model.id } });
+      return data.data ?? [];
+    },
+    enabled: Boolean(model.id) && !model.isReferenceOnly,
+    retry: false,
+  });
 
-  const mintShareUrl = async (rec: PaymentLinkRecord) => {
-    try {
-      const { data } = await client.post<{ path: string }>(`/portal/links/${model.id}`);
+  const createMut = useMutation({
+    mutationFn: (input: { kind: 'deposit' | 'balance' | 'custom'; amount: number }) =>
+      client.post<ApiPayment>('/payments', {
+        eventId: model.id,
+        eventTitle: model.title,
+        kind: input.kind,
+        amount: input.amount,
+      }).then(r => r.data),
+    onSuccess: async rec => {
+      await qc.invalidateQueries({ queryKey: ['payments', model.id] });
       const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      return `${origin}${data.path}&pay=${encodeURIComponent(rec.token)}`;
-    } catch {
-      return paymentLinkUrl(rec);
-    }
-  };
+      let url = guestPayUrl(rec);
+      try {
+        const { data } = await client.post<{ path: string }>(`/portal/links/${model.id}`);
+        url = `${origin}${data.path}&pay=${encodeURIComponent(rec.token)}`;
+      } catch {
+        /* keep fallback */
+      }
+      void navigator.clipboard?.writeText(url);
+      setMsg(
+        `${rec.kind === 'deposit' ? 'Deposit' : rec.kind === 'balance' ? 'Balance' : 'Payment'} link saved to CRM and copied. Card charges are not live.`,
+      );
+    },
+    onError: (e: unknown) => {
+      const ax = e as { response?: { data?: { error?: string } }; message?: string };
+      setMsg(ax.response?.data?.error ?? ax.message ?? 'Could not create payment link');
+    },
+  });
 
-  const createLink = async (kind: 'deposit' | 'balance' | 'custom', amount: number) => {
+  const patchMut = useMutation({
+    mutationFn: (input: { id: string; status: 'sent' | 'paid' | 'void' }) =>
+      client.patch<ApiPayment>(`/payments/${input.id}`, { status: input.status }).then(r => r.data),
+    onSuccess: async rec => {
+      await qc.invalidateQueries({ queryKey: ['payments', model.id] });
+      await qc.invalidateQueries({ queryKey: ['deal', model.id] });
+      await qc.invalidateQueries({ queryKey: ['deals'] });
+      if (rec.status === 'paid') {
+        setMsg(`Recorded ${formatCurrency(rec.amount)} on the event (staff-entered — not a card charge).`);
+      }
+    },
+    onError: (e: unknown) => {
+      const ax = e as { response?: { data?: { error?: string } }; message?: string };
+      setMsg(ax.response?.data?.error ?? ax.message ?? 'Could not update payment');
+    },
+  });
+
+  const busy = createMut.isPending || patchMut.isPending || patchPending;
+
+  const createLink = (kind: 'deposit' | 'balance' | 'custom', amount: number) => {
     if (!(amount > 0)) {
       setMsg('Enter a valid amount.');
       return;
     }
-    const rec = createPaymentLink({
-      eventId: model.id,
-      eventTitle: model.title,
-      kind,
-      amount,
-    });
-    refresh();
-    const url = await mintShareUrl(rec);
-    void navigator.clipboard?.writeText(url);
-    setMsg(
-      `${kind === 'deposit' ? 'Deposit' : kind === 'balance' ? 'Balance' : 'Payment'} link copied. Card charges are not live — this opens the guest portal.`,
-    );
-  };
-
-  const copyLink = async (rec: PaymentLinkRecord) => {
-    const url = await mintShareUrl(rec);
-    void navigator.clipboard?.writeText(url);
-    markPaymentLinkSent(rec.id);
-    refresh();
-    setMsg('Guest pay link copied. Not a Stripe charge — staff can record payment below.');
-  };
-
-  const simulatePaid = async (rec: PaymentLinkRecord) => {
-    if (!onPatch || model.isReferenceOnly) {
-      markPaymentLinkPaid(rec.id);
-      refresh();
-      setMsg('Recorded locally (read-only event — CRM totals not updated). Not a card charge.');
-      return;
-    }
-    setBusy(true);
     setMsg(null);
+    createMut.mutate({ kind, amount });
+  };
+
+  const copyLink = async (rec: ApiPayment) => {
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    let url = guestPayUrl(rec);
     try {
-      const patch = paymentImportMetaPatch({
-        existingPaid: model.amountPaid ?? 0,
-        existingBalance: model.balanceDue,
-        grandTotal: model.grandTotal ?? rec.amount,
-        paymentAmount: rec.amount,
-        paymentType: rec.kind,
-      });
-      const existingPayments = model.payments.map(p => ({
-        amount: p.amount,
-        paymentDate: p.date,
-        method: p.method,
-        paymentType: p.type,
-      }));
-      await onPatch({
-        amount: model.grandTotal ?? undefined,
-        importMeta: {
-          amountPaid: patch.amountPaid,
-          balanceDue: patch.balanceDue,
-          grandTotal: model.grandTotal ?? patch.amountPaid,
-          payments: [...existingPayments, patch.paymentEntry],
-          lastContactedIso: new Date().toISOString().slice(0, 10),
-        },
-      });
-      markPaymentLinkPaid(rec.id);
-      refresh();
-      setMsg(`Recorded ${formatCurrency(rec.amount)} on the event (staff-entered — not a card charge).`);
-    } catch (e) {
-      setMsg(e instanceof Error ? e.message : 'Could not update event');
-    } finally {
-      setBusy(false);
+      const { data } = await client.post<{ path: string }>(`/portal/links/${model.id}`);
+      url = `${origin}${data.path}&pay=${encodeURIComponent(rec.token)}`;
+    } catch {
+      /* keep */
     }
+    void navigator.clipboard?.writeText(url);
+    patchMut.mutate({ id: rec.id, status: 'sent' });
+    setMsg('Guest pay link copied. Not a Stripe charge — staff can record payment below.');
   };
 
   return (
@@ -143,16 +137,16 @@ export default function EventMoneyPanel({ model, onPatch, patchPending }: Props)
         <button
           type="button"
           className="btn btn-primary btn-sm"
-          disabled={busy || patchPending || !(deposit > 0)}
-          onClick={() => void createLink('deposit', deposit)}
+          disabled={busy || model.isReferenceOnly || !(deposit > 0)}
+          onClick={() => createLink('deposit', deposit)}
         >
           Create deposit link ({formatCurrency(deposit)})
         </button>
         <button
           type="button"
           className="btn btn-secondary btn-sm"
-          disabled={busy || patchPending || !(balance > 0)}
-          onClick={() => void createLink('balance', balance)}
+          disabled={busy || model.isReferenceOnly || !(balance > 0)}
+          onClick={() => createLink('balance', balance)}
         >
           Create balance link ({formatCurrency(balance)})
         </button>
@@ -169,8 +163,8 @@ export default function EventMoneyPanel({ model, onPatch, patchPending }: Props)
           <button
             type="button"
             className="btn btn-ghost btn-sm"
-            disabled={busy}
-            onClick={() => void createLink('custom', Number(customAmount))}
+            disabled={busy || model.isReferenceOnly}
+            onClick={() => createLink('custom', Number(customAmount))}
           >
             Create
           </button>
@@ -178,11 +172,12 @@ export default function EventMoneyPanel({ model, onPatch, patchPending }: Props)
       </div>
 
       <p className="event-money-panel__hint text-muted text-sm">
-        Links open the guest portal with a signed token. Card charges are not live — Stripe is not
-        connected. “Record payment” updates CRM totals (staff-entered). It does not charge a card.
+        Deposit, schedule, and balance live in Mongo via the Hub API — not only this browser.
+        Card charges are not live until Stripe is connected. “Record payment” is staff-entered.
       </p>
 
       {msg ? <p className="event-money-panel__msg" role="status">{msg}</p> : null}
+      {isFetching ? <p className="text-muted text-sm">Refreshing payment ledger…</p> : null}
 
       {links.length > 0 ? (
         <table className="event-money-table">
@@ -216,17 +211,14 @@ export default function EventMoneyPanel({ model, onPatch, patchPending }: Props)
                         type="button"
                         className="btn btn-ghost btn-sm"
                         disabled={busy}
-                        onClick={() => void simulatePaid(link)}
+                        onClick={() => patchMut.mutate({ id: link.id, status: 'paid' })}
                       >
                         Record payment
                       </button>
                       <button
                         type="button"
                         className="btn btn-ghost btn-sm"
-                        onClick={() => {
-                          voidPaymentLink(link.id);
-                          refresh();
-                        }}
+                        onClick={() => patchMut.mutate({ id: link.id, status: 'void' })}
                       >
                         Void
                       </button>
