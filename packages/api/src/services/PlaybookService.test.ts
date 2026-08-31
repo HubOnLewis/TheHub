@@ -24,6 +24,10 @@ const {
   planPlaybookPaymentUpserts,
   eventDocFromClientDetails,
   buildClientDetailsDocHtml,
+  buildStaffBeoChecklistHtml,
+  staffBeoChecklistRows,
+  paymentSummaryLedgerFields,
+  buildGuestPaymentSummaryDocHtml,
 } = await import('@hub-crm/shared');
 const { applyPlaybookToDealMeta, persistClientDetailsOnDealMeta } = await import('./PlaybookService.js');
 
@@ -366,4 +370,82 @@ test('BEO/doc content includes clientDetails fields from importMeta', () => {
   assert.match(html, /Spin Co/);
   assert.match(html, /No tree nuts/);
   assert.match(html, /10:00 PM/);
+});
+
+test('BEO staff checklist reflects playbook task done vs open', () => {
+  const applied = applyPlaybookToImportMeta({ eventDateIso: EVENT, grandTotal: 8000 }, 'wedding', NOW);
+  const marked = setPlaybookTaskStatus(applied, 'task-deposit', 'done');
+  assert.ok(marked);
+  const tasks = playbookFromImportMeta(marked)?.tasks;
+  assert.ok(tasks && tasks.length > 0);
+
+  const rows = staffBeoChecklistRows(tasks, 'Jordan Coord');
+  const deposit = rows.find(r => /deposit/i.test(r.label));
+  const balance = rows.find(r => /final balance/i.test(r.label));
+  const count = rows.find(r => /guest count/i.test(r.label));
+  assert.equal(deposit?.done, true);
+  assert.equal(deposit?.owner, 'Jordan Coord');
+  assert.equal(balance?.done, false);
+  assert.equal(count?.done, false);
+
+  const html = buildStaffBeoChecklistHtml(tasks, 'Jordan Coord');
+  assert.match(html, /Staff checklist/);
+  assert.match(html, /Collect deposit to hold the date<\/td><td>Jordan Coord<\/td><td>☑<\/td>/);
+  assert.match(html, /Collect final balance<\/td><td>Jordan Coord<\/td><td>☐<\/td>/);
+  assert.match(html, /Confirm final guest count/);
+  assert.equal((html.match(/☑/g) || []).length, 1);
+  assert.ok((html.match(/☐/g) || []).length >= 1);
+});
+
+test('guest payment summary print includes payment_links ledger fields', () => {
+  const paid = paymentSummaryLedgerFields({
+    kind: 'deposit',
+    amount: 2000,
+    status: 'paid',
+    dueDate: '2026-08-31',
+    paidAt: '2026-08-31T18:00:00.000Z',
+  });
+  assert.equal(paid.kind, 'Deposit');
+  assert.equal(paid.amountLabel, '$2,000');
+  assert.equal(paid.dueDate, '2026-08-31');
+  assert.equal(paid.statusLabel, 'Paid');
+  assert.equal(paid.paidOn, '2026-08-31');
+  assert.equal(paid.paid, true);
+
+  const open = paymentSummaryLedgerFields({
+    kind: 'balance',
+    amount: 6000,
+    status: 'created',
+    dueDate: '2026-10-03',
+  });
+  assert.equal(open.kind, 'Final balance');
+  assert.equal(open.amountLabel, '$6,000');
+  assert.equal(open.dueDate, '2026-10-03');
+  assert.equal(open.statusLabel, 'Unpaid');
+  assert.equal(open.paidOn, '—');
+  assert.equal(open.paid, false);
+
+  const html = buildGuestPaymentSummaryDocHtml({
+    title: 'Allen wedding',
+    eventDateDisplay: 'Saturday, October 17, 2026',
+    packageTotal: 8000,
+    paidTotal: 2000,
+    balanceDue: 6000,
+    payments: [
+      { kind: 'deposit', amount: 2000, status: 'paid', dueDate: '2026-08-31', paidAt: '2026-08-31T18:00:00.000Z' },
+      { kind: 'balance', amount: 6000, status: 'created', dueDate: '2026-10-03' },
+    ],
+  });
+  assert.match(html, /Payment schedule/);
+  assert.match(html, /Deposit/);
+  assert.match(html, /Final balance/);
+  assert.match(html, /\$2,000/);
+  assert.match(html, /\$6,000/);
+  assert.match(html, /\$8,000/);
+  assert.match(html, /2026-08-31/);
+  assert.match(html, /2026-10-03/);
+  assert.match(html, /Paid/);
+  assert.match(html, /Unpaid/);
+  assert.doesNotMatch(html, /Stripe/i);
+  assert.doesNotMatch(html, /hub_/);
 });

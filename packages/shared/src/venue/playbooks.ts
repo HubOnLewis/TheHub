@@ -548,3 +548,63 @@ export function planPlaybookPaymentUpserts(
   }
   return plan;
 }
+
+function escDoc(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+export type StaffBeoChecklistRow = {
+  label: string;
+  owner: string;
+  done: boolean;
+};
+
+const FALLBACK_STAFF_CHECKLIST: Array<{ label: string; owner: PlaybookTask['owner'] }> = [
+  { label: 'Confirm final guest count', owner: 'coordinator' },
+  { label: 'Room / space setup diagram', owner: 'ops' },
+  { label: 'Access / Kisi codes', owner: 'ops' },
+  { label: 'F&B / catering confirmed', owner: 'coordinator' },
+  { label: 'AV / tech needs', owner: 'ops' },
+  { label: 'Final balance collected', owner: 'coordinator' },
+];
+
+function checklistOwnerLabel(owner: PlaybookTask['owner'], coordinatorName?: string): string {
+  if (owner === 'coordinator') return coordinatorName?.trim() || 'Coordinator';
+  if (owner === 'ops') return 'Ops';
+  return 'Client';
+}
+
+/** Map playbook tasks onto staff BEO checklist rows (done vs open). */
+export function staffBeoChecklistRows(
+  tasks: PlaybookTask[] | null | undefined,
+  coordinatorName?: string,
+): StaffBeoChecklistRow[] {
+  const source =
+    tasks && tasks.length
+      ? tasks.map(t => ({ label: t.label, owner: t.owner, done: t.status === 'done' }))
+      : FALLBACK_STAFF_CHECKLIST.map(t => ({ label: t.label, owner: t.owner, done: false }));
+  return source.map(t => ({
+    label: t.label,
+    owner: checklistOwnerLabel(t.owner as PlaybookTask['owner'], coordinatorName),
+    done: t.done,
+  }));
+}
+
+/** HTML fragment for staff BEO checklist. Same playbook.tasks the event panel checks off. */
+export function buildStaffBeoChecklistHtml(
+  tasks: PlaybookTask[] | null | undefined,
+  coordinatorName?: string,
+): string {
+  const rows = staffBeoChecklistRows(tasks, coordinatorName);
+  return `<h2>Staff checklist</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Owner</th><th>Done</th></tr></thead>
+    <tbody>
+      ${rows.map(r => `<tr><td>${escDoc(r.label)}</td><td>${escDoc(r.owner)}</td><td>${r.done ? '☑' : '☐'}</td></tr>`).join('')}
+    </tbody>
+  </table>`;
+}

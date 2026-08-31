@@ -25,13 +25,13 @@ const ACTIONS: Array<{ kind: VenueDocKind; title: string; blurb: string; audienc
   {
     kind: 'beo',
     title: 'Staff BEO',
-    blurb: 'Internal banquet event order with run-of-show, money, and the same client details. Not shown to guests.',
+    blurb: 'Internal banquet event order with run-of-show, money, client details, and playbook task check-off. Not shown to guests.',
     audience: 'staff',
   },
   {
     kind: 'invoice_summary',
     title: 'Payment summary',
-    blurb: 'Paid vs balance for client or accounting. Guest portal shows the same ledger.',
+    blurb: 'Paid vs balance for client or accounting. Guests print payment_links (amount, due, paid/unpaid) from Documents.',
     audience: 'guest',
   },
 ];
