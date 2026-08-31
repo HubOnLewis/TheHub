@@ -12,6 +12,7 @@ import PortalMessages from './pages/PortalMessages.js';
 import PortalTimeline from './pages/PortalTimeline.js';
 import PortalChecklist from './pages/PortalChecklist.js';
 import PortalGuests from './pages/PortalGuests.js';
+import PortalDetails from './pages/PortalDetails.js';
 import PortalDesignBoard from './pages/PortalDesignBoard.js';
 import PortalSettings from './pages/PortalSettings.js';
 import { usePortalStore, PORTAL_DEMO_SESSION } from './portalStore.js';
@@ -50,6 +51,7 @@ export default function PortalRoutes() {
         <Route path="timeline" element={<PortalTimeline />} />
         <Route path="checklist" element={<PortalChecklist />} />
         <Route path="guests" element={<PortalGuests />} />
+        <Route path="details" element={<PortalDetails />} />
         <Route path="design-board" element={<PortalDesignBoard />} />
         <Route path="settings" element={<PortalSettings />} />
       </Route>

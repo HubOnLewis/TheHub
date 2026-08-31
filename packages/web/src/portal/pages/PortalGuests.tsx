@@ -1,10 +1,18 @@
+import { Link } from 'react-router-dom';
 import { usePortalStore } from '../portalStore.js';
+import { PORTAL_ROUTES } from '../paths.js';
 
 export default function PortalGuests() {
   const guestCount = usePortalStore(s => s.event.guestCount);
   const locked = usePortalStore(s => s.event.guestEstimateLocked);
   const setGuestCount = usePortalStore(s => s.setGuestCount);
   const lockGuestEstimate = usePortalStore(s => s.lockGuestEstimate);
+  const saveClientDetails = usePortalStore(s => s.saveClientDetails);
+
+  const confirm = () => {
+    lockGuestEstimate();
+    void saveClientDetails({ guestCount });
+  };
 
   return (
     <>
@@ -23,10 +31,13 @@ export default function PortalGuests() {
         {locked ? (
           <p style={{ color: 'var(--portal-success)', fontSize: 13, marginTop: 12 }}>Estimate locked for catering.</p>
         ) : (
-          <button type="button" className="portal-btn portal-btn--primary" style={{ marginTop: 14 }} onClick={() => lockGuestEstimate()}>
+          <button type="button" className="portal-btn portal-btn--primary" style={{ marginTop: 14 }} onClick={() => confirm()}>
             Confirm guest count
           </button>
         )}
+        <p style={{ fontSize: 13, marginTop: 16 }}>
+          <Link to={PORTAL_ROUTES.details}>Full event details (layout, bar, vendors, allergies) →</Link>
+        </p>
       </div>
     </>
   );

@@ -21,13 +21,14 @@ import {
 } from '../../lib/eventDetail.js';
 import EventMoneyPanel from '../venue/EventMoneyPanel.js';
 import EventDocsPanel from '../venue/EventDocsPanel.js';
+import EventPlaybookPanel from '../venue/EventPlaybookPanel.js';
 import EventThreadPanel from '../venue/EventThreadPanel.js';
 import VenueStageStepper from '../venue/VenueStageStepper.js';
 import EventAiAssist from '../venue/EventAiAssist.js';
 import { openVenueDocument } from '../../venue/documentGenerator.js';
 import client from '../../api/client.js';
 
-type EventTab = 'overview' | 'money' | 'docs' | 'activity' | 'portal';
+type EventTab = 'overview' | 'money' | 'docs' | 'playbook' | 'activity' | 'portal';
 
 type Props = {
   model: EventDetailViewModel;
@@ -398,6 +399,7 @@ export default function EventDetailCommandCenter({
             ['overview', 'Overview'],
             ['money', 'Money'],
             ['docs', 'Docs'],
+            ['playbook', 'Playbook'],
             ['activity', 'Activity'],
             ['portal', 'Portal'],
           ] as const
@@ -520,6 +522,12 @@ export default function EventDetailCommandCenter({
           {tab === 'docs' ? (
             <Section title="Documents" subtitle="Proposals, BEOs, and payment summaries">
               <EventDocsPanel model={model} />
+            </Section>
+          ) : null}
+
+          {tab === 'playbook' ? (
+            <Section title="Event playbook" subtitle="Type-driven tasks, payments, documents, and portal details">
+              <EventPlaybookPanel model={model} />
             </Section>
           ) : null}
 

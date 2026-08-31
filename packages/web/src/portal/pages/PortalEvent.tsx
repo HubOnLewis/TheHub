@@ -93,6 +93,9 @@ export default function PortalEvent() {
             </button>
           ))}
         </div>
+        <Link to={PORTAL_ROUTES.details} style={{ display: 'inline-block', marginTop: 12, marginRight: 12 }}>
+          Event details form →
+        </Link>
         <Link to={PORTAL_ROUTES.designBoard} style={{ display: 'inline-block', marginTop: 12 }}>
           Design board →
         </Link>

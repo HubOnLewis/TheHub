@@ -14,6 +14,7 @@ const NAV = [
 
 const NAV_MORE = [
   { to: PORTAL_ROUTES.checklist, label: 'Checklist' },
+  { to: PORTAL_ROUTES.details, label: 'Event details' },
   { to: PORTAL_ROUTES.guests, label: 'Guests' },
   { to: PORTAL_ROUTES.designBoard, label: 'Design' },
   { to: PORTAL_ROUTES.settings, label: 'Settings' },

@@ -2,8 +2,8 @@
  * Normalized event/deal detail view model — API deals + Perfect Venue refresh enrichment.
  */
 
-import { dealStatusForDisplay, formatCurrency } from '@hub-crm/shared';
-import type { DealStatus, PatchDealPayload } from '@hub-crm/shared';
+import { barPackageLabel, clientDetailsFromImportMeta, dealStatusForDisplay, formatCurrency, playbookFromImportMeta } from '@hub-crm/shared';
+import type { AppliedPlaybook, ClientDetails, DealStatus, PatchDealPayload } from '@hub-crm/shared';
 import { pvStatusDisplay, type PvEventStatus } from '../data/perfectVenueSeed.js';
 import { daysSince, formatRelativeDate } from '../config/productionData.js';
 import type { HubRefreshEvent } from '../data/hubRefreshTypes.js';
@@ -75,6 +75,8 @@ export type EventDetailViewModel = {
   planFields: Array<{ label: string; value: string }>;
   noteSections: Array<{ title: string; body: string }>;
   isReferenceOnly: boolean;
+  clientDetails: ClientDetails;
+  playbook: AppliedPlaybook | null;
 };
 
 export type EventDetailEditForm = {
@@ -376,7 +378,10 @@ export function mapDealToEventDetailViewModel(
     null;
   const startTime = (meta?.startTime as string) ?? hubRefresh?.startTime ?? null;
   const endTime = (meta?.endTime as string) ?? hubRefresh?.endTime ?? null;
+  const clientDetails = clientDetailsFromImportMeta(meta);
+  const playbook = playbookFromImportMeta(meta);
   const guests =
+    (typeof clientDetails.guestCount === 'number' ? clientDetails.guestCount : null) ??
     normalizeMoney(meta?.guests) ?? hubRefresh?.guests ?? null;
   const space = (meta?.space as string) ?? hubRefresh?.space ?? null;
 
@@ -550,12 +555,16 @@ export function mapDealToEventDetailViewModel(
   const planFields: Array<{ label: string; value: string }> = [
     { label: 'Space / room', value: displayOrEmpty(space) },
     { label: 'Guest count', value: guests != null ? String(guests) : EMPTY },
+    { label: 'Layout', value: displayOrEmpty(clientDetails.layout) },
+    { label: 'Bar package', value: clientDetails.barPackage ? barPackageLabel(clientDetails.barPackage) : EMPTY },
+    { label: 'Music cutoff', value: displayOrEmpty(clientDetails.musicCutoff) },
+    { label: 'Allergies', value: displayOrEmpty(clientDetails.allergies) },
     { label: 'Food & beverage notes', value: EMPTY },
     { label: 'Setup notes', value: EMPTY },
     { label: 'AV / equipment notes', value: EMPTY },
     { label: 'Special requests', value: EMPTY },
-    { label: 'Event package', value: displayOrEmpty(hubRefresh?.eventType ?? (meta?.eventType as string)) },
-    { label: 'Timeline notes', value: EMPTY },
+    { label: 'Event package', value: displayOrEmpty(hubRefresh?.eventType ?? (meta?.eventType as string) ?? playbook?.eventTypeLabel) },
+    { label: 'Timeline notes', value: clientDetails.timelineBlocks?.length ? clientDetails.timelineBlocks.map(b => b.label).join(', ') : EMPTY },
     { label: 'Internal notes', value: notes || EMPTY },
   ];
 
@@ -624,6 +633,8 @@ export function mapDealToEventDetailViewModel(
     timeline,
     planFields,
     noteSections,
+    clientDetails,
+    playbook,
   };
 }
 

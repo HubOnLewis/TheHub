@@ -11,6 +11,7 @@ export const PORTAL_ROUTES = {
   timeline: '/portal/timeline',
   checklist: '/portal/checklist',
   guests: '/portal/guests',
+  details: '/portal/details',
   designBoard: '/portal/design-board',
   settings: '/portal/settings',
 } as const;

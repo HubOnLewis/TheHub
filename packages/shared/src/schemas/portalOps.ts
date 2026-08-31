@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import type { AppliedPlaybook } from '../venue/playbooks.js';
+import type { ClientDetails } from '../venue/clientDetails.js';
 // ── Proposals (persisted, versioned, e-sign in portal) ────────────
 export const PROPOSAL_STATUSES = [
   'draft',
@@ -134,6 +136,57 @@ export type GuestPortalNextDate = {
   date: string | null;
 };
 
+
+export const EVENT_TYPE_KEYS = ['wedding', 'corporate', 'social', 'nonprofit', 'private', 'other'] as const;
+
+export const ApplyPlaybookSchema = z.object({
+  eventType: z.enum(EVENT_TYPE_KEYS).optional(),
+});
+export type ApplyPlaybookPayload = z.infer<typeof ApplyPlaybookSchema>;
+
+export const GuestPortalDetailsSchema = z.object({
+  guestCount: z.number().int().min(0).max(5000).optional(),
+  layout: z.string().max(120).optional(),
+  barPackage: z.string().max(40).optional(),
+  allergies: z.string().max(2000).optional(),
+  musicCutoff: z.string().max(80).optional(),
+  timelineBlocks: z
+    .array(
+      z.object({
+        id: z.string().max(80).optional(),
+        label: z.string().min(1).max(120),
+        startTime: z.string().max(40).optional().default(''),
+        endTime: z.string().max(40).optional().default(''),
+        notes: z.string().max(400).optional(),
+      }),
+    )
+    .max(20)
+    .optional(),
+  vendors: z
+    .array(
+      z.object({
+        id: z.string().max(80).optional(),
+        type: z.string().max(80).optional().default(''),
+        name: z.string().max(120).optional().default(''),
+        status: z.enum(['invited', 'confirmed', 'placeholder']).optional().default('placeholder'),
+      }),
+    )
+    .max(30)
+    .optional(),
+  contacts: z
+    .array(
+      z.object({
+        name: z.string().min(1).max(120),
+        email: z.union([z.string().email(), z.literal('')]).optional(),
+        phone: z.string().max(40).optional(),
+        role: z.enum(['client', 'planner', 'partner', 'other']).default('other'),
+      }),
+    )
+    .max(8)
+    .optional(),
+});
+export type GuestPortalDetailsPayload = z.infer<typeof GuestPortalDetailsSchema>;
+
 export type GuestPortalSnapshot = {
   eventId: string;
   profile: GuestPortalProfile;
@@ -157,4 +210,6 @@ export type GuestPortalSnapshot = {
   }>;
   nextDates: GuestPortalNextDate[];
   documents: GuestPortalDocument[];
+  clientDetails?: ClientDetails;
+  playbook?: AppliedPlaybook | null;
 };

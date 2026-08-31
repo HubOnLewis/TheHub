@@ -1,9 +1,14 @@
 import type { Db } from 'mongodb';
 import {
   buildGuestStatusTimeline,
+  clientDetailsAreComplete,
+  clientDetailsFromImportMeta,
+  playbookFromImportMeta,
   type GuestPortalSnapshot,
   type GuestPortalProfile,
+  type GuestPortalDetailsPayload,
 } from '@hub-crm/shared';
+import { persistClientDetailsOnDealMeta } from './PlaybookService.js';
 import { NotFoundError, UnauthorizedError, ValidationError } from '../errors/index.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { PaymentRepository } from '../repositories/PaymentRepository.js';
@@ -32,6 +37,7 @@ export function guestProfileFromDeal(deal: Record<string, unknown>): GuestPortal
     (typeof meta.eventDateIso === 'string' && meta.eventDateIso) ||
     (typeof meta.eventDate === 'string' && meta.eventDate) ||
     null;
+  const details = clientDetailsFromImportMeta(meta);
   const startTime = typeof meta.startTime === 'string' ? meta.startTime : null;
   const endTime = typeof meta.endTime === 'string' ? meta.endTime : null;
   let displayDate = 'Date TBD';
@@ -68,7 +74,7 @@ export function guestProfileFromDeal(deal: Record<string, unknown>): GuestPortal
     packageTotal: grandTotal,
     paidTotal: amountPaid,
     balanceDue,
-    guests: typeof meta.guests === 'number' ? meta.guests : 0,
+    guests: typeof details.guestCount === 'number' ? details.guestCount : typeof meta.guests === 'number' ? meta.guests : 0,
     space: typeof meta.space === 'string' ? meta.space : 'Event Space',
     notes: typeof deal.notes === 'string' ? deal.notes : '',
     source: 'crm',
@@ -149,16 +155,28 @@ export class GuestPortalService {
     const payments = await PaymentRepository.listByEvent(db, ctx, eventId);
     const rows = await InteractionRepository.listByRelatedDealIds(db, ctx, [eventId]);
     const messages = threadFromInteractions(rows);
+    const meta =
+      deal.importMeta && typeof deal.importMeta === 'object'
+        ? (deal.importMeta as Record<string, unknown>)
+        : {};
+    const clientDetails = clientDetailsFromImportMeta(meta);
+    const playbook = playbookFromImportMeta(meta);
     const timeline = buildGuestStatusTimeline({
-      proposalStatus: proposal?.status ?? (typeof (deal.importMeta as Record<string, unknown> | undefined)?.proposalStatus === 'string'
-        ? String((deal.importMeta as Record<string, unknown>).proposalStatus)
-        : null),
+      proposalStatus: proposal?.status ?? (typeof meta.proposalStatus === 'string' ? String(meta.proposalStatus) : null),
       amountPaid: profile.paidTotal,
       balanceDue: profile.balanceDue,
       grandTotal: profile.packageTotal,
       eventDateIso: profile.eventStartIso,
-      detailsConfirmed: Boolean(profile.guests && profile.space && profile.eventStartIso),
+      detailsConfirmed: clientDetailsAreComplete(clientDetails) || Boolean(profile.guests && profile.space && profile.eventStartIso),
     });
+    const nextDates = nextDatesForGuest(profile, proposal?.status);
+    if (playbook) {
+      for (const step of playbook.clientTimeline) {
+        if (step.dueDate && step.id !== 'tl-day-of') {
+          nextDates.push({ label: step.label, date: step.dueDate });
+        }
+      }
+    }
     return {
       eventId,
       profile,
@@ -166,8 +184,10 @@ export class GuestPortalService {
       payments,
       messages,
       timeline,
-      nextDates: nextDatesForGuest(profile, proposal?.status),
+      nextDates,
       documents: guestSafeDocuments({ proposalStatus: proposal?.status }),
+      clientDetails,
+      playbook,
     };
   }
 
@@ -182,6 +202,13 @@ export class GuestPortalService {
     const latest = await proposalService.latestForEvent(db, ctx, eventId);
     if (!latest || latest.id !== proposalId) throw new NotFoundError('Proposal');
     return proposalService.markViewed(db, ctx, proposalId);
+  }
+
+  async patchDetails(db: Db, token: string, body: GuestPortalDetailsPayload) {
+    const { deal, ctx, eventId } = await this.resolveDealFromAccess(db, token);
+    const importMeta = persistClientDetailsOnDealMeta(deal, body);
+    await DealRepository.updateOne(db, ctx, eventId, { importMeta } as never);
+    return this.snapshot(db, token);
   }
 
   async acceptProposal(

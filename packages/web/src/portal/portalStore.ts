@@ -13,7 +13,7 @@ import {
 } from './fromCrmEvent.js';
 import client from '../api/client.js';
 import publicClient from '../api/publicClient.js';
-import type { GuestPortalSnapshot, ProposalRecord, ProposalSignPayload } from '@hub-crm/shared';
+import type { ClientDetails, GuestPortalSnapshot, ProposalRecord, ProposalSignPayload } from '@hub-crm/shared';
 import { eventStateFromSnapshot, profileFromSnapshot } from './applyGuestSnapshot.js';
 import { getScreenshotDeal } from '../api/screenshotDealsStore.js';
 import { isScreenshotMode } from '../config/screenshotMode.js';
@@ -51,6 +51,7 @@ interface PortalStore {
   setGuestCount: (n: number) => void;
   lockGuestEstimate: () => void;
   setLayout: (choice: string) => void;
+  saveClientDetails: (details: ClientDetails) => Promise<{ ok: boolean; message: string }>;
   sendMessage: (body: string) => void;
   dismissConcierge: (id: string) => void;
   appendTimeline: (entry: {
@@ -334,6 +335,39 @@ export const usePortalStore = create<PortalStore>()(
       lockGuestEstimate: () => set({ event: { ...get().event, guestEstimateLocked: true } }),
 
       setLayout: choice => set({ event: { ...get().event, layoutChoice: choice } }),
+
+      saveClientDetails: async details => {
+        const access = get().accessToken;
+        const ev = get().event;
+        set({
+          event: {
+            ...ev,
+            guestCount: details.guestCount ?? ev.guestCount,
+            layoutChoice: details.layout ?? ev.layoutChoice,
+          },
+        });
+        if (!access) {
+          return { ok: true, message: 'Saved on this device. Open a guest link to persist on the event.' };
+        }
+        try {
+          const { data } = await publicClient.patch<GuestPortalSnapshot>(
+            `/public/portal/bookings/${encodeURIComponent(access)}/details`,
+            details,
+            { timeout: 12_000 },
+          );
+          if (data?.profile?.id) {
+            set({
+              snapshot: data,
+              proposal: data.proposal,
+              profile: profileFromSnapshot(data),
+              event: eventStateFromSnapshot(data, get().event),
+            });
+          }
+          return { ok: true, message: 'Saved to your event. Your coordinator sees the same details on the BEO.' };
+        } catch {
+          return { ok: false, message: 'Could not save to the event. Try again or ask your coordinator.' };
+        }
+      },
 
       sendMessage: body => {
         const text = body.trim();

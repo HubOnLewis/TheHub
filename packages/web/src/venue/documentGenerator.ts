@@ -2,7 +2,7 @@
  * Proposal + BEO HTML document generation (print / save as PDF via browser).
  */
 
-import { formatCurrency, venueStageLabel } from '@hub-crm/shared';
+import { barPackageLabel, formatCurrency, venueStageLabel } from '@hub-crm/shared';
 import type { EventDetailViewModel, EventPipelineStage } from '../lib/eventDetail.js';
 
 function stageLabel(stage: EventPipelineStage): string {
@@ -157,6 +157,29 @@ export function buildBeoHtml(model: EventDetailViewModel): string {
     <div class="field"><label>Balance due</label><div>${money(model.balanceDue)}</div></div>
     <div class="field"><label>Payment status</label><div>${esc(model.paymentStatus)}</div></div>
   </div>
+
+  ${model.playbook ? `<h2>Playbook · ${esc(model.playbook.eventTypeLabel)}</h2>
+  <div class="notes">${esc(model.playbook.clientTimeline.map(s => s.label + ' — ' + s.dueLabel).join('; '))}</div>` : ''}
+  <h2>Client details (portal)</h2>
+  <div class="grid">
+    <div class="field"><label>Guests</label><div>${model.clientDetails.guestCount != null ? model.clientDetails.guestCount : (model.guests != null ? model.guests : 'TBD')}</div></div>
+    <div class="field"><label>Layout</label><div>${esc(model.clientDetails.layout ?? 'TBD')}</div></div>
+    <div class="field"><label>Bar package</label><div>${esc(barPackageLabel(model.clientDetails.barPackage))}</div></div>
+    <div class="field"><label>Music cutoff</label><div>${esc(model.clientDetails.musicCutoff ?? 'TBD')}</div></div>
+    <div class="field"><label>Allergies</label><div>${esc(model.clientDetails.allergies ?? 'None noted')}</div></div>
+  </div>
+  ${model.clientDetails.timelineBlocks?.length ? `<h2>Run of show</h2>
+  <table><thead><tr><th>Block</th><th>Start</th><th>End</th></tr></thead><tbody>
+  ${model.clientDetails.timelineBlocks.map(b => `<tr><td>${esc(b.label)}</td><td>${esc(b.startTime || '—')}</td><td>${esc(b.endTime || '—')}</td></tr>`).join('')}
+  </tbody></table>` : ''}
+  ${model.clientDetails.vendors?.length ? `<h2>Vendor roster</h2>
+  <table><thead><tr><th>Type</th><th>Name</th><th>Status</th></tr></thead><tbody>
+  ${model.clientDetails.vendors.map(v => `<tr><td>${esc(v.type)}</td><td>${esc(v.name)}</td><td>${esc(v.status)}</td></tr>`).join('')}
+  </tbody></table>` : ''}
+  ${model.clientDetails.contacts?.length ? `<h2>Contacts</h2>
+  <table><thead><tr><th>Name</th><th>Role</th><th>Email</th></tr></thead><tbody>
+  ${model.clientDetails.contacts.map(c => `<tr><td>${esc(c.name)}</td><td>${esc(c.role)}</td><td>${esc(c.email ?? '—')}</td></tr>`).join('')}
+  </tbody></table>` : ''}
   <h2>Run of show / notes</h2>
   <div class="notes">${esc(model.notes || 'No internal notes captured yet. Add setup, F&B, AV, and special requests on the event record.')}</div>
   <h2>Staff checklist</h2>

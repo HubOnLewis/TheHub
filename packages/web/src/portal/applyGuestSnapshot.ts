@@ -47,21 +47,35 @@ export function eventStateFromSnapshot(snapshot: GuestPortalSnapshot, base?: Por
   if (proposal?.status === 'accepted') agreementStatus = 'signed';
   else if (proposal?.status === 'viewed') agreementStatus = 'viewed';
   else if (proposal?.status === 'sent') agreementStatus = 'pending_review';
+  const details = snapshot.clientDetails;
+  const playbookSteps = snapshot.playbook?.clientTimeline ?? [];
+  const checklist = playbookSteps.length
+    ? playbookSteps.map(s => ({
+        id: s.id,
+        label: s.label,
+        due: s.dueLabel,
+        complete: s.id === 'tl-deposit' ? snapshot.profile.paidTotal > 0 : s.id === 'tl-details' ? Boolean(details?.layout && details?.guestCount) : false,
+        category: s.id.includes('pay') || s.id.includes('deposit') || s.id.includes('balance') ? 'payments' as const : 'logistics' as const,
+      }))
+    : seeded.checklist.map(c => {
+        if (c.id === 'ck-agreement') return { ...c, complete: proposal?.status === 'accepted' };
+        if (c.id === 'ck-deposit') return { ...c, complete: snapshot.profile.paidTotal > 0 };
+        if (c.id === 'ck-balance') return { ...c, complete: snapshot.profile.balanceDue <= 0 && snapshot.profile.packageTotal > 0 };
+        if (c.id === 'ck-guests') return { ...c, complete: Boolean(details?.guestCount || snapshot.profile.guests) };
+        return c;
+      });
   return {
     ...seeded,
     agreementStatus,
     agreementSignedAt: proposal?.acceptedAt,
     agreementViewedAt: proposal?.viewedAt,
+    guestCount: details?.guestCount ?? snapshot.profile.guests ?? seeded.guestCount,
+    layoutChoice: details?.layout ?? seeded.layoutChoice,
     payments: paymentsFromSnapshot(snapshot),
     messages: messagesFromSnapshot(snapshot.messages).length
       ? messagesFromSnapshot(snapshot.messages)
       : seeded.messages,
     timeline: timelineFromSnapshot(snapshot),
-    checklist: seeded.checklist.map(c => {
-      if (c.id === 'ck-agreement') return { ...c, complete: proposal?.status === 'accepted' };
-      if (c.id === 'ck-deposit') return { ...c, complete: snapshot.profile.paidTotal > 0 };
-      if (c.id === 'ck-balance') return { ...c, complete: snapshot.profile.balanceDue <= 0 && snapshot.profile.packageTotal > 0 };
-      return c;
-    }),
+    checklist,
   };
 }

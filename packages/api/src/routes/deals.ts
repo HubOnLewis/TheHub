@@ -9,7 +9,8 @@ import { buildService } from '../services/BuildService.js';
 import { unitService } from '../services/UnitService.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { getDB } from '../config/db.js';
-import { CreateBuildSchema, CreateDealSchema, PatchDealSchema } from '@hub-crm/shared';
+import { ApplyPlaybookSchema, CreateBuildSchema, CreateDealSchema, PatchDealSchema } from '@hub-crm/shared';
+import { playbookService } from '../services/PlaybookService.js';
 
 const CreateDealBuildSchema = CreateBuildSchema.omit({ dealId: true, unitId: true }).extend({
   unitId: z.string().optional(),
@@ -152,6 +153,13 @@ router.post('/:id/builds', validate(CreateDealBuildSchema), async (req, res, nex
 router.post('/', validate(CreateDealSchema), async (req, res, next) => {
   try {
     res.status(201).json(await dealService.create(getDB(), req.tenant, req.body));
+  } catch (err) { next(err); }
+});
+
+
+router.post('/:id/playbook', validate(ApplyPlaybookSchema), async (req, res, next) => {
+  try {
+    res.json(await playbookService.apply(getDB(), req.tenant, req.params['id']!, req.body.eventType));
   } catch (err) { next(err); }
 });
 

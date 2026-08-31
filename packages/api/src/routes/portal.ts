@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { GuestPortalMessageSchema, ProposalSignSchema } from '@hub-crm/shared';
+import { GuestPortalDetailsSchema, GuestPortalMessageSchema, ProposalSignSchema } from '@hub-crm/shared';
 import { requireAuth } from '../middleware/auth.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
@@ -30,6 +30,15 @@ const pub = Router();
 pub.get('/bookings/:token', async (req, res, next) => {
   try {
     res.json(await guestPortalService.snapshot(getDB(), req.params['token'] ?? ''));
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+pub.patch('/bookings/:token/details', validate(GuestPortalDetailsSchema), async (req, res, next) => {
+  try {
+    res.json(await guestPortalService.patchDetails(getDB(), req.params['token'] ?? '', req.body));
   } catch (err) {
     next(err);
   }

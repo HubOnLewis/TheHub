@@ -3,6 +3,7 @@ import { usePortalStore } from '../portalStore.js';
 export default function PortalDesignBoard() {
   const layout = usePortalStore(s => s.event.layoutChoice);
   const setLayout = usePortalStore(s => s.setLayout);
+  const saveClientDetails = usePortalStore(s => s.saveClientDetails);
 
   return (
     <>
@@ -16,7 +17,7 @@ export default function PortalDesignBoard() {
               type="button"
               className={`portal-btn ${layout === opt ? 'portal-btn--primary' : 'portal-btn--secondary'}`}
               style={{ width: '100%', justifyContent: 'flex-start' }}
-              onClick={() => setLayout(opt)}
+              onClick={() => { setLayout(opt); void saveClientDetails({ layout: opt }); }}
             >
               {opt}
             </button>
