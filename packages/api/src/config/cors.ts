@@ -5,6 +5,21 @@ export function normalizeOrigin(url: string): string {
   return url.trim().replace(/\/$/, '');
 }
 
+/** Public /book form origins — always allowed, never wildcard. */
+export const PUBLIC_INQUIRY_ORIGINS = [
+  'https://admin.hubonlewis.com',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+] as const;
+
+export function mergePublicInquiryOrigins(existing: readonly string[]): string[] {
+  const merged = [
+    ...existing.map(normalizeOrigin),
+    ...PUBLIC_INQUIRY_ORIGINS.map(normalizeOrigin),
+  ].filter(origin => origin && origin !== '*');
+  return [...new Set(merged)];
+}
+
 /** Shared allowlist — used by CORS middleware and error handler. */
 export function createOriginMatcher(allowedOrigins: readonly string[]) {
   const allowed = new Set(allowedOrigins.map(normalizeOrigin));

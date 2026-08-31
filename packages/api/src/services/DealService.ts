@@ -151,7 +151,7 @@ export class DealService {
     });
   }
 
-  private async assertSpaceAvailability(
+  async assertSpaceAvailability(
     db: Db,
     ctx: TenantContext,
     importMeta: Record<string, unknown> | undefined,

@@ -4,6 +4,7 @@
 // Cloned or legacy environments must set DB_NAME (and MONGODB_URI) to the existing database or the API will
 // connect to an empty database and the app will look "blank."
 import { z } from 'zod';
+import { mergePublicInquiryOrigins } from './cors.js';
 
 function normalizeOrigin(url: string): string {
   let u = url.trim();
@@ -61,7 +62,7 @@ function resolveAllowedOrigins(opts: {
     merged.push('http://localhost:5173', 'http://127.0.0.1:5173');
   }
 
-  return [...new Set(merged.map(normalizeOrigin))];
+  return mergePublicInquiryOrigins([...new Set(merged.map(normalizeOrigin))]);
 }
 
 const EnvSchema = z.object({

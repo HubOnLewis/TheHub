@@ -639,6 +639,90 @@ body {
 .legal-page__back { font-size: 13px; color: var(--text-secondary); text-decoration: none; }
 .legal-page__back:hover { color: var(--red); }
 
+/* ── Public booking (/book) ───────────────────────────────────── */
+.book-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text-primary);
+}
+.book-page__header {
+  padding: 24px 32px;
+  border-bottom: 1px solid var(--border);
+}
+.book-page__brand { display: inline-flex; text-decoration: none; }
+.book-page__venue { margin: 8px 0 0; font-size: 13px; color: var(--text-secondary); }
+.book-page__main {
+  flex: 1;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+  width: 100%;
+}
+.book-page__eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 8px;
+}
+.book-page__main h1 {
+  font-family: var(--font-cond);
+  font-size: 36px;
+  font-weight: 800;
+  margin: 0 0 12px;
+}
+.book-page__lede {
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+  margin: 0 0 28px;
+}
+.book-page__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 18px;
+  margin-bottom: 18px;
+}
+@media (max-width: 640px) {
+  .book-page__grid { grid-template-columns: 1fr; }
+}
+.book-page__form .form-group { margin: 0; }
+.book-page__error {
+  background: var(--red-muted);
+  color: var(--red);
+  border: 1px solid rgba(225, 29, 72, 0.35);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.book-page__submit {
+  width: 100%;
+  justify-content: center;
+  padding: 12px;
+}
+.book-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.book-page__success .form-input { margin-bottom: 4px; }
+.book-page__footer {
+  padding: 20px 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+.book-page__staff { font-size: 13px; color: var(--text-secondary); text-decoration: none; }
+.book-page__staff:hover { color: var(--red); }
+
+
 .legal-footer-links {
   display: flex;
   flex-wrap: wrap;

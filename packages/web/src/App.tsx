@@ -55,6 +55,7 @@ import PortalRoutes from './portal/PortalRoutes.js';
 import PrivacyPage from './pages/legal/PrivacyPage.js';
 import TermsPage from './pages/legal/TermsPage.js';
 import ReferralRedirect from './pages/ReferralRedirect.js';
+import BookPage from './pages/Book.js';
 import ProspectsPage from './pages/ProspectsPage.js';
 import MarketingPage from './pages/MarketingPage.js';
 import ReferralsPage from './pages/ReferralsPage.js';
@@ -407,6 +408,7 @@ function AppRouter() {
       <AnalyticsRouteTracker />
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path={ROUTES.book} element={<BookPage />} />
         <Route path={ROUTES.privacy} element={<PrivacyPage />} />
         <Route path={ROUTES.terms} element={<TermsPage />} />
         <Route path="/r/:referralCode" element={<ReferralRedirect />} />

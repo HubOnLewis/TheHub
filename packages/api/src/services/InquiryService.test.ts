@@ -1,13 +1,21 @@
 import assert from 'node:assert/strict';
-import test from 'node:test';
+import test, { mock } from 'node:test';
 
 process.env.MONGODB_URI ??= 'mongodb://localhost:27017/hub_crm';
 process.env.JWT_SECRET ??= 'this_is_a_very_long_test_secret_value_12345';
 process.env.SUPER_ADMIN_EMAILS ??= 'admin@hubonlewis.com';
 
 const { PublicInquirySchema, isAssignedSpace } = await import('@hub-crm/shared');
-const { mapPublicInquiryToRecords } = await import('./InquiryService.js');
+const { mapPublicInquiryToRecords, inquiryService, SPACE_TAKEN_MESSAGE } = await import('./InquiryService.js');
 const { knownEventTypeFromCreate } = await import('./PlaybookService.js');
+const { dealService } = await import('./DealService.js');
+const { leadService } = await import('./LeadService.js');
+const { ConflictError } = await import('../errors/index.js');
+const { DealRepository } = await import('../repositories/DealRepository.js');
+
+test.afterEach(() => {
+  mock.restoreAll();
+});
 
 test('public inquiry schema requires name and email', () => {
   const bad = PublicInquirySchema.safeParse({ name: '', email: 'not-an-email' });
@@ -56,4 +64,65 @@ test('public inquiry without space skips occupancy fields so dated holds stay po
   assert.equal(mapped.deal.importMeta?.eventDateIso, undefined);
   assert.equal(mapped.deal.importMeta?.space, undefined);
   assert.equal(knownEventTypeFromCreate(mapped.deal.importMeta as Record<string, unknown>), 'social');
+});
+
+const inquiryBody = {
+  name: 'Alex Guest',
+  email: 'alex@example.com',
+  eventDate: '2026-10-17',
+  eventType: 'Wedding',
+  space: 'Main Hall',
+  guests: 80,
+};
+
+test('conflict rejection does not create a lead or deal', async () => {
+  mock.method(DealRepository, 'listOccupancyForDate', async () => ({
+    data: [{
+      _id: 'existing',
+      title: 'Held wedding',
+      status: 'Won',
+      importMeta: {
+        eventDateIso: '2026-10-17',
+        space: 'Main Hall',
+        startTime: '17:00',
+        endTime: '22:00',
+      },
+    }],
+    total: 1,
+  }));
+  let leadCalls = 0;
+  let dealCalls = 0;
+  mock.method(leadService, 'create', async () => {
+    leadCalls += 1;
+    return { _id: 'lead_should_not' };
+  });
+  mock.method(dealService, 'create', async () => {
+    dealCalls += 1;
+    return { _id: 'deal_should_not' };
+  });
+
+  await assert.rejects(
+    () => inquiryService.create({} as never, inquiryBody),
+    (err: unknown) => err instanceof ConflictError && (err as Error).message === SPACE_TAKEN_MESSAGE,
+  );
+  assert.equal(leadCalls, 0);
+  assert.equal(dealCalls, 0);
+});
+
+test('successful inquiry returns portalUrl', async () => {
+  mock.method(dealService, 'assertSpaceAvailability', async () => undefined);
+  mock.method(leadService, 'create', async () => ({ _id: 'lead_1' }));
+  mock.method(dealService, 'create', async () => ({ _id: 'deal_1' }));
+  mock.method(inquiryService, 'mintPortal', async () => ({
+    token: 'tok',
+    path: '/portal/login?access=tok',
+    reused: false,
+  }));
+
+  const result = await inquiryService.create({} as never, inquiryBody);
+  assert.equal(result.eventId, 'deal_1');
+  assert.equal(result.leadId, 'lead_1');
+  assert.equal(result.portalPath, '/portal/login?access=tok');
+  assert.equal(result.portalUrl, 'https://admin.hubonlewis.com/portal/login?access=tok');
+  assert.equal(result.emailStatus, 'stubbed');
 });

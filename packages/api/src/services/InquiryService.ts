@@ -13,6 +13,17 @@ import { leadService } from './LeadService.js';
 import { dealService } from './DealService.js';
 import { reuseOrMintPortalToken } from './GuestPortalService.js';
 import { getEmailProvider } from './email/EmailProvider.js';
+import { ConflictError } from '../errors/index.js';
+
+export const SPACE_TAKEN_MESSAGE =
+  'That date is taken for this space. Please pick another.';
+
+function rethrowGuestConflict(err: unknown): never {
+  if (err instanceof ConflictError) {
+    throw new ConflictError(SPACE_TAKEN_MESSAGE);
+  }
+  throw err;
+}
 
 export function publicInquiryTenantContext(): TenantContext {
   return {
@@ -88,15 +99,35 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
 }
 
 export class InquiryService {
+  async mintPortal(db: Db, ctx: TenantContext, eventId: string) {
+    return reuseOrMintPortalToken(db, ctx, eventId);
+  }
+
   async create(db: Db, body: PublicInquiryPayload) {
     const ctx = publicInquiryTenantContext();
     const mapped = mapPublicInquiryToRecords(body);
+    try {
+      await dealService.assertSpaceAvailability(
+        db,
+        ctx,
+        mapped.deal.importMeta as Record<string, unknown> | undefined,
+        mapped.deal.title,
+        mapped.deal.status,
+      );
+    } catch (err) {
+      rethrowGuestConflict(err);
+    }
     const lead = await leadService.create(db, ctx, mapped.lead);
-    const deal = await dealService.create(db, ctx, {
-      ...mapped.deal,
-      leadId: String(lead._id),
-    });
-    const minted = await reuseOrMintPortalToken(db, ctx, String(deal._id));
+    let deal;
+    try {
+      deal = await dealService.create(db, ctx, {
+        ...mapped.deal,
+        leadId: String(lead._id),
+      });
+    } catch (err) {
+      rethrowGuestConflict(err);
+    }
+    const minted = await this.mintPortal(db, ctx, String(deal._id));
     const portalPath = minted.path;
     const portalUrl = `${HUB_ADMIN_URL}${portalPath}`;
 

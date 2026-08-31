@@ -55,6 +55,8 @@ export const ROUTES = {
   marketingBlasts: '/marketing-blasts',
   referrals: '/referrals',
   monthlyScorecard: '/monthly-scorecard',
+  /** Public customer booking — unauthenticated */
+  book: '/book',
 } as const;
 
 /** Routes that use the simplified client shell (no ops rail / demo flow). */
@@ -80,6 +82,7 @@ export const PUBLIC_ROUTES = {
   privacy: '/privacy',
   terms: '/terms',
   referral: '/r',
+  book: '/book',
 } as const;
 
 export function referralPath(code: string): string {
