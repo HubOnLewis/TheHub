@@ -78,6 +78,21 @@ export const PatchDealSchema = CreateDealSchema.partial().extend({
   importMeta: z.record(z.unknown()).optional(),
 });
 export type PatchDealPayload = z.infer<typeof PatchDealSchema>;
+// ── Public inquiry (unauthenticated) ──────────────────────────────
+export const PublicInquirySchema = z.object({
+  name: z.string().min(1, 'Name required').max(120),
+  email: z.string().email(),
+  phone: z.string().max(40).optional(),
+  company: z.string().max(160).optional(),
+  eventDate: z.string().max(32).optional(),
+  startTime: z.string().max(16).optional(),
+  endTime: z.string().max(16).optional(),
+  space: z.string().max(80).optional(),
+  eventType: z.string().max(80).optional(),
+  guests: z.number().int().min(0).max(5000).optional(),
+  notes: z.string().max(2000).optional(),
+});
+export type PublicInquiryPayload = z.infer<typeof PublicInquirySchema>;
 
 // ── Payments (staff ledger — not Stripe charges) ──────────────────
 export const PAYMENT_LINK_KINDS = ['deposit', 'balance', 'custom', 'schedule'] as const;

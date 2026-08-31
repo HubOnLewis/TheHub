@@ -8,6 +8,7 @@ import {
   setDocumentOnFile,
   setPlaybookTaskStatus,
   type ClientDetails,
+  type EventType,
   type PlaybookTask,
 } from '@hub-crm/shared';
 import { NotFoundError } from '../errors/index.js';
@@ -15,6 +16,13 @@ import { DealRepository } from '../repositories/DealRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
 import { paymentService } from './PaymentService.js';
 
+
+/** Non-empty eventType on a new booking — used to auto-apply playbook. Blank is not known. */
+export function knownEventTypeFromCreate(meta?: Record<string, unknown> | null): EventType | null {
+  const raw = meta && typeof meta.eventType === 'string' ? meta.eventType.trim() : '';
+  if (!raw) return null;
+  return resolveEventType(raw);
+}
 function metaOf(deal: { importMeta?: Record<string, unknown> }): Record<string, unknown> {
   return deal.importMeta && typeof deal.importMeta === 'object'
     ? { ...deal.importMeta }

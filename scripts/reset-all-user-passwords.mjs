@@ -19,6 +19,12 @@
 
 import { MongoClient } from 'mongodb';
 import { loadEnv, getMongoDb, parseMongoTarget } from './lib/hub-refresh-utils.mjs';
+import {
+  HANNAH_DEFAULTS,
+  buildSeedUsers,
+  planBootstrap,
+  userDocFromSpec,
+} from './lib/seed-admin-users.mjs';
 
 loadEnv();
 
@@ -74,13 +80,27 @@ try {
     .sort({ email: 1 })
     .toArray();
 
+  function pickEnv(key, fallback) {
+    const v = process.env[key];
+    return v !== undefined && v !== '' ? v : fallback;
+  }
+  const { hannah } = buildSeedUsers(pickEnv);
+  const createHannah = !emailFilter && planBootstrap(
+    allUsers.map(u => u.email),
+    [{ ...hannah, password: newPassword || 'placeholder-ok' }],
+    { requirePassword: false },
+  ).toCreate.some(s => s.email === HANNAH_DEFAULTS.email);
+
   console.log('\n=== Reset all user passwords ===\n');
   console.log(`  Mode:       ${apply ? 'APPLY' : 'dry-run'}`);
   console.log(`  Mongo host: ${mongoTarget.host}`);
   console.log(`  Database:   ${dbName}`);
   console.log(`  Users:      ${allUsers.length}${emailFilter ? ` (filter: ${emailFilter})` : ''}`);
+  if (createHannah) {
+    console.log(`  Missing:    ${HANNAH_DEFAULTS.email} (admin) — will be created`);
+  }
 
-  if (allUsers.length === 0) {
+  if (allUsers.length === 0 && !createHannah) {
     console.error('\n[reset-passwords] No users matched — check DB_NAME / cluster URI.');
     process.exit(1);
   }
@@ -103,6 +123,9 @@ try {
       `  ${u.email}  role=${u.role}  active=${u.active}  tenant=${u.tenantId ?? '(none)'}  [${hashState}]`,
     );
   }
+  if (createHannah) {
+    console.log(`  ${HANNAH_DEFAULTS.email}  role=admin  (missing — create)`);
+  }
 
   if (!apply) {
     console.log('\n[reset-passwords] Dry-run only — no changes written.');
@@ -124,6 +147,14 @@ try {
     );
     if (result.modifiedCount === 1 || result.matchedCount === 1) updated += 1;
     console.log(`  updated ${u.email}`);
+  }
+
+  if (createHannah) {
+    const spec = { ...hannah, password: newPassword, role: HANNAH_DEFAULTS.role };
+    const inserted = await users.insertOne(userDocFromSpec(spec, passwordHash, now));
+    updated += 1;
+    console.log(`  created ${spec.email} role=${spec.role}`);
+    allUsers.push({ _id: inserted.insertedId, email: spec.email });
   }
 
   const sample = allUsers[0];

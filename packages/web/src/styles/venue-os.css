@@ -1235,6 +1235,13 @@
 .inbox-triage-card span { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #78716c; }
 .inbox-triage-card strong { display: block; font-size: 22px; margin: 4px 0; }
 .inbox-triage-card em { font-style: normal; font-size: 12px; color: #57534e; }
+.inbox-triage-card--warn { border-color: #f59e0b; }
+.inbox-triage-card--urgent { border-color: #e11d48; }
+a.inbox-triage-card { text-decoration: none; display: block; }
+.ops-home__morning-head {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 4px;
+}
+.ops-home__morning-head h2 { margin: 0; font-size: 16px; }
 .guest-timeline {
   list-style: none; display: flex; gap: 0; padding: 0; margin: 0 0 20px; overflow-x: auto;
 }

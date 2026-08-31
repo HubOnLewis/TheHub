@@ -1,25 +1,34 @@
 // scripts/seed-admin.mjs
 // ─────────────────────────────────────────────────────────────────────────────
-// LOCAL / DEVELOPMENT ONLY — seeds or updates the demo super_admin for The Hub CRM.
+// LOCAL / DEVELOPMENT ONLY — seeds or updates Hub login operators.
 //
-// Default demo identity (HuB on Lewis):
-//   Email: jason@hubonlewis.com
-//   Password: HubAdmin123!   (change after first login on shared machines)
+// Default identities (HuB on Lewis):
+//   Jason Lavender  jason@hubonlewis.com  role=super_admin
+//   Hannah Bayless  hannah@hubonlewis.com role=admin
 //
-// NEVER use these defaults in production. Override via SEED_* in repo-root `.env` or shell.
+// NEVER use local defaults in production. Override via SEED_* / SEED_HANNAH_* in
+// repo-root `.env` or shell. This script does not print password values.
 //
-// Re-running this script updates the password hash if the user already exists (same email),
+// Re-running updates the password hash if the user already exists (same email),
 // so local login keeps working after credential changes.
 //
 // Supported overrides (optional):
 //   SEED_ADMIN_NAME, SEED_ADMIN_EMAIL, SEED_ADMIN_PASSWORD,
 //   SEED_ADMIN_ENTITY, SEED_ADMIN_LOCATION, SEED_ADMIN_TENANT_ID
+//   SEED_HANNAH_NAME, SEED_HANNAH_EMAIL, SEED_HANNAH_PASSWORD,
+//   SEED_HANNAH_ENTITY, SEED_HANNAH_LOCATION, SEED_HANNAH_TENANT_ID
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { MongoClient } from 'mongodb';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import {
+  buildSeedUsers,
+  planSeedUpsert,
+  userDocFromSpec,
+  userUpdateFromSpec,
+} from './lib/seed-admin-users.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -57,15 +66,8 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 
-const USER = {
-  name: pick('SEED_ADMIN_NAME', 'Jason Lavender'),
-  email: pick('SEED_ADMIN_EMAIL', 'jason@hubonlewis.com').toLowerCase().trim(),
-  password: pick('SEED_ADMIN_PASSWORD', 'HubAdmin123!'),
-  role: 'super_admin',
-  entity: pick('SEED_ADMIN_ENTITY', 'HUB'),
-  location: pick('SEED_ADMIN_LOCATION', 'Wichita'),
-  tenantId: pick('SEED_ADMIN_TENANT_ID', 'hub-wichita'),
-};
+const LOCAL_DEV_PASSWORD = 'HubAdmin123!';
+const { users: seedUsers } = buildSeedUsers(pick, { localDefaultPassword: LOCAL_DEV_PASSWORD });
 
 async function hashPassword(plain) {
   const bcrypt = await import('../packages/api/node_modules/bcryptjs/dist/bcrypt.js').catch(() =>
@@ -81,47 +83,26 @@ async function main() {
   const db = client.db(DB_NAME);
   const users = db.collection('users');
 
-  const passwordHash = await hashPassword(USER.password);
+  const existing = await users
+    .find({ email: { $in: seedUsers.map(u => u.email) } }, { projection: { email: 1 } })
+    .toArray();
+  const plan = planSeedUpsert(existing.map(u => u.email), seedUsers);
   const now = new Date();
 
-  const existing = await users.findOne({ email: USER.email });
-
-  if (existing) {
-    await users.updateOne(
-      { _id: existing._id },
-      {
-        $set: {
-          name: USER.name,
-          passwordHash,
-          role: USER.role,
-          entity: USER.entity,
-          location: USER.location,
-          tenantId: USER.tenantId,
-          active: true,
-          updatedAt: now,
-        },
-      },
-    );
-    console.log(`Updated existing super_admin: ${USER.email} (id: ${existing._id})`);
-    console.log('Password hash refreshed — use current SEED_ADMIN_PASSWORD / default HubAdmin123! for login.');
-  } else {
-    const result = await users.insertOne({
-      name: USER.name,
-      email: USER.email,
-      passwordHash,
-      role: USER.role,
-      entity: USER.entity,
-      location: USER.location,
-      tenantId: USER.tenantId,
-      active: true,
-      createdAt: now,
-      updatedAt: now,
-      lastLoginAt: null,
-    });
-    console.log(`Created super_admin: ${USER.email}  (id: ${result.insertedId})`);
+  for (const step of plan) {
+    const spec = step.spec;
+    const passwordHash = await hashPassword(spec.password);
+    if (step.action === 'update') {
+      const row = existing.find(u => String(u.email).toLowerCase() === spec.email);
+      await users.updateOne({ _id: row._id }, { $set: userUpdateFromSpec(spec, passwordHash, now) });
+      console.log(`Updated existing ${spec.role}: ${spec.email} (id: ${row._id})`);
+    } else {
+      const result = await users.insertOne(userDocFromSpec(spec, passwordHash, now));
+      console.log(`Created ${spec.role}: ${spec.email}  (id: ${result.insertedId})`);
+    }
   }
 
-  console.log('Done. Ensure API .env SUPER_ADMIN_EMAILS includes this email for full admin scope.');
+  console.log('Done. Password hashes refreshed from SEED_* env / local defaults. Ensure API SUPER_ADMIN_EMAILS includes owner emails for full admin scope.');
   await client.close();
 }
 

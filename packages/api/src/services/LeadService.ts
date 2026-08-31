@@ -8,6 +8,7 @@ import { NotFoundError, ValidationError } from '../errors/index.js';
 import { buildTenantId } from '@hub-crm/shared';
 import type { Entity, Location } from '@hub-crm/shared';
 import { DealRepository } from '../repositories/DealRepository.js';
+import { playbookService } from './PlaybookService.js';
 
 export class LeadService {
   async list(db: Db, ctx: TenantContext, filter: LeadFilter, options: ListOptions) {
@@ -53,6 +54,13 @@ export class LeadService {
       }
       payload.convertedDealId = String(deal._id);
       payload.dealId = String(deal._id);
+      const hint = (typeof (current as { eventType?: string }).eventType === 'string' && (current as { eventType?: string }).eventType)
+        || (typeof payload.eventType === 'string' ? payload.eventType : '');
+      if (hint) {
+        await playbookService.apply(db, ctx, String(deal._id), hint).catch(err =>
+          console.error(`[LeadService] Auto-apply playbook failed for ${deal._id}:`, err),
+        );
+      }
     }
 
     // Set lastTouchedAt when any meaningful business field is being changed

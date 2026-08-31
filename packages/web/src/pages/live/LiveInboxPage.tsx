@@ -6,16 +6,8 @@ import LiveModuleTable, { EventLink, MoneyCell, StatusCell } from '../../compone
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
 import { generateInboxActivity, type InboxActivityItem } from '../../lib/liveEventHelpers.js';
 import { enhanceWithLlm, fetchAiStatus } from '../../intelligence/ai/provider.js';
-import client from '../../api/client.js';
+import { useInboxTriage } from '../../hooks/useInboxTriage.js';
 
-type Triage = {
-  unansweredMessages: Array<{ eventId: string; eventTitle: string; preview: string; at: string }>;
-  unsignedProposals: Array<{ eventId: string; eventTitle: string; version: number; status: string }>;
-  unpaidDeposits: Array<{ eventId: string; eventTitle: string; balanceDue: number }>;
-  drafts: unknown[];
-  scheduled: unknown[];
-  templates: Array<{ key: string; label: string }>;
-};
 
 export default function LiveInboxPage() {
   const navigate = useNavigate();
@@ -26,12 +18,7 @@ export default function LiveInboxPage() {
     staleTime: 30_000,
     retry: false,
   });
-  const { data: triage } = useQuery({
-    queryKey: ['comms', 'inbox'],
-    queryFn: () => client.get<Triage>('/comms/inbox').then(r => r.data),
-    retry: false,
-    staleTime: 15_000,
-  });
+  const { data: triage } = useInboxTriage();
   const aiOnline = Boolean(aiStatus?.enabled && aiStatus?.configured && !aiStatus.offline);
   const [draftingId, setDraftingId] = useState<string | null>(null);
   const [draftById, setDraftById] = useState<Record<string, string>>({});

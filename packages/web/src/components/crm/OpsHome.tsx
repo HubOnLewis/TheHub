@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '@hub-crm/shared';
 import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
-import { ROUTES } from '../../config/paths.js';
+import { ROUTES, opportunityDetailPath } from '../../config/paths.js';
 import {
   daysUntilEvent,
   getBalanceDue,
@@ -17,6 +17,7 @@ import AddEventModal from './AddEventModal.js';
 import AttentionRail from '../venue/AttentionRail.js';
 import { useVenueAttention } from '../../hooks/useAgentSnapshot.js';
 import { formatTodayLabel } from '../../config/productionData.js';
+import { useInboxTriage } from '../../hooks/useInboxTriage.js';
 
 function startOfDay(d: Date): Date {
   const x = new Date(d);
@@ -65,6 +66,7 @@ function EventOpsRow({ row }: { row: CrmEventRow }) {
 
 export default function OpsHome() {
   const { rows, isLoading, isError, sourceId } = useLiveCrmEvents();
+  const { data: triage } = useInboxTriage();
   const [addOpen, setAddOpen] = useState(false);
   const [showFar, setShowFar] = useState(false);
 
@@ -157,12 +159,52 @@ export default function OpsHome() {
         </div>
       </div>
 
-      {missingSpace.length > 0 ? (
-        <div className="ops-home__alert" role="alert">
-          <strong>{missingSpace.length} event{missingSpace.length === 1 ? '' : 's'} this week {missingSpace.length === 1 ? 'has' : 'have'} no space assigned.</strong>
-          <span> Assign a room before the calendar can block double-books.</span>
+      <section className="ops-home__morning" aria-label="This morning">
+        <header className="ops-home__morning-head">
+          <h2>This morning</h2>
+          <Link to={ROUTES.inbox} className="ops-home__link">
+            Inbox / Activity →
+          </Link>
+        </header>
+        <div className="inbox-triage-grid">
+          <Link
+            to={triage?.unsignedProposals[0] ? opportunityDetailPath(triage.unsignedProposals[0].eventId) : ROUTES.inbox}
+            className={`inbox-triage-card${(triage?.unsignedProposals.length ?? 0) > 0 ? ' inbox-triage-card--warn' : ''}`}
+          >
+            <span>Unsigned proposals</span>
+            <strong>{triage?.unsignedProposals.length ?? '—'}</strong>
+            <em>{triage?.unsignedProposals[0]?.eventTitle ?? 'None waiting'}</em>
+          </Link>
+          <Link
+            to={triage?.unpaidDeposits[0] ? opportunityDetailPath(triage.unpaidDeposits[0].eventId) : ROUTES.inbox}
+            className={`inbox-triage-card${(triage?.unpaidDeposits.length ?? 0) > 0 ? ' inbox-triage-card--warn' : ''}`}
+          >
+            <span>Unpaid deposits</span>
+            <strong>{triage?.unpaidDeposits.length ?? '—'}</strong>
+            <em>
+              {triage?.unpaidDeposits[0]
+                ? `${triage.unpaidDeposits[0].eventTitle} · ${formatCurrency(triage.unpaidDeposits[0].balanceDue)}`
+                : 'None outstanding'}
+            </em>
+          </Link>
+          <Link
+            to={triage?.unansweredMessages[0] ? opportunityDetailPath(triage.unansweredMessages[0].eventId) : ROUTES.inbox}
+            className={`inbox-triage-card${(triage?.unansweredMessages.length ?? 0) > 0 ? ' inbox-triage-card--urgent' : ''}`}
+          >
+            <span>Unanswered portal messages</span>
+            <strong>{triage?.unansweredMessages.length ?? '—'}</strong>
+            <em>{triage?.unansweredMessages[0]?.preview || 'All threads have a staff reply'}</em>
+          </Link>
+          <Link
+            to={missingSpace[0]?.href || ROUTES.calendar}
+            className={`inbox-triage-card${missingSpace.length > 0 ? ' inbox-triage-card--urgent' : ''}`}
+          >
+            <span>This week · missing space</span>
+            <strong>{missingSpace.length}</strong>
+            <em>{missingSpace[0]?.title ?? 'All dated events have a room'}</em>
+          </Link>
         </div>
-      ) : null}
+      </section>
 
       {attention[0] ? (
         <div className="crm-start-here">

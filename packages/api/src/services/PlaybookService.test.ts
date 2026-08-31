@@ -33,7 +33,7 @@ const {
   guestPaymentHasSecrets,
   toPaymentSummaryLedgerRow,
 } = await import('@hub-crm/shared');
-const { applyPlaybookToDealMeta, persistClientDetailsOnDealMeta } = await import('./PlaybookService.js');
+const { applyPlaybookToDealMeta, persistClientDetailsOnDealMeta, knownEventTypeFromCreate } = await import('./PlaybookService.js');
 
 const EVENT = '2026-10-17';
 const NOW = new Date('2026-08-31T18:00:00.000Z');
@@ -533,4 +533,27 @@ test('staff payment summary print uses payment_links ledger not importMeta recei
   assert.doesNotMatch(html, /hub_other_secret/);
   assert.doesNotMatch(html, /token/i);
   assert.doesNotMatch(html, /Stripe/i);
+});
+
+test('create-with-type applies playbook when event type is known', () => {
+  assert.equal(knownEventTypeFromCreate({ eventType: 'Wedding' }), 'wedding');
+  assert.equal(knownEventTypeFromCreate({ eventType: '  ' }), null);
+  assert.equal(knownEventTypeFromCreate({}), null);
+  assert.equal(knownEventTypeFromCreate(undefined), null);
+
+  const created = { amount: 8000, importMeta: { eventType: 'Wedding', eventDateIso: EVENT, grandTotal: 8000 } };
+  const type = knownEventTypeFromCreate(created.importMeta);
+  assert.equal(type, 'wedding');
+  const meta = applyPlaybookToDealMeta(created, type, NOW);
+  const pb = playbookFromImportMeta(meta);
+  assert.ok(pb);
+  assert.equal(pb?.eventType, 'wedding');
+  assert.ok((pb?.tasks.length ?? 0) > 0);
+  assert.equal(pb?.paymentSchedule[0]?.kind, 'deposit');
+});
+
+test('create without event type does not auto-apply playbook', () => {
+  const created = { amount: 2500, importMeta: { eventDateIso: EVENT } };
+  assert.equal(knownEventTypeFromCreate(created.importMeta), null);
+  assert.equal(playbookFromImportMeta(created.importMeta), null);
 });

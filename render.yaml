@@ -80,6 +80,9 @@ services:
 
       - key: SEED_ADMIN_PASSWORD
         sync: false
+      - key: SEED_HANNAH_PASSWORD
+        sync: false
+
 
       # Browser origins allowed for CORS (comma-separated, exact match on Origin header)
       - key: CORS_ORIGINS

@@ -22,6 +22,8 @@ import type { Entity, Location } from '@hub-crm/shared';
 import { NotFoundError, ValidationError, ConflictError } from '../errors/index.js';
 import { eventBus } from '../jobs/index.js';
 import { dealPressureService } from './DealPressureService.js';
+import { knownEventTypeFromCreate, playbookService } from './PlaybookService.js';
+import { playbookFromImportMeta } from '@hub-crm/shared';
 import { forecastConfidenceService } from './ForecastConfidenceService.js';
 import { buildMarginService } from './BuildMarginService.js';
 import { getAiRuntimeConfig } from '../config/ai.js';
@@ -115,6 +117,31 @@ function closeoutHandoffComplete(co: {
 
 export class DealService {
 
+
+  private metaOf(deal: { importMeta?: Record<string, unknown> }): Record<string, unknown> {
+    return deal.importMeta && typeof deal.importMeta === 'object' ? { ...deal.importMeta } : {};
+  }
+
+  /** Auto-apply event-type playbook on new venue bookings / lead convert. Manual Playbook tab still works. */
+  private async applyPlaybookIfKnown(
+    db: Db,
+    ctx: TenantContext,
+    deal: DealDoc & { _id: string },
+    eventTypeHint?: string,
+  ) {
+    const meta = this.metaOf(deal);
+    if (eventTypeHint && !meta.eventType) meta.eventType = eventTypeHint;
+    const eventType = knownEventTypeFromCreate(meta);
+    if (!eventType) return deal;
+    if (playbookFromImportMeta(meta)) return deal;
+    try {
+      const updated = await playbookService.apply(db, ctx, String(deal._id), eventType);
+      return (updated as DealDoc & { _id: string }) ?? deal;
+    } catch (err) {
+      console.error(`[DealService] Auto-apply playbook failed for ${deal._id}:`, err);
+      return deal;
+    }
+  }
   private occupancySlotFromDeal(deal: { _id?: string; title?: string; status?: string; importMeta?: Record<string, unknown> }): OccupancySlot | null {
     return occupancyFromImportMeta({
       id: String(deal._id ?? ''),
@@ -509,7 +536,11 @@ export class DealService {
           convertedDealId: String(existingLeadDeal._id),
         } as never)
           .catch(err => console.error(`[DealService] Failed to mark existing lead conversion ${payload.leadId}:`, err));
-        return existingLeadDeal;
+        const lead = await LeadRepository.findById(db, tenantCtx, payload.leadId);
+        const hint = typeof (lead as { eventType?: string } | null)?.eventType === 'string'
+          ? (lead as { eventType?: string }).eventType
+          : undefined;
+        return this.applyPlaybookIfKnown(db, tenantCtx, existingLeadDeal, hint);
       }
     }
 
@@ -525,7 +556,7 @@ export class DealService {
       companyId: (payload as any).companyId,
       companyName: payload.company,
     });
-    const importMeta =
+    let importMeta =
       payload.importMeta && typeof payload.importMeta === 'object'
         ? { ...payload.importMeta }
         : undefined;
@@ -571,7 +602,7 @@ export class DealService {
 
       void eventBus.emit({ type: 'deal.created', dealId: String(deal._id), tenantId }, db);
 
-    return deal;
+    return this.applyPlaybookIfKnown(db, tenantCtx, deal);
   }
 
   async update(db: Db, ctx: TenantContext, id: string, payload: PatchDealPayload) {
