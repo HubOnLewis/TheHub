@@ -67,8 +67,9 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
   if (dateKey && hasSpace) {
     importMeta.eventDateIso = dateKey;
     importMeta.space = space;
-    importMeta.startTime = body.startTime?.trim() || '17:00';
-    importMeta.endTime = body.endTime?.trim() || '22:00';
+    const hold = inquiryHoldWindow(body.startTime, body.endTime);
+    importMeta.startTime = hold.startTime;
+    importMeta.endTime = hold.endTime;
   } else if (hasSpace) {
     importMeta.space = space;
   }
@@ -101,17 +102,24 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
   };
 }
 
-/** Full-day window so any occupancy that calendar day is a hard conflict. */
+/** Same default hold as public create when startTime is omitted. */
+export const DEFAULT_INQUIRY_START = '17:00';
+export const DEFAULT_INQUIRY_END = '22:00';
+
+export function inquiryHoldWindow(startTime?: string, endTime?: string): { startTime: string; endTime: string } {
+  return {
+    startTime: startTime?.trim() || DEFAULT_INQUIRY_START,
+    endTime: endTime?.trim() || DEFAULT_INQUIRY_END,
+  };
+}
+
 export function availabilityImportMeta(input: PublicInquiryAvailabilityPayload): Record<string, unknown> {
   const eventDate = input.eventDate.trim().slice(0, 10);
-  const start = input.startTime?.trim() || '';
-  const end = input.endTime?.trim() || '';
   return {
     eventDateIso: eventDate,
     eventDate,
     space: input.space.trim(),
-    startTime: start || '00:00',
-    endTime: end || (start ? '22:00' : '23:59'),
+    ...inquiryHoldWindow(input.startTime, input.endTime),
   };
 }
 
@@ -140,8 +148,10 @@ export class InquiryService {
 
   async create(db: Db, body: PublicInquiryPayload) {
     const ctx = publicInquiryTenantContext();
-    if (!isAssignedSpace(body.space) || !(body.eventType ?? '').trim()) {
-      throw new BadRequestError('Please pick a room and an event type.');
+    const dateRaw = (body.eventDate ?? '').trim();
+    const dateKey = /^\d{4}-\d{2}-\d{2}/.test(dateRaw) ? dateRaw.slice(0, 10) : '';
+    if (!isAssignedSpace(body.space) || !(body.eventType ?? '').trim() || !dateKey) {
+      throw new BadRequestError('Please pick a room, an event type, and a date.');
     }
     const mapped = mapPublicInquiryToRecords(body);
     try {

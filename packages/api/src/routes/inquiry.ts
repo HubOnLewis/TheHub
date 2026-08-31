@@ -58,8 +58,9 @@ router.post('/', inquiryLimiter, async (req, res, next) => {
     const body = (req.body ?? {}) as Record<string, unknown>;
     const space = firstString(body.space);
     const eventType = firstString(body.eventType);
-    if (!isAssignedSpace(space) || !eventType) {
-      res.status(400).json({ error: 'Please pick a room and an event type.' });
+    const eventDate = firstString(body.eventDate);
+    if (!isAssignedSpace(space) || !eventType || !/^\d{4}-\d{2}-\d{2}/.test(eventDate)) {
+      res.status(400).json({ error: 'Please pick a room, an event type, and a date.' });
       return;
     }
     const parsed = PublicInquirySchema.safeParse(req.body);

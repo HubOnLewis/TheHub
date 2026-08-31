@@ -84,7 +84,7 @@ export const PublicInquirySchema = z.object({
   email: z.string().email(),
   phone: z.string().max(40).optional(),
   company: z.string().max(160).optional(),
-  eventDate: z.string().max(32).optional(),
+  eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date required'),
   startTime: z.string().max(16).optional(),
   endTime: z.string().max(16).optional(),
   space: z.string().min(1, 'Space required').max(80),

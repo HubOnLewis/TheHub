@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import test, { mock } from 'node:test';
+import type { Db } from 'mongodb';
+import type { TenantContext } from '../tenancy/index.js';
 
 process.env.MONGODB_URI ??= 'mongodb://localhost:27017/hub_crm';
 process.env.JWT_SECRET ??= 'this_is_a_very_long_test_secret_value_12345';
@@ -22,7 +24,7 @@ test.afterEach(() => {
   mock.restoreAll();
 });
 
-test('public inquiry schema requires name, email, space, and event type', () => {
+test('public inquiry schema requires name, email, date, space, and event type', () => {
   const bad = PublicInquirySchema.safeParse({ name: '', email: 'not-an-email' });
   assert.equal(bad.success, false);
   const missingSpace = PublicInquirySchema.safeParse({
@@ -39,6 +41,13 @@ test('public inquiry schema requires name, email, space, and event type', () => 
     space: 'Main Hall',
   });
   assert.equal(missingType.success, false);
+  const missingDate = PublicInquirySchema.safeParse({
+    name: 'Alex Guest',
+    email: 'alex@example.com',
+    eventType: 'Wedding',
+    space: 'Main Hall',
+  });
+  assert.equal(missingDate.success, false);
   const ok = PublicInquirySchema.safeParse({
     name: 'Alex Guest',
     email: 'alex@example.com',
@@ -59,8 +68,8 @@ test('availability schema requires date and space', () => {
   });
   assert.equal(ok.success, true);
   const meta = availabilityImportMeta(ok.data);
-  assert.equal(meta.startTime, '00:00');
-  assert.equal(meta.endTime, '23:59');
+  assert.equal(meta.startTime, '17:00');
+  assert.equal(meta.endTime, '22:00');
   const timed = PublicInquiryAvailabilitySchema.safeParse({
     eventDate: '2026-10-17',
     space: 'Main Hall',
@@ -167,6 +176,21 @@ test('missing event type is 400 and does not create a lead', async () => {
   assert.equal(calls.dealCalls(), 0);
 });
 
+test('missing event date is 400 and does not create a lead', async () => {
+  const calls = mockNoLeadCreate();
+  await assert.rejects(
+    () => inquiryService.create({} as never, {
+      name: 'Alex Guest',
+      email: 'alex@example.com',
+      eventType: 'Wedding',
+      space: 'Main Hall',
+    } as never),
+    (err: unknown) => err instanceof BadRequestError && (err as { statusCode: number }).statusCode === 400,
+  );
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
+});
+
 test('TBD space is 400 and does not create a lead', async () => {
   const calls = mockNoLeadCreate();
   await assert.rejects(
@@ -207,10 +231,45 @@ test('availability conflict does not create a lead', async () => {
   assert.equal(calls.dealCalls(), 0);
 });
 
+test('availability and create share 17:00-22:00 when startTime is omitted', () => {
+  const avail = availabilityImportMeta({ eventDate: '2026-10-17', space: 'Main Hall' });
+  const mapped = mapPublicInquiryToRecords({
+    name: 'Alex Guest',
+    email: 'alex@example.com',
+    eventDate: '2026-10-17',
+    eventType: 'Wedding',
+    space: 'Main Hall',
+  });
+  assert.equal(avail.startTime, '17:00');
+  assert.equal(avail.endTime, '22:00');
+  assert.equal(mapped.deal.importMeta?.startTime, '17:00');
+  assert.equal(mapped.deal.importMeta?.endTime, '22:00');
+});
+
+test('availability and create use sent startTime with default end 22:00', () => {
+  const avail = availabilityImportMeta({
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+    startTime: '18:30',
+  });
+  const mapped = mapPublicInquiryToRecords({
+    name: 'Alex Guest',
+    email: 'alex@example.com',
+    eventDate: '2026-10-17',
+    eventType: 'Wedding',
+    space: 'Main Hall',
+    startTime: '18:30',
+  });
+  assert.equal(avail.startTime, '18:30');
+  assert.equal(avail.endTime, '22:00');
+  assert.equal(mapped.deal.importMeta?.startTime, '18:30');
+  assert.equal(mapped.deal.importMeta?.endTime, '22:00');
+});
+
 test('availability with startTime uses that start and default end', async () => {
   let seen: Record<string, unknown> | undefined;
-  mock.method(dealService, 'assertSpaceAvailability', async (_db, _ctx, meta) => {
-    seen = meta as Record<string, unknown>;
+  mock.method(dealService, 'assertSpaceAvailability', async (_db: Db, _ctx: TenantContext, meta: Record<string, unknown> | undefined) => {
+    seen = meta;
   });
   await inquiryService.checkAvailability({} as never, {
     eventDate: '2026-10-17',
@@ -221,17 +280,17 @@ test('availability with startTime uses that start and default end', async () => 
   assert.equal(seen?.endTime, '22:00');
 });
 
-test('availability without startTime stays day-level', async () => {
+test('availability without startTime uses the create default window', async () => {
   let seen: Record<string, unknown> | undefined;
-  mock.method(dealService, 'assertSpaceAvailability', async (_db, _ctx, meta) => {
-    seen = meta as Record<string, unknown>;
+  mock.method(dealService, 'assertSpaceAvailability', async (_db: Db, _ctx: TenantContext, meta: Record<string, unknown> | undefined) => {
+    seen = meta;
   });
   await inquiryService.checkAvailability({} as never, {
     eventDate: '2026-10-17',
     space: 'Main Hall',
   });
-  assert.equal(seen?.startTime, '00:00');
-  assert.equal(seen?.endTime, '23:59');
+  assert.equal(seen?.startTime, '17:00');
+  assert.equal(seen?.endTime, '22:00');
 });
 
 test('availability ok returns available true without creating a lead', async () => {
