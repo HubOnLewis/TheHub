@@ -90,3 +90,75 @@ export function buildGuestPaymentSummaryDocHtml(input: PaymentSummaryDocInput): 
     <div class="row strong"><span>Balance</span><span>${escDoc(formatCurrency(input.balanceDue))}</span></div>
   </div>`;
 }
+
+
+/** Public guest-portal payment row. Never includes payment-link token or other secrets. */
+export type GuestPortalPayment = {
+  id: string;
+  eventId: string;
+  kind: string;
+  amount: number;
+  status: string;
+  dueDate?: string;
+  paidAt?: string;
+  createdAt: string;
+};
+
+const GUEST_PAYMENT_SECRET_KEYS = ['token'];
+
+/** Pick ledger print fields only — strips token and other payment_links secrets. */
+export function toPaymentSummaryLedgerRow(row: {
+  kind: string;
+  amount: number;
+  status: string;
+  dueDate?: string;
+  paidAt?: string;
+}): PaymentSummaryLedgerRow {
+  const out: PaymentSummaryLedgerRow = {
+    kind: String(row.kind ?? ''),
+    amount: typeof row.amount === 'number' && Number.isFinite(row.amount) ? row.amount : 0,
+    status: String(row.status ?? ''),
+  };
+  if (typeof row.dueDate === 'string' && row.dueDate) out.dueDate = row.dueDate;
+  if (typeof row.paidAt === 'string' && row.paidAt) out.paidAt = row.paidAt;
+  return out;
+}
+
+/** Map a payment_links record onto the public guest snapshot shape (no token/secrets). */
+export function guestSafePayment(row: {
+  id: string;
+  eventId: string;
+  kind: string;
+  amount: number;
+  status: string;
+  dueDate?: string;
+  paidAt?: string;
+  createdAt: string;
+}): GuestPortalPayment {
+  const out: GuestPortalPayment = {
+    id: String(row.id),
+    eventId: String(row.eventId),
+    kind: String(row.kind),
+    amount: typeof row.amount === 'number' && Number.isFinite(row.amount) ? row.amount : 0,
+    status: String(row.status),
+    createdAt: String(row.createdAt ?? ''),
+  };
+  if (typeof row.dueDate === 'string' && row.dueDate) out.dueDate = row.dueDate;
+  if (typeof row.paidAt === 'string' && row.paidAt) out.paidAt = row.paidAt;
+  return out;
+}
+
+export function guestSafePayments(
+  rows: Array<Parameters<typeof guestSafePayment>[0]>,
+): GuestPortalPayment[] {
+  return rows.map(guestSafePayment);
+}
+
+/** True when a serialized guest payment object still contains a payment-link secret. */
+export function guestPaymentHasSecrets(row: object): boolean {
+  const keys = Object.keys(row);
+  if (keys.some(k => GUEST_PAYMENT_SECRET_KEYS.includes(k))) return true;
+  const json = JSON.stringify(row);
+  return /"token"\s*:/.test(json);
+}
+

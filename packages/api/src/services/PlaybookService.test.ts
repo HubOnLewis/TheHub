@@ -28,6 +28,10 @@ const {
   staffBeoChecklistRows,
   paymentSummaryLedgerFields,
   buildGuestPaymentSummaryDocHtml,
+  guestSafePayment,
+  guestSafePayments,
+  guestPaymentHasSecrets,
+  toPaymentSummaryLedgerRow,
 } = await import('@hub-crm/shared');
 const { applyPlaybookToDealMeta, persistClientDetailsOnDealMeta } = await import('./PlaybookService.js');
 
@@ -448,4 +452,85 @@ test('guest payment summary print includes payment_links ledger fields', () => {
   assert.match(html, /Unpaid/);
   assert.doesNotMatch(html, /Stripe/i);
   assert.doesNotMatch(html, /hub_/);
+});
+
+test('public portal payment objects omit payment-link token and secrets', () => {
+  const raw = {
+    id: 'plink_1',
+    eventId: 'evt_1',
+    eventTitle: 'Allen wedding',
+    kind: 'deposit',
+    amount: 2000,
+    currency: 'USD',
+    status: 'paid',
+    token: 'hub_secretpaytoken',
+    note: 'Staff-only note',
+    dueDate: '2026-08-31',
+    createdAt: '2026-08-01T00:00:00.000Z',
+    updatedAt: '2026-08-31T00:00:00.000Z',
+    paidAt: '2026-08-31T18:00:00.000Z',
+    createdBy: 'Hannah',
+    source: 'playbook',
+    playbookPaymentId: 'pay-deposit',
+  };
+  const safe = guestSafePayment(raw);
+  assert.equal(safe.kind, 'deposit');
+  assert.equal(safe.amount, 2000);
+  assert.equal(safe.status, 'paid');
+  assert.equal(safe.dueDate, '2026-08-31');
+  assert.equal(safe.paidAt, '2026-08-31T18:00:00.000Z');
+  assert.equal('token' in safe, false);
+  assert.equal('note' in safe, false);
+  assert.equal('createdBy' in safe, false);
+  assert.equal(guestPaymentHasSecrets(safe), false);
+  const payload = { payments: guestSafePayments([raw]) };
+  const json = JSON.stringify(payload);
+  assert.doesNotMatch(json, /hub_secretpaytoken/);
+  assert.doesNotMatch(json, /"token"/);
+  assert.match(json, /"amount":2000/);
+});
+
+test('staff payment summary print uses payment_links ledger not importMeta receipts', () => {
+  const links = [
+    {
+      kind: 'deposit',
+      amount: 2000,
+      status: 'paid',
+      dueDate: '2026-08-31',
+      paidAt: '2026-08-31T18:00:00.000Z',
+      token: 'hub_staff_secret',
+      method: 'Staff-recorded (not Stripe)',
+      paymentType: 'deposit',
+    },
+    {
+      kind: 'balance',
+      amount: 6000,
+      status: 'created',
+      dueDate: '2026-10-03',
+      token: 'hub_other_secret',
+    },
+  ];
+  const rows = links.map(toPaymentSummaryLedgerRow);
+  assert.equal(rows[0]?.kind, 'deposit');
+  assert.equal('token' in rows[0], false);
+  const html = buildGuestPaymentSummaryDocHtml({
+    title: 'Allen wedding',
+    eventDateDisplay: 'Saturday, October 17, 2026',
+    packageTotal: 8000,
+    paidTotal: 2000,
+    balanceDue: 6000,
+    payments: rows,
+  });
+  assert.match(html, /Payment schedule/);
+  assert.match(html, /Deposit/);
+  assert.match(html, /Final balance/);
+  assert.match(html, /Paid/);
+  assert.match(html, /Unpaid/);
+  assert.match(html, /2026-08-31/);
+  assert.match(html, /2026-10-03/);
+  assert.doesNotMatch(html, /Staff-recorded/);
+  assert.doesNotMatch(html, /hub_staff_secret/);
+  assert.doesNotMatch(html, /hub_other_secret/);
+  assert.doesNotMatch(html, /token/i);
+  assert.doesNotMatch(html, /Stripe/i);
 });

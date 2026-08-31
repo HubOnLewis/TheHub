@@ -28,6 +28,7 @@ export type GuestEventSheetInput = {
   contact?: string;
   guests?: number | null;
   clientDetails: ClientDetails;
+  paymentSummary?: PaymentSummaryDocInput;
 };
 
 function esc(s: string): string {
@@ -206,6 +207,7 @@ export function buildGuestBeoHtml(input: GuestEventSheetInput): string {
     <div class="field"><label>Guests</label><div>${guests}</div></div>
   </div>
   ${buildClientDetailsDocHtml(input.clientDetails)}
+  ${input.paymentSummary ? buildGuestPaymentSummaryDocHtml(input.paymentSummary) : ''}
   <div class="footer">Guest event sheet · HuB on Lewis · ${esc(new Date().toLocaleString())}</div>`;
   return shell(`Event details — ${input.title}`, body);
 }

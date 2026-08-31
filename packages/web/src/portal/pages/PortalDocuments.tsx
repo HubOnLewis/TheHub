@@ -1,3 +1,4 @@
+import { toPaymentSummaryLedgerRow } from '@hub-crm/shared';
 import { usePortalStore } from '../portalStore.js';
 import ProposalSignPanel from '../components/ProposalSignPanel.js';
 import GuestStatusTimeline from '../components/GuestStatusTimeline.js';
@@ -10,6 +11,15 @@ export default function PortalDocuments() {
   const snapshot = usePortalStore(s => s.snapshot);
   const profile = usePortalStore(s => s.profile);
 
+  const paymentSummary = {
+    title: profile.title,
+    eventDateDisplay: profile.displayDate,
+    packageTotal: profile.packageTotal,
+    paidTotal: profile.paidTotal,
+    balanceDue: profile.balanceDue,
+    payments: (snapshot?.payments ?? []).map(toPaymentSummaryLedgerRow),
+  };
+
   const printGuestBeo = () => {
     openGuestEventSheet({
       title: profile.title,
@@ -18,24 +28,12 @@ export default function PortalDocuments() {
       contact: profile.contactName,
       guests: profile.guests,
       clientDetails: snapshot?.clientDetails ?? {},
+      paymentSummary,
     });
   };
 
   const printPaymentSummary = () => {
-    openGuestPaymentSummary({
-      title: profile.title,
-      eventDateDisplay: profile.displayDate,
-      packageTotal: profile.packageTotal,
-      paidTotal: profile.paidTotal,
-      balanceDue: profile.balanceDue,
-      payments: (snapshot?.payments ?? []).map(p => ({
-        kind: p.kind,
-        amount: p.amount,
-        status: p.status,
-        dueDate: p.dueDate,
-        paidAt: p.paidAt,
-      })),
-    });
+    openGuestPaymentSummary(paymentSummary);
   };
 
   return (
@@ -50,7 +48,7 @@ export default function PortalDocuments() {
       <div className="portal-card portal-card--flat" style={{ marginTop: 16 }}>
         <h3>Guest downloads</h3>
         <p style={{ fontSize: 13, color: 'var(--portal-muted)' }}>
-          Event details are the guest BEO from the same planning fields staff print. Payment summary prints the deposit and balance rows already on this event — not a card charge. Internal staff BEOs stay on the admin event.
+          Event details are the guest BEO from the same planning fields staff print, including the payment schedule. Payment summary prints the deposit and balance rows already on this event — not a card charge. Internal staff BEOs stay on the admin event.
         </p>
         {(snapshot?.documents ?? []).filter(d => d.audience === 'guest').map(d => (
           <p key={d.kind} style={{ fontSize: 14 }}>

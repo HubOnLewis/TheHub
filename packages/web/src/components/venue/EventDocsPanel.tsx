@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { formatCurrency, type ProposalRecord } from '@hub-crm/shared';
+import { formatCurrency, toPaymentSummaryLedgerRow, type PaymentLinkRecord, type ProposalRecord } from '@hub-crm/shared';
 import type { EventDetailViewModel } from '../../lib/eventDetail.js';
-import { openVenueDocument, type VenueDocKind } from '../../venue/documentGenerator.js';
+import { openGuestEventSheet, openGuestPaymentSummary, openVenueDocument, type VenueDocKind } from '../../venue/documentGenerator.js';
 import client from '../../api/client.js';
 
 type Props = {
@@ -19,7 +19,7 @@ const ACTIONS: Array<{ kind: VenueDocKind; title: string; blurb: string; audienc
   {
     kind: 'beo_guest',
     title: 'Guest event details / BEO',
-    blurb: 'Simplified event sheet from the same portal client details. Same fields the guest can print.',
+    blurb: 'Simplified event sheet from portal client details plus the payment_links schedule. Same fields the guest can print.',
     audience: 'guest',
   },
   {
@@ -31,7 +31,7 @@ const ACTIONS: Array<{ kind: VenueDocKind; title: string; blurb: string; audienc
   {
     kind: 'invoice_summary',
     title: 'Payment summary',
-    blurb: 'Paid vs balance for client or accounting. Guests print payment_links (amount, due, paid/unpaid) from Documents.',
+    blurb: 'payment_links ledger (kind, amount, due, paid/unpaid). Same document guests print — not importMeta receipts.',
     audience: 'guest',
   },
 ];
@@ -56,6 +56,25 @@ function statusLabel(status: string): string {
 export default function EventDocsPanel({ model }: Props) {
   const qc = useQueryClient();
   const [msg, setMsg] = useState<string | null>(null);
+
+  const { data: paymentLinks = [] } = useQuery({
+    queryKey: ['payments', model.id],
+    queryFn: async () => {
+      const { data } = await client.get<{ data: PaymentLinkRecord[] }>('/payments', { params: { eventId: model.id } });
+      return data.data ?? [];
+    },
+    enabled: Boolean(model.id) && !model.isReferenceOnly,
+    retry: false,
+  });
+
+  const paymentSummary = {
+    title: model.title,
+    eventDateDisplay: model.eventDateDisplay,
+    packageTotal: model.grandTotal ?? 0,
+    paidTotal: model.amountPaid ?? 0,
+    balanceDue: model.balanceDue ?? 0,
+    payments: paymentLinks.map(toPaymentSummaryLedgerRow),
+  };
 
   const { data: proposals = [], isFetching } = useQuery({
     queryKey: ['proposals', model.id],
@@ -175,7 +194,26 @@ export default function EventDocsPanel({ model }: Props) {
             key={a.kind}
             type="button"
             className="event-docs-card"
-            onClick={() => openVenueDocument(a.kind, model)}
+            onClick={() => {
+              if (a.kind === 'invoice_summary') {
+                openGuestPaymentSummary(paymentSummary);
+                return;
+              }
+              if (a.kind === 'beo_guest') {
+                openGuestEventSheet({
+                  title: model.title,
+                  eventDateDisplay: model.eventDateDisplay,
+                  eventTimeDisplay: model.eventTimeDisplay,
+                  space: model.space,
+                  contact: model.contact,
+                  guests: model.guests,
+                  clientDetails: model.clientDetails,
+                  paymentSummary,
+                });
+                return;
+              }
+              openVenueDocument(a.kind, model);
+            }}
           >
             <strong>{a.title}</strong>
             <span>{a.blurb}</span>

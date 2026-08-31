@@ -38,6 +38,7 @@ import paymentRoutes from './routes/payments.js';
 import proposalRoutes from './routes/proposals.js';
 import commsRoutes from './routes/comms.js';
 import { getAiRuntimeConfig } from './config/ai.js';
+import { getApiRoot } from './rootIndex.js';
 
 const app = express();
 
@@ -53,6 +54,9 @@ app.use(corsMiddleware);
 app.use('/api/uploads', express.static(UPLOADS_ROOT));
 app.use(express.json({ limit: '2mb' }));
 app.use(requestAudit);
+
+// ── Root (API host is not the staff UI) ──────────────────────────
+app.get('/', getApiRoot);
 
 // ── Health check ──────────────────────────────────────────────────
 app.get('/health', (_req, res) => {

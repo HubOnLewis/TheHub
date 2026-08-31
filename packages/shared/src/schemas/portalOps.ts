@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { AppliedPlaybook } from '../venue/playbooks.js';
 import type { ClientDetails } from '../venue/clientDetails.js';
+import type { GuestPortalPayment } from '../venue/paymentSummary.js';
 // ── Proposals (persisted, versioned, e-sign in portal) ────────────
 export const PROPOSAL_STATUSES = [
   'draft',
@@ -209,16 +210,7 @@ export type GuestPortalSnapshot = {
   eventId: string;
   profile: GuestPortalProfile;
   proposal: ProposalRecord | null;
-  payments: Array<{
-    id: string;
-    eventId: string;
-    kind: string;
-    amount: number;
-    status: string;
-    dueDate?: string;
-    paidAt?: string;
-    createdAt: string;
-  }>;
+  payments: GuestPortalPayment[];
   messages: GuestPortalMessage[];
   timeline: Array<{
     key: string;
