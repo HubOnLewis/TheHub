@@ -4,6 +4,7 @@ import {
   clientDetailsAreComplete,
   clientDetailsFromImportMeta,
   playbookFromImportMeta,
+  setClientTimelineStepStatus,
   type GuestPortalSnapshot,
   type GuestPortalProfile,
   type GuestPortalDetailsPayload,
@@ -207,6 +208,18 @@ export class GuestPortalService {
   async patchDetails(db: Db, token: string, body: GuestPortalDetailsPayload) {
     const { deal, ctx, eventId } = await this.resolveDealFromAccess(db, token);
     const importMeta = persistClientDetailsOnDealMeta(deal, body);
+    await DealRepository.updateOne(db, ctx, eventId, { importMeta } as never);
+    return this.snapshot(db, token);
+  }
+
+  async patchTimelineStep(db: Db, token: string, stepId: string, status: 'open' | 'done') {
+    const { deal, ctx, eventId } = await this.resolveDealFromAccess(db, token);
+    const meta =
+      deal.importMeta && typeof deal.importMeta === 'object'
+        ? { ...(deal.importMeta as Record<string, unknown>) }
+        : {};
+    const importMeta = setClientTimelineStepStatus(meta, stepId, status);
+    if (!importMeta) throw new NotFoundError('Playbook timeline step');
     await DealRepository.updateOne(db, ctx, eventId, { importMeta } as never);
     return this.snapshot(db, token);
   }

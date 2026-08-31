@@ -258,3 +258,83 @@ export function barPackageLabel(raw: string | undefined): string {
   if (parsed) return BAR_PACKAGE_LABELS[parsed];
   return raw;
 }
+
+export type EventDocClientFields = {
+  guestCount: string;
+  layout: string;
+  barPackage: string;
+  allergies: string;
+  musicCutoff: string;
+  timelineBlocks: Array<{ label: string; startTime: string; endTime: string }>;
+  vendors: Array<{ type: string; name: string; status: string }>;
+  contacts: Array<{ name: string; role: string; email: string }>;
+};
+
+function escDoc(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/** Flatten portal clientDetails into the fields staff BEO / guest event sheet print. */
+export function eventDocFromClientDetails(details: ClientDetails | null | undefined): EventDocClientFields {
+  const d = details ?? {};
+  return {
+    guestCount: d.guestCount != null ? String(d.guestCount) : 'TBD',
+    layout: d.layout?.trim() || 'TBD',
+    barPackage: barPackageLabel(d.barPackage),
+    allergies: d.allergies?.trim() || 'None noted',
+    musicCutoff: d.musicCutoff?.trim() || 'TBD',
+    timelineBlocks: (d.timelineBlocks ?? []).map(b => ({
+      label: b.label,
+      startTime: b.startTime || '—',
+      endTime: b.endTime || '—',
+    })),
+    vendors: (d.vendors ?? []).map(v => ({
+      type: v.type,
+      name: v.name,
+      status: v.status,
+    })),
+    contacts: (d.contacts ?? []).map(c => ({
+      name: c.name,
+      role: c.role,
+      email: c.email ?? '—',
+    })),
+  };
+}
+
+/** HTML fragment shared by staff BEO and guest event sheet. Same importMeta.clientDetails — no second store. */
+export function buildClientDetailsDocHtml(details: ClientDetails | null | undefined): string {
+  const f = eventDocFromClientDetails(details);
+  const blocks = f.timelineBlocks.length
+    ? `<h2>Run of show</h2>
+  <table><thead><tr><th>Block</th><th>Start</th><th>End</th></tr></thead><tbody>
+  ${f.timelineBlocks.map(b => `<tr><td>${escDoc(b.label)}</td><td>${escDoc(b.startTime)}</td><td>${escDoc(b.endTime)}</td></tr>`).join('')}
+  </tbody></table>`
+    : '';
+  const vendors = f.vendors.length
+    ? `<h2>Vendor roster</h2>
+  <table><thead><tr><th>Type</th><th>Name</th><th>Status</th></tr></thead><tbody>
+  ${f.vendors.map(v => `<tr><td>${escDoc(v.type)}</td><td>${escDoc(v.name)}</td><td>${escDoc(v.status)}</td></tr>`).join('')}
+  </tbody></table>`
+    : '';
+  const contacts = f.contacts.length
+    ? `<h2>Contacts</h2>
+  <table><thead><tr><th>Name</th><th>Role</th><th>Email</th></tr></thead><tbody>
+  ${f.contacts.map(c => `<tr><td>${escDoc(c.name)}</td><td>${escDoc(c.role)}</td><td>${escDoc(c.email)}</td></tr>`).join('')}
+  </tbody></table>`
+    : '';
+  return `<h2>Client details (portal)</h2>
+  <div class="grid">
+    <div class="field"><label>Guests</label><div>${escDoc(f.guestCount)}</div></div>
+    <div class="field"><label>Layout</label><div>${escDoc(f.layout)}</div></div>
+    <div class="field"><label>Bar package</label><div>${escDoc(f.barPackage)}</div></div>
+    <div class="field"><label>Music cutoff</label><div>${escDoc(f.musicCutoff)}</div></div>
+    <div class="field"><label>Allergies</label><div>${escDoc(f.allergies)}</div></div>
+  </div>
+  ${blocks}
+  ${vendors}
+  ${contacts}`;
+}

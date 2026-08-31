@@ -18,9 +18,12 @@ const {
   extraContacts,
   parseClientDetails,
   setPlaybookTaskStatus,
+  setClientTimelineStepStatus,
   setDocumentOnFile,
   playbookScheduleToLedger,
   planPlaybookPaymentUpserts,
+  eventDocFromClientDetails,
+  buildClientDetailsDocHtml,
 } = await import('@hub-crm/shared');
 const { applyPlaybookToDealMeta, persistClientDetailsOnDealMeta } = await import('./PlaybookService.js');
 
@@ -299,4 +302,68 @@ test('doc flag persist: seeded playbook docs toggle on-file on importMeta.docume
   assert.equal((reapplied.documents as Record<string, boolean>).alcoholDocs, true);
 
   assert.equal(setDocumentOnFile(applied, 'not-a-doc', true), null);
+});
+
+test('client timeline check-off persist: guest can mark a step done and undo on the deal meta', () => {
+  const applied = applyPlaybookToImportMeta({ eventDateIso: EVENT, grandTotal: 8000 }, 'wedding', NOW);
+  const stepId = playbookFromImportMeta(applied)?.clientTimeline.find(s => s.id === 'tl-count')?.id;
+  assert.ok(stepId);
+  assert.equal(playbookFromImportMeta(applied)?.clientTimeline.find(s => s.id === stepId)?.status, 'open');
+
+  const done = setClientTimelineStepStatus(applied, stepId, 'done');
+  assert.ok(done);
+  assert.equal(playbookFromImportMeta(done)?.clientTimeline.find(s => s.id === stepId)?.status, 'done');
+  assert.equal(playbookFromImportMeta(done)?.clientTimeline.filter(s => s.status === 'done').length, 1);
+  assert.equal(done.portalAccessToken, applied.portalAccessToken);
+
+  const undone = setClientTimelineStepStatus(done, stepId, 'open');
+  assert.ok(undone);
+  assert.equal(playbookFromImportMeta(undone)?.clientTimeline.find(s => s.id === stepId)?.status, 'open');
+});
+
+test('client timeline check-off persist: re-apply keeps done client steps and unknown ids return null', () => {
+  const first = applyPlaybookToImportMeta({ eventDateIso: EVENT }, 'wedding', NOW);
+  const marked = setClientTimelineStepStatus(first, 'tl-details', 'done');
+  assert.ok(marked);
+  const reapplied = applyPlaybookToImportMeta(marked, 'wedding', NOW);
+  assert.equal(playbookFromImportMeta(reapplied)?.clientTimeline.find(s => s.id === 'tl-details')?.status, 'done');
+  assert.equal(playbookFromImportMeta(reapplied)?.clientTimeline.find(s => s.id === 'tl-count')?.status, 'open');
+  assert.equal(setClientTimelineStepStatus(reapplied, 'tl-does-not-exist', 'done'), null);
+});
+
+test('BEO/doc content includes clientDetails fields from importMeta', () => {
+  const meta = persistClientDetailsOnDealMeta(
+    { importMeta: { eventDateIso: EVENT } },
+    {
+      guestCount: 92,
+      layout: 'Crescent tables',
+      barPackage: 'full_bar',
+      allergies: 'No tree nuts',
+      musicCutoff: '10:00 PM',
+      timelineBlocks: [
+        { id: 'b1', label: 'Cocktail hour', startTime: '5:00 PM', endTime: '6:00 PM' },
+      ],
+      vendors: [{ id: 'v1', type: 'DJ', name: 'Spin Co', status: 'confirmed' }],
+    },
+    NOW,
+  );
+  const details = clientDetailsFromImportMeta(meta);
+  const fields = eventDocFromClientDetails(details);
+  assert.equal(fields.guestCount, '92');
+  assert.equal(fields.layout, 'Crescent tables');
+  assert.match(fields.barPackage, /full bar/i);
+  assert.equal(fields.allergies, 'No tree nuts');
+  assert.equal(fields.musicCutoff, '10:00 PM');
+  assert.equal(fields.timelineBlocks[0]?.label, 'Cocktail hour');
+  assert.equal(fields.vendors[0]?.name, 'Spin Co');
+
+  const html = buildClientDetailsDocHtml(details);
+  assert.match(html, /92/);
+  assert.match(html, /Crescent tables/);
+  assert.match(html, /Full bar/);
+  assert.match(html, /Cocktail hour/);
+  assert.match(html, /5:00 PM/);
+  assert.match(html, /Spin Co/);
+  assert.match(html, /No tree nuts/);
+  assert.match(html, /10:00 PM/);
 });

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { GuestPortalDetailsSchema, GuestPortalMessageSchema, ProposalSignSchema } from '@hub-crm/shared';
+import { GuestPortalDetailsSchema, GuestPortalMessageSchema, PatchGuestTimelineStepSchema, ProposalSignSchema } from '@hub-crm/shared';
 import { requireAuth } from '../middleware/auth.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
@@ -39,6 +39,21 @@ pub.get('/bookings/:token', async (req, res, next) => {
 pub.patch('/bookings/:token/details', validate(GuestPortalDetailsSchema), async (req, res, next) => {
   try {
     res.json(await guestPortalService.patchDetails(getDB(), req.params['token'] ?? '', req.body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+pub.patch('/bookings/:token/timeline', validate(PatchGuestTimelineStepSchema), async (req, res, next) => {
+  try {
+    res.json(
+      await guestPortalService.patchTimelineStep(
+        getDB(),
+        req.params['token'] ?? '',
+        req.body.stepId,
+        req.body.status,
+      ),
+    );
   } catch (err) {
     next(err);
   }

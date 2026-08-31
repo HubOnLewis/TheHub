@@ -54,7 +54,7 @@ export function eventStateFromSnapshot(snapshot: GuestPortalSnapshot, base?: Por
         id: s.id,
         label: s.label,
         due: s.dueLabel,
-        complete: s.id === 'tl-deposit' ? snapshot.profile.paidTotal > 0 : s.id === 'tl-details' ? Boolean(details?.layout && details?.guestCount) : false,
+        complete: s.status === 'done',
         category: s.id.includes('pay') || s.id.includes('deposit') || s.id.includes('balance') ? 'payments' as const : 'logistics' as const,
       }))
     : seeded.checklist.map(c => {

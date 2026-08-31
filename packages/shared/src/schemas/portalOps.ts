@@ -156,6 +156,12 @@ export const PatchPlaybookDocumentSchema = z.object({
 });
 export type PatchPlaybookDocumentPayload = z.infer<typeof PatchPlaybookDocumentSchema>;
 
+export const PatchGuestTimelineStepSchema = z.object({
+  stepId: z.string().min(1).max(80),
+  status: z.enum(['open', 'done']),
+});
+export type PatchGuestTimelineStepPayload = z.infer<typeof PatchGuestTimelineStepSchema>;
+
 export const GuestPortalDetailsSchema = z.object({
   guestCount: z.number().int().min(0).max(5000).optional(),
   layout: z.string().max(120).optional(),

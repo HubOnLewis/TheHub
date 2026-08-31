@@ -17,9 +17,15 @@ const ACTIONS: Array<{ kind: VenueDocKind; title: string; blurb: string; audienc
     audience: 'guest',
   },
   {
+    kind: 'beo_guest',
+    title: 'Guest event details / BEO',
+    blurb: 'Simplified event sheet from the same portal client details. Same fields the guest can print.',
+    audience: 'guest',
+  },
+  {
     kind: 'beo',
     title: 'Staff BEO',
-    blurb: 'Internal banquet event order with run-of-show and financial snapshot. Not shown to guests.',
+    blurb: 'Internal banquet event order with run-of-show, money, and the same client details. Not shown to guests.',
     audience: 'staff',
   },
   {

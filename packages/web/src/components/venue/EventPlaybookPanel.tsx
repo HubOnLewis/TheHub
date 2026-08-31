@@ -182,14 +182,15 @@ export default function EventPlaybookPanel({ model }: Props) {
             })}
           </ul>
           <h3 className="event-docs-panel__sub">Client timeline</h3>
+          <p className="text-muted text-sm">Same check-off the guest uses in the portal. Staff can see it here.</p>
           <ul className="event-docs-checklist">
             {playbook.clientTimeline.map(s => (
-              <li key={s.id}>
+              <li key={s.id} className={s.status === 'done' ? 'is-onfile' : ''}>
                 <span className="event-docs-check" aria-hidden>
-                  ○
+                  {s.status === 'done' ? '✓' : '○'}
                 </span>
                 {s.label}
-                <span className="text-muted"> · {s.dueLabel}</span>
+                <span className="text-muted"> · {s.owner} · {s.dueLabel}{s.status === 'done' ? ' · done' : ''}</span>
               </li>
             ))}
           </ul>

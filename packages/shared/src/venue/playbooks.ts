@@ -71,6 +71,7 @@ export type PlaybookTimelineStep = {
   dueDate: string | null;
   dueLabel: string;
   owner: 'client' | 'venue';
+  status: 'open' | 'done';
 };
 
 export type AppliedPlaybook = {
@@ -197,7 +198,7 @@ function timeline(
   dueDate: string | null,
   fallback: string,
 ): PlaybookTimelineStep {
-  return { id, label, owner, dueDate, dueLabel: dueLabel(dueDate, fallback) };
+  return { id, label, owner, dueDate, dueLabel: dueLabel(dueDate, fallback), status: 'open' };
 }
 
 function documentsFor(type: EventType): PlaybookDocument[] {
@@ -286,6 +287,15 @@ function preserveTaskStatus(tasks: PlaybookTask[], previous: AppliedPlaybook | n
   return tasks.map(t => (prevStatus.get(t.id) === "done" ? { ...t, status: "done" as const } : t));
 }
 
+function preserveTimelineStatus(
+  steps: PlaybookTimelineStep[],
+  previous: AppliedPlaybook | null,
+): PlaybookTimelineStep[] {
+  if (!previous?.clientTimeline?.length) return steps;
+  const prevStatus = new Map(previous.clientTimeline.map(s => [s.id, s.status]));
+  return steps.map(s => (prevStatus.get(s.id) === 'done' ? { ...s, status: 'done' as const } : s));
+}
+
 export type ApplyPlaybookInput = {
   eventType?: unknown;
   eventDateIso?: string | null;
@@ -368,7 +378,10 @@ export function applyEventPlaybook(input: ApplyPlaybookInput): ApplyPlaybookResu
     ),
     paymentSchedule,
     documents: docs,
-    clientTimeline,
+    clientTimeline: preserveTimelineStatus(
+      clientTimeline,
+      playbookFromImportMeta(input.existingMeta ?? null),
+    ),
   };
 
   const documentFlags: Record<string, boolean> = {};
@@ -394,7 +407,17 @@ export function playbookFromImportMeta(meta: Record<string, unknown> | null | un
   if (!raw || typeof raw !== 'object') return null;
   const p = raw as Partial<AppliedPlaybook>;
   if (!p.eventType || !Array.isArray(p.tasks)) return null;
-  return p as AppliedPlaybook;
+  const tasks = p.tasks.map(t => ({
+    ...t,
+    status: t.status === 'done' ? ('done' as const) : ('open' as const),
+  }));
+  const clientTimeline = Array.isArray(p.clientTimeline)
+    ? p.clientTimeline.map(s => ({
+        ...s,
+        status: s.status === 'done' ? ('done' as const) : ('open' as const),
+      }))
+    : [];
+  return { ...(p as AppliedPlaybook), tasks, clientTimeline };
 }
 
 export function applyPlaybookToImportMeta(
@@ -422,6 +445,18 @@ export function setPlaybookTaskStatus(
   if (!playbook.tasks.some(t => t.id === taskId)) return null;
   const tasks = playbook.tasks.map(t => (t.id === taskId ? { ...t, status } : t));
   return { ...meta, playbook: { ...playbook, tasks } };
+}
+
+export function setClientTimelineStepStatus(
+  meta: Record<string, unknown>,
+  stepId: string,
+  status: PlaybookTimelineStep['status'],
+): Record<string, unknown> | null {
+  const playbook = playbookFromImportMeta(meta);
+  if (!playbook) return null;
+  if (!playbook.clientTimeline.some(s => s.id === stepId)) return null;
+  const clientTimeline = playbook.clientTimeline.map(s => (s.id === stepId ? { ...s, status } : s));
+  return { ...meta, playbook: { ...playbook, clientTimeline } };
 }
 
 export function setDocumentOnFile(

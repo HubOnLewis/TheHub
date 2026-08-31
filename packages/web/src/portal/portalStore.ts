@@ -322,12 +322,36 @@ export const usePortalStore = create<PortalStore>()(
 
       toggleChecklist: id => {
         const ev = get().event;
+        const current = ev.checklist.find(c => c.id === id);
+        const nextComplete = current ? !current.complete : true;
         set({
           event: {
             ...ev,
             checklist: ev.checklist.map(c => (c.id === id ? { ...c, complete: !c.complete } : c)),
           },
         });
+        const access = get().accessToken;
+        const isPlaybookStep = Boolean(get().snapshot?.playbook?.clientTimeline?.some(s => s.id === id));
+        if (!access || !isPlaybookStep) return;
+        void publicClient
+          .patch<GuestPortalSnapshot>(
+            `/public/portal/bookings/${encodeURIComponent(access)}/timeline`,
+            { stepId: id, status: nextComplete ? 'done' : 'open' },
+            { timeout: 12_000 },
+          )
+          .then(({ data }) => {
+            if (data?.profile?.id) {
+              set({
+                snapshot: data,
+                proposal: data.proposal,
+                profile: profileFromSnapshot(data),
+                event: eventStateFromSnapshot(data, get().event),
+              });
+            }
+          })
+          .catch(() => {
+            /* keep optimistic local check-off */
+          });
       },
 
       setGuestCount: n => set({ event: { ...get().event, guestCount: Math.max(0, n) } }),
