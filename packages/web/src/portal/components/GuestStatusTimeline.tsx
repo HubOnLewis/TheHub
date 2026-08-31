@@ -1,25 +1,7 @@
-import { buildGuestStatusTimeline } from '@hub-crm/shared';
-import { usePortalStore } from '../portalStore.js';
+import { useGuestFacts } from '../guestFacts.js';
 
 export default function GuestStatusTimeline() {
-  const profile = usePortalStore(s => s.profile);
-  const event = usePortalStore(s => s.event);
-  const proposalStatus =
-    event.agreementStatus === 'signed'
-      ? 'accepted'
-      : event.agreementStatus === 'viewed'
-        ? 'viewed'
-        : event.agreementStatus === 'pending_review'
-          ? 'sent'
-          : null;
-  const steps = buildGuestStatusTimeline({
-    proposalStatus,
-    amountPaid: profile.paidTotal,
-    balanceDue: profile.balanceDue,
-    grandTotal: profile.packageTotal,
-    eventDateIso: profile.eventStartIso,
-    detailsConfirmed: Boolean(profile.guests && profile.space && profile.eventStartIso),
-  });
+  const { steps } = useGuestFacts();
 
   return (
     <ol className="guest-timeline" aria-label="Event status">

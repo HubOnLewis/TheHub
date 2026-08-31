@@ -126,3 +126,23 @@ test('successful inquiry returns portalUrl', async () => {
   assert.equal(result.portalUrl, 'https://admin.hubonlewis.com/portal/login?access=tok');
   assert.equal(result.emailStatus, 'stubbed');
 });
+
+test('public inquiry stores phone, startTime, and notes on lead and importMeta', () => {
+  const mapped = mapPublicInquiryToRecords({
+    name: 'Alex Guest',
+    email: 'alex@example.com',
+    phone: '316-555-0100',
+    eventDate: '2026-10-17',
+    eventType: 'Wedding',
+    space: 'Main Hall',
+    startTime: '18:30',
+    guests: 80,
+    notes: 'Garden ceremony vibe',
+  });
+  assert.equal(mapped.lead.phone, '316-555-0100');
+  assert.equal(mapped.lead.notes, 'Garden ceremony vibe');
+  assert.equal(mapped.deal.notes, 'Garden ceremony vibe');
+  assert.equal(mapped.deal.importMeta?.startTime, '18:30');
+  assert.equal(mapped.deal.importMeta?.contactPhone, '316-555-0100');
+  assert.equal(mapped.deal.importMeta?.inquiryNotes, 'Garden ceremony vibe');
+});

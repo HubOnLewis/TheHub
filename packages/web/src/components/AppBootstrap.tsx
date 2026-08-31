@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useAppStore } from '../store/index.js';
 import BrandLoader from './BrandLoader.js';
+import { isPublicBookPath } from '../lib/publicBookPath.js';
 
 const MIN_MS = 520;
 const MAX_MS = 3200;
@@ -9,14 +10,17 @@ type Props = { children: ReactNode };
 
 /**
  * Initial boot veil: wait for auth persist hydration + short branded reveal.
+ * Public /book skips the staff splash entirely.
  */
 export default function AppBootstrap({ children }: Props) {
-  const [hydrated, setHydrated] = useState(() => useAppStore.persist.hasHydrated());
-  const [minElapsed, setMinElapsed] = useState(false);
+  const publicBook = isPublicBookPath();
+  const [hydrated, setHydrated] = useState(() => publicBook || useAppStore.persist.hasHydrated());
+  const [minElapsed, setMinElapsed] = useState(publicBook);
   const [exiting, setExiting] = useState(false);
-  const [done, setDone] = useState(false);
+  const [done, setDone] = useState(publicBook);
 
   useEffect(() => {
+    if (publicBook) return;
     const t = window.setTimeout(() => setMinElapsed(true), MIN_MS);
     const safety = window.setTimeout(() => setHydrated(true), MAX_MS);
     const forceVisible = window.setTimeout(() => setDone(true), MAX_MS + 400);
@@ -28,16 +32,18 @@ export default function AppBootstrap({ children }: Props) {
       window.clearTimeout(forceVisible);
       unsub();
     };
-  }, []);
+  }, [publicBook]);
 
   const ready = hydrated && minElapsed;
 
   useEffect(() => {
-    if (!ready || done) return;
+    if (publicBook || !ready || done) return;
     setExiting(true);
     const t = window.setTimeout(() => setDone(true), 380);
     return () => window.clearTimeout(t);
-  }, [ready, done]);
+  }, [ready, done, publicBook]);
+
+  if (publicBook) return <>{children}</>;
 
   return (
     <div className="app-bootstrap">

@@ -2,14 +2,28 @@ import PaymentProgress from '../components/PaymentProgress.js';
 import { formatCurrency } from '@hub-crm/shared';
 import { computeReadiness } from '../readiness.js';
 import { usePortalStore } from '../portalStore.js';
+import { useGuestFacts } from '../guestFacts.js';
 
 export default function PortalPayments() {
   const event = usePortalStore(s => s.event);
   const profile = usePortalStore(s => s.profile);
-  const payDeposit = usePortalStore(s => s.payDeposit);
+  const { phase, hasProposal } = useGuestFacts();
   const { score } = computeReadiness(event);
   const remaining = Math.max(0, profile.balanceDue);
-  const depositDue = event.payments.some(p => p.label.toLowerCase().includes('deposit') && p.status !== 'paid');
+  const paidInFull = profile.packageTotal > 0 && remaining <= 0;
+
+  if (!hasProposal || phase === 'awaiting_proposal' || phase === 'awaiting_signature') {
+    return (
+      <>
+        <h1 className="portal-page-title">Payments</h1>
+        <p className="portal-page-lede">
+          {phase === 'awaiting_signature'
+            ? 'Sign your proposal first. Deposit instructions appear after you sign — nothing is charged here.'
+            : 'A proposal is not on file yet. Nothing is due, and this is not a booking.'}
+        </p>
+      </>
+    );
+  }
 
   return (
     <>
@@ -17,7 +31,9 @@ export default function PortalPayments() {
       <p className="portal-page-lede">
         {remaining > 0
           ? `${formatCurrency(remaining)} remaining to fully secure ${profile.title}.`
-          : `Your package for ${profile.title} is paid in full.`}
+          : paidInFull
+            ? `Your package for ${profile.title} is paid in full.`
+            : `No payment schedule yet for ${profile.title}.`}
       </p>
 
       <PaymentProgress showActions />
@@ -51,15 +67,10 @@ export default function PortalPayments() {
       </div>
 
       <p className="portal-pay-footnote">
-        Package total {formatCurrency(profile.packageTotal)}. Card checkout is not live yet — these
-        buttons record a payment received another way (check, Venmo, coordinator). Nothing is charged.
+        Package total {formatCurrency(profile.packageTotal)}. Card checkout is not live yet — your coordinator
+        records payments received another way (check, Venmo). Guests cannot mark a deposit paid from this
+        portal.
       </p>
-
-      {depositDue ? (
-        <button type="button" className="portal-btn portal-btn--secondary" style={{ marginTop: 12 }} onClick={() => payDeposit()}>
-          Record deposit received (not a card charge)
-        </button>
-      ) : null}
     </>
   );
 }

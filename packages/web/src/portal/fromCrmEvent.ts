@@ -122,7 +122,7 @@ export function portalStateFromProfile(profile: PortalEventProfile): PortalEvent
     {
       id: 'ck-details',
       label: 'Confirm event details',
-      complete: Boolean(profile.eventStartIso && profile.guests > 0),
+      complete: false,
       category: 'logistics',
     },
     {
@@ -153,6 +153,9 @@ export function portalStateFromProfile(profile: PortalEventProfile): PortalEvent
 
   return {
     ...base,
+    agreementStatus: 'waiting_venue',
+    agreementSignedAt: undefined,
+    agreementViewedAt: undefined,
     guestCount: profile.guests || base.guestCount,
     payments,
     checklist,
@@ -178,7 +181,7 @@ export function portalStateFromProfile(profile: PortalEventProfile): PortalEvent
     conciergeCards: [
       {
         id: 'c-welcome',
-        headline: remaining > 0 ? `${formatMoney(remaining)} remaining on your package` : 'Package is paid in full',
+        headline: remaining > 0 ? `${formatMoney(remaining)} remaining on your package` : profile.packageTotal > 0 ? 'Package is paid in full' : 'Waiting on your proposal',
         because: `${profile.space} · ${profile.guests || '—'} guests · ${profile.displayDate}`,
         actionLabel: 'View payments',
         actionRoute: '/portal/payments',

@@ -9,6 +9,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script>
+      (function () {
+        var p = location.pathname;
+        if (p === '/book' || p.indexOf('/book/') === 0) {
+          document.title = 'Book your event · HuB on Lewis';
+          document.documentElement.setAttribute('data-theme', 'light');
+          document.documentElement.classList.add('public-book');
+        }
+      })();
+    </script>
+    <style>html.public-book #boot-splash { display: none !important; }</style>
   </head>
   <body>
     <div id="root">

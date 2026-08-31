@@ -40,8 +40,17 @@ export type GuestTimelineInput = {
   balanceDue?: number | null;
   grandTotal?: number | null;
   eventDateIso?: string | null;
+  /** Planning details confirmed AFTER deposit — not /book intake (guests+date+space). */
   detailsConfirmed?: boolean | null;
 };
+
+export type GuestPortalPhase =
+  | 'awaiting_proposal'
+  | 'awaiting_signature'
+  | 'awaiting_deposit'
+  | 'details'
+  | 'final_pay'
+  | 'day_of';
 
 function money(n: unknown): number {
   return typeof n === 'number' && Number.isFinite(n) ? n : 0;
@@ -58,8 +67,37 @@ function isDayOf(iso: string | null | undefined, now = new Date()): boolean {
   return start.getTime() <= today.getTime();
 }
 
+export function guestHasPublishedProposal(status?: string | null): boolean {
+  const proposal = (status ?? '').toLowerCase();
+  return ['sent', 'viewed', 'accepted', 'declined', 'superseded'].includes(proposal);
+}
+
+export function guestProposalIsSigned(status?: string | null): boolean {
+  return (status ?? '').toLowerCase() === 'accepted';
+}
+
+/**
+ * Map portal store facts to a proposal status.
+ * A pending_review agreement without a published proposal is still waiting — not "sent".
+ */
+export function proposalStatusFromPortal(input: {
+  proposalStatus?: string | null;
+  agreementStatus?: string | null;
+}): string | null {
+  const published = (input.proposalStatus ?? '').toLowerCase();
+  if (published && published !== 'draft' && published !== 'none') return published;
+  const agreement = (input.agreementStatus ?? '').toLowerCase();
+  if (agreement === 'signed') return 'accepted';
+  if (agreement === 'viewed') return 'viewed';
+  return null;
+}
+
 /**
  * Derive the client portal status rail from the SAME proposal + money + event facts staff see.
+ *
+ * Day 0 after inquiry (no proposal, intake guests/date/space, $0):
+ *   inquiry complete, current = proposal (waiting for venue to send).
+ * Details is NOT complete from /book intake. Paid-in-full is never true on a $0 package.
  */
 export function buildGuestStatusTimeline(
   input: GuestTimelineInput,
@@ -69,11 +107,12 @@ export function buildGuestStatusTimeline(
   const paid = money(input.amountPaid);
   const balance = money(input.balanceDue);
   const total = money(input.grandTotal);
-  const hasProposal = ['sent', 'viewed', 'accepted', 'declined', 'superseded'].includes(proposal);
-  const signed = proposal === 'accepted';
+  const hasProposal = guestHasPublishedProposal(proposal);
+  const signed = guestProposalIsSigned(proposal);
   const depositPaid = paid > 0;
   const paidInFull = total > 0 && balance <= 0 && paid >= total;
-  const details = Boolean(input.detailsConfirmed);
+  // Intake (guests/date/space) is NOT planning confirmation.
+  const details = Boolean(input.detailsConfirmed) && depositPaid;
   const dayOf = isDayOf(input.eventDateIso, now);
 
   const done: Record<GuestTimelineStage, boolean> = {
@@ -97,6 +136,7 @@ export function buildGuestStatusTimeline(
   if (done.day_of) current = 'day_of';
 
   const detailsByStage: Partial<Record<GuestTimelineStage, string>> = {
+    inquiry: 'Received',
     proposal: signed
       ? 'Accepted'
       : proposal === 'viewed'
@@ -106,10 +146,14 @@ export function buildGuestStatusTimeline(
           : proposal === 'declined'
             ? 'Declined'
             : 'Not sent yet',
-    signed: signed ? 'Agreement on file' : 'Sign in the portal',
-    deposit: depositPaid ? 'Deposit recorded' : 'Staff-recorded until Stripe',
-    details: details ? 'Planning details confirmed' : 'Guest count, layout, and timing',
-    final_pay: paidInFull ? 'Paid in full' : balance > 0 ? 'Balance remaining' : 'Schedule pending',
+    signed: signed ? 'Agreement on file' : hasProposal ? 'Sign in the portal' : 'After your proposal arrives',
+    deposit: depositPaid ? 'Deposit recorded' : signed ? 'Pay to hold your date' : 'After you sign',
+    details: details
+      ? 'Planning details confirmed'
+      : depositPaid
+        ? 'Guest count, layout, and timing'
+        : 'After your deposit',
+    final_pay: paidInFull ? 'Paid in full' : total > 0 && balance > 0 ? 'Balance remaining' : 'Schedule pending',
     day_of: dayOf ? 'Event date reached' : input.eventDateIso ?? 'Date TBD',
   };
 
@@ -125,4 +169,42 @@ export function buildGuestStatusTimeline(
       detail: detailsByStage[key],
     };
   });
+}
+
+export function guestPortalPhase(input: GuestTimelineInput, now = new Date()): GuestPortalPhase {
+  const steps = buildGuestStatusTimeline(input, now);
+  const current = steps.find(s => s.state === 'current') ?? steps.find(s => s.state === 'complete' && s.key === 'day_of');
+  switch (current?.key) {
+    case 'inquiry':
+    case 'proposal':
+      return 'awaiting_proposal';
+    case 'signed':
+      return 'awaiting_signature';
+    case 'deposit':
+      return 'awaiting_deposit';
+    case 'details':
+      return 'details';
+    case 'final_pay':
+      return 'final_pay';
+    case 'day_of':
+      return 'day_of';
+    default:
+      return 'awaiting_proposal';
+  }
+}
+
+export type GuestNavItem = { to: 'home' | 'messages' | 'sign' | 'pay' | 'details' | 'docs'; label: string };
+
+/** Stage-gated primary nav. Routes stay the same; only visibility changes. */
+export function guestPrimaryNav(phase: GuestPortalPhase): GuestNavItem[] {
+  const home: GuestNavItem = { to: 'home', label: 'Home' };
+  const messages: GuestNavItem = { to: 'messages', label: 'Messages' };
+  if (phase === 'awaiting_proposal') return [home, messages];
+  if (phase === 'awaiting_signature') {
+    return [home, { to: 'sign', label: 'Sign' }, messages];
+  }
+  if (phase === 'awaiting_deposit') {
+    return [home, { to: 'pay', label: 'Pay deposit' }, messages];
+  }
+  return [home, { to: 'pay', label: 'Pay' }, { to: 'details', label: 'Details' }, messages];
 }

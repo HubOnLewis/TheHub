@@ -43,10 +43,10 @@ export function timelineFromSnapshot(snapshot: GuestPortalSnapshot): PortalTimel
 export function eventStateFromSnapshot(snapshot: GuestPortalSnapshot, base?: PortalEventState): PortalEventState {
   const seeded = base ?? portalStateFromProfile(profileFromSnapshot(snapshot));
   const proposal = snapshot.proposal;
-  let agreementStatus: PortalEventState['agreementStatus'] = 'pending_review';
+  let agreementStatus: PortalEventState['agreementStatus'] = 'waiting_venue';
   if (proposal?.status === 'accepted') agreementStatus = 'signed';
   else if (proposal?.status === 'viewed') agreementStatus = 'viewed';
-  else if (proposal?.status === 'sent') agreementStatus = 'pending_review';
+  else if (proposal?.status === 'sent' || proposal?.status === 'declined') agreementStatus = 'pending_review';
   const details = snapshot.clientDetails;
   const playbookSteps = snapshot.playbook?.clientTimeline ?? [];
   const checklist = playbookSteps.length

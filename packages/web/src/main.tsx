@@ -9,6 +9,7 @@ import AppBootstrap from './components/AppBootstrap.js';
 import RootErrorBoundary from './components/RootErrorBoundary.js';
 
 import BrandLoader from './components/BrandLoader.js';
+import { isPublicBookPath } from './lib/publicBookPath.js';
 
 import './index.css';
 import { purgeHubContaminatedLocalCache, hubDemoCacheResetConsoleHelp } from './lib/hubLocalCacheCleanup.js';
@@ -68,7 +69,7 @@ ReactDOM.createRoot(rootEl).render(
 
         <AppBootstrap>
 
-          <Suspense fallback={<BrandLoader message="Loading venue workspace…" showStatusRotation />}>
+          <Suspense fallback={isPublicBookPath() ? <div /> : <BrandLoader message="Loading venue workspace…" showStatusRotation />}>
 
             <App />
 

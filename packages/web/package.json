@@ -7,7 +7,8 @@
     "dev:demo":  "vite --mode demo",
     "build":     "tsc && vite build",
     "preview":   "vite preview",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "uxcheck": "tsx --test src/lib/morningCards.test.ts src/lib/bookInquiry.test.ts"
   },
   "dependencies": {
     "@hookform/resolvers":  "^3.3.4",

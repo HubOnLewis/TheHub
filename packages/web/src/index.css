@@ -722,6 +722,42 @@ body {
 .book-page__staff { font-size: 13px; color: var(--text-secondary); text-decoration: none; }
 .book-page__staff:hover { color: var(--red); }
 
+.book-page__field-error {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--red);
+}
+.book-page__form .form-group + .form-group { }
+.inbox-triage-card__action {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.ops-home__do-now {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface, #fff);
+}
+.ops-home__do-now strong { display: block; font-size: 16px; }
+.ops-home__do-now p { margin: 4px 0 0; font-size: 13px; color: var(--text-secondary); }
+.ops-home__do-now-kicker {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+
 
 .legal-footer-links {
   display: flex;

@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { VENUE_EVENT_TYPES, VENUE_SPACES } from '@hub-crm/shared';
 import BrandLogo from '../components/BrandLogo.js';
@@ -6,8 +6,10 @@ import LegalFooterLinks from '../components/LegalFooterLinks.js';
 import { BRAND } from '../branding/tokens.js';
 import { resolveApiBaseUrl, getApiNetworkErrorMessage } from '../config/apiBaseUrl.js';
 import { getApiConfigError } from '../api/client.js';
+import { bookInquiryPayload, validateBookInquiry, type BookFieldErrors } from '../lib/bookInquiry.js';
 
 const BOOKING_SPACES = VENUE_SPACES.filter(s => s !== 'TBD');
+const BOOK_TITLE = 'Book your event · HuB on Lewis';
 
 type InquiryOk = {
   leadId: string;
@@ -36,10 +38,14 @@ function guestConflictMessage(status: number, apiError: string | undefined): str
 export default function BookPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [eventDate, setEventDate] = useState('');
+  const [startTime, setStartTime] = useState('');
   const [space, setSpace] = useState<string>(BOOKING_SPACES[0] ?? 'Main Hall');
   const [eventType, setEventType] = useState<string>(VENUE_EVENT_TYPES[0] ?? 'Wedding');
-  const [guests, setGuests] = useState('80');
+  const [guests, setGuests] = useState('');
+  const [notes, setNotes] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<BookFieldErrors>({});
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<InquiryOk | null>(null);
@@ -47,6 +53,7 @@ export default function BookPage() {
 
   useLayoutEffect(() => {
     document.documentElement.setAttribute('data-theme', 'light');
+    document.title = BOOK_TITLE;
   }, []);
 
   const minDate = useMemo(() => {
@@ -55,6 +62,14 @@ export default function BookPage() {
     const day = String(d.getDate()).padStart(2, '0');
     return `${d.getFullYear()}-${m}-${day}`;
   }, []);
+
+  useEffect(() => {
+    if (!result?.portalUrl) return;
+    const t = window.setTimeout(() => {
+      window.location.assign(result.portalUrl);
+    }, 1600);
+    return () => window.clearTimeout(t);
+  }, [result]);
 
   const copyPortal = async (url: string) => {
     try {
@@ -70,18 +85,13 @@ export default function BookPage() {
     e.preventDefault();
     setError('');
     setCopied(false);
+    const nextErrors = validateBookInquiry({ name, email, eventDate, space, eventType, guests, phone, startTime, notes });
+    setFieldErrors(nextErrors);
+    if (Object.keys(nextErrors).length) return;
+
     const configErr = getApiConfigError();
     if (configErr) {
       setError(configErr);
-      return;
-    }
-    const guestCount = Number(guests);
-    if (!name.trim() || !email.trim() || !eventDate || !space || !eventType) {
-      setError('Please fill in your name, email, date, space, and event type.');
-      return;
-    }
-    if (!Number.isFinite(guestCount) || guestCount < 1) {
-      setError('Please enter a guest count.');
       return;
     }
     const { url, configError } = publicInquiryUrl();
@@ -94,14 +104,9 @@ export default function BookPage() {
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          eventDate,
-          space,
-          eventType,
-          guests: guestCount,
-        }),
+        body: JSON.stringify(
+          bookInquiryPayload({ name, email, eventDate, space, eventType, guests, phone, startTime, notes }),
+        ),
       });
       let body: { error?: string } & Partial<InquiryOk> = {};
       try {
@@ -140,12 +145,19 @@ export default function BookPage() {
     }
   };
 
+  const fieldErr = (key: keyof BookFieldErrors) =>
+    fieldErrors[key] ? (
+      <p className="book-page__field-error" role="alert">
+        {fieldErrors[key]}
+      </p>
+    ) : null;
+
   return (
     <div className="book-page">
       <header className="book-page__header">
-        <Link to="/login" className="book-page__brand">
+        <a href="https://hubonlewis.com" className="book-page__brand">
           <BrandLogo size="md" />
-        </Link>
+        </a>
         <p className="book-page__venue">
           {BRAND.venueName} · {BRAND.venueLocation}
         </p>
@@ -155,10 +167,9 @@ export default function BookPage() {
         {result ? (
           <div className="book-page__success" role="status">
             <p className="book-page__eyebrow">HuB on Lewis</p>
-            <h1>We&apos;ve got you</h1>
+            <h1>You&apos;re in. Save this link. We&apos;ll send a proposal.</h1>
             <p className="book-page__lede">
-              Your inquiry is in. Hannah has it, and your event portal is ready. Email is still being wired up —
-              copy or open this link so you can come back anytime.
+              This is not a booking and nothing is paid. Opening your event portal so you can come back anytime.
             </p>
             <label className="form-label" htmlFor="portal-url">
               Your event portal
@@ -174,7 +185,7 @@ export default function BookPage() {
               <button type="button" className="btn btn-primary" onClick={() => void copyPortal(result.portalUrl)}>
                 {copied ? 'Copied' : 'Copy link'}
               </button>
-              <a className="btn btn-secondary" href={result.portalUrl} target="_blank" rel="noreferrer">
+              <a className="btn btn-secondary" href={result.portalUrl} rel="noreferrer">
                 Open portal
               </a>
             </div>
@@ -184,10 +195,10 @@ export default function BookPage() {
             <p className="book-page__eyebrow">Request a date</p>
             <h1>Book your event</h1>
             <p className="book-page__lede">
-              Tell us the date, the room, and who to take care of. We&apos;ll check the calendar and set up your
-              portal — no back-and-forth required.
+              Tell us the date, the room, and who to take care of. We&apos;ll check the calendar and send a proposal —
+              you are not booked or charged yet.
             </p>
-            <form className="book-page__form" onSubmit={e => void handleSubmit(e)}>
+            <form className="book-page__form" noValidate onSubmit={e => void handleSubmit(e)}>
               <div className="book-page__grid">
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-date">
@@ -200,19 +211,20 @@ export default function BookPage() {
                     min={minDate}
                     value={eventDate}
                     onChange={e => setEventDate(e.target.value)}
-                    required
+                    aria-invalid={Boolean(fieldErrors.eventDate)}
                   />
+                  {fieldErr('eventDate')}
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-space">
-                    Space
+                    Which room?
                   </label>
                   <select
                     id="book-space"
                     className="form-input"
                     value={space}
                     onChange={e => setSpace(e.target.value)}
-                    required
+                    aria-invalid={Boolean(fieldErrors.space)}
                   >
                     {BOOKING_SPACES.map(s => (
                       <option key={s} value={s}>
@@ -220,6 +232,7 @@ export default function BookPage() {
                       </option>
                     ))}
                   </select>
+                  {fieldErr('space')}
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-type">
@@ -230,7 +243,7 @@ export default function BookPage() {
                     className="form-input"
                     value={eventType}
                     onChange={e => setEventType(e.target.value)}
-                    required
+                    aria-invalid={Boolean(fieldErrors.eventType)}
                   >
                     {VENUE_EVENT_TYPES.map(t => (
                       <option key={t} value={t}>
@@ -238,6 +251,7 @@ export default function BookPage() {
                       </option>
                     ))}
                   </select>
+                  {fieldErr('eventType')}
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-guests">
@@ -250,8 +264,36 @@ export default function BookPage() {
                     min={1}
                     max={5000}
                     value={guests}
+                    placeholder="e.g. 80"
                     onChange={e => setGuests(e.target.value)}
-                    required
+                    aria-invalid={Boolean(fieldErrors.guests)}
+                  />
+                  {fieldErr('guests')}
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="book-time">
+                    Start time
+                  </label>
+                  <input
+                    id="book-time"
+                    type="time"
+                    className="form-input"
+                    value={startTime}
+                    onChange={e => setStartTime(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label" htmlFor="book-phone">
+                    Phone
+                  </label>
+                  <input
+                    id="book-phone"
+                    type="tel"
+                    className="form-input"
+                    value={phone}
+                    onChange={e => setPhone(e.target.value)}
+                    autoComplete="tel"
+                    placeholder="Optional"
                   />
                 </div>
                 <div className="form-group">
@@ -265,8 +307,9 @@ export default function BookPage() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     autoComplete="name"
-                    required
+                    aria-invalid={Boolean(fieldErrors.name)}
                   />
+                  {fieldErr('name')}
                 </div>
                 <div className="form-group">
                   <label className="form-label" htmlFor="book-email">
@@ -279,9 +322,23 @@ export default function BookPage() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     autoComplete="email"
-                    required
+                    aria-invalid={Boolean(fieldErrors.email)}
                   />
+                  {fieldErr('email')}
                 </div>
+              </div>
+              <div className="form-group">
+                <label className="form-label" htmlFor="book-notes">
+                  Tell us about your event
+                </label>
+                <textarea
+                  id="book-notes"
+                  className="form-input"
+                  rows={3}
+                  value={notes}
+                  onChange={e => setNotes(e.target.value)}
+                  placeholder="Anything we should know — vibe, timing, must-haves."
+                />
               </div>
               {error ? (
                 <div className="book-page__error" role="alert">

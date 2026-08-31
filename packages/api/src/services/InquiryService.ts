@@ -52,6 +52,7 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
   const eventType = body.eventType?.trim() || undefined;
   const hannah = getHubTeamMember(HUB_CONTACT_EMAILS.hannah);
 
+  const notes = body.notes?.trim() || undefined;
   const importMeta: Record<string, unknown> = {
     source: 'public_inquiry',
     contactEmail: email,
@@ -60,6 +61,7 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
     guests: body.guests,
     eventDate: dateKey || dateRaw || undefined,
     pvStatus: 'lead',
+    inquiryNotes: notes,
   };
   if (dateKey && hasSpace) {
     importMeta.eventDateIso = dateKey;
@@ -77,7 +79,7 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
       email,
       phone: body.phone?.trim() || undefined,
       source: 'public_inquiry',
-      notes: body.notes?.trim() || undefined,
+      notes,
       assignedTo: hannah?.name ?? 'Hannah Bayless',
       status: 'New',
       eventDate: dateKey || dateRaw || undefined,
@@ -91,7 +93,7 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
       contact: name,
       amount: 0,
       assignedTo: hannah?.name ?? 'Hannah Bayless',
-      notes: body.notes?.trim() || undefined,
+      notes,
       status: 'Draft',
       importMeta,
     },

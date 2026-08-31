@@ -18,6 +18,12 @@ import AttentionRail from '../venue/AttentionRail.js';
 import { useVenueAttention } from '../../hooks/useAgentSnapshot.js';
 import { formatTodayLabel } from '../../config/productionData.js';
 import { useInboxTriage } from '../../hooks/useInboxTriage.js';
+import {
+  buildMorningCards,
+  pickDoThisNow,
+  selectNewInquiries,
+  type MorningEventRow,
+} from '../../lib/morningCards.js';
 
 function startOfDay(d: Date): Date {
   const x = new Date(d);
@@ -40,6 +46,27 @@ function inRange(row: CrmEventRow, from: Date, to: Date): boolean {
 
 function opsRows(rows: CrmEventRow[]): CrmEventRow[] {
   return rows.filter(r => !isLost(r) && !isCompleted(r));
+}
+
+function proposalHint(row: CrmEventRow): string | null {
+  const s = `${row.pvStatus ?? ''} ${row.status} ${row.statusLabel}`.toLowerCase();
+  if (/accepted|confirmed|won/.test(s)) return 'accepted';
+  if (/proposal|approved/.test(s)) return 'sent';
+  return null;
+}
+
+function toMorningRow(row: CrmEventRow): MorningEventRow {
+  return {
+    id: row.id,
+    title: row.title,
+    href: row.href,
+    statusLabel: row.statusLabel,
+    stage: row.status,
+    proposalStatus: proposalHint(row),
+    space: row.space,
+    eventDateIso: row.eventDate,
+    guests: row.guests,
+  };
 }
 
 function EventOpsRow({ row }: { row: CrmEventRow }) {
@@ -109,6 +136,35 @@ export default function OpsHome() {
     });
   }, [active, today]);
 
+
+  const morningRows = useMemo(() => active.map(toMorningRow), [active]);
+  const inquiries = useMemo(() => selectNewInquiries(morningRows), [morningRows]);
+  const morningCards = useMemo(
+    () =>
+      buildMorningCards({
+        inquiries,
+        unsignedProposals: (triage?.unsignedProposals ?? []).map(u => ({
+          eventId: u.eventId,
+          eventTitle: u.eventTitle,
+          href: opportunityDetailPath(u.eventId),
+        })),
+        unpaidDeposits: (triage?.unpaidDeposits ?? []).map(u => ({
+          eventId: u.eventId,
+          eventTitle: u.eventTitle,
+          href: opportunityDetailPath(u.eventId),
+        })),
+        unansweredMessages: (triage?.unansweredMessages ?? []).map(u => ({
+          eventId: u.eventId,
+          eventTitle: u.eventTitle,
+          preview: u.preview,
+          href: opportunityDetailPath(u.eventId),
+        })),
+        missingSpace: missingSpace.map(toMorningRow),
+      }),
+    [inquiries, triage, missingSpace],
+  );
+  const doNow = useMemo(() => pickDoThisNow(morningCards), [morningCards]);
+
   const { items: attention, source: attentionSource } = useVenueAttention(active);
 
   const balanceTotal = balances.reduce((s, r) => s + getBalanceDue(r), 0);
@@ -166,43 +222,33 @@ export default function OpsHome() {
             Inbox / Activity →
           </Link>
         </header>
+        {doNow ? (
+          <div className="ops-home__do-now">
+            <div>
+              <span className="ops-home__do-now-kicker">Do this now</span>
+              <strong>{doNow.action}</strong>
+              <p>
+                {doNow.title} · {doNow.count} · {doNow.preview}
+              </p>
+            </div>
+            <Link to={doNow.href} className="btn btn-primary">
+              {doNow.action}
+            </Link>
+          </div>
+        ) : null}
         <div className="inbox-triage-grid">
-          <Link
-            to={triage?.unsignedProposals[0] ? opportunityDetailPath(triage.unsignedProposals[0].eventId) : ROUTES.inbox}
-            className={`inbox-triage-card${(triage?.unsignedProposals.length ?? 0) > 0 ? ' inbox-triage-card--warn' : ''}`}
-          >
-            <span>Unsigned proposals</span>
-            <strong>{triage?.unsignedProposals.length ?? '—'}</strong>
-            <em>{triage?.unsignedProposals[0]?.eventTitle ?? 'None waiting'}</em>
-          </Link>
-          <Link
-            to={triage?.unpaidDeposits[0] ? opportunityDetailPath(triage.unpaidDeposits[0].eventId) : ROUTES.inbox}
-            className={`inbox-triage-card${(triage?.unpaidDeposits.length ?? 0) > 0 ? ' inbox-triage-card--warn' : ''}`}
-          >
-            <span>Unpaid deposits</span>
-            <strong>{triage?.unpaidDeposits.length ?? '—'}</strong>
-            <em>
-              {triage?.unpaidDeposits[0]
-                ? `${triage.unpaidDeposits[0].eventTitle} · ${formatCurrency(triage.unpaidDeposits[0].balanceDue)}`
-                : 'None outstanding'}
-            </em>
-          </Link>
-          <Link
-            to={triage?.unansweredMessages[0] ? opportunityDetailPath(triage.unansweredMessages[0].eventId) : ROUTES.inbox}
-            className={`inbox-triage-card${(triage?.unansweredMessages.length ?? 0) > 0 ? ' inbox-triage-card--urgent' : ''}`}
-          >
-            <span>Unanswered portal messages</span>
-            <strong>{triage?.unansweredMessages.length ?? '—'}</strong>
-            <em>{triage?.unansweredMessages[0]?.preview || 'All threads have a staff reply'}</em>
-          </Link>
-          <Link
-            to={missingSpace[0]?.href || ROUTES.calendar}
-            className={`inbox-triage-card${missingSpace.length > 0 ? ' inbox-triage-card--urgent' : ''}`}
-          >
-            <span>This week · missing space</span>
-            <strong>{missingSpace.length}</strong>
-            <em>{missingSpace[0]?.title ?? 'All dated events have a room'}</em>
-          </Link>
+          {morningCards.map(card => (
+            <Link
+              key={card.key}
+              to={card.href}
+              className={`inbox-triage-card${card.urgent ? (card.key === 'unanswered' || card.key === 'missing-space' ? ' inbox-triage-card--urgent' : ' inbox-triage-card--warn') : card.count > 0 ? ' inbox-triage-card--warn' : ''}`}
+            >
+              <span>{card.title}</span>
+              <strong>{card.count}</strong>
+              <em>{card.preview}</em>
+              <span className="inbox-triage-card__action">{card.action}</span>
+            </Link>
+          ))}
         </div>
       </section>
 
@@ -303,7 +349,7 @@ export default function OpsHome() {
             {farPipeline.length} far-pipeline event{farPipeline.length === 1 ? '' : 's'} (90+ days out, including 2027)
           </summary>
           <p className="text-muted text-sm">
-            Kept off the daily home so coordinators see today first. Open an event to work it.
+            Dated 90+ days out stay here so today stays clear. New inquiries still surface in This morning so you can send a proposal.
           </p>
           <div className="ops-home__list">
             {farPipeline.slice(0, 20).map(row => (

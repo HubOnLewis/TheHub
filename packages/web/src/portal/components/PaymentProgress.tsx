@@ -4,15 +4,13 @@ import { usePortalStore } from '../portalStore.js';
 export default function PaymentProgress({ showActions = false }: { showActions?: boolean }) {
   const payments = usePortalStore(s => s.event.payments);
   const packageTotal = usePortalStore(s => s.profile.packageTotal);
-  const payDeposit = usePortalStore(s => s.payDeposit);
-  const payBalance = usePortalStore(s => s.payBalance);
   const queueLink = usePortalStore(s => s.queuePaymentLink);
-  const remainingDue = payments.find(p => p.status === 'due' || p.status === 'scheduled');
 
   const paid = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
   const total = packageTotal > 0 ? packageTotal : 1;
-  const pct = Math.min(100, Math.round((paid / total) * 100));
+  const pct = packageTotal > 0 ? Math.min(100, Math.round((paid / total) * 100)) : 0;
   const remaining = Math.max(0, packageTotal - paid);
+  const paidInFull = packageTotal > 0 && remaining <= 0;
 
   return (
     <div className="portal-card portal-card--flat">
@@ -40,21 +38,14 @@ export default function PaymentProgress({ showActions = false }: { showActions?:
           </li>
         ))}
       </ul>
-      {showActions && remaining > 0 ? (
+      {showActions && remaining > 0 && packageTotal > 0 ? (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 14 }}>
-          <button
-            type="button"
-            className="portal-btn portal-btn--primary"
-            onClick={() => (remainingDue?.label.toLowerCase().includes('deposit') ? payDeposit() : payBalance())}
-          >
-            {remainingDue?.label.toLowerCase().includes('deposit') ? 'Record deposit received' : 'Record remaining as received'}
-          </button>
           <button type="button" className="portal-btn portal-btn--secondary" onClick={() => queueLink()}>
             Ask coordinator to record a payment
           </button>
         </div>
       ) : null}
-      {pct >= 100 ? (
+      {paidInFull ? (
         <p style={{ marginTop: 12, fontSize: 13, color: 'var(--portal-success)', fontWeight: 600 }}>
           Fully paid — thank you. Planning details stay available here anytime.
         </p>
