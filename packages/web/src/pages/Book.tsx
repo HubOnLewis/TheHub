@@ -101,7 +101,7 @@ export default function BookPage() {
           const res = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bookAvailabilityPayload({ eventDate, space })),
+            body: JSON.stringify(bookAvailabilityPayload({ eventDate, space, startTime })),
           });
           let body: { error?: string; available?: boolean } = {};
           try {
@@ -131,7 +131,7 @@ export default function BookPage() {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [eventDate, space]);
+  }, [eventDate, space, startTime]);
 
   const copyPortal = async (url: string) => {
     try {
@@ -150,7 +150,7 @@ export default function BookPage() {
       const res = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bookAvailabilityPayload({ eventDate, space })),
+        body: JSON.stringify(bookAvailabilityPayload({ eventDate, space, startTime })),
       });
       let body: { error?: string; available?: boolean } = {};
       try {

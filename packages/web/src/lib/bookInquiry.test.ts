@@ -111,7 +111,8 @@ test('valid book inquiry passes phone, start time, and notes through the payload
   assert.equal(body.phone, '316-555-0100');
   assert.equal(body.startTime, '17:00');
   assert.equal(body.notes, 'Garden ceremony');
-  assert.deepEqual(bookAvailabilityPayload(fields), { eventDate: '2027-06-12', space: 'Main Hall' });
+  assert.deepEqual(bookAvailabilityPayload(fields), { eventDate: '2027-06-12', space: 'Main Hall', startTime: '17:00' });
+  assert.deepEqual(bookAvailabilityPayload({ eventDate: '2027-06-12', space: 'Main Hall' }), { eventDate: '2027-06-12', space: 'Main Hall' });
 });
 
 test('room-taken response is 409 or available false; start time stays optional', () => {

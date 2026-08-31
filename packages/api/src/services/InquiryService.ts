@@ -14,15 +14,12 @@ import { leadService } from './LeadService.js';
 import { dealService } from './DealService.js';
 import { reuseOrMintPortalToken } from './GuestPortalService.js';
 import { getEmailProvider } from './email/EmailProvider.js';
-import { ConflictError } from '../errors/index.js';
+import { BadRequestError, ConflictError } from '../errors/index.js';
 
-export const SPACE_TAKEN_MESSAGE =
-  'That date is taken for this space. Please pick another.';
-
-/** Guest-facing day-level copy used by /availability before create. */
+/** Guest-facing copy for create 409 and /availability. */
 export const ROOM_TAKEN_MESSAGE = 'That room is taken that day';
 
-function rethrowGuestConflict(err: unknown, message = SPACE_TAKEN_MESSAGE): never {
+function rethrowGuestConflict(err: unknown, message = ROOM_TAKEN_MESSAGE): never {
   if (err instanceof ConflictError) {
     throw new ConflictError(message);
   }
@@ -107,12 +104,14 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
 /** Full-day window so any occupancy that calendar day is a hard conflict. */
 export function availabilityImportMeta(input: PublicInquiryAvailabilityPayload): Record<string, unknown> {
   const eventDate = input.eventDate.trim().slice(0, 10);
+  const start = input.startTime?.trim() || '';
+  const end = input.endTime?.trim() || '';
   return {
     eventDateIso: eventDate,
     eventDate,
     space: input.space.trim(),
-    startTime: '00:00',
-    endTime: '23:59',
+    startTime: start || '00:00',
+    endTime: end || (start ? '22:00' : '23:59'),
   };
 }
 
@@ -129,7 +128,7 @@ export class InquiryService {
       await dealService.assertSpaceAvailability(
         db,
         ctx,
-        availabilityImportMeta({ eventDate, space }),
+        availabilityImportMeta(input),
         'Public availability',
         'Draft',
       );
@@ -141,6 +140,9 @@ export class InquiryService {
 
   async create(db: Db, body: PublicInquiryPayload) {
     const ctx = publicInquiryTenantContext();
+    if (!isAssignedSpace(body.space) || !(body.eventType ?? '').trim()) {
+      throw new BadRequestError('Please pick a room and an event type.');
+    }
     const mapped = mapPublicInquiryToRecords(body);
     try {
       await dealService.assertSpaceAvailability(
@@ -151,7 +153,7 @@ export class InquiryService {
         mapped.deal.status,
       );
     } catch (err) {
-      rethrowGuestConflict(err);
+      rethrowGuestConflict(err, ROOM_TAKEN_MESSAGE);
     }
     const lead = await leadService.create(db, ctx, mapped.lead);
     let deal;

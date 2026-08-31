@@ -9,23 +9,36 @@ const { PublicInquirySchema, PublicInquiryAvailabilitySchema, isAssignedSpace } 
 const {
   mapPublicInquiryToRecords,
   inquiryService,
-  SPACE_TAKEN_MESSAGE,
   ROOM_TAKEN_MESSAGE,
   availabilityImportMeta,
 } = await import('./InquiryService.js');
 const { knownEventTypeFromCreate } = await import('./PlaybookService.js');
 const { dealService } = await import('./DealService.js');
 const { leadService } = await import('./LeadService.js');
-const { ConflictError } = await import('../errors/index.js');
+const { BadRequestError, ConflictError } = await import('../errors/index.js');
 const { DealRepository } = await import('../repositories/DealRepository.js');
 
 test.afterEach(() => {
   mock.restoreAll();
 });
 
-test('public inquiry schema requires name and email', () => {
+test('public inquiry schema requires name, email, space, and event type', () => {
   const bad = PublicInquirySchema.safeParse({ name: '', email: 'not-an-email' });
   assert.equal(bad.success, false);
+  const missingSpace = PublicInquirySchema.safeParse({
+    name: 'Alex Guest',
+    email: 'alex@example.com',
+    eventDate: '2026-10-17',
+    eventType: 'Wedding',
+  });
+  assert.equal(missingSpace.success, false);
+  const missingType = PublicInquirySchema.safeParse({
+    name: 'Alex Guest',
+    email: 'alex@example.com',
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+  });
+  assert.equal(missingType.success, false);
   const ok = PublicInquirySchema.safeParse({
     name: 'Alex Guest',
     email: 'alex@example.com',
@@ -48,6 +61,15 @@ test('availability schema requires date and space', () => {
   const meta = availabilityImportMeta(ok.data);
   assert.equal(meta.startTime, '00:00');
   assert.equal(meta.endTime, '23:59');
+  const timed = PublicInquiryAvailabilitySchema.safeParse({
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+    startTime: '18:30',
+  });
+  assert.equal(timed.success, true);
+  const timedMeta = availabilityImportMeta(timed.data);
+  assert.equal(timedMeta.startTime, '18:30');
+  assert.equal(timedMeta.endTime, '22:00');
 });
 
 test('public inquiry maps to lead+deal and known event type for playbook', () => {
@@ -70,19 +92,6 @@ test('public inquiry maps to lead+deal and known event type for playbook', () =>
   assert.equal(mapped.deal.importMeta?.source, 'public_inquiry');
   assert.equal(knownEventTypeFromCreate(mapped.deal.importMeta as Record<string, unknown>), 'wedding');
   assert.equal(isAssignedSpace(String(mapped.deal.importMeta?.space)), true);
-});
-
-test('public inquiry without space skips occupancy fields so dated holds stay possible', () => {
-  const mapped = mapPublicInquiryToRecords({
-    name: 'Alex Guest',
-    email: 'alex@example.com',
-    eventDate: '2026-10-17',
-    eventType: 'Birthday',
-  });
-  assert.equal(mapped.deal.importMeta?.eventDate, '2026-10-17');
-  assert.equal(mapped.deal.importMeta?.eventDateIso, undefined);
-  assert.equal(mapped.deal.importMeta?.space, undefined);
-  assert.equal(knownEventTypeFromCreate(mapped.deal.importMeta as Record<string, unknown>), 'social');
 });
 
 const inquiryBody = {
@@ -111,8 +120,7 @@ function mockTakenMainHall() {
   }));
 }
 
-test('conflict rejection does not create a lead or deal', async () => {
-  mockTakenMainHall();
+function mockNoLeadCreate() {
   let leadCalls = 0;
   let dealCalls = 0;
   mock.method(leadService, 'create', async () => {
@@ -123,43 +131,112 @@ test('conflict rejection does not create a lead or deal', async () => {
     dealCalls += 1;
     return { _id: 'deal_should_not' };
   });
+  return {
+    leadCalls: () => leadCalls,
+    dealCalls: () => dealCalls,
+  };
+}
+
+test('missing space is 400 and does not create a lead', async () => {
+  const calls = mockNoLeadCreate();
+  await assert.rejects(
+    () => inquiryService.create({} as never, {
+      name: 'Alex Guest',
+      email: 'alex@example.com',
+      eventDate: '2026-10-17',
+      eventType: 'Wedding',
+    } as never),
+    (err: unknown) => err instanceof BadRequestError && (err as { statusCode: number }).statusCode === 400,
+  );
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
+});
+
+test('missing event type is 400 and does not create a lead', async () => {
+  const calls = mockNoLeadCreate();
+  await assert.rejects(
+    () => inquiryService.create({} as never, {
+      name: 'Alex Guest',
+      email: 'alex@example.com',
+      eventDate: '2026-10-17',
+      space: 'Main Hall',
+    } as never),
+    (err: unknown) => err instanceof BadRequestError && (err as { statusCode: number }).statusCode === 400,
+  );
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
+});
+
+test('TBD space is 400 and does not create a lead', async () => {
+  const calls = mockNoLeadCreate();
+  await assert.rejects(
+    () => inquiryService.create({} as never, {
+      name: 'Alex Guest',
+      email: 'alex@example.com',
+      eventDate: '2026-10-17',
+      eventType: 'Wedding',
+      space: 'TBD',
+    } as never),
+    (err: unknown) => err instanceof BadRequestError && (err as { statusCode: number }).statusCode === 400,
+  );
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
+});
+
+test('conflict rejection does not create a lead or deal', async () => {
+  mockTakenMainHall();
+  const calls = mockNoLeadCreate();
 
   await assert.rejects(
     () => inquiryService.create({} as never, inquiryBody),
-    (err: unknown) => err instanceof ConflictError && (err as Error).message === SPACE_TAKEN_MESSAGE,
+    (err: unknown) => err instanceof ConflictError && (err as Error).message === ROOM_TAKEN_MESSAGE,
   );
-  assert.equal(leadCalls, 0);
-  assert.equal(dealCalls, 0);
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
 });
 
 test('availability conflict does not create a lead', async () => {
   mockTakenMainHall();
-  let leadCalls = 0;
-  let dealCalls = 0;
-  mock.method(leadService, 'create', async () => {
-    leadCalls += 1;
-    return { _id: 'lead_should_not' };
-  });
-  mock.method(dealService, 'create', async () => {
-    dealCalls += 1;
-    return { _id: 'deal_should_not' };
-  });
+  const calls = mockNoLeadCreate();
 
   await assert.rejects(
     () => inquiryService.checkAvailability({} as never, { eventDate: '2026-10-17', space: 'Main Hall' }),
     (err: unknown) => err instanceof ConflictError && (err as Error).message === ROOM_TAKEN_MESSAGE,
   );
-  assert.equal(leadCalls, 0);
-  assert.equal(dealCalls, 0);
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
+});
+
+test('availability with startTime uses that start and default end', async () => {
+  let seen: Record<string, unknown> | undefined;
+  mock.method(dealService, 'assertSpaceAvailability', async (_db, _ctx, meta) => {
+    seen = meta as Record<string, unknown>;
+  });
+  await inquiryService.checkAvailability({} as never, {
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+    startTime: '18:30',
+  });
+  assert.equal(seen?.startTime, '18:30');
+  assert.equal(seen?.endTime, '22:00');
+});
+
+test('availability without startTime stays day-level', async () => {
+  let seen: Record<string, unknown> | undefined;
+  mock.method(dealService, 'assertSpaceAvailability', async (_db, _ctx, meta) => {
+    seen = meta as Record<string, unknown>;
+  });
+  await inquiryService.checkAvailability({} as never, {
+    eventDate: '2026-10-17',
+    space: 'Main Hall',
+  });
+  assert.equal(seen?.startTime, '00:00');
+  assert.equal(seen?.endTime, '23:59');
 });
 
 test('availability ok returns available true without creating a lead', async () => {
   mock.method(dealService, 'assertSpaceAvailability', async () => undefined);
-  let leadCalls = 0;
-  mock.method(leadService, 'create', async () => {
-    leadCalls += 1;
-    return { _id: 'lead_should_not' };
-  });
+  const calls = mockNoLeadCreate();
 
   const result = await inquiryService.checkAvailability({} as never, {
     eventDate: '2026-10-17',
@@ -168,7 +245,7 @@ test('availability ok returns available true without creating a lead', async () 
   assert.equal(result.available, true);
   assert.equal(result.eventDate, '2026-10-17');
   assert.equal(result.space, 'Main Hall');
-  assert.equal(leadCalls, 0);
+  assert.equal(calls.leadCalls(), 0);
 });
 
 test('successful inquiry returns portalUrl', async () => {

@@ -87,8 +87,8 @@ export const PublicInquirySchema = z.object({
   eventDate: z.string().max(32).optional(),
   startTime: z.string().max(16).optional(),
   endTime: z.string().max(16).optional(),
-  space: z.string().max(80).optional(),
-  eventType: z.string().max(80).optional(),
+  space: z.string().min(1, 'Space required').max(80),
+  eventType: z.string().min(1, 'Event type required').max(80),
   guests: z.number().int().min(0).max(5000).optional(),
   notes: z.string().max(2000).optional(),
 });
@@ -98,6 +98,8 @@ export type PublicInquiryPayload = z.infer<typeof PublicInquirySchema>;
 export const PublicInquiryAvailabilitySchema = z.object({
   eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date required'),
   space: z.string().min(1, 'Space required').max(80),
+  startTime: z.string().max(16).optional(),
+  endTime: z.string().max(16).optional(),
 });
 export type PublicInquiryAvailabilityPayload = z.infer<typeof PublicInquiryAvailabilitySchema>;
 

@@ -1,8 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
-import { PublicInquiryAvailabilitySchema, PublicInquirySchema } from '@hub-crm/shared';
-import { validate } from '../middleware/validate.js';
+import { PublicInquiryAvailabilitySchema, PublicInquirySchema, isAssignedSpace } from '@hub-crm/shared';
 import { inquiryService } from '../services/InquiryService.js';
 import { getDB } from '../config/db.js';
 
@@ -25,9 +24,13 @@ function firstString(value: unknown): string {
 
 function parseAvailabilityInput(req: Request) {
   const source = (req.method === 'GET' ? req.query : req.body) as Record<string, unknown>;
+  const startTime = firstString(source.startTime);
+  const endTime = firstString(source.endTime);
   return PublicInquiryAvailabilitySchema.safeParse({
     eventDate: firstString(source.eventDate ?? source.date),
     space: firstString(source.space),
+    ...(startTime ? { startTime } : {}),
+    ...(endTime ? { endTime } : {}),
   });
 }
 
@@ -50,9 +53,24 @@ async function handleAvailability(req: Request, res: Response, next: NextFunctio
 router.get('/availability', inquiryLimiter, handleAvailability);
 router.post('/availability', inquiryLimiter, handleAvailability);
 
-router.post('/', inquiryLimiter, validate(PublicInquirySchema), async (req, res, next) => {
+router.post('/', inquiryLimiter, async (req, res, next) => {
   try {
-    res.status(201).json(await inquiryService.create(getDB(), req.body));
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const space = firstString(body.space);
+    const eventType = firstString(body.eventType);
+    if (!isAssignedSpace(space) || !eventType) {
+      res.status(400).json({ error: 'Please pick a room and an event type.' });
+      return;
+    }
+    const parsed = PublicInquirySchema.safeParse(req.body);
+    if (!parsed.success) {
+      res.status(422).json({
+        error: 'Validation failed',
+        issues: parsed.error.flatten().fieldErrors,
+      });
+      return;
+    }
+    res.status(201).json(await inquiryService.create(getDB(), parsed.data));
   } catch (err) {
     next(err);
   }

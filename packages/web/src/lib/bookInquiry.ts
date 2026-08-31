@@ -55,8 +55,12 @@ export function bookInquiryPayload(fields: BookInquiryFields) {
   };
 }
 
-export function bookAvailabilityPayload(fields: Pick<BookInquiryFields, 'eventDate' | 'space'>) {
-  return { eventDate: fields.eventDate, space: fields.space };
+export function bookAvailabilityPayload(fields: Pick<BookInquiryFields, 'eventDate' | 'space' | 'startTime'>) {
+  return {
+    eventDate: fields.eventDate,
+    space: fields.space,
+    ...(fields.startTime ? { startTime: fields.startTime } : {}),
+  };
 }
 
 export function isRoomTakenResponse(
