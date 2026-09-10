@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { isScreenshotMode } from '../config/screenshotMode.js';
 import PortalShell from './components/PortalShell.js';
 import { PORTAL_ROUTES } from './paths.js';
+import { PORTAL_NESTED } from './portalNestedPaths.js';
 import PortalLogin from './pages/PortalLogin.js';
 import PortalDashboard from './pages/PortalDashboard.js';
 import PortalEvent from './pages/PortalEvent.js';
@@ -28,14 +29,19 @@ function RequirePortalAuth({ children }: { children: ReactNode }) {
   }, [login]);
 
   const active = usePortalStore.getState().session ?? session;
+  // Absolute Navigate destination — preserves public URL contract `/portal/login`
   return active ? <>{children}</> : <Navigate to={PORTAL_ROUTES.login} replace />;
 }
 
+/**
+ * Nested under App `<Route path="/portal/*" />` with `v7_relativeSplatPath`.
+ * Child paths MUST be relative to the splat remainder (e.g. `login`, not `/portal/login`).
+ */
 export default function PortalRoutes() {
   return (
     <Routes>
-      <Route path={PORTAL_ROUTES.login} element={<PortalLogin />} />
-      <Route path="/" element={<Navigate to={PORTAL_ROUTES.dashboard} replace />} />
+      <Route path={PORTAL_NESTED.login} element={<PortalLogin />} />
+      <Route index element={<Navigate to={PORTAL_ROUTES.login} replace />} />
       <Route
         element={
           <RequirePortalAuth>
@@ -43,17 +49,17 @@ export default function PortalRoutes() {
           </RequirePortalAuth>
         }
       >
-        <Route path="dashboard" element={<PortalDashboard />} />
-        <Route path="event/:id" element={<PortalEvent />} />
-        <Route path="payments" element={<PortalPayments />} />
-        <Route path="documents" element={<PortalDocuments />} />
-        <Route path="messages" element={<PortalMessages />} />
-        <Route path="timeline" element={<PortalTimeline />} />
-        <Route path="checklist" element={<PortalChecklist />} />
-        <Route path="guests" element={<PortalGuests />} />
-        <Route path="details" element={<PortalDetails />} />
-        <Route path="design-board" element={<PortalDesignBoard />} />
-        <Route path="settings" element={<PortalSettings />} />
+        <Route path={PORTAL_NESTED.dashboard} element={<PortalDashboard />} />
+        <Route path={PORTAL_NESTED.event} element={<PortalEvent />} />
+        <Route path={PORTAL_NESTED.payments} element={<PortalPayments />} />
+        <Route path={PORTAL_NESTED.documents} element={<PortalDocuments />} />
+        <Route path={PORTAL_NESTED.messages} element={<PortalMessages />} />
+        <Route path={PORTAL_NESTED.timeline} element={<PortalTimeline />} />
+        <Route path={PORTAL_NESTED.checklist} element={<PortalChecklist />} />
+        <Route path={PORTAL_NESTED.guests} element={<PortalGuests />} />
+        <Route path={PORTAL_NESTED.details} element={<PortalDetails />} />
+        <Route path={PORTAL_NESTED.designBoard} element={<PortalDesignBoard />} />
+        <Route path={PORTAL_NESTED.settings} element={<PortalSettings />} />
       </Route>
       <Route path="*" element={<Navigate to={PORTAL_ROUTES.login} replace />} />
     </Routes>

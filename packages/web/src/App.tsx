@@ -412,6 +412,8 @@ function AppRouter() {
         <Route path={ROUTES.privacy} element={<PrivacyPage />} />
         <Route path={ROUTES.terms} element={<TermsPage />} />
         <Route path="/r/:referralCode" element={<ReferralRedirect />} />
+        {/* Exact /portal → login; splat children use relative paths (see PortalRoutes). */}
+        <Route path="/portal" element={<Navigate to="/portal/login" replace />} />
         <Route path="/portal/*" element={<PortalRoutes />} />
         <Route path="/*" element={<RequireAuth><Shell /></RequireAuth>} />
       </Routes>
