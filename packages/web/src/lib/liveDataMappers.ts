@@ -117,32 +117,59 @@ export function mapLeadToOperationalRow(lead: Record<string, unknown>): Operatio
   const age = daysSince(updatedAt);
   const stale = age != null && age >= 3;
   const urgency =
-    status === 'New' && stale ? 'high' : status === 'Quoted' ? 'medium' : stale ? 'medium' : 'low';
+    status === 'New' && stale
+      ? 'high'
+      : status === 'Quoted'
+        ? 'medium'
+        : status === 'Converted'
+          ? 'low'
+          : stale
+            ? 'medium'
+            : 'low';
 
   const eventDate = typeof lead.eventDate === 'string' && lead.eventDate.trim() ? lead.eventDate.trim() : '';
   const guests = typeof lead.guestCount === 'number' ? lead.guestCount : null;
   const estimated =
     typeof lead.estimatedValue === 'number' && Number.isFinite(lead.estimatedValue) ? lead.estimatedValue : null;
+  const convertedDealId =
+    typeof lead.convertedDealId === 'string' && lead.convertedDealId.trim()
+      ? lead.convertedDealId.trim()
+      : typeof lead.dealId === 'string' && lead.dealId.trim()
+        ? lead.dealId.trim()
+        : '';
   const metaBits = [
+    'Live CRM',
     lead.source ? String(lead.source) : '',
     eventDate,
     guests != null ? `${guests} guests` : '',
+    status === 'Converted' && convertedDealId ? 'Converted' : '',
     `Updated ${formatRelativeDate(updatedAt)}`,
   ].filter(Boolean);
+
+  const tags = ['Live CRM'];
+  if (urgency === 'high') tags.push('Needs attention');
+  if (status === 'Converted') tags.push('Converted');
 
   return {
     id,
     href: leadDetailPath(id),
     stage: status,
-    stageTone: urgency === 'high' ? 'rose' : status === 'Quoted' ? 'violet' : 'amber',
+    stageTone:
+      urgency === 'high'
+        ? 'rose'
+        : status === 'Quoted'
+          ? 'violet'
+          : status === 'Converted'
+            ? 'green'
+            : 'amber',
     title: String(lead.contact ?? 'Contact'),
     subtitle: String(lead.company ?? ''),
     meta: metaBits.join(' · '),
     value: estimated != null ? formatCurrency(estimated) : status,
-    progress: status === 'Quoted' ? 55 : status === 'New' ? 30 : 65,
+    progress: status === 'Converted' ? 100 : status === 'Quoted' ? 55 : status === 'New' ? 30 : 65,
     urgency,
-    live: urgency === 'high',
-    tags: urgency === 'high' ? ['Needs attention'] : undefined,
+    live: urgency === 'high' || status === 'New' || status === 'Working' || status === 'Contacted',
+    tags,
   };
 }
 
@@ -185,7 +212,10 @@ export function matchesLeadFilter(lead: Record<string, unknown>, filter: string)
   if (filter === 'urgent') return status === 'New' && (age ?? 0) >= 3;
   if (filter === 'proposal') return status === 'Quoted';
   if (filter === 'stalled') return (status === 'Working' || status === 'Contacted') && (age ?? 0) >= 7;
-  return status !== 'Converted' && status !== 'Lost';
+  if (filter === 'open') return status !== 'Converted' && status !== 'Lost';
+  if (filter === 'converted') return status === 'Converted';
+  // Default "all" includes Converted / Lost so /book inquiries remain visible after conversion.
+  return true;
 }
 
 export function matchesDealFilter(deal: Record<string, unknown>, filter: string): boolean {

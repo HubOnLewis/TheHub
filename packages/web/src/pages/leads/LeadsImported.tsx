@@ -27,13 +27,13 @@ export default function LeadsImported() {
     stageTone: l.urgency === 'high' ? 'rose' : 'amber',
     title: l.client,
     subtitle: l.org,
-    meta: `${l.summary} · ${l.when}`,
+    meta: `Perfect Venue import · ${l.summary} · ${l.when}`,
     value: l.value ? formatCurrency(l.value) : 'Inquiry',
     progress: l.urgency === 'high' ? 35 : l.summary.includes('Proposal') ? 55 : 70,
     urgency: l.urgency === 'high' ? 'high' : l.urgency === 'medium' ? 'medium' : 'low',
     aiHint: l.aiAssessment,
     live: false,
-    tags: l.urgency === 'high' ? ['Needs attention'] : undefined,
+    tags: l.urgency === 'high' ? ['Perfect Venue import', 'Needs attention'] : ['Perfect Venue import'],
   }));
 
   return (
@@ -47,9 +47,9 @@ export default function LeadsImported() {
           <OpsIntelShell
             eyebrow="Leads"
             title="Leads"
-            subtitle="Imported inquiry queue from Perfect Venue — not live-synced."
+            subtitle="Historical Perfect Venue import — not the live CRM queue."
             stats={[
-              { label: 'Open leads', value: String(PV_VENUE_SUMMARY.lead), hint: 'Imported records' },
+              { label: 'Open leads', value: String(PV_VENUE_SUMMARY.lead), hint: 'Import only' },
               {
                 label: 'Proposals out',
                 value: String(PV_VENUE_SUMMARY.proposalSent),
