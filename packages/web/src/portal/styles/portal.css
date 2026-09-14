@@ -425,18 +425,14 @@
   color: var(--portal-muted);
 }
 
-.portal-login {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 24px;
-  background: linear-gradient(160deg, #fffdf9 0%, #f0ebe3 50%, #e8dcc8 100%);
+.portal-login .hub-site-footer {
+  width: 100%;
+  margin-top: auto;
 }
 
 .portal-login__card {
   width: min(400px, 100%);
+  margin: auto;
   padding: 32px 28px;
   background: var(--portal-surface);
   border-radius: 20px;
@@ -445,7 +441,7 @@
 }
 
 .portal-login__card img {
-  max-height: 56px;
+  max-height: 88px;
   margin: 0 auto 20px;
 }
 

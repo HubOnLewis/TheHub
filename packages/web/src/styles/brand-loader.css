@@ -22,11 +22,11 @@
   object-position: left center;
 }
 
-.brand-logo--xs { max-height: 22px; }
-.brand-logo--sm { max-height: 32px; }
-.brand-logo--md { max-height: 44px; }
-.brand-logo--lg { max-height: 64px; }
-.brand-logo--hero { max-height: clamp(72px, 14vw, 120px); }
+.brand-logo--xs { max-height: 28px; }
+.brand-logo--sm { max-height: 40px; }
+.brand-logo--md { max-height: 56px; }
+.brand-logo--lg { max-height: 80px; }
+.brand-logo--hero { max-height: clamp(96px, 18vw, 160px); }
 
 .brand-logo--watermark {
   opacity: 0.12;
@@ -94,13 +94,20 @@
 /* Login */
 .login-page {
   min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
 }
 
+.login-page__panels {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 0;
+}
+
 @media (min-width: 900px) {
-  .login-page {
+  .login-page__panels {
     grid-template-columns: 1fr 1fr;
   }
 }
@@ -138,7 +145,7 @@
 
 .login-page__logo {
   margin: 0 auto 20px;
-  max-height: clamp(80px, 18vw, 140px);
+  max-height: clamp(112px, 22vw, 180px);
   object-position: center;
 }
 

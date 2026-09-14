@@ -11,6 +11,7 @@ import { generateInboxActivity, generateLiveTasks } from '../../lib/liveEventHel
 import { useAppStore } from '../../store/index.js';
 import HubThemeToggle from './HubThemeToggle.js';
 import GlobalSearch from '../venue/GlobalSearch.js';
+import HubSiteFooter from '../HubSiteFooter.js';
 
 type NavItem = {
   to: string;
@@ -126,6 +127,7 @@ export default function HubAdminShell({
         />
       ) : null}
       <main className="crm-pv-shell__content">{children}</main>
+      <HubSiteFooter compact />
     </div>
   );
 }

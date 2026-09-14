@@ -9,6 +9,7 @@ import { useAppStore, type AppUser } from '../store/index.js';
 import { isScreenshotMode } from '../config/screenshotMode.js';
 import { getScreenshotDemoUser, SCREENSHOT_DEMO_TOKEN } from '../config/screenshotSession.js';
 import LegalFooterLinks from '../components/LegalFooterLinks.js';
+import HubSiteFooter from '../components/HubSiteFooter.js';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -80,6 +81,7 @@ export default function Login() {
 
   return (
     <div className={`login-page${loading ? ' login-page--loading' : ''}`}>
+      <div className="login-page__panels">
       <section className="login-page__brand-panel" aria-hidden={false}>
         <div className="login-page__brand-inner">
           <BrandLogo size="hero" className="login-page__logo" />
@@ -162,6 +164,8 @@ export default function Login() {
           <LegalFooterLinks className="login-card__legal" />
         </div>
       </section>
+      </div>
+      <HubSiteFooter />
     </div>
   );
 }

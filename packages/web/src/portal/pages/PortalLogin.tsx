@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import BrandLogo from '../../components/BrandLogo.js';
+import HubSiteFooter from '../../components/HubSiteFooter.js';
 import { isScreenshotMode } from '../../config/screenshotMode.js';
 import { PORTAL_ROUTES } from '../paths.js';
 import { usePortalStore } from '../portalStore.js';
@@ -141,6 +142,7 @@ export default function PortalLogin() {
           ← Venue team login
         </a>
       </div>
+      <HubSiteFooter />
     </div>
   );
 }

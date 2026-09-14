@@ -1,6 +1,7 @@
 # Brand assets
 
-- **thehublogo.svg** — canonical HuB on Lewis logo (copied from `logos/thehublogo.svg` at repo root).
-- Referenced in app via `HUB_LOGO_SRC` in `src/branding/logo.ts`.
+- **hublogonoback.png** — transparent HuB on Lewis mark used in nav, login, and loaders.
+- **hublogowithback.jpg** — full-background mark used in the site footer.
+- **favicon.png** — browser icon derived from the transparent mark.
 
-When updating the logo, replace this file and the source under `logos/`.
+When updating the logo, replace the source files under `logos/` and regenerate the public copies.

@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { VENUE_EVENT_TYPES, VENUE_SPACES } from '@hub-crm/shared';
 import BrandLogo from '../components/BrandLogo.js';
-import LegalFooterLinks from '../components/LegalFooterLinks.js';
+import HubSiteFooter from '../components/HubSiteFooter.js';
 import { BRAND } from '../branding/tokens.js';
 import { resolveApiBaseUrl, getApiNetworkErrorMessage } from '../config/apiBaseUrl.js';
 import { getApiConfigError } from '../api/client.js';
@@ -455,12 +455,13 @@ export default function BookPage() {
         )}
       </main>
 
-      <footer className="book-page__footer">
-        <LegalFooterLinks showContact />
-        <Link to="/login" className="book-page__staff">
-          Staff sign in
-        </Link>
-      </footer>
+      <HubSiteFooter
+        extra={
+          <Link to="/login" className="book-page__staff">
+            Staff sign in
+          </Link>
+        }
+      />
     </div>
   );
 }

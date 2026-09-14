@@ -1,5 +1,5 @@
 /**
- * Hub CRM brand system tokens — HuB on Lewis logo at /branding/thehublogo.svg
+ * Hub CRM brand system tokens — HuB on Lewis logo at /branding/hublogonoback.png
  */
 
 export const BRAND = {

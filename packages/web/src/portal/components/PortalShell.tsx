@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/BrandLogo.js';
+import HubSiteFooter from '../../components/HubSiteFooter.js';
 import { PORTAL_ROUTES } from '../paths.js';
 import { usePortalStore } from '../portalStore.js';
 import { portalPathForNav, useGuestFacts } from '../guestFacts.js';
@@ -85,6 +86,8 @@ export default function PortalShell() {
           <Outlet />
         </main>
       </div>
+
+      <HubSiteFooter compact />
 
       <nav className="portal-nav-bottom" aria-label="Portal mobile navigation">
         {nav.map(n => (

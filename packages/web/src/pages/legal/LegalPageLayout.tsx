@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import BrandLogo from '../../components/BrandLogo.js';
-import LegalFooterLinks from '../../components/LegalFooterLinks.js';
+import HubSiteFooter from '../../components/HubSiteFooter.js';
 import { BRAND } from '../../branding/tokens.js';
 import { HUB_PUBLIC_CONTACT_EMAIL } from '@hub-crm/shared';
 
@@ -31,12 +31,13 @@ export default function LegalPageLayout({ title, lastUpdated, children }: LegalP
           <a href={`mailto:${HUB_PUBLIC_CONTACT_EMAIL}`}>{HUB_PUBLIC_CONTACT_EMAIL}</a>.
         </p>
       </main>
-      <footer className="legal-page__footer">
-        <LegalFooterLinks showContact={false} />
-        <Link to="/login" className="legal-page__back">
-          ← Back to sign in
-        </Link>
-      </footer>
+      <HubSiteFooter
+        extra={
+          <Link to="/login" className="legal-page__back">
+            ← Back to sign in
+          </Link>
+        }
+      />
     </div>
   );
 }
