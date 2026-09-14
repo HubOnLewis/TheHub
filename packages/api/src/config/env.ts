@@ -99,6 +99,15 @@ const EnvSchema = z.object({
   AI_TIMEOUT_MS: z.coerce.number().optional(),
   /** venue (default HuB) | equipment (legacy unit gates) */
   HUB_PRODUCT_MODE: z.enum(['venue', 'equipment']).optional(),
+
+  /**
+   * Machine read token for /api/agent-read (local multi-agent runtime).
+   * Optional — routes return 401 until set. Never commit the value.
+   */
+  HUB_AGENT_READ_TOKEN: z.string().optional(),
+  HUB_AGENT_TENANT_ID: z.string().optional(),
+  HUB_AGENT_ENTITY: z.string().optional(),
+  HUB_AGENT_LOCATION: z.string().optional(),
 });
 
 const parsed = EnvSchema.safeParse(process.env);

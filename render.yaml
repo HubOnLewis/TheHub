@@ -119,6 +119,16 @@ services:
       - key: AI_TIMEOUT_MS
         value: "120000"
 
+      # Onsite companion machine auth (set in Dashboard; never commit value)
+      - key: HUB_AGENT_READ_TOKEN
+        sync: false
+      - key: HUB_AGENT_TENANT_ID
+        value: hub-on-lewis
+      - key: HUB_AGENT_ENTITY
+        value: Hub
+      - key: HUB_AGENT_LOCATION
+        value: On Lewis
+
   - type: web
     name: The-Hub
     runtime: static

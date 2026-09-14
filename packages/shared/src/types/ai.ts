@@ -82,6 +82,14 @@ export interface AiStatusResponse {
   /** True when no onsite/cloud model is configured */
   offline: boolean;
   roles: AiRoleDescriptor[];
+  /** Onsite outbound companion (job bridge) — no LAN secrets */
+  localNode?: {
+    connected: boolean;
+    lastHeartbeatAt: string | null;
+    currentJobId: string | null;
+    lastSuccessfulJobId: string | null;
+    bridge: 'outbound_jobs';
+  };
 }
 
 export interface AiRoleDescriptor {

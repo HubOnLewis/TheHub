@@ -6,6 +6,9 @@ import { requireAuth, requireRole } from '../middleware/auth.js';
 import { resolveTenant } from '../tenancy/index.js';
 import { validate } from '../middleware/validate.js';
 import { aiService } from '../services/AiService.js';
+import { aiJobService } from '../services/AiJobService.js';
+import { getDB } from '../config/db.js';
+import { isAgentReadTokenConfigured } from '../middleware/agentReadAuth.js';
 
 const router = Router();
 
@@ -64,7 +67,33 @@ router.get('/status', async (req, res, next) => {
   try {
     const probe = req.query.probe === '1' || req.query.probe === 'true';
     const status = await aiService.getStatus({ probe });
-    res.json(status);
+    const worker = await aiJobService.workerStatus(getDB(), req.tenant).catch(() => null);
+    const bridgeConfigured = isAgentReadTokenConfigured();
+    res.json({
+      ...status,
+      // Outbound companion bridge is the production local-AI path (not AI_PROVIDER=local tunnel).
+      enabled: status.enabled || bridgeConfigured,
+      message: bridgeConfigured
+        ? worker?.connected
+          ? 'Local AI node connected (outbound companion). Analysis jobs run asynchronously.'
+          : 'Local AI bridge configured; waiting for onsite companion heartbeat.'
+        : status.message,
+      localNode: worker
+        ? {
+            connected: worker.connected,
+            lastHeartbeatAt: worker.lastHeartbeatAt,
+            currentJobId: worker.currentJobId,
+            lastSuccessfulJobId: worker.lastSuccessfulJobId,
+            bridge: 'outbound_jobs' as const,
+          }
+        : {
+            connected: false,
+            lastHeartbeatAt: null,
+            currentJobId: null,
+            lastSuccessfulJobId: null,
+            bridge: 'outbound_jobs' as const,
+          },
+    });
   } catch (err) {
     next(err);
   }
