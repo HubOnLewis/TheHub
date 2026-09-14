@@ -31,7 +31,6 @@ function deriveWebServiceOrigin(serviceName: string, root: string): string {
 const PRODUCTION_FRONTEND_ORIGINS = [
   'https://admin.hubonlewis.com',
   'https://the-hub-qy8a.onrender.com',
-  'https://the-hub.onrender.com',
 ];
 
 function resolveAllowedOrigins(opts: {

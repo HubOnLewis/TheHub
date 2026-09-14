@@ -164,8 +164,8 @@ npm run verify:deploy          # typecheck + production build
 npm run smoke:production       # after live deploy (optional)
 ```
 
-Default alpha URLs: `https://The-Hub.onrender.com` (web), `https://The-Hub-Api.onrender.com` (API).
- * Render may lowercase public URL slugs for default *.onrender.com web URLs.
+Default alpha URLs: `https://admin.hubonlewis.com` (web), `https://api.hubonlewis.com` (API).
+ * Canonical Render web URL: https://the-hub-qy8a.onrender.com
  * Production API uses custom domain: https://api.hubonlewis.com
 
 ---

@@ -11,7 +11,7 @@ Use this checklist when deploying the alpha with the client **without** pre-exis
 | JWT signing secret | `generateValue: true` on API |
 | Service names | API `The-Hub-Api`; web `The-Hub` |
 | Render plan | API uses `starter`; static web omits `plan` because Render static-site services do not accept that field |
-| CORS `CLIENT_URL` | Derived from `HUB_WEB_SERVICE_NAME` → `https://The-Hub.onrender.com` (Render may serve lowercase `https://the-hub.onrender.com`) |
+| CORS origins | Explicitly includes `https://the-hub-qy8a.onrender.com` and `https://admin.hubonlewis.com` |
 | Web `VITE_API_URL` | `https://api.hubonlewis.com/api` (custom API domain) |
 | Team admin emails | `SUPER_ADMIN_EMAILS` in `render.yaml` |
 | First login user | API `preDeployCommand` seeds `jason@hubonlewis.com` when DB has **zero** users |

@@ -2,13 +2,16 @@
  * Production smoke — public routes + API health (no auth required for listed paths).
  *
  * Usage:
- *   HUB_WEB_URL=https://the-hub.onrender.com \
+ *   HUB_WEB_URLS=https://the-hub-qy8a.onrender.com,https://admin.hubonlewis.com \
  *   HUB_API_URL=https://api.hubonlewis.com \
  *   node scripts/smoke-production.mjs
  */
 import { chromium } from 'playwright';
 
-const WEB = (process.env.HUB_WEB_URL ?? 'https://the-hub.onrender.com').replace(/\/$/, '');
+const WEB_TARGETS = (process.env.HUB_WEB_URLS ?? process.env.HUB_WEB_URL ?? 'https://the-hub-qy8a.onrender.com,https://admin.hubonlewis.com')
+  .split(',')
+  .map(url => url.trim().replace(/\/$/, ''))
+  .filter(Boolean);
 const API = (process.env.HUB_API_URL ?? 'https://api.hubonlewis.com').replace(/\/$/, '');
 
 const PUBLIC_ROUTES = [
@@ -38,7 +41,6 @@ async function checkHealth() {
 }
 
 const browser = await chromium.launch();
-const page = await browser.newPage();
 let failed = 0;
 
 try {
@@ -48,45 +50,58 @@ try {
   console.error('FAIL API health:', e.message);
 }
 
-for (const route of PUBLIC_ROUTES) {
-  try {
-    await page.goto(`${WEB}${route}`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    const title = await page.title();
-    if (!title || title.toLowerCase().includes('error')) {
-      failed++;
-      console.error(`FAIL ${route}: bad title "${title}"`);
-    } else {
-      console.log(`OK   ${route} — ${title}`);
-    }
-  } catch (e) {
-    failed++;
-    console.error(`FAIL ${route}:`, e.message);
-  }
-}
+for (const web of WEB_TARGETS) {
+  const page = await browser.newPage();
+  console.log(`\nChecking web host: ${web}`);
 
-for (const route of AUTH_ROUTES) {
-  try {
-    await page.goto(`${WEB}${route}`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    const url = page.url();
-    const onLogin = url.includes('/login');
-    if (onLogin) {
-      console.log(`OK   ${route} — redirects to login (expected without session)`);
-    } else {
+  for (const route of PUBLIC_ROUTES) {
+    try {
+      await page.goto(`${web}${route}`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
       const title = await page.title();
-      console.log(`OK   ${route} — ${title} (session may exist)`);
+      const bodyText = await page.locator('body').innerText();
+      if (
+        !title ||
+        title.toLowerCase().includes('error') ||
+        title.toLowerCase().includes('render - application loading') ||
+        bodyText.includes('Application loading')
+      ) {
+        failed++;
+        console.error(`FAIL ${web}${route}: app did not load (title "${title}")`);
+      } else {
+        console.log(`OK   ${route} — ${title}`);
+      }
+    } catch (e) {
+      failed++;
+      console.error(`FAIL ${web}${route}:`, e.message);
     }
+  }
+
+  for (const route of AUTH_ROUTES) {
+    try {
+      await page.goto(`${web}${route}`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+      const url = page.url();
+      const onLogin = url.includes('/login');
+      if (onLogin) {
+        console.log(`OK   ${route} — redirects to login (expected without session)`);
+      } else {
+        const title = await page.title();
+        console.log(`OK   ${route} — ${title} (session may exist)`);
+      }
+    } catch (e) {
+      failed++;
+      console.error(`FAIL ${web}${route}:`, e.message);
+    }
+  }
+
+  try {
+    await page.goto(`${web}/r/DEMO`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    console.log(`OK   /r/DEMO — landed at ${page.url()}`);
   } catch (e) {
     failed++;
-    console.error(`FAIL ${route}:`, e.message);
+    console.error(`FAIL ${web}/r/DEMO:`, e.message);
   }
-}
 
-try {
-  await page.goto(`${WEB}/r/DEMO`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-  console.log(`OK   /r/DEMO — landed at ${page.url()}`);
-} catch (e) {
-  failed++;
-  console.error('FAIL /r/DEMO:', e.message);
+  await page.close();
 }
 
 await browser.close();
@@ -95,4 +110,4 @@ if (failed > 0) {
   console.error(`\n${failed} check(s) failed`);
   process.exit(1);
 }
-console.log(`\nProduction smoke passed (web ${WEB})`);
+console.log(`\nProduction smoke passed for ${WEB_TARGETS.length} web hosts`);
