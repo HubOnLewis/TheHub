@@ -1,0 +1,44 @@
+﻿# NewSite — HuB on Lewis public marketing site
+#
+# Apply in Render: Dashboard → New → Blueprint → connect HubOnLewis/TheHub
+# → select this file: NewSite/render.yaml
+#
+# This is a STATIC site (CDN). It does NOT need the $7/mo Starter web plan.
+# Static sites on Render are free and are the correct runtime for Vite output.
+# Use your ~$7 budget for the CRM web service instead, or for a custom domain later.
+#
+# After apply:
+#   1. Wait for first deploy to go live (*.onrender.com)
+#   2. Optional: attach custom domain hubonlewis.com → this static service
+#   3. Booking CTAs already point at https://the-hub-qy8a.onrender.com/book
+
+services:
+  - type: web
+    name: hub-on-lewis-marketing
+    runtime: static
+    region: oregon
+
+    rootDir: NewSite
+
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+
+    # SPA-style fallback (single-page anchors still work; this covers deep links)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
