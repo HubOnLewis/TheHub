@@ -1,0 +1,609 @@
+/**
+ * Premium venue UI polish — hospitality command center.
+ * Loaded last among staff CRM styles. Presentation only.
+ * Accent: champagne gold + ink (not purple SaaS defaults).
+ */
+
+.app-shell--hub-admin {
+  --hub-canvas: #f4f0e8;
+  --hub-card: #fffcf7;
+  --hub-card-muted: #f7f2ea;
+  --hub-border: #ddd4c6;
+  --hub-border-soft: #ebe4d8;
+  --hub-text: #1c1917;
+  --hub-text-secondary: #57534e;
+  --hub-text-muted: #78716c;
+  --hub-accent: #9a7b4f;
+  --hub-accent-soft: rgba(154, 123, 79, 0.12);
+  --hub-accent-border: rgba(154, 123, 79, 0.32);
+  --hub-gold: #c4a574;
+  --hub-gold-soft: rgba(196, 165, 116, 0.16);
+  --hub-ink: #1c1917;
+  --hub-radius: 14px;
+  --hub-radius-sm: 10px;
+  --hub-shadow: 0 1px 2px rgba(28, 25, 23, 0.04), 0 8px 24px rgba(28, 25, 23, 0.04);
+  --hub-shadow-md: 0 2px 4px rgba(28, 25, 23, 0.05), 0 12px 28px rgba(28, 25, 23, 0.06);
+  --hub-row-hover: rgba(196, 165, 116, 0.1);
+  --hub-font: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --hub-display: 'Barlow Condensed', 'Inter', system-ui, sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  height: auto !important;
+  overflow: visible !important;
+  background:
+    radial-gradient(1200px 480px at 8% -10%, rgba(196, 165, 116, 0.14), transparent 55%),
+    radial-gradient(900px 420px at 100% 0%, rgba(28, 25, 23, 0.04), transparent 50%),
+    var(--hub-canvas);
+}
+
+[data-theme='dark'] .app-shell--hub-admin {
+  --hub-canvas: #0c0f14;
+  --hub-card: #141a22;
+  --hub-card-muted: #1a222d;
+  --hub-border: rgba(255, 255, 255, 0.1);
+  --hub-border-soft: rgba(255, 255, 255, 0.07);
+  --hub-text: #f5f1ea;
+  --hub-text-secondary: #a8a29e;
+  --hub-text-muted: #78716c;
+  --hub-accent: #c4a574;
+  --hub-accent-soft: rgba(196, 165, 116, 0.14);
+  --hub-row-hover: rgba(196, 165, 116, 0.08);
+  background:
+    radial-gradient(1000px 420px at 0% 0%, rgba(196, 165, 116, 0.08), transparent 50%),
+    var(--hub-canvas);
+}
+
+/* ── Top navigation ───────────────────────────────────────── */
+
+.app-shell--hub-admin .crm-topnav--light,
+.app-shell--hub-admin .crm-topnav {
+  background: rgba(255, 252, 247, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--hub-border-soft);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 8px 24px rgba(28, 25, 23, 0.04);
+  min-height: 68px;
+  padding: 0 24px;
+  gap: 16px;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav--light,
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav {
+  background: rgba(20, 26, 34, 0.94);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+
+.app-shell--hub-admin .crm-topnav__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.app-shell--hub-admin .crm-topnav__venue-name {
+  font-family: var(--hub-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hub-ink);
+  line-height: 1.1;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__venue-name {
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .crm-topnav__venue-sub {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hub-text-muted);
+  margin-top: 2px;
+}
+
+.app-shell--hub-admin .crm-topnav__venue-loc {
+  display: block;
+  font-size: 10px;
+  color: var(--hub-gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+.app-shell--hub-admin .crm-topnav__link {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--hub-text-secondary);
+  padding: 8px 12px;
+  border-radius: 999px;
+  transition: background var(--ease-out, 0.15s ease), color var(--ease-out, 0.15s ease);
+}
+
+.app-shell--hub-admin .crm-topnav__link:hover {
+  color: var(--hub-text);
+  background: var(--hub-card-muted);
+}
+
+.app-shell--hub-admin .crm-topnav__link--active {
+  color: var(--hub-ink) !important;
+  background: var(--hub-accent-soft) !important;
+  box-shadow: inset 0 0 0 1px var(--hub-accent-border);
+  font-weight: 600;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__link--active {
+  color: var(--hub-gold) !important;
+}
+
+.app-shell--hub-admin .crm-topnav__badge {
+  background: var(--hub-ink);
+  color: #f8f4ec;
+  font-size: 10px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+}
+
+.app-shell--hub-admin .crm-topnav__user-avatar {
+  background: linear-gradient(145deg, #c4a574, #8a6a3e) !important;
+  color: #fffdf9 !important;
+  width: 30px;
+  height: 30px;
+  font-size: 11px;
+}
+
+/* ── Content gutters / shared surfaces ────────────────────── */
+
+.app-shell--hub-admin .crm-events-workspace,
+.app-shell--hub-admin .hub-reports-page,
+.app-shell--hub-admin .hub-admin-settings,
+.app-shell--hub-admin .command-page,
+.app-shell--hub-admin .page-simple,
+.app-shell--hub-admin .ops-home {
+  padding-left: clamp(16px, 2.2vw, 28px);
+  padding-right: clamp(16px, 2.2vw, 28px);
+  padding-bottom: 36px;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.app-shell--hub-admin .ops-home {
+  padding-top: 20px;
+}
+
+.app-shell--hub-admin .card,
+.app-shell--hub-admin .crm-events-panel,
+.app-shell--hub-admin .monthly-scorecard,
+.app-shell--hub-admin .settings-panel,
+.app-shell--hub-admin .ops-row-panel,
+.app-shell--hub-admin .ops-home__panel {
+  background: var(--hub-card);
+  border: 1px solid var(--hub-border-soft);
+  border-radius: var(--hub-radius);
+  box-shadow: var(--hub-shadow);
+}
+
+.app-shell--hub-admin .btn-primary {
+  background: var(--hub-ink);
+  border-color: var(--hub-ink);
+  color: #f8f4ec;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset;
+}
+
+.app-shell--hub-admin .btn-primary:hover {
+  background: #292524;
+  border-color: #292524;
+}
+
+.app-shell--hub-admin .btn-secondary {
+  background: var(--hub-card);
+  border-color: var(--hub-border);
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin .btn-secondary:hover {
+  background: var(--hub-card-muted);
+  border-color: var(--hub-accent-border);
+}
+
+/* ── Dashboard / Ops Home ─────────────────────────────────── */
+
+.ops-home {
+  gap: 22px;
+}
+
+.ops-home__header {
+  align-items: flex-end;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--hub-border-soft, #ebe4d8);
+  margin-bottom: 4px;
+}
+
+.ops-home__identity {
+  min-width: 0;
+  flex: 1;
+}
+
+.ops-home__kicker {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  font-weight: 600;
+  color: var(--hub-gold, #c4a574);
+}
+
+.ops-home__title {
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif);
+  font-size: clamp(28px, 3.2vw, 36px);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--hub-ink, #1c1917);
+  margin: 6px 0 8px;
+  line-height: 1.05;
+}
+
+.ops-home__sub {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--hub-text-secondary, #57534e);
+  max-width: 54ch;
+}
+
+.ops-home__metrics {
+  gap: 12px;
+}
+
+.ops-home__metric {
+  background: var(--hub-card, #fffcf7);
+  border: 1px solid var(--hub-border-soft, #ebe4d8);
+  border-radius: var(--hub-radius, 14px);
+  padding: 14px 16px;
+  box-shadow: var(--hub-shadow, 0 1px 2px rgba(28, 25, 23, 0.04));
+  position: relative;
+  overflow: hidden;
+}
+
+.ops-home__metric::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--hub-gold, #c4a574);
+}
+
+.ops-home__metric span {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--hub-text-muted, #78716c);
+}
+
+.ops-home__metric strong {
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  margin-top: 4px;
+  display: block;
+  color: var(--hub-ink, #1c1917);
+}
+
+.ops-home__metric--warn strong { color: #b45309; }
+.ops-home__metric--urgent strong { color: #be123c; }
+.ops-home__metric--warn::before { background: #f59e0b; }
+.ops-home__metric--urgent::before { background: #e11d48; }
+
+.ops-home__morning {
+  background: var(--hub-card, #fffcf7);
+  border: 1px solid var(--hub-border-soft, #ebe4d8);
+  border-radius: var(--hub-radius, 14px);
+  padding: 16px 18px 18px;
+  box-shadow: var(--hub-shadow, none);
+}
+
+.ops-home__morning-head h2,
+.ops-home__panel h2 {
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif);
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.ops-home__do-now {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  margin: 10px 0 14px;
+  border-radius: 12px;
+  background: linear-gradient(120deg, #1c1917 0%, #2d2620 60%, #3f3428 100%);
+  color: #f8f4ec;
+  box-shadow: var(--hub-shadow-md, none);
+}
+
+.ops-home__do-now-kicker {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(196, 165, 116, 0.95);
+  margin-bottom: 4px;
+}
+
+.ops-home__do-now strong {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.ops-home__do-now p {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(248, 244, 236, 0.72);
+  max-width: 52ch;
+}
+
+.ops-home__do-now .btn-primary {
+  background: var(--hub-gold, #c4a574);
+  border-color: var(--hub-gold, #c4a574);
+  color: #1c1917;
+  font-weight: 700;
+}
+
+.ops-home__do-now .btn-primary:hover {
+  background: #d4b888;
+  border-color: #d4b888;
+}
+
+.inbox-triage-card {
+  border-radius: 12px;
+  border-color: var(--hub-border-soft, #ebe4d8);
+  background: var(--hub-card-muted, #f7f2ea);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.inbox-triage-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--hub-shadow-md, 0 8px 20px rgba(28, 25, 23, 0.06));
+  border-color: var(--hub-accent-border, rgba(154, 123, 79, 0.32));
+}
+
+.inbox-triage-card strong {
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif);
+  font-size: 26px;
+}
+
+.ops-home__panel {
+  padding: 16px 18px;
+}
+
+.ops-home__panel header span {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hub-text-muted, #78716c);
+  background: var(--hub-card-muted, #f7f2ea);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.ops-home-row {
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 12px 10px;
+}
+
+.ops-home-row:hover {
+  background: var(--hub-row-hover, rgba(196, 165, 116, 0.1));
+  border-color: var(--hub-border-soft, #ebe4d8);
+}
+
+.ops-home-row__when {
+  color: var(--hub-accent, #9a7b4f) !important;
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ops-home__empty {
+  padding: 18px 8px;
+  text-align: left;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.ops-home__far {
+  background: var(--hub-card-muted, #f7f2ea);
+  border-style: solid;
+  border-color: var(--hub-border-soft, #ebe4d8);
+}
+
+.crm-start-here {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--hub-accent-border, rgba(154, 123, 79, 0.32));
+  background: linear-gradient(180deg, rgba(196, 165, 116, 0.12), rgba(255, 252, 247, 0.9));
+}
+
+.crm-start-here__kicker {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hub-accent, #9a7b4f);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+/* ── Shared ops intel pages (Leads, Tasks, etc.) ──────────── */
+
+.ops-intel-hero {
+  background: linear-gradient(135deg, #1c1917 0%, #2a2420 46%, #3d3228 100%) !important;
+  border: 1px solid rgba(196, 165, 116, 0.22);
+  box-shadow: var(--hub-shadow-md, none);
+  padding: 20px 22px 16px !important;
+}
+
+.ops-intel-hero__glow {
+  background: radial-gradient(ellipse at 25% 15%, rgba(196, 165, 116, 0.28), transparent 55%) !important;
+}
+
+.ops-intel-hero__title {
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif) !important;
+  font-size: clamp(26px, 3vw, 32px) !important;
+  letter-spacing: 0.03em !important;
+  text-transform: uppercase;
+  font-weight: 700 !important;
+}
+
+.ops-intel-stat {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(196, 165, 116, 0.18) !important;
+}
+
+.ops-row-panel {
+  margin-top: 4px;
+}
+
+.ops-row-panel__head h2 {
+  font-family: var(--hub-display, 'Barlow Condensed', sans-serif);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+
+.ops-row {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ops-row:hover {
+  background: var(--hub-row-hover, rgba(196, 165, 116, 0.1));
+  border-color: var(--hub-border-soft, #ebe4d8);
+}
+
+.ops-filter-chips {
+  gap: 8px;
+}
+
+.ops-filter-chip {
+  border-radius: 999px !important;
+  border: 1px solid var(--hub-border, #ddd4c6);
+  background: var(--hub-card, #fffcf7);
+  color: var(--hub-text-secondary, #57534e);
+}
+
+.ops-filter-chip--active,
+.ops-filter-chip.is-active,
+button.ops-filter-chip[aria-pressed='true'] {
+  background: var(--hub-accent-soft, rgba(154, 123, 79, 0.12)) !important;
+  border-color: var(--hub-accent-border, rgba(154, 123, 79, 0.32)) !important;
+  color: var(--hub-ink, #1c1917) !important;
+  font-weight: 600;
+}
+
+/* Calendar / tables / common CRM surfaces */
+.app-shell--hub-admin .crm-metric-card--selected {
+  border-color: var(--hub-accent-border) !important;
+  box-shadow: inset 0 0 0 1px var(--hub-accent-border);
+  background: var(--hub-accent-soft) !important;
+}
+
+.app-shell--hub-admin table.data-table th,
+.app-shell--hub-admin .crm-events-table th {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hub-text-muted);
+  background: var(--hub-card-muted);
+}
+
+.app-shell--hub-admin .empty-state,
+.app-shell--hub-admin .live-empty {
+  border-radius: var(--hub-radius);
+  border: 1px dashed var(--hub-border);
+  background: var(--hub-card-muted);
+  padding: 28px 20px;
+}
+
+/* Scroll safety — never lock the page; keep content within viewport width */
+.app-shell--hub-admin,
+.app-shell--hub-admin .crm-pv-shell,
+.app-shell--hub-admin .crm-pv-shell__content {
+  max-width: 100%;
+  height: auto !important;
+  min-height: 100vh;
+  overflow: visible !important;
+}
+
+.app-shell--hub-admin .page-content,
+.app-shell--hub-admin .page-content--dashboard,
+.app-shell--hub-admin .ops-home {
+  max-width: 100%;
+  height: auto !important;
+  overflow: visible !important;
+  flex: none !important;
+}
+
+.app-shell--hub-admin .crm-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 220px;
+  margin: 24px auto;
+  max-width: 420px;
+  padding: 28px 24px;
+  border-radius: var(--hub-radius);
+  border: 1px solid var(--hub-border-soft);
+  background: var(--hub-card);
+  box-shadow: var(--hub-shadow);
+  color: var(--hub-text-secondary);
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .ops-home__header {
+    align-items: flex-start;
+  }
+
+  .ops-home__do-now {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-shell--hub-admin .crm-topnav--light,
+  .app-shell--hub-admin .crm-topnav {
+    padding: 0 12px;
+    min-height: 60px;
+  }
+
+  .ops-home__title {
+    font-size: 28px;
+  }
+
+  .ops-home__metric strong {
+    font-size: 24px;
+  }
+}

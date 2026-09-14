@@ -20,6 +20,7 @@
 @import './styles/hub-admin-shell.css';
 @import './styles/hospitality-financial.css';
 @import './styles/premium-command-density.css';
+@import './styles/premium-venue-ui.css';
 @import './portal/styles/portal.css';
 
 :root {

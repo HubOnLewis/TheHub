@@ -58,7 +58,8 @@ export default function CrmTopNav() {
         <BrandLogo size="sm" />
         <div className="crm-topnav__venue">
           <span className="crm-topnav__venue-name">{BRAND.venueName}</span>
-          <span className="crm-topnav__venue-sub">{BRAND.productName}</span>
+          <span className="crm-topnav__venue-sub">{BRAND.productSubtitle}</span>
+          <span className="crm-topnav__venue-loc">{BRAND.venueLocation}</span>
         </div>
       </div>
       <nav className="crm-topnav__links">

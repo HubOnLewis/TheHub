@@ -174,7 +174,7 @@ export default function OpsHome() {
   return (
     <div className="ops-home">
       <header className="ops-home__header">
-        <div>
+        <div className="ops-home__identity">
           <p className="ops-home__kicker">{formatTodayLabel()}</p>
           <h1 className="ops-home__title">Today at The Hub</h1>
           <p className="ops-home__sub">
