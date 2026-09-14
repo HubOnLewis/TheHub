@@ -54,10 +54,44 @@ const FailSchema = NodeSchema.extend({
   runtimeMetadata: CompleteSchema.shape.runtimeMetadata,
 });
 
+const EnqueueSchema = z.object({
+  agent: z.enum([
+    'lead-intelligence',
+    'event-operations',
+    'follow-up-drafting',
+    'daily-briefing',
+    'data-quality',
+  ]),
+  recordType: z.enum(['lead', 'event', 'none']),
+  recordId: z.string().min(1).optional().nullable(),
+  taskType: z
+    .enum(['analyze_lead', 'analyze_event', 'draft_follow_up', 'daily_briefing', 'data_quality_scan'])
+    .optional(),
+  input: z.record(z.unknown()).optional(),
+});
+
 router.get('/health', async (req, res, next) => {
   try {
     const status = await aiJobService.workerStatus(getDB(), req.tenant);
     res.json({ status: 'ok', surface: 'agent-worker', worker: status });
+  } catch (err) {
+    next(err);
+  }
+});
+
+/** Machine may enqueue jobs for its tenant (onsite proof / automation). */
+router.post('/jobs', validate(EnqueueSchema), async (req, res, next) => {
+  try {
+    const job = await aiJobService.create(getDB(), req.tenant, req.body);
+    res.status(201).json(job);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/jobs/:id', async (req, res, next) => {
+  try {
+    res.json(await aiJobService.getById(getDB(), req.tenant, req.params['id']!));
   } catch (err) {
     next(err);
   }
