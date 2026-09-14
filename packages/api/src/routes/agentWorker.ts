@@ -89,14 +89,6 @@ router.post('/jobs', validate(EnqueueSchema), async (req, res, next) => {
   }
 });
 
-router.get('/jobs/:id', async (req, res, next) => {
-  try {
-    res.json(await aiJobService.getById(getDB(), req.tenant, req.params['id']!));
-  } catch (err) {
-    next(err);
-  }
-});
-
 router.post('/heartbeat', validate(HeartbeatSchema), async (req, res, next) => {
   try {
     const row = await aiJobService.heartbeat(getDB(), req.tenant, req.body);
@@ -123,6 +115,14 @@ router.get('/jobs/next', async (req, res, next) => {
       ...claimed,
       input: raw?.input ?? {},
     });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/jobs/:id', async (req, res, next) => {
+  try {
+    res.json(await aiJobService.getById(getDB(), req.tenant, req.params['id']!));
   } catch (err) {
     next(err);
   }
