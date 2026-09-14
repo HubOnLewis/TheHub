@@ -34,10 +34,10 @@ export default function AiModelSettingsPanel() {
     <section className="card settings-provider-card" style={{ marginTop: 20 }}>
       <h4>Local model / AI bridge</h4>
       <p className="settings-muted">
-        Onsite box talks to the Hub API. Hub talks to a local OpenAI-compatible model only when
-        AI_PROVIDER=local. Production stays on AI_PROVIDER=none until the model PC is built.
-        Roles: assistant, lead generator, accounting manager, booking assistant — draft only, human
-        approve outbound. Browser never talks to the model host.
+        Production local AI uses an outbound companion on the Hub PC (no public tunnels to Ollama).
+        Staff request analysis from Lead/Event pages; jobs queue on Render and complete on the PC.
+        AI_PROVIDER=local remains an optional direct model path. Browser never talks to the model host.
+        Results are advisory only — nothing sends or mutates CRM automatically.
       </p>
 
       {isLoading ? (
@@ -57,6 +57,16 @@ export default function AiModelSettingsPanel() {
               <li>Model: {status.model ?? '—'}</li>
               <li>Host: {status.baseUrlHost ?? '—'}</li>
               <li>Product mode: {status.productMode}</li>
+              <li>
+                Local AI node:{' '}
+                {status.localNode?.connected
+                  ? `connected · last heartbeat ${status.localNode.lastHeartbeatAt ?? '—'}`
+                  : status.localNode
+                    ? 'disconnected (outbound companion)'
+                    : '—'}
+              </li>
+              <li>Current job: {status.localNode?.currentJobId ?? '—'}</li>
+              <li>Last successful job: {status.localNode?.lastSuccessfulJobId ?? '—'}</li>
             </ul>
           ) : null}
           <p className="settings-muted" style={{ marginTop: 8 }}>
