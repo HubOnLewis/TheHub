@@ -19,7 +19,11 @@ export function errorHandler(
   }
 
   if (err instanceof AppError) {
-    res.status(err.statusCode).json({ error: err.message });
+    const payload: { error: string; code?: string } = { error: err.message };
+    if ('code' in err && typeof (err as { code?: unknown }).code === 'string' && (err as { code: string }).code) {
+      payload.code = (err as { code: string }).code;
+    }
+    res.status(err.statusCode).json(payload);
     return;
   }
 

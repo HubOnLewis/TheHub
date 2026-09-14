@@ -10,7 +10,8 @@ test('public inquiry CORS always includes admin and localhost, never wildcard', 
   const merged = mergePublicInquiryOrigins([]);
   assert.equal(merged.includes('*'), false);
   assert.ok(merged.includes('https://admin.hubonlewis.com'));
-  assert.ok(merged.includes('http://localhost:5173'));
+  assert.ok(merged.includes('https://the-hub-qy8a.onrender.com'));
+  assert.ok(merged.includes('https://hubonlewis.com'));
   assert.ok(merged.includes('http://127.0.0.1:5173'));
   assert.equal(PUBLIC_INQUIRY_ORIGINS.includes('*' as (typeof PUBLIC_INQUIRY_ORIGINS)[number]), false);
 });

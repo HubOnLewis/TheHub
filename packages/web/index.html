@@ -12,8 +12,8 @@
     <script>
       (function () {
         var p = location.pathname;
-        if (p === '/book' || p.indexOf('/book/') === 0) {
-          document.title = 'Book your event · HuB on Lewis';
+        if (p === '/book' || p.indexOf('/book/') === 0 || p === '/availability') {
+          document.title = 'Request your date · HuB on Lewis';
           document.documentElement.setAttribute('data-theme', 'light');
           document.documentElement.classList.add('public-book');
         }

@@ -17,6 +17,8 @@ const {
 const { knownEventTypeFromCreate } = await import('./PlaybookService.js');
 const { dealService } = await import('./DealService.js');
 const { leadService } = await import('./LeadService.js');
+const { publicAvailabilityService } = await import('./PublicAvailabilityService.js');
+const { AVAILABILITY_CHANGED_CODE, AVAILABILITY_CHANGED_MESSAGE } = await import('@hub-crm/shared');
 const { BadRequestError, ConflictError } = await import('../errors/index.js');
 const { DealRepository } = await import('../repositories/DealRepository.js');
 
@@ -112,7 +114,12 @@ const inquiryBody = {
   guests: 80,
 };
 
+function mockPublicDay(status: 'available' | 'hold' | 'booked' | 'closed' = 'available') {
+  mock.method(publicAvailabilityService, 'statusForDate', async () => status);
+}
+
 function mockTakenMainHall() {
+  mockPublicDay('available');
   mock.method(DealRepository, 'listOccupancyForDate', async () => ({
     data: [{
       _id: 'existing',
@@ -213,7 +220,10 @@ test('conflict rejection does not create a lead or deal', async () => {
 
   await assert.rejects(
     () => inquiryService.create({} as never, inquiryBody),
-    (err: unknown) => err instanceof ConflictError && (err as Error).message === ROOM_TAKEN_MESSAGE,
+    (err: unknown) =>
+      err instanceof ConflictError &&
+      (err as Error).message === AVAILABILITY_CHANGED_MESSAGE &&
+      (err as { code?: string }).code === AVAILABILITY_CHANGED_CODE,
   );
   assert.equal(calls.leadCalls(), 0);
   assert.equal(calls.dealCalls(), 0);
@@ -307,7 +317,21 @@ test('availability ok returns available true without creating a lead', async () 
   assert.equal(calls.leadCalls(), 0);
 });
 
+test('date that became booked returns AVAILABILITY_CHANGED without creating records', async () => {
+  mockPublicDay('booked');
+  const calls = mockNoLeadCreate();
+  await assert.rejects(
+    () => inquiryService.create({} as never, inquiryBody),
+    (err: unknown) =>
+      err instanceof ConflictError &&
+      (err as { code?: string }).code === AVAILABILITY_CHANGED_CODE,
+  );
+  assert.equal(calls.leadCalls(), 0);
+  assert.equal(calls.dealCalls(), 0);
+});
+
 test('successful inquiry returns portalUrl', async () => {
+  mockPublicDay('available');
   mock.method(dealService, 'assertSpaceAvailability', async () => undefined);
   mock.method(leadService, 'create', async () => ({ _id: 'lead_1' }));
   mock.method(dealService, 'create', async () => ({ _id: 'deal_1' }));
@@ -322,7 +346,9 @@ test('successful inquiry returns portalUrl', async () => {
   assert.equal(result.leadId, 'lead_1');
   assert.equal(result.portalPath, '/portal/login?access=tok');
   assert.equal(result.portalUrl, 'https://admin.hubonlewis.com/portal/login?access=tok');
-  assert.equal(result.emailStatus, 'stubbed');
+  assert.equal(result.confirmedBooking, false);
+  assert.equal(result.received, true);
+  assert.equal(result.requestedDate, '2026-10-17');
 });
 
 test('public inquiry stores phone, startTime, and notes on lead and importMeta', () => {

@@ -15,13 +15,18 @@ import { dealService } from './DealService.js';
 import { reuseOrMintPortalToken } from './GuestPortalService.js';
 import { getEmailProvider } from './email/EmailProvider.js';
 import { BadRequestError, ConflictError } from '../errors/index.js';
+import { publicAvailabilityService } from './PublicAvailabilityService.js';
+import {
+  AVAILABILITY_CHANGED_CODE,
+  AVAILABILITY_CHANGED_MESSAGE,
+} from '@hub-crm/shared';
 
 /** Guest-facing copy for create 409 and /availability. */
 export const ROOM_TAKEN_MESSAGE = 'That room is taken that day';
 
-function rethrowGuestConflict(err: unknown, message = ROOM_TAKEN_MESSAGE): never {
+function rethrowGuestConflict(err: unknown, message = ROOM_TAKEN_MESSAGE, code?: string): never {
   if (err instanceof ConflictError) {
-    throw new ConflictError(message);
+    throw new ConflictError(message, code ?? err.code);
   }
   throw err;
 }
@@ -54,8 +59,10 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
   const hannah = getHubTeamMember(HUB_CONTACT_EMAILS.hannah);
 
   const notes = body.notes?.trim() || undefined;
+  const source = body.source?.trim() || 'public_inquiry';
+  const submittedAt = new Date().toISOString();
   const importMeta: Record<string, unknown> = {
-    source: 'public_inquiry',
+    source,
     contactEmail: email,
     contactPhone: body.phone?.trim() || undefined,
     eventType,
@@ -63,6 +70,13 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
     eventDate: dateKey || dateRaw || undefined,
     pvStatus: 'lead',
     inquiryNotes: notes,
+    walkthroughRequested: body.walkthroughRequested === true,
+    alternateDate: body.alternateDate,
+    requestedSpaces: body.requestedSpaces,
+    packageInterest: body.packageInterest,
+    cateringBarNeeds: body.cateringBarNeeds,
+    submittedAt,
+    availabilityStateAtSubmission: 'available',
   };
   if (dateKey && hasSpace) {
     importMeta.eventDateIso = dateKey;
@@ -80,7 +94,7 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
       contact: name,
       email,
       phone: body.phone?.trim() || undefined,
-      source: 'public_inquiry',
+      source,
       notes,
       assignedTo: hannah?.name ?? 'Hannah Bayless',
       status: 'New',
@@ -88,6 +102,10 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
       guestCount: body.guests,
       eventType,
       spacePreference: hasSpace ? space : undefined,
+      walkthroughRequested: body.walkthroughRequested === true,
+      alternateDate: body.alternateDate,
+      availabilityStateAtSubmission: 'available',
+      submittedAt,
     },
     deal: {
       title: eventType ? `${name} — ${eventType}` : `${name} inquiry`,
@@ -154,6 +172,10 @@ export class InquiryService {
       throw new BadRequestError('Please pick a room, an event type, and a date.');
     }
     const mapped = mapPublicInquiryToRecords(body);
+    const publicStatus = await publicAvailabilityService.statusForDate(db, dateKey);
+    if (publicStatus !== 'available') {
+      throw new ConflictError(AVAILABILITY_CHANGED_MESSAGE, AVAILABILITY_CHANGED_CODE);
+    }
     try {
       await dealService.assertSpaceAvailability(
         db,
@@ -163,7 +185,7 @@ export class InquiryService {
         mapped.deal.status,
       );
     } catch (err) {
-      rethrowGuestConflict(err, ROOM_TAKEN_MESSAGE);
+      rethrowGuestConflict(err, AVAILABILITY_CHANGED_MESSAGE, AVAILABILITY_CHANGED_CODE);
     }
     const lead = await leadService.create(db, ctx, mapped.lead);
     let deal;
@@ -188,6 +210,9 @@ export class InquiryService {
     });
 
     return {
+      received: true,
+      confirmedBooking: false,
+      requestedDate: dateKey,
       leadId: String(lead._id),
       eventId: String(deal._id),
       portalPath,

@@ -8,8 +8,13 @@ export function normalizeOrigin(url: string): string {
 /** Public /book form origins — always allowed, never wildcard. */
 export const PUBLIC_INQUIRY_ORIGINS = [
   'https://admin.hubonlewis.com',
+  'https://the-hub-qy8a.onrender.com',
+  'https://hubonlewis.com',
+  'https://www.hubonlewis.com',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
+  'http://localhost:5180',
+  'http://127.0.0.1:5180',
 ] as const;
 
 export function mergePublicInquiryOrigins(existing: readonly string[]): string[] {

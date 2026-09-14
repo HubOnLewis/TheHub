@@ -417,6 +417,7 @@ function AppRouter() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path={ROUTES.book} element={<BookPage />} />
+        <Route path={ROUTES.availability} element={<BookPage />} />
         <Route path={ROUTES.privacy} element={<PrivacyPage />} />
         <Route path={ROUTES.terms} element={<TermsPage />} />
         <Route path="/r/:referralCode" element={<ReferralRedirect />} />

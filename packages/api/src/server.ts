@@ -38,6 +38,7 @@ import agentWorkerRoutes from './routes/agentWorker.js';
 import aiJobsRoutes from './routes/aiJobs.js';
 import { portalStaffRoutes, portalPublicRoutes } from './routes/portal.js';
 import inquiryRoutes from './routes/inquiry.js';
+import publicAvailabilityRoutes from './routes/publicAvailability.js';
 import paymentRoutes from './routes/payments.js';
 import proposalRoutes from './routes/proposals.js';
 import commsRoutes from './routes/comms.js';
@@ -123,6 +124,7 @@ app.use('/api/comms', commsRoutes);
 app.use('/api/portal', portalStaffRoutes);
 app.use('/api/public/portal', portalPublicRoutes);
 app.use('/api/public/inquiry', inquiryRoutes);
+app.use('/api/public/availability', publicAvailabilityRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────
 app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {

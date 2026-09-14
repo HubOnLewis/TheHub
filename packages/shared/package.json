@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "uxcheck": "tsx --test src/venue/guestTimeline.test.ts"
+    "uxcheck": "tsx --test src/venue/guestTimeline.test.ts src/venue/publicAvailability.test.ts"
   },
   "exports": {
     ".": {

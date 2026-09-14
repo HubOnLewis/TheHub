@@ -32,6 +32,10 @@ export const CreateLeadSchema = z.object({
   eventType:  z.string().optional(),
   spacePreference: z.string().optional(),
   estimatedValue: z.number().min(0).optional(),
+  walkthroughRequested: z.boolean().optional(),
+  alternateDate: z.string().optional(),
+  availabilityStateAtSubmission: z.string().optional(),
+  submittedAt: z.string().optional(),
 });
 export type CreateLeadPayload = z.infer<typeof CreateLeadSchema>;
 
@@ -91,6 +95,12 @@ export const PublicInquirySchema = z.object({
   eventType: z.string().min(1, 'Event type required').max(80),
   guests: z.number().int().min(0).max(5000).optional(),
   notes: z.string().max(2000).optional(),
+  walkthroughRequested: z.boolean().optional(),
+  alternateDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+  requestedSpaces: z.string().max(160).optional(),
+  packageInterest: z.string().max(160).optional(),
+  cateringBarNeeds: z.string().max(500).optional(),
+  source: z.string().max(80).optional(),
 });
 export type PublicInquiryPayload = z.infer<typeof PublicInquirySchema>;
 
