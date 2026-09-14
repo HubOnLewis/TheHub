@@ -33,6 +33,9 @@ import deliveryRoutes from './routes/delivery.js';
 import integrationsRoutes from './routes/integrations.js';
 import aiRoutes from './routes/ai.js';
 import agentRoutes from './routes/agents.js';
+import agentReadRoutes from './routes/agentRead.js';
+import agentWorkerRoutes from './routes/agentWorker.js';
+import aiJobsRoutes from './routes/aiJobs.js';
 import { portalStaffRoutes, portalPublicRoutes } from './routes/portal.js';
 import inquiryRoutes from './routes/inquiry.js';
 import paymentRoutes from './routes/payments.js';
@@ -40,6 +43,8 @@ import proposalRoutes from './routes/proposals.js';
 import commsRoutes from './routes/comms.js';
 import { getAiRuntimeConfig } from './config/ai.js';
 import { getApiRoot } from './rootIndex.js';
+import { isAgentReadTokenConfigured } from './middleware/agentReadAuth.js';
+import { AiJobRepository, AiWorkerHeartbeatRepository } from './repositories/AiJobRepository.js';
 
 const app = express();
 
@@ -73,6 +78,11 @@ app.get('/health', (_req, res) => {
       model: ai.model,
       baseUrlHost: ai.baseUrlHost,
     },
+    agentRead: {
+      configured: isAgentReadTokenConfigured(),
+      path: '/api/agent-read',
+      mode: 'read_only',
+    },
   });
 });
 
@@ -95,7 +105,12 @@ app.use('/api/production', productionRoutes);
 app.use('/api/delivery', deliveryRoutes);
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/ai-jobs', aiJobsRoutes);
 app.use('/api/agents', agentRoutes);
+/** Local companion: GET CRM context (machine token). */
+app.use('/api/agent-read', agentReadRoutes);
+/** Local companion: poll/claim/complete AI jobs (machine token). */
+app.use('/api/agent-worker', agentWorkerRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/proposals', proposalRoutes);
 app.use('/api/comms', commsRoutes);
@@ -153,6 +168,12 @@ async function start() {
     );
     await ProposalRepository.ensureIndexes(db).catch(err =>
       console.error('[API] proposals index failed:', err),
+    );
+    await AiJobRepository.ensureIndexes(db).catch(err =>
+      console.error('[API] ai_jobs index failed:', err),
+    );
+    await AiWorkerHeartbeatRepository.ensureIndexes(db).catch(err =>
+      console.error('[API] ai_worker_heartbeats index failed:', err),
     );
     registerJobs(db);
     app.listen(env.PORT, '0.0.0.0', () => {

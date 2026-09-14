@@ -10,4 +10,5 @@ export * from './types/referral.js';
 export * from './types/marketingBlast.js';
 export * from './types/eventFinalization.js';
 export * from './types/ai.js';
+export * from './types/aiJobs.js';
 export * from './venue/index.js';
