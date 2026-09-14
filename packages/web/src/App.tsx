@@ -60,6 +60,12 @@ import ProspectsPage from './pages/ProspectsPage.js';
 import MarketingPage from './pages/MarketingPage.js';
 import ReferralsPage from './pages/ReferralsPage.js';
 import MonthlyScorecardPage from './pages/MonthlyScorecardPage.js';
+import ProductionToday from './pages/ProductionToday.js';
+import ProductionRevenueLeaks from './pages/ProductionRevenueLeaks.js';
+import ProductionAutopilot from './pages/ProductionAutopilot.js';
+import ProductionAuditTrail from './pages/ProductionAuditTrail.js';
+import ContactsPage from './pages/ContactsPage.js';
+import FinancialPaymentsPage from './pages/FinancialPaymentsPage.js';
 import AnalyticsRouteTracker from './components/AnalyticsRouteTracker.js';
 import LegalFooterLinks from './components/LegalFooterLinks.js';
 import ClientReviewBanner from './components/ClientReviewBanner.js';
@@ -275,11 +281,11 @@ function Shell() {
           {!isDeployedAlpha() && <DemoToastStack />}
           <Routes>
             <Route path={ROUTES.dashboard} element={resolveHubRouteElement(ROUTES.dashboard, withLiveModuleBoundary('Home', <Dashboard />))} />
-            <Route path={ROUTES.today} element={resolveHubRouteElement(ROUTES.today, <TodayOperations />, 'Today')} />
+            <Route path={ROUTES.today} element={<ProductionToday />} />
             <Route path={ROUTES.ownerBriefing} element={resolveHubRouteElement(ROUTES.ownerBriefing, withLiveModuleBoundary('Owner briefing', <OwnerBriefing />))} />
-            <Route path={ROUTES.revenueLeaks} element={resolveHubRouteElement(ROUTES.revenueLeaks, <RevenueLeaks />, 'Revenue leaks')} />
+            <Route path={ROUTES.revenueLeaks} element={<ProductionRevenueLeaks />} />
             <Route path={ROUTES.automationImpact} element={resolveHubRouteElement(ROUTES.automationImpact, <AutomationImpact />, 'Automation impact')} />
-            <Route path={ROUTES.autopilot} element={resolveHubRouteElement(ROUTES.autopilot, <AutopilotPage />, 'Autopilot')} />
+            <Route path={ROUTES.autopilot} element={<ProductionAutopilot />} />
             <Route path={ROUTES.inbox} element={resolveHubRouteElement(ROUTES.inbox, withLiveModuleBoundary('Inbox', <InboxPage />))} />
             <Route path={ROUTES.calendar} element={resolveHubRouteElement(ROUTES.calendar, withLiveModuleBoundary('Calendar', <CalendarOccupancy />))} />
             <Route path={ROUTES.tasks} element={resolveHubRouteElement(ROUTES.tasks, withLiveModuleBoundary('Tasks', <TasksCenter />))} />
@@ -294,7 +300,7 @@ function Shell() {
             <Route path={ROUTES.dealsAlias} element={resolveHubRouteElement(ROUTES.dealsAlias, <Deals />)} />
             <Route path={ROUTES.opportunities} element={resolveHubRouteElement(ROUTES.opportunities, <Deals />)} />
             <Route path={ROUTES.userManagement} element={resolveHubRouteElement(ROUTES.userManagement, <UserManagement />)} />
-            <Route path={ROUTES.audit} element={resolveHubRouteElement(ROUTES.audit, <AuditTrail />, 'Audit trail')} />
+            <Route path={ROUTES.audit} element={<ProductionAuditTrail />} />
             <Route path={ROUTES.admin} element={resolveHubRouteElement(ROUTES.admin, <Admin />)} />
             <Route path={ROUTES.accounts} element={resolveHubRouteElement(ROUTES.accounts, <Companies />, HUB_LABELS.accounts)} />
             <Route path={ROUTES.companiesAlias} element={resolveHubRouteElement(ROUTES.companiesAlias, <Companies />, HUB_LABELS.accounts)} />
@@ -306,6 +312,8 @@ function Shell() {
             <Route path={ROUTES.marketing} element={resolveHubRouteElement(ROUTES.marketing, <MarketingPage />, 'Marketing')} />
             <Route path={ROUTES.referrals} element={resolveHubRouteElement(ROUTES.referrals, <ReferralsPage />, 'Referrals')} />
             <Route path={ROUTES.monthlyScorecard} element={resolveHubRouteElement(ROUTES.monthlyScorecard, withLiveModuleBoundary('Reports', <MonthlyScorecardPage />))} />
+            <Route path={ROUTES.contacts} element={<ContactsPage />} />
+            <Route path={ROUTES.financial} element={<FinancialPaymentsPage />} />
             <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
           </Routes>
         </HubAdminShell>

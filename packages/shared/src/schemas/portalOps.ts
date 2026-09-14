@@ -37,6 +37,27 @@ export const PatchProposalSchema = z.object({
 });
 export type PatchProposalPayload = z.infer<typeof PatchProposalSchema>;
 
+export type ImportedProposalLine = {
+  id: string;
+  sourceId?: string;
+  itemName: string;
+  quantity: number;
+  unit?: string;
+  total: number;
+  category?: string;
+  details?: string;
+  sortOrder?: number;
+};
+
+export type ImportedRecordProvenance = {
+  sourceSystem: 'perfect_venue';
+  externalId: string;
+  sourceReport: string;
+  sourceUpdatedAt?: string;
+  importedAt: string;
+  importBatchId: string;
+};
+
 export const ProposalSignSchema = z.object({
   method: z.enum(['typed', 'drawn']),
   name: z.string().min(1).max(120),
@@ -73,6 +94,43 @@ export type ProposalRecord = {
     dataUrl?: string;
     signedAt: string;
   };
+  lines?: ImportedProposalLine[];
+  provenance?: ImportedRecordProvenance;
+};
+
+export type ContactRecord = {
+  id: string;
+  tenantId: string;
+  source: 'perfect_venue' | 'manual';
+  sourceId: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  email?: string;
+  phone?: string;
+  companyId?: string;
+  companyName?: string;
+  conflictGroup?: string;
+  sourceReport?: string;
+  sourceUpdatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ImportedPaymentRecord = {
+  id: string;
+  tenantId: string;
+  eventId?: string;
+  eventTitle?: string;
+  amount: number;
+  paymentType: string;
+  status: string;
+  paymentDate?: string;
+  method?: string;
+  source: 'perfect_venue';
+  sourceId: string;
+  sourceReport?: string;
+  provenance?: ImportedRecordProvenance;
 };
 
 // ── Communications (one in-app thread per event) ─────────────────

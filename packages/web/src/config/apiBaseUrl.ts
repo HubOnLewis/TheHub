@@ -24,9 +24,10 @@ export function resolveApiBaseUrl(): ApiBaseUrlResolution {
   const raw = import.meta.env.VITE_API_URL as string | undefined;
   const trimmed = String(raw ?? '').trim();
   const isProduction = import.meta.env.PROD;
+  const isStaging = import.meta.env.VITE_STAGING_MODE === 'true';
 
   if (isProduction) {
-    if (!trimmed || isLocalhostUrl(trimmed)) {
+    if (!trimmed || (isLocalhostUrl(trimmed) && !isStaging)) {
       return {
         baseUrl: '',
         configError:

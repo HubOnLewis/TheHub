@@ -2,7 +2,7 @@ import type { Db, Document } from 'mongodb';
 import { ObjectId } from 'mongodb';
 import { BaseRepository } from './BaseRepository.js';
 import type { TenantContext } from '../tenancy/index.js';
-import type { ProposalRecord } from '@hub-crm/shared';
+import type { ImportedProposalLine, ImportedRecordProvenance, ProposalRecord } from '@hub-crm/shared';
 
 export interface ProposalSignature {
   method: 'typed' | 'drawn';
@@ -36,6 +36,8 @@ export interface ProposalDoc extends Document {
   createdBy?: string;
   supersedesId?: string;
   signature?: ProposalSignature;
+  lines?: ImportedProposalLine[];
+  provenance?: ImportedRecordProvenance;
 }
 
 function toIso(d: Date | string | undefined): string | undefined {
@@ -76,6 +78,8 @@ export function serializeProposal(doc: ProposalDoc & { _id: string }): ProposalR
           signedAt: toIso(doc.signature.signedAt) ?? new Date().toISOString(),
         }
       : undefined,
+    lines: doc.lines,
+    provenance: doc.provenance,
   };
 }
 

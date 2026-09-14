@@ -13,6 +13,15 @@ export async function connectDB(): Promise<Db> {
   await client.connect();
   database = client.db(env.DB_NAME);
 
+  void database.collection('contacts').createIndex(
+    { tenantId: 1, source: 1, sourceId: 1 },
+    { unique: true, name: 'contacts_tenant_source_sourceId' },
+  );
+  void database.collection('contacts').createIndex(
+    { tenantId: 1, email: 1 },
+    { name: 'contacts_tenant_email' },
+  );
+
   void database.collection('interactions').createIndex(
     { tenantId: 1, companyId: 1, createdAt: -1 },
     { name: 'interactions_tenant_company_created' },

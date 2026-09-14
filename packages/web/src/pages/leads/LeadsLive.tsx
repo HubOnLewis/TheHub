@@ -9,7 +9,6 @@ import AddLeadModal from '../../components/leads/AddLeadModal.js';
 import { Spinner } from '../../components/ui/index.js';
 import { ROUTES } from '../../config/paths.js';
 import { useLeads } from '../../hooks/useLeads.js';
-import { hasImportedVenueRecords } from '../../lib/operationalSource.js';
 import {
   countLiveLeadFilter,
   mapLeadToOperationalRow,
@@ -19,7 +18,6 @@ import {
   resolveLeadsQueueAuthority,
   type LeadsQueueView,
 } from '../../lib/leadsQueueAuthority.js';
-import LeadsImported from './LeadsImported.js';
 
 export default function LeadsLive() {
   const [filter, setFilter] = useState('all');
@@ -29,7 +27,7 @@ export default function LeadsLive() {
   const { data, isLoading, isError } = useLeads({ limit: 100, sort: 'updatedAt', order: 'desc' });
   const leads = (data?.data ?? []) as Array<Record<string, unknown>>;
   const total = data?.total ?? leads.length;
-  const hasImported = hasImportedVenueRecords();
+  const hasImported = false;
 
   const authority = resolveLeadsQueueAuthority({
     isLoading,
@@ -94,7 +92,6 @@ export default function LeadsLive() {
             + New lead
           </button>
         </div>
-        <LeadsImported />
         <AddLeadModal open={addOpen} onClose={() => setAddOpen(false)} />
       </>
     );

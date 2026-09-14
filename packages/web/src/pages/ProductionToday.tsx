@@ -1,0 +1,12 @@
+import { Link } from 'react-router-dom';
+import { formatCurrency } from '@hub-crm/shared';
+import { ROUTES } from '../config/paths.js';
+import { useTodayIntelligence } from '../hooks/useProductionIntelligence.js';
+
+export default function ProductionToday() {
+  const query = useTodayIntelligence();
+  if (query.isLoading) return <main className="page-simple"><div className="card page-section">Loading live operations…</div></main>;
+  if (query.isError) return <main className="page-simple"><div className="card page-section"><h1>Today</h1><p>Live operations data is temporarily unavailable.</p></div></main>;
+  const data = query.data as any;
+  return <main className="today-ops command-page"><header className="today-ops__hero"><div><span className="today-ops__badge">Live operations</span><h1 className="page-title">Today</h1><p className="page-subtitle">Current Hub events, open work, and financial attention from Mongo.</p></div><Link to={ROUTES.calendar} className="btn btn-secondary btn-sm">Calendar →</Link></header><div className="today-ops__grid"><section className="today-block today-block--events"><h2>Today&apos;s events</h2>{data.events?.length ? <ul className="today-list">{data.events.map((e:any)=><li key={e._id} className="today-list__row"><div><strong>{e.title}</strong><span>{e.importMeta?.space || 'Event Space'} · {e.importMeta?.guests || 0} guests · {e.status}</span></div></li>)}</ul> : <p className="today-empty">No events scheduled today.</p>}</section><section className="today-block today-block--tasks"><h2>Open follow-ups</h2>{data.tasks?.length ? <ul className="today-list">{data.tasks.map((t:any)=><li key={t._id} className="today-list__row"><div><strong>{t.summary || 'Follow-up'}</strong><span>{t.companyName || 'Hub work'} · {t.followUpAt || ''}</span></div></li>)}</ul> : <p className="today-empty">No open follow-ups with due dates.</p>}</section><section className="today-block today-block--balances"><h2>Balances requiring attention</h2>{data.balances?.length ? <ul className="today-list">{data.balances.map((e:any)=><li key={e._id} className="today-list__row today-list__row--urgent"><div><strong>{e.title}</strong><span>{e.importMeta?.eventDateIso || 'Date not set'}</span></div><span className="today-list__amt">{formatCurrency(Number(e.importMeta?.balanceDue || 0))}</span></li>)}</ul> : <p className="today-empty">No outstanding balances.</p>}</section></div></main>;
+}

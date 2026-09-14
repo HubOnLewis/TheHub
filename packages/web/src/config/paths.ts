@@ -55,6 +55,8 @@ export const ROUTES = {
   marketingBlasts: '/marketing-blasts',
   referrals: '/referrals',
   monthlyScorecard: '/monthly-scorecard',
+  contacts: '/contacts',
+  financial: '/financial/payments',
   /** Public customer booking — unauthenticated */
   book: '/book',
 } as const;

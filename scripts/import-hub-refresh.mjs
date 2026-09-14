@@ -13,7 +13,8 @@ import { MongoClient } from 'mongodb';
 import { mkdirSync, writeFileSync, existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { loadEnv, parseArgs, mapPvToDealStatus, ROOT, getMongoDb, parseMongoTarget } from './lib/hub-refresh-utils.mjs';
+import { createHash } from 'crypto';
+import { loadEnv, parseArgs, mapPvToDealStatus, normalizeName, normalizeEmail, ROOT, getMongoDb, parseMongoTarget } from './lib/hub-refresh-utils.mjs';
 import { runRefreshPipeline } from './lib/hub-refresh-pipeline.mjs';
 import { resolveHubTenantIds, resolvePrimaryHubTenant } from './lib/hub-tenant-resolve.mjs';
 
@@ -24,7 +25,7 @@ const WEB_EVENTS_TS = resolve(ROOT, 'packages/web/src/data/hubRefreshEvents.ts')
 
 loadEnv();
 
-const { root, tenant, apply, audit, dryRun, confirmProduction } = parseArgs(process.argv.slice(2));
+const { root, tenant, apply, audit, dryRun, confirmProduction, archiveStale, staging } = parseArgs(process.argv.slice(2));
 const tenantIds = resolveHubTenantIds(tenant);
 const primaryTenant = resolvePrimaryHubTenant(tenant);
 const importBatchId = `hub-refresh-${new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)}`;
@@ -40,7 +41,7 @@ if (!existsSync(root)) {
 }
 
 const result = runRefreshPipeline({ root, importBatchId });
-const { summary, events, contacts, payments, documents, unmatched, warnings, contamination, discovered } =
+const { summary, events, contacts, proposalLines, supplementaryConflicts, payments, documents, unmatched, warnings, contamination, discovered } =
   result;
 
 console.log('\n[hub-refresh] Folders detected:');
@@ -75,14 +76,18 @@ if (contamination.length) {
 }
 
 mkdirSync(OUT_DIR, { recursive: true });
-const writeArtifacts = () => {
+const writeArtifacts = ({ includeWeb = true } = {}) => {
   writeFileSync(resolve(OUT_DIR, 'events.normalized.json'), JSON.stringify(events, null, 2));
   writeFileSync(resolve(OUT_DIR, 'contacts.normalized.json'), JSON.stringify(contacts, null, 2));
+  writeFileSync(resolve(OUT_DIR, 'proposal-lines.normalized.json'), JSON.stringify(proposalLines, null, 2));
+  writeFileSync(resolve(OUT_DIR, 'supplementary-conflicts.json'), JSON.stringify(supplementaryConflicts, null, 2));
   writeFileSync(resolve(OUT_DIR, 'payments.normalized.json'), JSON.stringify(payments, null, 2));
   writeFileSync(resolve(OUT_DIR, 'documents.normalized.json'), JSON.stringify(documents, null, 2));
   writeFileSync(resolve(OUT_DIR, 'unmatched-records.json'), JSON.stringify(unmatched, null, 2));
   writeFileSync(resolve(OUT_DIR, 'warnings.json'), JSON.stringify(warnings, null, 2));
   writeFileSync(resolve(OUT_DIR, 'import-summary.json'), JSON.stringify(summary, null, 2));
+
+  if (!includeWeb) return;
 
   const manifest = { ...summary, contaminationAudit: 'pass' };
 
@@ -142,7 +147,7 @@ if (audit) {
   process.exit(0);
 }
 
-writeArtifacts();
+writeArtifacts({ includeWeb: !dryRun && !staging });
 console.log(`\n[hub-refresh] Processed artifacts: ${OUT_DIR}`);
 
 if (dryRun && !apply) {
@@ -158,6 +163,22 @@ const uri = process.env.MONGODB_URI;
 if (!uri) {
   console.error('[hub-refresh] MONGODB_URI required for --apply');
   process.exit(1);
+}
+
+if (staging) {
+  const stagingDb = process.env.DB_NAME?.trim() ?? '';
+  if (!['1', 'true', 'yes'].includes(String(process.env.HUB_STAGING_APPROVED ?? '').toLowerCase())) {
+    console.error('[hub-refresh] STAGING blocked — HUB_STAGING_APPROVED=1 is required.');
+    process.exit(1);
+  }
+  if (!/staging|sandbox|test/i.test(stagingDb) || stagingDb === 'hub_crm' || stagingDb === 'mtte_core' || /mtte_core/i.test(uri)) {
+    console.error(`[hub-refresh] STAGING blocked — protected or non-staging database: ${stagingDb || '(missing)'}`);
+    process.exit(1);
+  }
+  if (!process.env.HUB_TENANT_ID?.trim()) {
+    console.error('[hub-refresh] STAGING blocked — HUB_TENANT_ID is required.');
+    process.exit(1);
+  }
 }
 
 const mongoTarget = parseMongoTarget(uri);
@@ -186,20 +207,85 @@ const client = new MongoClient(uri);
 let created = 0;
 let updated = 0;
 let paymentsUpserted = 0;
+let contactsCreated = 0;
+let contactsUpdated = 0;
+let proposalsCreated = 0;
+let proposalsUpdated = 0;
 
 try {
   await client.connect();
   const db = getMongoDb(client);
   const dealsCol = db.collection('deals');
   const paymentsCol = db.collection('hub_payments');
+  const contactsCol = db.collection('contacts');
+  const companiesCol = db.collection('companies');
+  const proposalsCol = db.collection('proposals');
 
   const existing = await dealsCol.find({ tenantId: { $in: tenantIds } }).toArray();
   writeFileSync(resolve(backupDir, 'deals-backup.json'), JSON.stringify(existing, null, 2));
   const existingPayments = await paymentsCol.find({ tenantId: primaryTenant }).toArray();
   writeFileSync(resolve(backupDir, 'payments-backup.json'), JSON.stringify(existingPayments, null, 2));
+  const existingContacts = await contactsCol.find({ tenantId: primaryTenant }).toArray();
+  writeFileSync(resolve(backupDir, 'contacts-backup.json'), JSON.stringify(existingContacts, null, 2));
+  const existingProposals = await proposalsCol.find({ tenantId: primaryTenant }).toArray();
+  writeFileSync(resolve(backupDir, 'proposals-backup.json'), JSON.stringify(existingProposals, null, 2));
   console.log(`[hub-refresh] Backup: ${backupDir}`);
 
   const now = new Date();
+  const contactByEmail = new Map();
+  const companyByName = new Map();
+  for (const contact of contacts) {
+    const companyName = String(contact.companyName ?? '').trim();
+    let companyId;
+    if (companyName) {
+      const companySourceId = `pv-account:${normalizeName(companyName)}`;
+      const companyResult = await companiesCol.findOneAndUpdate(
+        { tenantId: primaryTenant, source: 'perfect_venue', sourceId: companySourceId },
+        {
+          $set: {
+            tenantId: primaryTenant,
+            name: companyName,
+            nameNormalized: normalizeName(companyName),
+            source: 'perfect_venue',
+            sourceId: companySourceId,
+            isStub: false,
+            updatedAt: now,
+            importMeta: { sourceSystem: 'perfect_venue', sourceReport: contact.sourceReport, importBatchId },
+          },
+          $setOnInsert: { createdAt: now },
+        },
+        { upsert: true, returnDocument: 'after' },
+      );
+      companyId = String(companyResult?._id ?? '');
+      if (companyId) companyByName.set(normalizeName(companyName), companyId);
+    }
+    const existingContact = await contactsCol.findOne({ tenantId: primaryTenant, source: contact.source, sourceId: contact.sourceId });
+    const contactDoc = {
+      tenantId: primaryTenant,
+      source: contact.source,
+      sourceId: contact.sourceId,
+      firstName: contact.firstName,
+      lastName: contact.lastName,
+      displayName: contact.displayName,
+      email: contact.email,
+      phone: contact.phone,
+      companyId: companyId || undefined,
+      companyName: companyName || undefined,
+      conflictGroup: contact.conflictGroup,
+      sourceReport: contact.sourceReport,
+      sourceUpdatedAt: contact.sourceUpdatedAt,
+      updatedAt: now,
+    };
+    if (existingContact) {
+      await contactsCol.updateOne({ _id: existingContact._id }, { $set: contactDoc });
+      contactsUpdated += 1;
+    } else {
+      await contactsCol.insertOne({ ...contactDoc, createdAt: now });
+      contactsCreated += 1;
+    }
+    if (contact.email && !contact.conflictGroup) contactByEmail.set(normalizeEmail(contact.email), contact.sourceId);
+  }
+
   for (const e of events) {
     const existingDeal = await dealsCol.findOne({
       tenantId: primaryTenant,
@@ -210,7 +296,9 @@ try {
       tenantId: primaryTenant,
       title: e.title,
       company: e.company || e.contact,
+      companyId: e.company ? companyByName.get(normalizeName(e.company)) : undefined,
       contact: e.contact,
+      contactId: e.contactEmail ? contactByEmail.get(normalizeEmail(e.contactEmail)) : undefined,
       amount: e.grandTotal,
       assignedTo: e.owner || undefined,
       status: mapPvToDealStatus(e.pvStatus),
@@ -265,11 +353,80 @@ try {
     }
   }
 
+  const linesByEvent = new Map();
+  for (const line of proposalLines) {
+    const list = linesByEvent.get(line.externalEventId) ?? [];
+    list.push(line);
+    linesByEvent.set(line.externalEventId, list);
+  }
+  for (const [externalEventId, lines] of linesByEvent) {
+    const deal = await dealsCol.findOne({ tenantId: primaryTenant, 'importMeta.pvEventId': externalEventId });
+    if (!deal) continue;
+    const sourceId = `pv-proposal:${externalEventId}`;
+    const event = events.find(item => item.pvEventId === externalEventId);
+    const importedLines = lines.map(line => ({
+      id: line.id,
+      sourceId: line.sourceId,
+      itemName: line.itemName,
+      quantity: line.quantity,
+      unit: line.unit,
+      total: line.total,
+      category: line.category,
+      details: line.details,
+      sortOrder: line.sortOrder,
+    }));
+    const proposalDoc = {
+      tenantId: primaryTenant,
+      eventId: String(deal._id),
+      eventTitle: event?.title ?? String(deal.title ?? 'Event'),
+      version: 1,
+      status: ['proposal_sent', 'confirmed', 'balance_due'].includes(event?.pvStatus) ? 'sent' : 'draft',
+      title: event?.title ? `Perfect Venue proposal · ${event.title}` : 'Perfect Venue proposal',
+      summary: 'Imported from Perfect Venue; lifecycle actions remain Hub-controlled.',
+      packageTotal: Math.round(lines.reduce((sum, line) => sum + line.total, 0) * 100) / 100,
+      terms: '',
+      space: event?.space || undefined,
+      eventDate: event?.eventDateIso || undefined,
+      guests: event?.guests,
+      token: `pv-import-${createHash('sha256').update(`${primaryTenant}:${sourceId}`).digest('hex').slice(0, 20)}`,
+      lines: importedLines,
+      provenance: {
+        sourceSystem: 'perfect_venue',
+        externalId: sourceId,
+        sourceReport: lines[0]?.sourceReport ?? 'proposal-report',
+        importedAt: now.toISOString(),
+        importBatchId,
+      },
+      updatedAt: now,
+    };
+    const existingProposal = await proposalsCol.findOne({ tenantId: primaryTenant, source: 'perfect_venue', sourceId });
+    if (existingProposal) {
+      await proposalsCol.updateOne({ _id: existingProposal._id }, { $set: proposalDoc });
+      proposalsUpdated += 1;
+    } else {
+      await proposalsCol.insertOne({ ...proposalDoc, source: 'perfect_venue', sourceId, createdAt: now });
+      proposalsCreated += 1;
+    }
+  }
+
   for (const p of payments) {
     await paymentsCol.updateOne(
       { tenantId: primaryTenant, id: p.id },
       {
-        $set: { ...p, tenantId: primaryTenant, updatedAt: now },
+        $set: {
+          ...p,
+          tenantId: primaryTenant,
+          source: 'perfect_venue',
+          sourceId: p.pvPaymentId || p.id,
+          provenance: {
+            sourceSystem: 'perfect_venue',
+            externalId: p.pvPaymentId || p.id,
+            sourceReport: p.sourceFile,
+            importedAt: now.toISOString(),
+            importBatchId,
+          },
+          updatedAt: now,
+        },
         $setOnInsert: { createdAt: now },
       },
       { upsert: true },
@@ -277,24 +434,30 @@ try {
     paymentsUpserted += 1;
   }
 
-  const archived = await dealsCol.updateMany(
-    {
-      tenantId: primaryTenant,
-      'importMeta.source': { $exists: true, $ne: 'perfect_venue_refresh' },
-    },
-    {
-      $set: {
-        status: 'Lost',
-        updatedAt: now,
-        notes: '[archived-pre-refresh-import]',
-      },
-    },
-  );
+  const archived = archiveStale
+    ? await dealsCol.updateMany(
+        {
+          tenantId: primaryTenant,
+          'importMeta.source': { $exists: true, $ne: 'perfect_venue_refresh' },
+        },
+        {
+          $set: {
+            status: 'Lost',
+            updatedAt: now,
+            notes: '[archived-pre-refresh-import]',
+          },
+        },
+      )
+    : { modifiedCount: 0 };
 
   summary.mongo = {
     created,
     updated,
     paymentsUpserted,
+    contactsCreated,
+    contactsUpdated,
+    proposalsCreated,
+    proposalsUpdated,
     archivedStale: archived.modifiedCount,
     backupDir,
   };
@@ -304,6 +467,8 @@ try {
   console.log(`  Deals created:  ${created}`);
   console.log(`  Deals updated:  ${updated}`);
   console.log(`  Payments upserted: ${paymentsUpserted}`);
+  console.log(`  Contacts created/updated: ${contactsCreated}/${contactsUpdated}`);
+  console.log(`  Proposals created/updated: ${proposalsCreated}/${proposalsUpdated}`);
 } finally {
   await client.close();
 }

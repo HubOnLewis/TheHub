@@ -25,6 +25,8 @@ export const HUB_ADMIN_PATH_PREFIXES: readonly string[] = [
   ROUTES.userManagement,
   ROUTES.ownerBriefing,
   ROUTES.revenueLeaks,
+  ROUTES.contacts,
+  ROUTES.financial,
   ROUTES.automationImpact,
 ];
 const DETAIL_PATTERNS = [

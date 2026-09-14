@@ -11,6 +11,7 @@ export interface DealDoc extends Document {
   title:      string;
   company:    string;
   contact:    string;
+  contactId?: string;
   amount:     number;
   assignedTo?: string;
   leadId?:    string;
@@ -244,6 +245,17 @@ class DealRepositoryClass extends BaseRepository<DealDoc> {
     leadId: string,
   ): Promise<(DealDoc & { _id: string }) | null> {
     const doc = await this.col(db).findOne(this.scope(ctx, { leadId } as never));
+    return doc ? this.serialize(doc as DealDoc & { _id: ObjectId }) : null;
+  }
+
+  async findByImportReference(db: Db, ctx: TenantContext, reference: string) {
+    const doc = await this.col(db).findOne(this.scope(ctx, {
+      $or: [
+        { 'importMeta.sourceKey': reference },
+        { 'importMeta.pvEventId': reference.replace(/^pv-/, '') },
+        { 'importMeta.pvId': reference },
+      ],
+    } as never));
     return doc ? this.serialize(doc as DealDoc & { _id: ObjectId }) : null;
   }
 }

@@ -4,6 +4,7 @@
 
 import { readdirSync, existsSync } from 'fs';
 import { join } from 'path';
+import { createHash } from 'crypto';
 import XLSX from 'xlsx';
 import {
   FOLDER_MAP,
@@ -41,6 +42,36 @@ export function discoverFiles(root) {
       found.folders[folder].files.push(full);
       found.files.push({ folder, role: meta.role, path: full, name: f });
     }
+  }
+
+  // Current Perfect Venue downloads may arrive as a flat report folder rather
+  // than the legacy numbered import layout. Keep the same parser and identity
+  // rules while mapping the known report names to existing roles.
+  if (found.files.length === 0 && existsSync(root)) {
+    const flatReports = [
+      { pattern: /^events-report-.*\.xlsx$/i, role: 'master' },
+      { pattern: /^payment-report-.*\.xlsx$/i, role: 'payments' },
+      { pattern: /^contact-report-.*\.xlsx$/i, role: 'contacts' },
+      { pattern: /^proposal-report-.*\.xlsx$/i, role: 'proposals' },
+      { pattern: /^sales-categories-.*\.xlsx$/i, role: 'sales' },
+      { pattern: /^.*_goals_\d{4}\.csv$/i, role: 'goals' },
+    ];
+    for (const name of readdirSync(root)) {
+      const match = flatReports.find(x => x.pattern.test(name));
+      if (!match) continue;
+      found.files.push({
+        folder: 'flat-reports',
+        role: match.role,
+        path: join(root, name),
+        name,
+      });
+    }
+    found.folders['flat-reports'] = {
+      role: 'flat-reports',
+      exists: true,
+      path: root,
+      files: found.files.map(f => f.path),
+    };
   }
   return found;
 }
@@ -124,6 +155,83 @@ function parseEventsMaster(files) {
     }
   }
   return { events, warnings };
+}
+
+function stableHash(value) {
+  return createHash('sha256').update(String(value)).digest('hex').slice(0, 16);
+}
+
+function parseSupplementaryReports(files, eventIds) {
+  const contactFile = files.find(f => f.role === 'contacts');
+  const proposalFile = files.find(f => f.role === 'proposals');
+  const contacts = [];
+  const proposalLines = [];
+  const conflicts = [];
+
+  if (contactFile) {
+    const rows = readXlsx(contactFile.path);
+    const emailCounts = new Map();
+    for (const row of rows) {
+      const normalizedEmail = normalizeEmail(row.Email);
+      if (normalizedEmail) emailCounts.set(normalizedEmail, (emailCounts.get(normalizedEmail) ?? 0) + 1);
+    }
+    rows.forEach((row, index) => {
+      const firstName = String(row['First Name'] ?? '').trim();
+      const lastName = String(row['Last Name'] ?? '').trim();
+      const displayName = `${firstName} ${lastName}`.trim() || String(row.Account ?? '').trim() || 'Unknown contact';
+      const normalizedEmail = normalizeEmail(row.Email);
+      const identityBase = normalizedEmail && emailCounts.get(normalizedEmail) === 1
+        ? `email:${normalizedEmail}`
+        : `fallback:${stableHash([normalizedEmail, displayName, row.Account, row.Phone, index].join('|'))}`;
+      contacts.push({
+        sourceId: `pv-contact:${identityBase}`,
+        source: 'perfect_venue',
+        firstName,
+        lastName,
+        displayName,
+        email: normalizedEmail || undefined,
+        phone: normalizePhone(row.Phone) || undefined,
+        companyName: String(row.Account ?? '').trim() || undefined,
+        conflictGroup: normalizedEmail && emailCounts.get(normalizedEmail) > 1
+          ? `email-conflict:${stableHash(normalizedEmail)}`
+          : undefined,
+        sourceReport: contactFile.name,
+        sourceUpdatedAt: excelSerialToDateTime(row['Created At']),
+      });
+    });
+  }
+
+  if (proposalFile) {
+    const rows = readXlsx(proposalFile.path);
+    rows.forEach((row, index) => {
+      const externalEventId = String(row['Event ID'] ?? '').trim();
+      if (!externalEventId || !eventIds.has(externalEventId)) {
+        conflicts.push({
+          type: externalEventId ? 'orphan_proposal_event' : 'missing_proposal_event_id',
+          externalEventId: externalEventId || null,
+          sourceReport: proposalFile.name,
+          sourceRow: index + 2,
+        });
+        return;
+      }
+      proposalLines.push({
+        id: `pv-line:${externalEventId}:${index + 2}`,
+        sourceId: `${externalEventId}:${index + 2}`,
+        externalEventId,
+        itemName: String(row['Item Name'] ?? '').trim(),
+        pricePerUnit: parseMoney(row['Price per unit']),
+        quantity: Number(row.Quantity) || 0,
+        total: parseMoney(row.Total),
+        unit: String(row.Unit ?? '').trim(),
+        category: String(row['Menu Section'] ?? '').trim() || 'other',
+        details: String(row.Details ?? '').trim(),
+        sortOrder: index,
+        sourceReport: proposalFile.name,
+      });
+    });
+  }
+
+  return { contacts, proposalLines, conflicts };
 }
 
 function buildEventIndexes(events) {
@@ -294,6 +402,10 @@ export function runRefreshPipeline({ root, importBatchId }) {
   const indexes = buildEventIndexes(events);
   const unmatched = [];
   const warnings = [...parseWarnings];
+  const supplementary = parseSupplementaryReports(
+    discovered.files,
+    new Set(events.map(e => e.pvEventId).filter(Boolean).map(String)),
+  );
 
   const docsMatched = attachPdfDocuments(discovered.files, indexes, unmatched);
   const { payments, matched: paymentsMatched } = parsePayments(
@@ -304,9 +416,10 @@ export function runRefreshPipeline({ root, importBatchId }) {
     warnings,
   );
 
-  const contacts = [];
+  const contacts = supplementary.contacts.length ? supplementary.contacts : [];
   const contactKeys = new Set();
   for (const e of events) {
+    if (contacts.length) break;
     const key = `${e.contactEmail}|${normalizeName(e.contact)}`;
     if (!e.contact || contactKeys.has(key)) continue;
     contactKeys.add(key);
@@ -342,6 +455,8 @@ export function runRefreshPipeline({ root, importBatchId }) {
     eventsParsed: events.length,
     uniquePvIds: pvIds.size,
     contactsParsed: contacts.length,
+    proposalLinesParsed: supplementary.proposalLines.length,
+    proposalConflicts: supplementary.conflicts.length,
     paymentsParsed: payments.length,
     paymentsMatched,
     documentsMatched: docsMatched,
@@ -373,6 +488,8 @@ export function runRefreshPipeline({ root, importBatchId }) {
     discovered,
     events,
     contacts,
+    proposalLines: supplementary.proposalLines,
+    supplementaryConflicts: supplementary.conflicts,
     payments,
     documents: events.flatMap(e =>
       Object.entries(e.documentFiles).map(([role, file]) => ({

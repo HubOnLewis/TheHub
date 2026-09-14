@@ -11,6 +11,7 @@ import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { getDB } from '../config/db.js';
 import { ApplyPlaybookSchema, CreateBuildSchema, CreateDealSchema, PatchDealSchema, PatchPlaybookDocumentSchema, PatchPlaybookTaskSchema } from '@hub-crm/shared';
 import { playbookService } from '../services/PlaybookService.js';
+import { DealRepository } from '../repositories/DealRepository.js';
 
 const CreateDealBuildSchema = CreateBuildSchema.omit({ dealId: true, unitId: true }).extend({
   unitId: z.string().optional(),
@@ -101,13 +102,21 @@ router.get('/', async (req, res, next) => {
 
 router.get('/:id', async (req, res, next) => {
   try {
-    res.json(await dealService.getById(getDB(), req.tenant, req.params['id']!));
+    try {
+      res.json(await dealService.getById(getDB(), req.tenant, req.params['id']!));
+    } catch (error) {
+      const sourceDeal = await DealRepository.findByImportReference(getDB(), req.tenant, req.params['id']!);
+      if (!sourceDeal) throw error;
+      res.json(await dealService.getById(getDB(), req.tenant, sourceDeal._id));
+    }
   } catch (err) { next(err); }
 });
 
 router.get('/:id/interactions', async (req, res, next) => {
   try {
-    res.json(await dealService.listInteractionsForDeal(getDB(), req.tenant, req.params['id']!));
+    const sourceDeal = await DealRepository.findByImportReference(getDB(), req.tenant, req.params['id']!);
+    const canonicalId = sourceDeal?._id ?? req.params['id']!;
+    res.json(await dealService.listInteractionsForDeal(getDB(), req.tenant, canonicalId));
   } catch (err) { next(err); }
 });
 

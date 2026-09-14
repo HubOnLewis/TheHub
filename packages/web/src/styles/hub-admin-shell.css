@@ -26,6 +26,7 @@
   width: 100%;
   max-width: none;
   min-height: 100vh;
+  overflow: visible;
   background: var(--hub-canvas);
   font-family: var(--hub-font);
 }
@@ -35,6 +36,11 @@
   width: 100%;
   max-width: none;
   min-width: 0;
+  overflow: visible;
+}
+
+.app-shell--hub-admin {
+  overflow: visible !important;
 }
 
 [data-theme='dark'] .app-shell--hub-admin {

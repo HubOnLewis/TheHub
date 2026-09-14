@@ -49,7 +49,9 @@ export function parseArgs(argv) {
   const audit = argv.includes('--audit');
   const dryRun = argv.includes('--dry-run');
   const confirmProduction = argv.includes('--confirm-production');
-  return { root, tenant, apply, audit, dryRun, confirmProduction };
+  const archiveStale = argv.includes('--archive-stale');
+  const staging = argv.includes('--staging');
+  return { root, tenant, apply, audit, dryRun, confirmProduction, archiveStale, staging };
 }
 
 /** Resolve Mongo database — matches API `client.db(env.DB_NAME)`. */
