@@ -6,6 +6,8 @@ export const ROUTES = {
   dashboard: '/dashboard',
   /** Operational mission control — what needs attention right now */
   today: '/today',
+  /** Team-wide active work and assignment board */ 
+  teamToday: '/team-today',
   /** The Hub Autopilot — agent workforce command center (UI-only demo) */
   autopilot: '/autopilot',
   /** Executive intelligence — owner / revenue / automation (demo-forward) */
