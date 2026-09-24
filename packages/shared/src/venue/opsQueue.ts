@@ -268,7 +268,7 @@ export function evaluateVenueOps(
   const playbook = playbookFromImportMeta(meta);
   const lastTouch = toMs(deal.lastTouchedAt) ?? toMs(deal.updatedAt) ?? toMs(deal.createdAt);
   const createdMs = toMs(deal.createdAt);
-  const tasks: VenueOpsTask[] = [];
+  const tasks: Array<Omit<VenueOpsTask, 'assignee' | 'workStatus'>> = [];
 
   const base = {
     dealId,
@@ -444,18 +444,21 @@ export function evaluateVenueOps(
     });
   }
 
-  for (const task of tasks) {
+  const assignedTasks: VenueOpsTask[] = tasks.map(task => {
     const manual = assignments[task.id];
     const action = actions[task.id];
-    task.assignee = manual
-      ? { type: manual.type, id: manual.id, name: manual.name, reason: manual.reason, source: 'manual', assignedAt: manual.at, assignedBy: manual.by }
-      : { ...defaultVenueOpsAssignee(task), source: 'policy' };
-    task.workStatus = action?.status ?? 'open';
-    task.statusUpdatedAt = action?.at;
-    task.statusUpdatedBy = action?.by;
-  }
+    return {
+      ...task,
+      assignee: manual
+        ? { type: manual.type, id: manual.id, name: manual.name, reason: manual.reason, source: 'manual' as const, assignedAt: manual.at, assignedBy: manual.by }
+        : { ...defaultVenueOpsAssignee(task), source: 'policy' as const },
+      workStatus: action?.status ?? 'open',
+      statusUpdatedAt: action?.at,
+      statusUpdatedBy: action?.by,
+    };
+  });
 
-  return tasks.sort((a, b) => {
+  return assignedTasks.sort((a, b) => {
     const p = PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
     if (p !== 0) return p;
     return a.title.localeCompare(b.title);
