@@ -28,6 +28,7 @@ services:
       && npm run build --workspace=packages/api
 
     startCommand: npm run start --workspace=packages/api
+    preDeployCommand: node scripts/render-bootstrap-admin.mjs
     healthCheckPath: /health
 
     envVars:
