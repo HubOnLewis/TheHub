@@ -13,6 +13,7 @@ export const HUB_ADMIN_PATH_PREFIXES: readonly string[] = [
   ROUTES.admin,
   ROUTES.autopilot,
   ROUTES.today,
+  ROUTES.teamToday,
   ROUTES.followUps,
   ROUTES.accounts,
   ROUTES.companiesAlias,
