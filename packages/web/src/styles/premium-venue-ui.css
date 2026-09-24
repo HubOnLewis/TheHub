@@ -1931,3 +1931,250 @@ button.ops-filter-chip[aria-pressed='true'] {
     transform: none !important;
   }
 }
+
+
+/* ── Shell correction + visibly deeper premium staging pass ───────────────
+   Sidebar now owns the full-height rail; utility header belongs to workspace. */
+@media (min-width: 901px) {
+  .app-shell--hub-admin .crm-pv-shell--sidebar {
+    display: grid;
+    grid-template-columns: 244px minmax(0, 1fr);
+    align-items: start;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .app-shell--hub-admin .crm-sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    z-index: 42;
+  }
+
+  .app-shell--hub-admin .crm-pv-shell__main {
+    min-width: 0;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .app-shell--hub-admin .crm-topnav--utility {
+    position: sticky;
+    top: 0;
+    z-index: 41;
+    min-height: 64px;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .app-shell--hub-admin .crm-topnav__utility-brand {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav__search-wrap--utility {
+    flex: 0 1 560px;
+    width: min(560px, 48vw);
+    max-width: 560px;
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .app-shell--hub-admin .crm-topnav__tools {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell--hub-admin .crm-pv-shell--sidebar {
+    display: block;
+  }
+
+  .app-shell--hub-admin .crm-topnav--utility {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .app-shell--hub-admin .crm-sidebar {
+    top: 58px;
+  }
+}
+
+/* Search should look intentionally embedded in the utility bar, not stranded. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-global-search {
+  position: relative;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__search {
+  height: 38px;
+  border-radius: 11px;
+  border: 1px solid #d8cec0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.94), rgba(249,245,238,.94));
+  box-shadow:
+    inset 0 1px 2px rgba(30,39,34,.045),
+    0 1px 0 rgba(255,255,255,.90);
+  padding-left: 34px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__search:focus {
+  border-color: rgba(173,135,70,.65);
+  box-shadow:
+    0 0 0 3px rgba(173,135,70,.12),
+    0 5px 16px rgba(16,39,31,.06);
+}
+
+/* Turn the Today intro into an actual top-level command surface. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__header {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 26px 22px;
+  border: 1px solid rgba(190,178,160,.76);
+  border-radius: 17px;
+  background:
+    radial-gradient(480px 150px at 92% 0%, rgba(173,135,70,.13), transparent 68%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(249,244,235,.97));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 3px 6px rgba(16,39,31,.055),
+    0 18px 42px rgba(16,39,31,.085);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: linear-gradient(90deg, #17392d 0%, #2b5a46 36%, #ad8746 72%, rgba(173,135,70,.12) 100%);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__header::after {
+  content: '';
+  position: absolute;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  right: -110px;
+  top: -130px;
+  border: 1px solid rgba(173,135,70,.10);
+  box-shadow:
+    0 0 0 22px rgba(173,135,70,.025),
+    0 0 0 46px rgba(29,70,55,.018);
+  pointer-events: none;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__title {
+  font-size: clamp(38px, 4vw, 54px);
+  letter-spacing: .005em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__actions {
+  position: relative;
+  z-index: 1;
+  padding: 7px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.62);
+  border: 1px solid rgba(197,185,168,.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.88),
+    0 5px 14px rgba(16,39,31,.05);
+}
+
+/* Make the major dashboard panels visibly float off the canvas. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__floor,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money {
+  border-color: rgba(177,164,145,.74) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 2px 4px rgba(14,33,26,.065),
+    0 14px 28px rgba(14,33,26,.095),
+    0 32px 62px rgba(14,33,26,.045) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work {
+  transform: translateZ(0);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head {
+  min-height: 56px;
+  background:
+    linear-gradient(180deg, rgba(250,247,241,.98), rgba(241,234,224,.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.94),
+    inset 0 -1px 0 rgba(108,91,69,.07),
+    0 3px 8px rgba(20,32,27,.035);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head::before {
+  width: 5px;
+  box-shadow: 1px 0 0 rgba(255,255,255,.30);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row {
+  background: rgba(255,255,255,.42);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row:nth-child(even) {
+  background: rgba(249,246,240,.52);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row:hover {
+  background:
+    linear-gradient(90deg, rgba(29,70,55,.075), rgba(255,255,255,.88) 56%, rgba(173,135,70,.055));
+  box-shadow:
+    inset 4px 0 0 rgba(173,135,70,.72),
+    inset 0 1px 0 rgba(255,255,255,.70),
+    0 8px 18px rgba(16,39,31,.07);
+}
+
+/* Make financial rows feel intentionally different from task rows. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money .today-desk__row {
+  min-height: 72px;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.82), rgba(249,245,237,.72));
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money .today-desk__amt {
+  min-width: 86px;
+  text-align: right;
+  font-size: 24px;
+  letter-spacing: -.02em;
+  text-shadow: 0 1px 0 rgba(255,255,255,.85);
+}
+
+/* General page surfaces get a stronger second elevation tier. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .card,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-row-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-command-list,
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-command-detail,
+:root:not([data-theme='dark']) .app-shell--hub-admin .cal-shell,
+:root:not([data-theme='dark']) .app-shell--hub-admin .tasks-table-wrap {
+  border-color: rgba(185,173,156,.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.97),
+    0 2px 4px rgba(14,33,26,.055),
+    0 12px 26px rgba(14,33,26,.075) !important;
+}
+
+/* Footer/header/sidebar now read as one continuous application frame. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact {
+  border-top-color: rgba(173,135,70,.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 -12px 30px rgba(16,39,31,.12);
+}
+
+@media (max-width: 760px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__header {
+    padding: 20px 18px 18px;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__actions {
+    width: 100%;
+  }
+}
