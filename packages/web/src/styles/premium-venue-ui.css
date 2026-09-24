@@ -1607,3 +1607,327 @@ button.ops-filter-chip[aria-pressed='true'] {
     box-shadow: 18px 0 42px rgba(7,24,18,.26);
   }
 }
+
+
+/* ── Premium depth + layering pass ──────────────────────────
+   Builds a deliberate elevation hierarchy without changing layout or data. */
+:root:not([data-theme='dark']) .app-shell--hub-admin {
+  --hub-elev-1:
+    0 1px 1px rgba(13, 31, 24, 0.035),
+    0 3px 10px rgba(13, 31, 24, 0.045);
+  --hub-elev-2:
+    0 2px 3px rgba(13, 31, 24, 0.05),
+    0 10px 28px rgba(13, 31, 24, 0.075);
+  --hub-elev-3:
+    0 5px 10px rgba(13, 31, 24, 0.07),
+    0 22px 50px rgba(13, 31, 24, 0.11);
+  --hub-inset-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.86);
+  --hub-surface:
+    linear-gradient(180deg, rgba(255,255,255,.985) 0%, rgba(255,252,247,.965) 100%);
+  --hub-surface-soft:
+    linear-gradient(180deg, rgba(250,247,241,.98) 0%, rgba(244,238,229,.97) 100%);
+}
+
+/* Give the entire workspace a subtle architectural depth cue. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-pv-shell__main {
+  position: relative;
+  isolation: isolate;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-pv-shell__main::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 220px;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.30), transparent 72%),
+    radial-gradient(680px 150px at 38% 0%, rgba(173,135,70,.085), transparent 70%);
+}
+
+/* Sidebar feels mounted above the workspace instead of printed beside it. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar {
+  box-shadow:
+    1px 0 0 rgba(255,255,255,.035) inset,
+    -1px 0 0 rgba(0,0,0,.12) inset,
+    10px 0 28px rgba(7, 24, 18, .13),
+    22px 0 46px rgba(7, 24, 18, .055);
+  background:
+    radial-gradient(260px 420px at 28% 0%, rgba(255,255,255,.045), transparent 70%),
+    linear-gradient(180deg, #143126 0%, #10271f 52%, #0d211a 100%);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand {
+  box-shadow:
+    inset 0 -1px 0 rgba(0,0,0,.13),
+    inset 0 1px 0 rgba(255,255,255,.03);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item--active {
+  box-shadow:
+    inset 3px 0 0 #ad8746,
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 2px 3px rgba(0,0,0,.13),
+    0 8px 20px rgba(0,0,0,.17);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__badge {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 2px 7px rgba(0,0,0,.22);
+}
+
+/* Frosted utility plane with a firmer lower edge. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav--utility {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,252,247,.94)),
+    rgba(255,253,249,.88);
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.94),
+    0 1px 0 rgba(122,105,82,.10),
+    0 8px 24px rgba(16,39,31,.07);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__user {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 1px 2px rgba(25,34,29,.05),
+    0 4px 12px rgba(25,34,29,.045);
+}
+
+/* Consistent tactile controls. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn {
+  transition:
+    transform .14s ease,
+    box-shadow .14s ease,
+    background .14s ease,
+    border-color .14s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn:hover {
+  transform: translateY(-1px);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn:active {
+  transform: translateY(0);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-primary,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:first-child,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:first-child {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 2px 4px rgba(20,53,41,.14),
+    0 7px 16px rgba(20,53,41,.14) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-primary:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:first-child:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:first-child:hover {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 3px 5px rgba(20,53,41,.16),
+    0 10px 20px rgba(20,53,41,.16) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-secondary,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:not(:first-child),
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:not(:first-child) {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 1px 2px rgba(25,34,29,.035),
+    0 4px 10px rgba(25,34,29,.035);
+}
+
+/* Main surface elevation hierarchy. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .card,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .monthly-scorecard,
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-row-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-home__panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-command-list,
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-command-detail,
+:root:not([data-theme='dark']) .app-shell--hub-admin .cal-shell,
+:root:not([data-theme='dark']) .app-shell--hub-admin .tasks-table-wrap,
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav {
+  background: var(--hub-surface) !important;
+  box-shadow:
+    var(--hub-inset-highlight),
+    var(--hub-elev-2) !important;
+  border-color: rgba(193,181,164,.68) !important;
+}
+
+/* Today gets the strongest, clearest layered construction. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__floor,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money {
+  position: relative;
+  background: var(--hub-surface) !important;
+  border: 1px solid rgba(190,177,159,.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 2px 3px rgba(20,32,27,.045),
+    0 14px 32px rgba(20,32,27,.075),
+    0 30px 56px rgba(20,32,27,.035) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work::after,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__floor::after,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.30);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.76),
+    inset 0 -1px 0 rgba(120,102,79,.06);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head > span {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.74),
+    0 2px 5px rgba(108,79,34,.08);
+}
+
+/* Rows feel like interactive layers, not flat spreadsheet lines. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row,
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-row,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__row {
+  position: relative;
+  transition:
+    background .15s ease,
+    box-shadow .15s ease,
+    transform .15s ease,
+    border-color .15s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row:hover {
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(29,70,55,.06), rgba(173,135,70,.038));
+  box-shadow:
+    inset 3px 0 0 rgba(173,135,70,.62),
+    0 6px 15px rgba(16,39,31,.055);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-row:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__row:hover {
+  z-index: 1;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(16,39,31,.055);
+}
+
+/* Metric tiles and money read as raised summary plates. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card,
+:root:not([data-theme='dark']) .app-shell--hub-admin .tasks-stat-pill,
+:root:not([data-theme='dark']) .app-shell--hub-admin .cal-summary-pill,
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-stat-pill {
+  background: var(--hub-surface);
+  border-color: rgba(194,183,168,.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    var(--hub-elev-1);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card--selected {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 4px 8px rgba(23,57,45,.16),
+    0 14px 30px rgba(23,57,45,.18) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money .today-desk__section-head > span {
+  background: linear-gradient(180deg, #f1e6ce, #e8d7b7);
+  color: #6f5123;
+  border-color: rgba(157,117,55,.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 3px 8px rgba(115,82,31,.10);
+}
+
+/* Event detail is the premium centerpiece. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-hero {
+  border-color: rgba(174,158,136,.62);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 3px 6px rgba(16,39,31,.055),
+    0 22px 50px rgba(16,39,31,.10);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-hero__inner {
+  position: relative;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-hero__actions {
+  padding: 12px;
+  border: 1px solid rgba(194,181,163,.58);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.74), rgba(248,242,232,.72));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 7px 18px rgba(16,39,31,.065);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-pill {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.84),
+    0 1px 3px rgba(16,39,31,.035);
+}
+
+/* Inputs have subtle inset depth at rest and lift on focus. */
+:root:not([data-theme='dark']) .app-shell--hub-admin input,
+:root:not([data-theme='dark']) .app-shell--hub-admin select,
+:root:not([data-theme='dark']) .app-shell--hub-admin textarea {
+  box-shadow:
+    inset 0 1px 2px rgba(37,42,39,.045),
+    0 1px 0 rgba(255,255,255,.78);
+  transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin input:focus,
+:root:not([data-theme='dark']) .app-shell--hub-admin select:focus,
+:root:not([data-theme='dark']) .app-shell--hub-admin textarea:focus {
+  background: #fffefa;
+  box-shadow:
+    0 0 0 3px rgba(173,135,70,.14),
+    0 4px 12px rgba(16,39,31,.055);
+}
+
+/* Table headers read as a raised control surface. */
+:root:not([data-theme='dark']) .app-shell--hub-admin table.data-table thead,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__head {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.70),
+    0 2px 7px rgba(16,39,31,.045);
+}
+
+/* Footer becomes a grounded base plane. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 -10px 26px rgba(16,39,31,.10);
+}
+
+/* Motion is restrained and disabled for users who request less. */
+@media (prefers-reduced-motion: reduce) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .btn,
+  :root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row,
+  :root:not([data-theme='dark']) .app-shell--hub-admin .ops-row,
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__row,
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item {
+    transition: none !important;
+    transform: none !important;
+  }
+}
