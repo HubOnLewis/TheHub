@@ -151,11 +151,11 @@ export class VenueOpsService {
         createdAt: now,
         createdByUserId: 'system',
         createdByName: 'Hub operations',
-        ownerUserId: deal.ownerUserId ?? 'system',
-        ownerName: deal.assignedTo ?? 'Hub operations',
+        ownerUserId: task.assignee.type === 'user' ? task.assignee.id : task.assignee.id,
+        ownerName: task.assignee.name,
         followUpAt: Number.isNaN(followUpAt.getTime()) ? now : followUpAt,
         attachments: [],
-        metadata: { source: 'venue_ops', opsTaskKey: task.id, kind: task.kind },
+        metadata: { source: 'venue_ops', opsTaskKey: task.id, kind: task.kind, assigneeType: task.assignee.type, assignmentReason: task.assignee.reason },
         updatedAt: now,
       };
       await InteractionRepository.insertOne(db, ctx, doc);
