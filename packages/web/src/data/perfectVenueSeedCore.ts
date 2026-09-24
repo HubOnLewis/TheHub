@@ -19,13 +19,13 @@ export type PvEventStatus =
   | 'lost';
 
 export const PV_STATUS_LABELS: Record<PvEventStatus, string> = {
-  lead: 'Lead',
-  qualified: 'Qualified',
-  proposal_sent: 'Proposal Sent',
-  confirmed: 'Confirmed',
-  balance_due: 'Balance Due',
-  completed: 'Completed',
-  lost: 'Lost / Archived',
+  lead: 'Inquiry',
+  qualified: 'Inquiry',
+  proposal_sent: 'Proposal',
+  confirmed: 'Booked',
+  balance_due: 'Deposit',
+  completed: 'Complete',
+  lost: 'Lost',
 };
 
 export function mapPvStatusToHubStage(status: PvEventStatus): DemoPipelineStage {

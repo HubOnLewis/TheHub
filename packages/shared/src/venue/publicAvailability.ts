@@ -1,11 +1,23 @@
+import { dealOccupiesCalendar } from './holds.js';
+import { parseEventTimeRange } from './spaceConflict.js';
 import { resolveVenueStage, type VenueStage } from './stages.js';
 
-export const PUBLIC_DAY_STATUSES = ['available', 'hold', 'booked', 'closed'] as const;
+export const PUBLIC_DAY_STATUSES = ['available', 'partial', 'hold', 'booked', 'closed'] as const;
 export type PublicDayStatus = (typeof PUBLIC_DAY_STATUSES)[number];
+export type PublicSlotName = 'morning' | 'evening';
+export type PublicOccupancySlot = PublicSlotName | 'allDay';
+
+export const PUBLIC_SLOT_SPLIT_MIN = 15 * 60;
+export const PUBLIC_MORNING_START = '09:00';
+export const PUBLIC_MORNING_END = '14:00';
+export const PUBLIC_EVENING_START = '17:00';
+export const PUBLIC_EVENING_END = '22:00';
 
 export type PublicAvailabilityDay = {
   date: string;
   status: PublicDayStatus;
+  morning: Exclude<PublicDayStatus, 'partial'>;
+  evening: Exclude<PublicDayStatus, 'partial'>;
 };
 
 export type PublicAvailabilityRange = {
@@ -17,7 +29,8 @@ export type PublicAvailabilityRange = {
 /** Internal occupancy used only to project public status — never serialized. */
 export type PublicOccupancySignal = {
   date: string;
-  block: Exclude<PublicDayStatus, 'available'>;
+  block: Exclude<PublicDayStatus, 'available' | 'partial'>;
+  slot?: PublicOccupancySlot;
 };
 
 export const PUBLIC_AVAILABILITY_MAX_DAYS = 93;
@@ -27,7 +40,9 @@ export const AVAILABILITY_CHANGED_MESSAGE =
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
-const RANK: Record<PublicDayStatus, number> = {
+type SlotStatus = PublicAvailabilityDay['morning'];
+
+const RANK: Record<SlotStatus, number> = {
   available: 0,
   hold: 1,
   booked: 2,
@@ -57,8 +72,56 @@ export function inclusiveDayCount(startDate: string, endDate: string): number {
   return enumerateIsoDates(startDate, endDate).length;
 }
 
-export function mergePublicStatus(current: PublicDayStatus, next: PublicDayStatus): PublicDayStatus {
+export function mergePublicStatus(current: SlotStatus, next: SlotStatus): SlotStatus {
   return RANK[next] > RANK[current] ? next : current;
+}
+
+export function occupancySlotFromTimes(startTime?: string, endTime?: string): PublicOccupancySlot {
+  const start = startTime?.trim() ?? '';
+  const end = endTime?.trim() ?? '';
+  if (!start && !end) return 'allDay';
+  const range = parseEventTimeRange(start && end ? `${start} - ${end}` : start || end);
+  if (range.allDay) return 'allDay';
+  if (range.endMin <= PUBLIC_SLOT_SPLIT_MIN) return 'morning';
+  if (range.startMin >= PUBLIC_SLOT_SPLIT_MIN) return 'evening';
+  return 'allDay';
+}
+
+export function timesForPublicSlot(slot: PublicOccupancySlot): { startTime: string; endTime: string } {
+  if (slot === 'morning') return { startTime: PUBLIC_MORNING_START, endTime: PUBLIC_MORNING_END };
+  if (slot === 'evening') return { startTime: PUBLIC_EVENING_START, endTime: PUBLIC_EVENING_END };
+  return { startTime: PUBLIC_MORNING_START, endTime: PUBLIC_EVENING_END };
+}
+
+export function summarizePublicDay(date: string, morning: SlotStatus, evening: SlotStatus): PublicAvailabilityDay {
+  const morningOpen = morning === 'available';
+  const eveningOpen = evening === 'available';
+  let status: PublicDayStatus;
+  if (morningOpen && eveningOpen) status = 'available';
+  else if (morningOpen || eveningOpen || morning !== evening) status = 'partial';
+  else status = morning;
+  return { date, status, morning, evening };
+}
+
+export function isPublicWindowOpen(
+  day: PublicAvailabilityDay | undefined,
+  startTime?: string,
+  endTime?: string,
+): boolean {
+  if (!day) return true;
+  const slot = occupancySlotFromTimes(startTime, endTime);
+  if (slot === 'morning' || slot === 'allDay') {
+    if (day.morning !== 'available') return false;
+  }
+  if (slot === 'evening' || slot === 'allDay') {
+    if (day.evening !== 'available') return false;
+  }
+  return true;
+}
+
+export function dayHasOpenSlot(day: PublicAvailabilityDay | undefined): boolean {
+  if (!day) return true;
+  return day.morning === 'available' || day.evening === 'available';
 }
 
 export function projectPublicDays(
@@ -66,16 +129,23 @@ export function projectPublicDays(
   endDate: string,
   signals: readonly PublicOccupancySignal[],
 ): PublicAvailabilityDay[] {
-  const byDate = new Map<string, PublicDayStatus>();
+  const byDate = new Map<string, { morning: SlotStatus; evening: SlotStatus }>();
   for (const signal of signals) {
     if (!isIsoDate(signal.date)) continue;
-    const prev = byDate.get(signal.date) ?? 'available';
-    byDate.set(signal.date, mergePublicStatus(prev, signal.block));
+    const prev = byDate.get(signal.date) ?? { morning: 'available', evening: 'available' };
+    const slot = signal.slot ?? 'allDay';
+    if (slot === 'morning' || slot === 'allDay') {
+      prev.morning = mergePublicStatus(prev.morning, signal.block);
+    }
+    if (slot === 'evening' || slot === 'allDay') {
+      prev.evening = mergePublicStatus(prev.evening, signal.block);
+    }
+    byDate.set(signal.date, prev);
   }
-  return enumerateIsoDates(startDate, endDate).map(date => ({
-    date,
-    status: byDate.get(date) ?? 'available',
-  }));
+  return enumerateIsoDates(startDate, endDate).map(date => {
+    const slots = byDate.get(date) ?? { morning: 'available', evening: 'available' };
+    return summarizePublicDay(date, slots.morning, slots.evening);
+  });
 }
 
 export function toPublicAvailabilityDto(
@@ -86,7 +156,12 @@ export function toPublicAvailabilityDto(
   return {
     startDate,
     endDate,
-    days: days.map(day => ({ date: day.date, status: day.status })),
+    days: days.map(day => ({
+      date: day.date,
+      status: day.status,
+      morning: day.morning,
+      evening: day.evening,
+    })),
   };
 }
 
@@ -114,13 +189,6 @@ export function isCoworkingInventory(input: {
   return !date && hasUnit;
 }
 
-function isExpiredHold(meta: Record<string, unknown> | null | undefined, nowMs: number): boolean {
-  const raw = metaString(meta, 'holdExpiresAt') || metaString(meta, 'holdExpires');
-  if (!raw) return false;
-  const ms = Date.parse(raw);
-  return Number.isFinite(ms) && ms <= nowMs;
-}
-
 function isClosedBlock(meta: Record<string, unknown> | null | undefined): boolean {
   if (!meta) return false;
   if (meta.blackout === true || meta.closed === true) return true;
@@ -141,8 +209,16 @@ export function occupancySignalFromDeal(
   if (isCoworkingInventory(deal)) return null;
   const date = eventDateFromMeta(deal.importMeta);
   if (!isIsoDate(date)) return null;
-  if (isExpiredHold(deal.importMeta, nowMs)) return null;
-  if (isClosedBlock(deal.importMeta)) return { date, block: 'closed' };
+  if (isClosedBlock(deal.importMeta)) return { date, block: 'closed', slot: 'allDay' };
+  if (!dealOccupiesCalendar(deal, nowMs)) return null;
+  const slot = occupancySlotFromTimes(
+    metaString(deal.importMeta, 'startTime') || metaString(deal.importMeta, 'eventTime'),
+    metaString(deal.importMeta, 'endTime'),
+  );
+
+  if (deal.status === 'Won' || deal.status === 'In Build' || deal.status === 'Delivered') {
+    return { date, block: 'booked', slot };
+  }
 
   const stage = resolveVenueStage({
     dealStatus: deal.status,
@@ -152,12 +228,12 @@ export function occupancySignalFromDeal(
     grandTotal: typeof deal.importMeta?.grandTotal === 'number' ? deal.importMeta.grandTotal : null,
   });
 
-  if (BOOKED_STAGES.has(stage)) return { date, block: 'booked' };
-  if (HOLD_STAGES.has(stage)) return { date, block: 'hold' };
-  return { date, block: 'hold' };
+  if (BOOKED_STAGES.has(stage)) return { date, block: 'booked', slot };
+  if (HOLD_STAGES.has(stage)) return { date, block: 'hold', slot };
+  return { date, block: 'hold', slot };
 }
 
-const PUBLIC_DAY_KEYS = new Set(['date', 'status']);
+const PUBLIC_DAY_KEYS = new Set(['date', 'status', 'morning', 'evening']);
 
 export function publicAvailabilityLeaksInternal(payload: unknown): string[] {
   const leaks: string[] = [];

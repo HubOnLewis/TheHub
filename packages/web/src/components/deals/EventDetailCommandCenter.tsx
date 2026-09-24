@@ -23,12 +23,13 @@ import EventMoneyPanel from '../venue/EventMoneyPanel.js';
 import EventDocsPanel from '../venue/EventDocsPanel.js';
 import EventPlaybookPanel from '../venue/EventPlaybookPanel.js';
 import EventThreadPanel from '../venue/EventThreadPanel.js';
+import EventHoldPanel from '../venue/EventHoldPanel.js';
 import VenueStageStepper from '../venue/VenueStageStepper.js';
 import EventAiAssist from '../venue/EventAiAssist.js';
 import { openVenueDocument } from '../../venue/documentGenerator.js';
 import client from '../../api/client.js';
 
-type EventTab = 'overview' | 'money' | 'docs' | 'playbook' | 'activity' | 'portal';
+type EventTab = 'overview' | 'money' | 'docs' | 'messages' | 'more';
 
 type Props = {
   model: EventDetailViewModel;
@@ -399,9 +400,8 @@ export default function EventDetailCommandCenter({
             ['overview', 'Overview'],
             ['money', 'Money'],
             ['docs', 'Docs'],
-            ['playbook', 'Playbook'],
-            ['activity', 'Activity'],
-            ['portal', 'Portal'],
+            ['messages', 'Messages'],
+            ['more', 'More'],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -422,13 +422,18 @@ export default function EventDetailCommandCenter({
       )}
 
       <div className="event-detail-kpi-row">
-        <KpiCard label="Status" value={model.statusLabel} />
+        <KpiCard label="Event date" value={model.eventDateDisplay} hint={timingLabel ?? undefined} tone={eventDateTone} />
+        <KpiCard label="Room / space" value={displayOrEmpty(model.space)} />
+        <KpiCard
+          label="Guest count"
+          value={model.guests != null ? String(model.guests) : 'Not captured yet'}
+        />
         <KpiCard
           label="Grand total"
           value={model.grandTotal != null ? formatCurrency(model.grandTotal) : 'Not captured yet'}
         />
         <KpiCard
-          label="Amount paid"
+          label="Paid / deposit"
           value={model.amountPaid != null ? formatCurrency(model.amountPaid) : 'Not captured yet'}
           tone={model.paidInFull ? 'ok' : undefined}
         />
@@ -437,44 +442,35 @@ export default function EventDetailCommandCenter({
           value={model.balanceDue != null ? formatCurrency(model.balanceDue) : 'Not captured yet'}
           tone={model.balanceDue != null && model.balanceDue > 0 ? 'warn' : undefined}
         />
-        <KpiCard
-          label="Guest count"
-          value={model.guests != null ? String(model.guests) : 'Not captured yet'}
-        />
-        <KpiCard label="Event date" value={model.eventDateDisplay} hint={timingLabel ?? undefined} tone={eventDateTone} />
-        <KpiCard label="Last activity" value={model.lastContactedDisplay} hint={model.followUpRisk ? 'Follow-up risk' : undefined} tone={model.followUpRisk ? 'warn' : undefined} />
       </div>
 
       <div className="event-detail-grid">
         <div className="event-detail-main">
           {tab === 'overview' ? (
             <>
-          <Section title="Event overview" subtitle="Core event details and record metadata">
+          <EventHoldPanel
+            dealId={model.id}
+            holdExpiresAt={model.holdExpiresAt}
+            holdReleasedAt={model.holdReleasedAt}
+            crmStatus={model.crmStatus}
+            pvStatus={model.pvStatus}
+            canPatch={editable}
+          />
+
+          <Section title="Event & contact" subtitle="Core details, guest, and account">
             <dl className="event-detail-fields event-detail-fields--grid">
               <Field label="Event name" value={model.title} />
               <Field label="Event type" value={displayOrEmpty(model.eventType)} />
-              <Field label="Event date" value={model.eventDateDisplay} />
               <Field label="Start time" value={displayOrEmpty(model.startTime)} />
               <Field label="End time" value={displayOrEmpty(model.endTime)} />
-              <Field label="Guest count" value={model.guests != null ? String(model.guests) : 'Not captured yet'} />
-              <Field label="Space / room" value={displayOrEmpty(model.space)} />
               <Field label="Stage" value={model.statusLabel} />
-              <Field label="Lead source" value={displayOrEmpty(model.leadSource)} />
               <Field label="Owner" value={model.owner} />
-              <Field label="Created" value={model.createdDisplay} />
-              <Field label="Last updated" value={model.updatedDisplay} />
-              <Field label="Last contacted" value={model.lastContactedDisplay} />
-              <Field label="Record source" value={model.sourceLabel} />
-            </dl>
-          </Section>
-
-          <Section title="Client & contact" subtitle="Account and primary contact information">
-            <dl className="event-detail-fields event-detail-fields--grid">
               <Field label="Client / account" value={model.company} />
               <Field label="Primary contact" value={model.contact} />
               <Field label="Email" value={displayOrEmpty(model.contactEmail)} />
               <Field label="Phone" value={displayOrEmpty(model.contactPhone)} />
               <Field label="Lead source" value={displayOrEmpty(model.leadSource)} />
+              <Field label="Record source" value={model.sourceLabel} />
             </dl>
             {model.companyId ? (
               <p className="event-detail-link-row">
@@ -483,14 +479,6 @@ export default function EventDetailCommandCenter({
                 </Link>
               </p>
             ) : null}
-          </Section>
-
-          <Section title="Event plan" subtitle="Operational planning and execution notes">
-            <dl className="event-detail-fields">
-              {model.planFields.map(f => (
-                <Field key={f.label} label={f.label} value={f.value} />
-              ))}
-            </dl>
           </Section>
 
           <Section title="Notes" subtitle="General, planning, and activity notes">
@@ -520,18 +508,12 @@ export default function EventDetailCommandCenter({
           ) : null}
 
           {tab === 'docs' ? (
-            <Section title="Documents" subtitle="Proposals, BEOs, and payment summaries">
+            <Section title="Documents" subtitle="Proposal, BEO, and payment summaries — one BEO workflow, staff and guest versions">
               <EventDocsPanel model={model} />
             </Section>
           ) : null}
 
-          {tab === 'playbook' ? (
-            <Section title="Event playbook" subtitle="Type-driven tasks, payments, documents, and portal details">
-              <EventPlaybookPanel model={model} />
-            </Section>
-          ) : null}
-
-          {tab === 'activity' ? (
+          {tab === 'messages' ? (
             <>
             <Section title="Guest thread" subtitle="Same conversation the client sees in the portal">
               <EventThreadPanel eventId={model.id} coordinatorName={model.owner} disabled={model.isReferenceOnly} />
@@ -566,7 +548,20 @@ export default function EventDetailCommandCenter({
             </>
           ) : null}
 
-          {tab === 'portal' ? (
+          {tab === 'more' ? (
+            <>
+            <Section title="Event plan" subtitle="Operational planning and execution notes">
+              <dl className="event-detail-fields">
+                {model.planFields.map(f => (
+                  <Field key={f.label} label={f.label} value={f.value} />
+                ))}
+              </dl>
+            </Section>
+
+            <Section title="Event playbook" subtitle="Type-driven tasks, payments, documents, and portal details">
+              <EventPlaybookPanel model={model} />
+            </Section>
+
             <Section title="Guest portal" subtitle="What the client sees — share one link">
               <div className="event-portal-preview">
                 <div className="event-portal-preview__card">
@@ -612,6 +607,7 @@ export default function EventDetailCommandCenter({
                 </div>
               </div>
             </Section>
+            </>
           ) : null}
         </div>
 
@@ -658,19 +654,19 @@ export default function EventDetailCommandCenter({
             </Section>
           ) : null}
 
-          <Section title="Quick tools" subtitle="Money · docs · portal">
+          <Section title="Quick tools" subtitle="Jump to money, docs, and messages">
             <div className="event-detail-quick-tools">
               <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTab('money')}>
                 Payment links
               </button>
-              <button type="button" className="btn btn-secondary btn-sm" onClick={() => openVenueDocument('beo', model)}>
-                Generate BEO
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTab('docs')}>
+                BEO / proposal
               </button>
-              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTab('portal')}>
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTab('more')}>
                 Portal share
               </button>
-              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTab('activity')}>
-                AI drafts
+              <button type="button" className="btn btn-secondary btn-sm" onClick={() => setTab('messages')}>
+                AI Assist
               </button>
             </div>
           </Section>

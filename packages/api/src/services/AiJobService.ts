@@ -1,6 +1,8 @@
 // packages/api/src/services/AiJobService.ts
 import type { Db } from 'mongodb';
 import {
+  buildEventAnalysisJobInput,
+  buildLeadAnalysisJobInput,
   defaultTaskTypeForAgent,
   isLocalAiAgentId,
   type AiJobPublic,
@@ -64,15 +66,30 @@ export class AiJobService {
     const recordId = body.recordId?.trim() || null;
     const taskType = inferTaskType(agent, body.taskType);
 
+    let analysisInput: Record<string, unknown> = {};
     if ((agent === 'lead-intelligence' || agent === 'follow-up-drafting') && recordType === 'lead') {
       if (!recordId) throw new ValidationError('recordId required for lead jobs');
       const lead = await LeadRepository.findById(db, ctx, recordId);
       if (!lead) throw new NotFoundError('Lead');
+      if (taskType === 'analyze_lead') {
+        const linkedId = String(
+          (lead as { convertedDealId?: string; dealId?: string }).convertedDealId ??
+            (lead as { dealId?: string }).dealId ??
+            '',
+        ).trim();
+        const linkedEvent = linkedId ? await DealRepository.findById(db, ctx, linkedId) : null;
+        analysisInput = buildLeadAnalysisJobInput(lead as Record<string, unknown>, {
+          linkedEvent: (linkedEvent as Record<string, unknown> | null) ?? null,
+        });
+      }
     }
     if (agent === 'event-operations' && recordType === 'event') {
       if (!recordId) throw new ValidationError('recordId required for event jobs');
       const deal = await DealRepository.findById(db, ctx, recordId);
       if (!deal) throw new NotFoundError('Event');
+      if (taskType === 'analyze_event') {
+        analysisInput = buildEventAnalysisJobInput(deal as Record<string, unknown>);
+      }
     }
 
     const tenantId = ctx.tenantId ?? 'hub-on-lewis';
@@ -95,7 +112,7 @@ export class AiJobService {
       result: null,
       error: null,
       runtimeMetadata: null,
-      input: body.input ?? {},
+      input: { ...(body.input ?? {}), ...analysisInput },
       claimedByNodeId: null,
       updatedAt: now,
     });

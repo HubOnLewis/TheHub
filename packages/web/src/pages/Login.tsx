@@ -23,19 +23,19 @@ export default function Login() {
   useEffect(() => {
     if (!isScreenshotMode()) return;
     if (user) {
-      navigate('/dashboard', { replace: true });
+      navigate('/today', { replace: true });
       return;
     }
     setEnteringDemo(true);
     login(getScreenshotDemoUser(), SCREENSHOT_DEMO_TOKEN);
-    navigate('/dashboard', { replace: true });
+    navigate('/today', { replace: true });
   }, [user, login, navigate]);
 
   const enterDemoWorkspace = () => {
     setError('');
     setEnteringDemo(true);
     login(getScreenshotDemoUser(), SCREENSHOT_DEMO_TOKEN);
-    navigate('/dashboard', { replace: true });
+    navigate('/today', { replace: true });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -54,7 +54,7 @@ export default function Login() {
     try {
       const { data } = await client.post<{ token: string; user: AppUser }>('/auth/login', { email, password });
       login(data.user!, data.token);
-      navigate('/dashboard');
+      navigate('/today');
     } catch (err: unknown) {
       const ax = err as {
         response?: { data?: { error?: string } };
@@ -150,6 +150,16 @@ export default function Login() {
             >
               {loading ? 'Signing in…' : 'Sign In'}
             </button>
+            {import.meta.env.DEV ? (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                style={{ width: '100%', justifyContent: 'center', padding: '10px', marginTop: 10 }}
+                onClick={enterDemoWorkspace}
+              >
+                Preview venue desk (no server)
+              </button>
+            ) : null}
             {isScreenshotMode() && (
               <button
                 type="button"

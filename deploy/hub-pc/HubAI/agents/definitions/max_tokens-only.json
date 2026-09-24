@@ -1,0 +1,6 @@
+{
+  "_comment": "DO NOT copy this file over C:\\HubAI\\agents\\definitions\\lead-intelligence.json. Edit max_tokens only on the live definition.",
+  "id": "lead-intelligence",
+  "max_tokens": 512,
+  "preferred_model": "gpt-oss:20b"
+}

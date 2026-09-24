@@ -3,6 +3,8 @@
  * Shared by Hub API (block saves) and web calendar.
  */
 
+import { dealOccupiesCalendar } from './holds.js';
+
 export type OccupancySlot = {
   id: string;
   title: string;
@@ -216,7 +218,10 @@ export function occupancyFromImportMeta(input: {
   title: string;
   status?: string | null;
   importMeta?: Record<string, unknown> | null;
-}): OccupancySlot | null {
+}, nowMs = Date.now()): OccupancySlot | null {
+  if (!dealOccupiesCalendar({ status: input.status, importMeta: input.importMeta }, nowMs)) {
+    return null;
+  }
   const meta = input.importMeta ?? {};
   const dateRaw =
     (typeof meta.eventDateIso === 'string' && meta.eventDateIso) ||

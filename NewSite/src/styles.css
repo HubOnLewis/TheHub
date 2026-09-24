@@ -829,7 +829,12 @@ a {
   outline-offset: 3px;
 }
 
-/* Lightbox */
+/* Lightbox — [hidden] must win over display:flex or the overlay eats every click */
+.lightbox[hidden] {
+  display: none !important;
+  pointer-events: none;
+}
+
 .lightbox {
   position: fixed;
   inset: 0;
@@ -840,11 +845,13 @@ a {
   justify-content: center;
   padding: 2rem;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.25s ease;
 }
 
 .lightbox.is-open {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .lightbox img {

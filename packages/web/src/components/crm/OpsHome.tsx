@@ -18,6 +18,7 @@ import AttentionRail from '../venue/AttentionRail.js';
 import { useVenueAttention } from '../../hooks/useAgentSnapshot.js';
 import { formatTodayLabel } from '../../config/productionData.js';
 import { useInboxTriage } from '../../hooks/useInboxTriage.js';
+import { useVenueOpsQueue } from '../../hooks/useVenueOps.js';
 import {
   buildMorningCards,
   pickDoThisNow,
@@ -94,6 +95,7 @@ function EventOpsRow({ row }: { row: CrmEventRow }) {
 export default function OpsHome() {
   const { rows, isLoading, isError, sourceId } = useLiveCrmEvents();
   const { data: triage } = useInboxTriage();
+  const { data: opsQueue } = useVenueOpsQueue();
   const [addOpen, setAddOpen] = useState(false);
   const [showFar, setShowFar] = useState(false);
 
@@ -209,9 +211,9 @@ export default function OpsHome() {
           <span>Balances due</span>
           <strong>{formatCurrency(balanceTotal)}</strong>
         </div>
-        <div className={`ops-home__metric${attention.length > 0 ? ' ops-home__metric--urgent' : ''}`}>
+        <div className={`ops-home__metric${(opsQueue?.summary.high ?? attention.length) > 0 ? ' ops-home__metric--urgent' : ''}`}>
           <span>Needs follow-up</span>
-          <strong>{attention.length}</strong>
+          <strong>{opsQueue?.summary.high ?? attention.length}</strong>
         </div>
       </div>
 
@@ -235,6 +237,20 @@ export default function OpsHome() {
               {doNow.action}
             </Link>
           </div>
+        ) : null}
+        {opsQueue?.tasks?.length ? (
+          <ul className="ops-home__ops-queue">
+            {opsQueue.tasks.slice(0, 5).map(task => (
+              <li key={task.id}>
+                <Link to={opportunityDetailPath(task.dealId)}>
+                  <strong>{task.title}</strong>
+                  <span>
+                    {task.dueLabel} · {task.contact}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         ) : null}
         <div className="inbox-triage-grid">
           {morningCards.map(card => (

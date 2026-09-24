@@ -9,6 +9,7 @@ process.env.SUPER_ADMIN_EMAILS ??= 'jason@hubonlewis.com';
 
 const { default: publicAvailabilityRoutes } = await import('./publicAvailability.js');
 const { default: dealRoutes } = await import('./deals.js');
+const { default: venueOpsRoutes } = await import('./venueOps.js');
 const { publicAvailabilityService } = await import('../services/PublicAvailabilityService.js');
 const { publicAvailabilityLeaksInternal } = await import('@hub-crm/shared');
 
@@ -58,6 +59,31 @@ test('unauthenticated visitor cannot access internal event calendar', async () =
   try {
     const res = await fetch(`http://127.0.0.1:${port}/api/deals/calendar`);
     assert.equal(res.status, 401);
+  } finally {
+    await new Promise<void>((resolve, reject) => server.close(err => (err ? reject(err) : resolve())));
+  }
+});
+
+test('unauthenticated visitor cannot mutate holds, BEO snapshots, or ops tasks', async () => {
+  const app = express();
+  app.use('/api/deals', dealRoutes);
+  app.use('/api/venue-ops', venueOpsRoutes);
+  app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+    const status = typeof err === 'object' && err && 'statusCode' in err ? Number((err as { statusCode: number }).statusCode) : 500;
+    res.status(status).json({ error: err instanceof Error ? err.message : 'error' });
+  });
+  const { server, port } = await listen(app);
+  try {
+    const paths = [
+      ['POST', '/api/deals/000000000000000000000000/hold/extend'],
+      ['POST', '/api/deals/000000000000000000000000/hold/release'],
+      ['POST', '/api/deals/000000000000000000000000/beo/snapshot'],
+      ['POST', '/api/venue-ops/tasks'],
+    ] as const;
+    for (const [method, path] of paths) {
+      const res = await fetch(`http://127.0.0.1:${port}${path}`, { method });
+      assert.equal(res.status, 401, `${method} ${path}`);
+    }
   } finally {
     await new Promise<void>((resolve, reject) => server.close(err => (err ? reject(err) : resolve())));
   }

@@ -5,6 +5,7 @@ import {
   projectPublicDays,
   toPublicAvailabilityDto,
   PUBLIC_AVAILABILITY_MAX_DAYS,
+  type PublicAvailabilityDay,
   type PublicAvailabilityRange,
   type PublicDayStatus,
   type PublicOccupancySignal,
@@ -67,9 +68,13 @@ export class PublicAvailabilityService {
     return this.listRange(getDB(), startDate, endDate, nowMs);
   }
 
-  async statusForDate(db: Db, date: string, nowMs = Date.now()): Promise<PublicDayStatus> {
+  async dayForDate(db: Db, date: string, nowMs = Date.now()): Promise<PublicAvailabilityDay> {
     const range = await this.listRange(db, date, date, nowMs);
-    return range.days[0]?.status ?? 'available';
+    return range.days[0] ?? { date, status: 'available', morning: 'available', evening: 'available' };
+  }
+
+  async statusForDate(db: Db, date: string, nowMs = Date.now()): Promise<PublicDayStatus> {
+    return (await this.dayForDate(db, date, nowMs)).status;
   }
 }
 

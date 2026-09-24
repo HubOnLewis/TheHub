@@ -101,6 +101,8 @@ test('public inquiry maps to lead+deal and known event type for playbook', () =>
   assert.equal(mapped.deal.importMeta?.eventDateIso, '2026-10-17');
   assert.equal(mapped.deal.importMeta?.space, 'Main Hall');
   assert.equal(mapped.deal.importMeta?.source, 'public_inquiry');
+  assert.equal(typeof mapped.deal.importMeta?.holdExpiresAt, 'string');
+  assert.ok(Date.parse(String(mapped.deal.importMeta?.holdExpiresAt)) > Date.now());
   assert.equal(knownEventTypeFromCreate(mapped.deal.importMeta as Record<string, unknown>), 'wedding');
   assert.equal(isAssignedSpace(String(mapped.deal.importMeta?.space)), true);
 });
@@ -115,7 +117,12 @@ const inquiryBody = {
 };
 
 function mockPublicDay(status: 'available' | 'hold' | 'booked' | 'closed' = 'available') {
-  mock.method(publicAvailabilityService, 'statusForDate', async () => status);
+  mock.method(publicAvailabilityService, 'dayForDate', async () => ({
+    date: '2026-10-17',
+    status,
+    morning: status,
+    evening: status,
+  }));
 }
 
 function mockTakenMainHall() {
@@ -328,6 +335,44 @@ test('date that became booked returns AVAILABILITY_CHANGED without creating reco
   );
   assert.equal(calls.leadCalls(), 0);
   assert.equal(calls.dealCalls(), 0);
+});
+
+test('evening default is rejected when only the morning is open', async () => {
+  mock.method(publicAvailabilityService, 'dayForDate', async () => ({
+    date: '2026-10-17',
+    status: 'partial' as const,
+    morning: 'available' as const,
+    evening: 'booked' as const,
+  }));
+  const calls = mockNoLeadCreate();
+  await assert.rejects(
+    () => inquiryService.create({} as never, inquiryBody),
+    (err: unknown) => err instanceof ConflictError,
+  );
+  assert.equal(calls.leadCalls(), 0);
+});
+
+test('morning request is accepted when only the evening is booked', async () => {
+  mock.method(publicAvailabilityService, 'dayForDate', async () => ({
+    date: '2026-10-17',
+    status: 'partial' as const,
+    morning: 'available' as const,
+    evening: 'booked' as const,
+  }));
+  mock.method(dealService, 'assertSpaceAvailability', async () => undefined);
+  mock.method(leadService, 'create', async () => ({ _id: 'lead_am' }));
+  mock.method(dealService, 'create', async () => ({ _id: 'deal_am' }));
+  mock.method(inquiryService, 'mintPortal', async () => ({
+    token: 'tok',
+    path: '/portal/login?access=tok',
+    reused: false,
+  }));
+  const result = await inquiryService.create({} as never, {
+    ...inquiryBody,
+    startTime: '09:00',
+    endTime: '14:00',
+  });
+  assert.equal(result.eventId, 'deal_am');
 });
 
 test('successful inquiry returns portalUrl', async () => {

@@ -3,6 +3,7 @@ import {
   HUB_CONTACT_EMAILS,
   getHubTeamMember,
   isAssignedSpace,
+  defaultHoldExpiresAt,
   type CreateDealPayload,
   type CreateLeadPayload,
   type PublicInquiryAvailabilityPayload,
@@ -14,11 +15,13 @@ import { leadService } from './LeadService.js';
 import { dealService } from './DealService.js';
 import { reuseOrMintPortalToken } from './GuestPortalService.js';
 import { getEmailProvider } from './email/EmailProvider.js';
+import { communicationsService } from './CommunicationsService.js';
 import { BadRequestError, ConflictError } from '../errors/index.js';
 import { publicAvailabilityService } from './PublicAvailabilityService.js';
 import {
   AVAILABILITY_CHANGED_CODE,
   AVAILABILITY_CHANGED_MESSAGE,
+  isPublicWindowOpen,
 } from '@hub-crm/shared';
 
 /** Guest-facing copy for create 409 and /availability. */
@@ -44,7 +47,10 @@ export function publicInquiryTenantContext(): TenantContext {
   };
 }
 
-export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
+export function mapPublicInquiryToRecords(
+  body: PublicInquiryPayload,
+  now = new Date(),
+): {
   lead: CreateLeadPayload;
   deal: CreateDealPayload;
 } {
@@ -77,6 +83,8 @@ export function mapPublicInquiryToRecords(body: PublicInquiryPayload): {
     cateringBarNeeds: body.cateringBarNeeds,
     submittedAt,
     availabilityStateAtSubmission: 'available',
+    holdPlacedAt: now.toISOString(),
+    holdExpiresAt: defaultHoldExpiresAt(now),
   };
   if (dateKey && hasSpace) {
     importMeta.eventDateIso = dateKey;
@@ -172,8 +180,9 @@ export class InquiryService {
       throw new BadRequestError('Please pick a room, an event type, and a date.');
     }
     const mapped = mapPublicInquiryToRecords(body);
-    const publicStatus = await publicAvailabilityService.statusForDate(db, dateKey);
-    if (publicStatus !== 'available') {
+    const publicDay = await publicAvailabilityService.dayForDate(db, dateKey);
+    const hold = inquiryHoldWindow(body.startTime, body.endTime);
+    if (!isPublicWindowOpen(publicDay, hold.startTime, hold.endTime)) {
       throw new ConflictError(AVAILABILITY_CHANGED_MESSAGE, AVAILABILITY_CHANGED_CODE);
     }
     try {
@@ -201,13 +210,28 @@ export class InquiryService {
     const portalPath = minted.path;
     const portalUrl = `${HUB_ADMIN_URL}${portalPath}`;
 
+    const firstName = (mapped.lead.contact || 'there').split(' ')[0] || 'there';
     const email = await getEmailProvider().send({
       to: mapped.lead.email || 'unspecified@hubonlewis.com',
       subject: 'Thanks for your inquiry — HuB on Lewis',
-      body: `Your event portal: ${portalUrl}`,
+      body: `Hi ${firstName},\n\nThank you for considering HuB on Lewis. We have ${dateKey} on our calendar as a 7-day hold.\n\nOpen your event portal anytime:\n${portalUrl}\n\n— HuB on Lewis`,
       eventId: String(deal._id),
       templateKey: 'inquiry',
     });
+    try {
+      if (typeof (db as { collection?: unknown })?.collection === 'function') {
+        await communicationsService.recordSystemEmail(db, ctx, deal, {
+          to: mapped.lead.email || '',
+          subject: 'Thanks for your inquiry — HuB on Lewis',
+          body: `Portal link: ${portalUrl}`,
+          templateKey: 'inquiry',
+          deliveryStatus: email.status,
+          providerMessageId: email.messageId,
+        });
+      }
+    } catch (err) {
+      console.error('[InquiryService] Failed to record inquiry email on the event thread:', err);
+    }
 
     return {
       received: true,
@@ -218,7 +242,11 @@ export class InquiryService {
       portalPath,
       portalUrl,
       emailStatus: email.status,
-      copyHint: 'Email is stubbed — staff copy this portal link for the guest.',
+      holdExpiresAt: (mapped.deal.importMeta as { holdExpiresAt?: string } | undefined)?.holdExpiresAt,
+      copyHint:
+        email.status === 'stubbed'
+          ? 'Email is stubbed — staff copy this portal link for the guest.'
+          : 'A confirmation with the portal link was recorded on the event thread.',
     };
   }
 }

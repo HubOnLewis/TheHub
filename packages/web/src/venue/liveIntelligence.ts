@@ -106,7 +106,7 @@ export function buildAttentionQueue(rows: CrmEventRow[]): AttentionItem[] {
         eventTitle: row.title,
         href: row.href,
         agent: 'Balance Guardian',
-        actionLabel: 'Send payment link',
+        actionLabel: 'Record payment',
         amount: balance,
       });
     }
@@ -121,7 +121,7 @@ export function buildAttentionQueue(rows: CrmEventRow[]): AttentionItem[] {
         eventTitle: row.title,
         href: row.href,
         agent: 'Follow-Up Hunter',
-        actionLabel: 'Draft follow-up',
+        actionLabel: 'Follow up',
         amount: row.value,
       });
     }
@@ -150,7 +150,7 @@ export function buildAttentionQueue(rows: CrmEventRow[]): AttentionItem[] {
         eventTitle: row.title,
         href: row.href,
         agent: 'Booking Coordinator',
-        actionLabel: 'Open BEO tools',
+        actionLabel: 'Prepare BEO',
       });
     }
   }

@@ -9,7 +9,7 @@ import { buildService } from '../services/BuildService.js';
 import { unitService } from '../services/UnitService.js';
 import { CompanyRepository } from '../repositories/CompanyRepository.js';
 import { getDB } from '../config/db.js';
-import { ApplyPlaybookSchema, CreateBuildSchema, CreateDealSchema, PatchDealSchema, PatchPlaybookDocumentSchema, PatchPlaybookTaskSchema } from '@hub-crm/shared';
+import { ApplyPlaybookSchema, CreateBuildSchema, CreateDealSchema, ExtendHoldSchema, PatchDealSchema, PatchPlaybookDocumentSchema, PatchPlaybookTaskSchema } from '@hub-crm/shared';
 import { playbookService } from '../services/PlaybookService.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 
@@ -181,6 +181,24 @@ router.patch('/:id/playbook/tasks', validate(PatchPlaybookTaskSchema), async (re
 router.patch('/:id/playbook/documents', validate(PatchPlaybookDocumentSchema), async (req, res, next) => {
   try {
     res.json(await playbookService.setDocumentFlag(getDB(), req.tenant, req.params['id']!, req.body.key, req.body.onFile));
+  } catch (err) { next(err); }
+});
+
+router.post('/:id/hold/extend', validate(ExtendHoldSchema), async (req, res, next) => {
+  try {
+    res.json(await dealService.extendHold(getDB(), req.tenant, req.params['id']!, req.body.days));
+  } catch (err) { next(err); }
+});
+
+router.post('/:id/hold/release', async (req, res, next) => {
+  try {
+    res.json(await dealService.releaseHold(getDB(), req.tenant, req.params['id']!));
+  } catch (err) { next(err); }
+});
+
+router.post('/:id/beo/snapshot', async (req, res, next) => {
+  try {
+    res.json(await playbookService.snapshotBeo(getDB(), req.tenant, req.params['id']!, req.tenant.userName));
   } catch (err) { next(err); }
 });
 

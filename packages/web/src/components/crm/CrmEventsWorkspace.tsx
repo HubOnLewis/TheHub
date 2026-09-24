@@ -10,7 +10,6 @@ import LoadingState from './LoadingState.js';
 import CrmEventSourceBanner from './CrmEventSourceBanner.js';
 import CrmEventSourceDiagnostics from './CrmEventSourceDiagnostics.js';
 import AddEventModal from './AddEventModal.js';
-import AttentionRail from '../venue/AttentionRail.js';
 import {
   filterCrmRows,
   mapApiDealsToWorkspaceRows,
@@ -106,7 +105,7 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
     return rows;
   }, [manifest.rows, statusFilter, mineOnly, user, search, useApi, advancedFilter, dealsPage]);
 
-  const { items: attention, source: attentionSource } = useVenueAttention(manifest.rows);
+  const { items: attention } = useVenueAttention(manifest.rows);
 
   const nextActionStats = useMemo(() => {
     const balance = manifest.rows.reduce((s, r) => s + (r.balanceDue ?? 0), 0);
@@ -144,7 +143,7 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
         <header className="crm-page-header">
           <h1 className="crm-page-header__title">{title}</h1>
           <p className="crm-page-header__subtitle">
-            What needs worked · what is booked · what is at risk — your venue command home.
+            Every booking — inquiry through event day.
           </p>
         </header>
 
@@ -161,18 +160,11 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
           <span>Balances due</span>
           <strong>{formatCurrency(nextActionStats.balance)}</strong>
         </div>
-        <div className={`crm-home-next-pill${nextActionStats.highPriority > 0 ? ' crm-home-next-pill--urgent' : ''}`}>
-          <span>High priority</span>
-          <strong>{nextActionStats.highPriority}</strong>
-        </div>
+        <Link to={ROUTES.today} className="crm-home-next-link">
+          Today →
+        </Link>
         <Link to={ROUTES.calendar} className="crm-home-next-link">
-          Open calendar →
-        </Link>
-        <Link to={ROUTES.tasks} className="crm-home-next-link">
-          Open tasks →
-        </Link>
-        <Link to={ROUTES.ownerBriefing} className="crm-home-next-link">
-          Owner briefing →
+          Calendar →
         </Link>
       </div>
 
@@ -188,13 +180,6 @@ export default function CrmEventsWorkspace({ title = 'Active Events' }: Props) {
           </Link>
         </div>
       ) : null}
-
-      <AttentionRail items={attention} title="Do this next" max={5} />
-      <p className="text-muted text-sm" style={{ margin: '-8px 0 16px' }}>
-        {attentionSource === 'api-agents'
-          ? 'Live agent snapshot from CRM events and leads — not Perfect Venue seed.'
-          : 'Live rules on current CRM rows. Open Briefing to refresh the stored agent run.'}
-      </p>
 
       {manifest.sourceId === 'live-api' && dashStats ? (
         <WorkspaceKpiStrip stats={dashStats} />
@@ -325,13 +310,13 @@ function WorkspaceKpiStrip({
     <div className="crm-kpi-strip crm-pipeline-summary command-stat-strip" role="status">
       {openLeads > 0 ? (
         <div className="tasks-stat-pill">
-          <span className="tasks-stat-pill__label">Open leads</span>
+          <span className="tasks-stat-pill__label">New inquiries</span>
           <strong>{openLeads}</strong>
         </div>
       ) : null}
       {pipelineDeals > 0 ? (
         <div className="tasks-stat-pill">
-          <span className="tasks-stat-pill__label">Pipeline events</span>
+          <span className="tasks-stat-pill__label">Open events</span>
           <strong>{pipelineDeals}</strong>
         </div>
       ) : null}

@@ -7,9 +7,9 @@ export const SCREENSHOT_DEMO_TOKEN = 'hub-screenshot-local-dev-token';
 export function getScreenshotDemoUser(): AppUser {
   return {
     id:       'screenshot-hub-admin',
-    name:     'Jason Lavender',
-    email:    HUB_CONTACT_EMAILS.jason,
-    role:     'super_admin',
+    name:     'Hannah Bayless',
+    email:    HUB_CONTACT_EMAILS.hannah,
+    role:     'admin',
     entity:   'HUB',
     location: 'Wichita',
     tenantId: 'hub-wichita',

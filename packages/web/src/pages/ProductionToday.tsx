@@ -1,12 +1,197 @@
 import { Link } from 'react-router-dom';
 import { formatCurrency } from '@hub-crm/shared';
-import { ROUTES } from '../config/paths.js';
-import { useTodayIntelligence } from '../hooks/useProductionIntelligence.js';
+import { ROUTES, opportunityDetailPath } from '../config/paths.js';
+import { useLiveCrmEvents } from '../hooks/useLiveCrmEvents.js';
+import { useVenueOpsQueue, useVenueOpsTaskAction } from '../hooks/useVenueOps.js';
+import {
+  daysUntilEvent,
+  getBalanceDue,
+  getEventDate,
+  isCompleted,
+  isLost,
+} from '../lib/liveEventHelpers.js';
+import type { CrmEventRow } from '../lib/crmEvents.js';
+import LoadingState from '../components/crm/LoadingState.js';
+import { formatTodayLabel } from '../config/productionData.js';
+import { useMemo } from 'react';
+
+function startOfDay(d: Date): Date {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+function activeRows(rows: CrmEventRow[]): CrmEventRow[] {
+  return rows.filter(r => !isLost(r) && !isCompleted(r));
+}
+
+function roomLine(row: CrmEventRow): string {
+  const space = row.space && row.space !== '—' ? row.space : 'Room TBD';
+  const time = row.eventTime || 'Time TBD';
+  const guests = row.guests ? `${row.guests} guests` : '';
+  return [time, space, guests].filter(Boolean).join(' · ');
+}
 
 export default function ProductionToday() {
-  const query = useTodayIntelligence();
-  if (query.isLoading) return <main className="page-simple"><div className="card page-section">Loading live operations…</div></main>;
-  if (query.isError) return <main className="page-simple"><div className="card page-section"><h1>Today</h1><p>Live operations data is temporarily unavailable.</p></div></main>;
-  const data = query.data as any;
-  return <main className="today-ops command-page"><header className="today-ops__hero"><div><span className="today-ops__badge">Live operations</span><h1 className="page-title">Today</h1><p className="page-subtitle">Current Hub events, open work, and financial attention from Mongo.</p></div><Link to={ROUTES.calendar} className="btn btn-secondary btn-sm">Calendar →</Link></header><div className="today-ops__grid"><section className="today-block today-block--events"><h2>Today&apos;s events</h2>{data.events?.length ? <ul className="today-list">{data.events.map((e:any)=><li key={e._id} className="today-list__row"><div><strong>{e.title}</strong><span>{e.importMeta?.space || 'Event Space'} · {e.importMeta?.guests || 0} guests · {e.status}</span></div></li>)}</ul> : <p className="today-empty">No events scheduled today.</p>}</section><section className="today-block today-block--tasks"><h2>Open follow-ups</h2>{data.tasks?.length ? <ul className="today-list">{data.tasks.map((t:any)=><li key={t._id} className="today-list__row"><div><strong>{t.summary || 'Follow-up'}</strong><span>{t.companyName || 'Hub work'} · {t.followUpAt || ''}</span></div></li>)}</ul> : <p className="today-empty">No open follow-ups with due dates.</p>}</section><section className="today-block today-block--balances"><h2>Balances requiring attention</h2>{data.balances?.length ? <ul className="today-list">{data.balances.map((e:any)=><li key={e._id} className="today-list__row today-list__row--urgent"><div><strong>{e.title}</strong><span>{e.importMeta?.eventDateIso || 'Date not set'}</span></div><span className="today-list__amt">{formatCurrency(Number(e.importMeta?.balanceDue || 0))}</span></li>)}</ul> : <p className="today-empty">No outstanding balances.</p>}</section></div></main>;
+  const { rows, isLoading, isError, sourceId } = useLiveCrmEvents();
+  const ops = useVenueOpsQueue();
+  const action = useVenueOpsTaskAction();
+
+  const today = startOfDay(new Date());
+  const active = useMemo(() => activeRows(rows), [rows]);
+  const tonight = useMemo(
+    () =>
+      active
+        .filter(r => {
+          const d = getEventDate(r);
+          return d != null && startOfDay(d).getTime() === today.getTime();
+        })
+        .sort((a, b) => a.eventTime.localeCompare(b.eventTime)),
+    [active, today],
+  );
+  const queue = ops.data?.tasks ?? [];
+  const balances = useMemo(
+    () => active.filter(r => getBalanceDue(r) > 0).sort((a, b) => getBalanceDue(b) - getBalanceDue(a)),
+    [active],
+  );
+
+  if (isLoading) return <LoadingState message="Loading today…" />;
+
+  return (
+    <main className="today-desk">
+      <header className="today-desk__header">
+        <div>
+          <p className="today-desk__kicker">{formatTodayLabel()}</p>
+          <h1 className="today-desk__title">Today</h1>
+          <p className="today-desk__sub">
+            What needs a reply, what is on the floor, and what money is still out.
+            {isError ? ' Showing saved venue data while the server refreshes.' : ''}
+            {!isError && sourceId !== 'live-api' && sourceId !== 'none'
+              ? ' Showing imported venue events.'
+              : ''}
+          </p>
+        </div>
+        <div className="today-desk__actions">
+          <Link to={ROUTES.calendar} className="btn btn-secondary btn-sm">
+            Calendar
+          </Link>
+          <Link to={`${ROUTES.opportunities}?new=1`} className="btn btn-primary btn-sm">
+            + Add event
+          </Link>
+        </div>
+      </header>
+
+      <section className="today-desk__work" aria-label="Do this">
+        <header className="today-desk__section-head">
+          <h2>Do this</h2>
+          <span>{queue.length || balances.length ? `${queue.length || balances.length}` : 'Clear'}</span>
+        </header>
+        {queue.length > 0 ? (
+          <ul className="today-desk__list">
+            {queue.slice(0, 12).map(t => (
+              <li key={t.id} className="today-desk__row">
+                <Link to={opportunityDetailPath(t.dealId)} className="today-desk__row-main">
+                  <strong>{t.title}</strong>
+                  <span>
+                    {t.dueLabel} · {t.contact}
+                  </span>
+                </Link>
+                <div className="today-desk__row-actions">
+                  <button
+                    type="button"
+                    className="btn btn-primary btn-sm"
+                    disabled={action.isPending}
+                    onClick={() =>
+                      action.mutate({ taskId: t.id, dealId: t.dealId, action: 'complete' })
+                    }
+                  >
+                    Done
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    disabled={action.isPending}
+                    onClick={() =>
+                      action.mutate({
+                        taskId: t.id,
+                        dealId: t.dealId,
+                        action: 'snooze',
+                        snoozeDays: 2,
+                      })
+                    }
+                  >
+                    Later
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        ) : balances.length > 0 ? (
+          <ul className="today-desk__list">
+            {balances.slice(0, 8).map(r => (
+              <li key={r.id} className="today-desk__row">
+                <Link to={r.href} className="today-desk__row-main">
+                  <strong>Collect balance — {r.title}</strong>
+                  <span>
+                    {r.contact} · {formatCurrency(getBalanceDue(r))} due
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="today-desk__empty">Nothing waiting. Check the calendar or add an event.</p>
+        )}
+      </section>
+
+      <section className="today-desk__floor" aria-label="On the floor">
+        <header className="today-desk__section-head">
+          <h2>On the floor today</h2>
+          <span>{tonight.length}</span>
+        </header>
+        {tonight.length === 0 ? (
+          <p className="today-desk__empty">No events scheduled for today.</p>
+        ) : (
+          <ul className="today-desk__list">
+            {tonight.map(r => {
+              const days = daysUntilEvent(r);
+              return (
+                <li key={r.id} className="today-desk__row">
+                  <Link to={r.href} className="today-desk__row-main">
+                    <strong>{r.title}</strong>
+                    <span>
+                      {roomLine(r)}
+                      {r.occupancy === 'hold' ? ' · Hold' : r.occupancy === 'booked' ? ' · Booked' : ''}
+                      {days === 0 ? '' : ''}
+                    </span>
+                  </Link>
+                  <span className="today-desk__chip">{r.statusLabel}</span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
+
+      {balances.length > 0 && queue.length > 0 ? (
+        <section className="today-desk__money" aria-label="Balances">
+          <header className="today-desk__section-head">
+            <h2>Money still out</h2>
+            <span>{formatCurrency(balances.reduce((s, r) => s + getBalanceDue(r), 0))}</span>
+          </header>
+          <ul className="today-desk__list">
+            {balances.slice(0, 6).map(r => (
+              <li key={r.id} className="today-desk__row">
+                <Link to={r.href} className="today-desk__row-main">
+                  <strong>{r.title}</strong>
+                  <span>{r.eventDateDisplay}</span>
+                </Link>
+                <span className="today-desk__amt">{formatCurrency(getBalanceDue(r))}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+    </main>
+  );
 }

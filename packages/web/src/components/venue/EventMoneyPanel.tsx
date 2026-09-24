@@ -74,7 +74,7 @@ export default function EventMoneyPanel({ model, patchPending }: Props) {
       await qc.invalidateQueries({ queryKey: ['deal', model.id] });
       await qc.invalidateQueries({ queryKey: ['deals'] });
       if (rec.status === 'paid') {
-        setMsg(`Recorded ${formatCurrency(rec.amount)} on the event (staff-entered — not a card charge).`);
+        setMsg(`Payment recorded: ${formatCurrency(rec.amount)} (staff entry — not a card charge).`);
       }
     },
     onError: (e: unknown) => {
@@ -105,7 +105,7 @@ export default function EventMoneyPanel({ model, patchPending }: Props) {
     }
     void navigator.clipboard?.writeText(url);
     patchMut.mutate({ id: rec.id, status: 'sent' });
-    setMsg('Guest pay link copied. Not a Stripe charge — staff can record payment below.');
+    setMsg('Guest pay link copied. Guests can review the balance — record payment here when it arrives.');
   };
 
   return (
@@ -173,7 +173,7 @@ export default function EventMoneyPanel({ model, patchPending }: Props) {
 
       <p className="event-money-panel__hint text-muted text-sm">
         Deposit, schedule, and balance live in Mongo via the Hub API — not only this browser.
-        Card charges are not live until Stripe is connected. “Record payment” is staff-entered.
+        Payments are staff-recorded. Card processing is not live yet.
       </p>
 
       {msg ? <p className="event-money-panel__msg" role="status">{msg}</p> : null}

@@ -44,19 +44,21 @@ export interface CrmEventRow {
   createdAt: string | null;
   createdDisplay: string;
   owner: string;
+  occupancy?: 'hold' | 'booked' | 'closed';
+  holdExpiresAt?: string | null;
   ownerUserId?: string;
   href: string;
   source: 'api' | 'import';
 }
 
 const METRIC_LABELS: Record<CrmMetricCategory, string> = {
-  active: 'Active Events',
-  lead: 'Lead',
-  qualified: 'Qualified',
-  proposal_sent: 'Proposal Sent',
-  confirmed: 'Confirmed',
-  balance_due: 'Balance Due',
-  completed_ytd: 'Completed YTD',
+  active: 'Active',
+  lead: 'Inquiry',
+  qualified: 'Inquiry',
+  proposal_sent: 'Proposal',
+  confirmed: 'Booked',
+  balance_due: 'Deposit',
+  completed_ytd: 'Done YTD',
 };
 
 function mapPvStatusToCategory(status: PvEventStatus, balanceDue: number): CrmMetricCategory | null {
@@ -105,7 +107,6 @@ export function computeCrmMetrics(rows: CrmEventRow[]): CrmMetricCard[] {
   const cats: CrmMetricCategory[] = [
     'active',
     'lead',
-    'qualified',
     'proposal_sent',
     'confirmed',
     'balance_due',
@@ -116,8 +117,10 @@ export function computeCrmMetrics(rows: CrmEventRow[]): CrmMetricCard[] {
   ) as Record<CrmMetricCategory, { count: number; dollars: number }>;
 
   for (const row of rows) {
-    const cat = rowMetricCategory(row);
+    let cat = rowMetricCategory(row);
     if (!cat || cat === 'active') continue;
+    // Desk: fold "qualified" into Inquiry so staff see one Inquiry bucket.
+    if (cat === 'qualified') cat = 'lead';
     buckets[cat].count += 1;
     buckets[cat].dollars += row.value;
   }
@@ -150,6 +153,11 @@ export function filterCrmRows(
       out = out.filter(r => {
         const cat = rowMetricCategory(r);
         return cat != null && cat !== 'completed_ytd';
+      });
+    } else if (category === 'lead') {
+      out = out.filter(r => {
+        const cat = rowMetricCategory(r);
+        return cat === 'lead' || cat === 'qualified';
       });
     } else {
       out = out.filter(r => rowMetricCategory(r) === category);

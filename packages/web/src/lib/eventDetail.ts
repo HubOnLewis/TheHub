@@ -4,7 +4,7 @@
 
 import { barPackageLabel, clientDetailsFromImportMeta, dealStatusForDisplay, formatCurrency, playbookFromImportMeta } from '@hub-crm/shared';
 import type { AppliedPlaybook, ClientDetails, DealStatus, PatchDealPayload } from '@hub-crm/shared';
-import { pvStatusDisplay, type PvEventStatus } from '../data/perfectVenueSeed.js';
+import { PV_PIPELINE_EVENTS, pvStatusDisplay, type PvEventStatus, type PvSeedEvent } from '../data/perfectVenueSeed.js';
 import { daysSince, formatRelativeDate } from '../config/productionData.js';
 import type { HubRefreshEvent } from '../data/hubRefreshTypes.js';
 import type { InteractionRow } from '../hooks/useInteractions.js';
@@ -77,6 +77,8 @@ export type EventDetailViewModel = {
   isReferenceOnly: boolean;
   clientDetails: ClientDetails;
   playbook: AppliedPlaybook | null;
+  holdExpiresAt: string | null;
+  holdReleasedAt: string | null;
 };
 
 export type EventDetailEditForm = {
@@ -215,14 +217,14 @@ export function getPaymentStatus(
   balanceDue: number | null,
 ): string {
   if (grandTotal == null || grandTotal <= 0) {
-    if (amountPaid != null && amountPaid > 0) return 'Partial payment recorded';
-    return 'No total captured';
+    if (amountPaid != null && amountPaid > 0) return 'Payment recorded';
+    return 'No total yet';
   }
   const paid = amountPaid ?? 0;
   const balance = balanceDue ?? Math.max(0, grandTotal - paid);
   if (balance <= 0 && paid >= grandTotal) return 'Paid in full';
   if (balance > 0 && paid > 0) return 'Balance due';
-  if (paid > 0) return 'Deposit or partial payment recorded';
+  if (paid > 0) return 'Deposit recorded';
   return 'No payment recorded';
 }
 
@@ -230,66 +232,60 @@ export function getEventNextSteps(stage: EventPipelineStage): string[] {
   switch (stage) {
     case 'lead':
       return [
-        'Confirm event details with the client',
-        'Capture contact email and phone',
-        'Confirm guest count and space needs',
-        'Move to Qualified when intake is complete',
+        'Reply to the guest',
+        'Confirm date, guests, and room',
+        'Start the proposal when ready',
       ];
     case 'qualified':
       return [
-        'Prepare proposal or package pricing',
-        'Confirm menu and service level',
-        'Schedule follow-up with decision maker',
+        'Send or prepare the proposal',
+        'Confirm pricing and package',
+        'Ask for the deposit when they are ready',
       ];
     case 'proposal_sent':
       return [
-        'Follow up on proposal status',
-        'Confirm deposit requirement and due date',
-        'Update proposal if scope changed',
+        'Follow up on the proposal',
+        'Record the deposit when it arrives',
+        'Mark booked after the deposit is in',
       ];
     case 'confirmed':
       return [
         'Confirm final guest count',
-        'Verify balance due and payment schedule',
-        'Prepare event execution notes for the team',
+        'Prepare the staff BEO',
+        'Collect any remaining balance',
       ];
     case 'balance_due':
       return [
-        'Collect remaining balance',
-        'Confirm payment deadline with client',
-        'Review contract and payment status',
+        'Record the remaining balance',
+        'Confirm the payment deadline with the guest',
       ];
     case 'completed':
-      return [
-        'Review final payment and closeout',
-        'Capture post-event notes',
-        'Archive or close the record',
-      ];
+      return ['Review final payment', 'Add any closeout notes'];
     case 'lost':
-      return ['Document reason for loss', 'Schedule re-engagement if appropriate'];
+      return ['Note why it did not book'];
     default:
-      return ['Review event record and next actions'];
+      return ['Review the event and choose the next step'];
   }
 }
 
 function primaryActionForStage(stage: EventPipelineStage): string {
   switch (stage) {
     case 'lead':
-      return 'Qualify Event';
+      return 'Reply';
     case 'qualified':
-      return 'Prepare Proposal';
+      return 'Send proposal';
     case 'proposal_sent':
-      return 'Follow Up';
+      return 'Follow up';
     case 'confirmed':
-      return 'Review Event Plan';
+      return 'Open event plan';
     case 'balance_due':
-      return 'Collect Balance';
+      return 'Collect balance';
     case 'completed':
-      return 'Review Record';
+      return 'Review';
     case 'lost':
-      return 'Review Record';
+      return 'Review';
     default:
-      return 'Review Event';
+      return 'Open event';
   }
 }
 
@@ -321,11 +317,11 @@ export function getStatusQuickActions(
   const next = CRM_NEXT_STATUS[stage];
   if (next && next !== crmStatus) {
     const labels: Partial<Record<EventPipelineStage, string>> = {
-      lead: 'Move to Qualified',
-      qualified: 'Mark Proposal Sent',
-      proposal_sent: 'Mark Confirmed (deposit secured)',
-      confirmed: 'Mark Balance Due',
-      balance_due: 'Mark Event Completed',
+      lead: 'Ready for proposal',
+      qualified: 'Mark proposal sent',
+      proposal_sent: 'Deposit paid — mark booked',
+      confirmed: 'Event is coming up',
+      balance_due: 'Mark event done',
     };
     actions.push({
       label: labels[stage] ?? `Advance to ${next}`,
@@ -642,6 +638,8 @@ export function mapDealToEventDetailViewModel(
     noteSections,
     clientDetails,
     playbook,
+    holdExpiresAt: typeof meta?.holdExpiresAt === 'string' ? meta.holdExpiresAt : null,
+    holdReleasedAt: typeof meta?.holdReleasedAt === 'string' && meta.holdReleasedAt ? meta.holdReleasedAt : null,
   };
 }
 
@@ -686,6 +684,35 @@ function pvFullEventToPseudoDeal(e: PvFullEvent): Record<string, unknown> {
   };
 }
 
+function pvSeedEventToPseudoDeal(e: PvSeedEvent): Record<string, unknown> {
+  return {
+    _id: e.id,
+    title: e.title,
+    company: e.client,
+    contact: e.client,
+    amount: e.value || 0,
+    assignedTo: '',
+    notes: '',
+    status: 'Draft',
+    importMeta: {
+      pvStatus: e.pvStatus,
+      eventDateIso: e.eventDate,
+      startTime: e.eventTime?.split('–')[0]?.trim() || e.eventTime?.split('-')[0]?.trim() || '',
+      endTime: e.eventTime?.includes('–')
+        ? e.eventTime.split('–')[1]?.trim()
+        : e.eventTime?.includes('-')
+          ? e.eventTime.split('-').slice(1).join('-').trim()
+          : '',
+      guests: e.guests,
+      space: e.spaces?.join(', ') || '',
+      grandTotal: e.value,
+      amountPaid: e.depositPaid ?? 0,
+      balanceDue: e.balanceDue ?? Math.max(0, (e.value || 0) - (e.depositPaid ?? 0)),
+      eventType: e.eventType,
+    },
+  };
+}
+
 /** Reference/import-only events — same layout as API deals, read-only. */
 export function mapReferenceEventToEventDetailViewModel(dealId: string): EventDetailViewModel | null {
   const hubRefresh = getHubRefreshEventById(dealId);
@@ -700,6 +727,15 @@ export function mapReferenceEventToEventDetailViewModel(dealId: string): EventDe
   const pv = getFullPvEventById(dealId);
   if (pv) {
     return mapDealToEventDetailViewModel(pvFullEventToPseudoDeal(pv), null, [], {
+      canPatch: false,
+      sourceLabel: 'Reference event record',
+      isReferenceOnly: true,
+    });
+  }
+
+  const seed = PV_PIPELINE_EVENTS.find(e => e.id === dealId);
+  if (seed) {
+    return mapDealToEventDetailViewModel(pvSeedEventToPseudoDeal(seed), null, [], {
       canPatch: false,
       sourceLabel: 'Reference event record',
       isReferenceOnly: true,

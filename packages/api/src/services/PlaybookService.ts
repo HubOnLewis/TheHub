@@ -113,6 +113,24 @@ export class PlaybookService {
     if (!updated) throw new NotFoundError('Event');
     return updated;
   }
+
+  async snapshotBeo(db: Db, ctx: TenantContext, dealId: string, actorName?: string) {
+    const deal = await DealRepository.findById(db, ctx, dealId);
+    if (!deal) throw new NotFoundError('Event');
+    let importMeta = metaOf(deal);
+    const now = new Date().toISOString();
+    importMeta = {
+      ...importMeta,
+      beoGeneratedAt: now,
+      beoGeneratedBy: actorName || ctx.userName || 'staff',
+    };
+    const withStaff = setDocumentOnFile(importMeta, 'staffBeo', true);
+    const updated = await DealRepository.updateOne(db, ctx, dealId, {
+      importMeta: withStaff ?? importMeta,
+    } as never);
+    if (!updated) throw new NotFoundError('Event');
+    return updated;
+  }
 }
 
 export const playbookService = new PlaybookService();

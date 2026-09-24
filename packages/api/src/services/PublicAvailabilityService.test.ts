@@ -24,9 +24,31 @@ test('open date is available', async () => {
   assert.deepEqual(range, {
     startDate: '2026-12-01',
     endDate: '2026-12-01',
-    days: [{ date: '2026-12-01', status: 'available' }],
+    days: [{ date: '2026-12-01', status: 'available', morning: 'available', evening: 'available' }],
   });
   assert.deepEqual(publicAvailabilityLeaksInternal(range), []);
+});
+
+test('evening booking leaves the morning open', async () => {
+  mockDeals([
+    {
+      status: 'Won',
+      importMeta: {
+        eventDateIso: '2026-12-12',
+        pvStatus: 'confirmed',
+        startTime: '17:00',
+        endTime: '22:00',
+      },
+    },
+  ]);
+  const range = await publicAvailabilityService.listRange({} as Db, '2026-12-12', '2026-12-12');
+  assert.deepEqual(range.days[0], {
+    date: '2026-12-12',
+    status: 'partial',
+    morning: 'available',
+    evening: 'booked',
+  });
+  assert.equal(await publicAvailabilityService.statusForDate({} as Db, '2026-12-12'), 'partial');
 });
 
 test('confirmed booking projects booked', async () => {
