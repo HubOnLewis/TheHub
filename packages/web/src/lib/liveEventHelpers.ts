@@ -356,6 +356,25 @@ const STATUS_BUCKETS: Array<{ id: CrmMetricCategory; label: string }> = [
   { id: 'completed_ytd', label: 'Completed YTD' },
 ];
 
+/**
+ * Bookings created per week over the trailing N weeks, bucketed by each
+ * record's real createdAt timestamp — a factual cadence readout, not a
+ * projection. Returned oldest-week-first.
+ */
+export function bookingCadence(rows: CrmEventRow[], weeks = 8, now = Date.now()): number[] {
+  const buckets = new Array(weeks).fill(0) as number[];
+  for (const r of rows) {
+    if (!r.createdAt) continue;
+    const created = new Date(r.createdAt).getTime();
+    if (Number.isNaN(created)) continue;
+    const weeksAgo = Math.floor((now - created) / (7 * 86_400_000));
+    if (weeksAgo >= 0 && weeksAgo < weeks) {
+      buckets[weeks - 1 - weeksAgo] += 1;
+    }
+  }
+  return buckets;
+}
+
 export function buildLiveReportSummary(rows: CrmEventRow[]): LiveReportSummary {
   const metrics = computeCrmMetrics(rows);
   const active = activePipelineRows(rows);
