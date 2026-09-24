@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "uxcheck": "tsx --test src/venue/guestTimeline.test.ts src/venue/publicAvailability.test.ts"
+    "typecheck": "tsc --noEmit",
+    "uxcheck": "tsx --test src/venue/guestTimeline.test.ts src/venue/publicAvailability.test.ts src/venue/holds.test.ts src/venue/opsQueue.test.ts src/venue/leadAnalysisPrompt.test.ts"
   },
   "exports": {
     ".": {
