@@ -1,17 +1,19 @@
 import { Link } from 'react-router-dom';
 import { ROUTES, opportunityDetailPath } from '../config/paths.js';
-import { useVenueOpsQueue, useVenueOpsTaskAction } from '../hooks/useVenueOps.js';
+import { useVenueOpsQueue, useVenueOpsTaskAction, useVenueOpsTaskAssignment } from '../hooks/useVenueOps.js';
 import LoadingState from '../components/crm/LoadingState.js';
 
 export default function TeamToday() {
   const ops = useVenueOpsQueue();
   const action = useVenueOpsTaskAction();
+  const assignment = useVenueOpsTaskAssignment();
   const tasks = ops.data?.tasks ?? [];
   if (ops.isLoading) return <LoadingState message="Loading team work…" />;
   const groups = [
     { id: 'hannah', name: 'Hannah', type: 'user' },
     { id: 'lewis', name: 'Lewis', type: 'agent' },
     { id: 'jason', name: 'Jason', type: 'user' },
+    { id: 'unassigned', name: 'Unassigned', type: 'unassigned' },
   ] as const;
   return (
     <main className="today-desk team-today">
@@ -41,6 +43,28 @@ export default function TeamToday() {
                   </Link>
                   <div className="today-desk__row-actions">
                     <span className="today-desk__chip">{t.priority}</span>
+                    <select
+                      className="input"
+                      aria-label={`Assign ${t.title}`}
+                      value={t.assignee.id}
+                      disabled={assignment.isPending}
+                      onChange={e => {
+                        const id = e.target.value;
+                        const target = id === 'lewis'
+                          ? { type: 'agent' as const, id: 'lewis', name: 'Lewis' }
+                          : id === 'jason'
+                            ? { type: 'user' as const, id: 'jason', name: 'Jason' }
+                            : id === 'hannah'
+                              ? { type: 'user' as const, id: 'hannah', name: 'Hannah' }
+                              : { type: 'unassigned' as const, id: 'unassigned', name: 'Unassigned' };
+                        assignment.mutate({ taskId: t.id, dealId: t.dealId, assignee: target, reason: 'Reassigned from Team Today' });
+                      }}
+                    >
+                      <option value="hannah">Hannah</option>
+                      <option value="lewis">Lewis · AI</option>
+                      <option value="jason">Jason</option>
+                      <option value="unassigned">Unassigned</option>
+                    </select>
                     {group.type === 'user' ? <button type="button" className="btn btn-primary btn-sm" disabled={action.isPending}
                       onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId, action: 'complete' })}>Done</button> : null}
                   </div>
