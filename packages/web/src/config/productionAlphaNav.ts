@@ -96,6 +96,7 @@ export function getHubNavSections(opts?: {
           badge: opts?.tasksBadge && opts.tasksBadge > 0 ? opts.tasksBadge : undefined,
           match: p => p === ROUTES.today || p === ROUTES.dashboard,
         },
+        { to: ROUTES.teamToday, label: 'Team Today', match: prefixMatch(ROUTES.teamToday) },
         { to: ROUTES.leads, label: 'Leads', match: prefixMatch(ROUTES.leads) },
         { to: ROUTES.calendar, label: 'Calendar', match: prefixMatch(ROUTES.calendar) },
         { to: ROUTES.opportunities, label: 'Events', match: isHubEventsPath },
@@ -157,6 +158,7 @@ export function getHubTopNavItems(opts?: {
 
 export const CRM_TOPNAV_PATHS: readonly string[] = [
   ROUTES.today,
+  ROUTES.teamToday,
   ROUTES.leads,
   ROUTES.calendar,
   ROUTES.opportunities,

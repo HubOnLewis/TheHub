@@ -1,0 +1,55 @@
+import { Link } from 'react-router-dom';
+import { ROUTES, opportunityDetailPath } from '../config/paths.js';
+import { useVenueOpsQueue, useVenueOpsTaskAction } from '../hooks/useVenueOps.js';
+import LoadingState from '../components/crm/LoadingState.js';
+
+export default function TeamToday() {
+  const ops = useVenueOpsQueue();
+  const action = useVenueOpsTaskAction();
+  const tasks = ops.data?.tasks ?? [];
+  if (ops.isLoading) return <LoadingState message="Loading team work…" />;
+  const groups = [
+    { id: 'hannah', name: 'Hannah', type: 'user' },
+    { id: 'lewis', name: 'Lewis', type: 'agent' },
+    { id: 'jason', name: 'Jason', type: 'user' },
+  ] as const;
+  return (
+    <main className="today-desk team-today">
+      <header className="today-desk__header">
+        <div>
+          <p className="today-desk__kicker">Active work · {tasks.length} tasks</p>
+          <h1 className="today-desk__title">Team Today</h1>
+          <p className="today-desk__sub">Everything the HuB team and its AI agents are responsible for right now.</p>
+        </div>
+        <div className="today-desk__actions">
+          <Link to={ROUTES.today} className="btn btn-secondary btn-sm">My Today</Link>
+          <Link to={ROUTES.tasks} className="btn btn-secondary btn-sm">Task Center</Link>
+        </div>
+      </header>
+      {groups.map(group => {
+        const rows = tasks.filter(t => t.assignee?.id === group.id && t.assignee?.type === group.type);
+        return (
+          <section key={group.id} className="today-desk__work" aria-label={group.name}>
+            <header className="today-desk__section-head">
+              <h2>{group.name}{group.type === 'agent' ? ' · AI' : ''}</h2><span>{rows.length}</span>
+            </header>
+            {rows.length === 0 ? <p className="today-desk__empty">No active work assigned.</p> : (
+              <ul className="today-desk__list">{rows.map(t => (
+                <li key={t.id} className="today-desk__row">
+                  <Link to={opportunityDetailPath(t.dealId)} className="today-desk__row-main">
+                    <strong>{t.title}</strong><span>{t.dueLabel} · {t.contact} · {t.assignee.reason}</span>
+                  </Link>
+                  <div className="today-desk__row-actions">
+                    <span className="today-desk__chip">{t.priority}</span>
+                    {group.type === 'user' ? <button type="button" className="btn btn-primary btn-sm" disabled={action.isPending}
+                      onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId, action: 'complete' })}>Done</button> : null}
+                  </div>
+                </li>
+              ))}</ul>
+            )}
+          </section>
+        );
+      })}
+    </main>
+  );
+}

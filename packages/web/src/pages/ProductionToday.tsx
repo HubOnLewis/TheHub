@@ -14,6 +14,7 @@ import type { CrmEventRow } from '../lib/crmEvents.js';
 import LoadingState from '../components/crm/LoadingState.js';
 import { formatTodayLabel } from '../config/productionData.js';
 import { useMemo } from 'react';
+import { useAppStore } from '../store/index.js';
 
 function startOfDay(d: Date): Date {
   const x = new Date(d);
@@ -36,6 +37,9 @@ export default function ProductionToday() {
   const { rows, isLoading, isError, sourceId } = useLiveCrmEvents();
   const ops = useVenueOpsQueue();
   const action = useVenueOpsTaskAction();
+  const user = useAppStore(s => s.user);
+  const firstName = user?.name?.trim().split(/\s+/)[0] || 'there';
+  const myId = firstName.toLowerCase() === 'jason' ? 'jason' : firstName.toLowerCase() === 'hannah' ? 'hannah' : null;
 
   const today = startOfDay(new Date());
   const active = useMemo(() => activeRows(rows), [rows]);
@@ -49,7 +53,8 @@ export default function ProductionToday() {
         .sort((a, b) => a.eventTime.localeCompare(b.eventTime)),
     [active, today],
   );
-  const queue = ops.data?.tasks ?? [];
+  const allQueue = ops.data?.tasks ?? [];
+  const queue = myId ? allQueue.filter(t => t.assignee?.type === 'user' && t.assignee.id === myId) : allQueue;
   const balances = useMemo(
     () => active.filter(r => getBalanceDue(r) > 0).sort((a, b) => getBalanceDue(b) - getBalanceDue(a)),
     [active],
@@ -62,9 +67,9 @@ export default function ProductionToday() {
       <header className="today-desk__header">
         <div>
           <p className="today-desk__kicker">{formatTodayLabel()}</p>
-          <h1 className="today-desk__title">Today</h1>
+          <h1 className="today-desk__title">{firstName}’s Today</h1>
           <p className="today-desk__sub">
-            What needs a reply, what is on the floor, and what money is still out.
+            Your assigned work, today’s floor, and the money that needs your attention.
             {isError ? ' Showing saved venue data while the server refreshes.' : ''}
             {!isError && sourceId !== 'live-api' && sourceId !== 'none'
               ? ' Showing imported venue events.'
@@ -72,6 +77,9 @@ export default function ProductionToday() {
           </p>
         </div>
         <div className="today-desk__actions">
+          <Link to={ROUTES.teamToday} className="btn btn-secondary btn-sm">
+            Team Today
+          </Link>
           <Link to={ROUTES.calendar} className="btn btn-secondary btn-sm">
             Calendar
           </Link>
