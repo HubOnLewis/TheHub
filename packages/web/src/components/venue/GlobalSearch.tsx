@@ -50,6 +50,14 @@ export default function GlobalSearch() {
           setQ(e.target.value);
           setOpen(true);
         }}
+        onKeyDown={e => {
+          if (e.key === 'Enter' && hits[0]) {
+            e.preventDefault();
+            setOpen(false);
+            setQ('');
+            navigate(hits[0].href);
+          }
+        }}
         onFocus={() => setOpen(true)}
         autoComplete="off"
       />

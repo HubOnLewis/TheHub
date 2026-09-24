@@ -1,11 +1,23 @@
 import MailchimpSettingsPanel from './MailchimpSettingsPanel.js';
 import AiModelSettingsPanel from './AiModelSettingsPanel.js';
 import { SMS_PROVIDER_STATUS, SMS_TEMPLATES } from '../../integrations/sms/smsDemoAdapter.js';
+import { useAppStore } from '../../store/index.js';
+import { isSuperAdminRole } from '../../config/productionAlphaNav.js';
 
 export default function IntegrationsSettingsPanel() {
+  const role = useAppStore(s => s.user?.role);
   return (
     <div className="settings-deep settings-integrations-stack">
-      <AiModelSettingsPanel />
+      {isSuperAdminRole(role) ? (
+        <AiModelSettingsPanel />
+      ) : (
+        <section className="card settings-provider-card" style={{ marginTop: 20 }}>
+          <h4>Onsite AI assistant</h4>
+          <p className="settings-muted">
+            Managed by your system administrator. AI suggestions appear on leads and events when the onsite AI is online.
+          </p>
+        </section>
+      )}
       <MailchimpSettingsPanel />
 
       <section className="card settings-provider-card" style={{ marginTop: 20 }}>
