@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { EMPTY_LIVE_MESSAGE, isProductionCRM } from '../config/productionData.js';
+import { isProductionCRM } from '../config/productionData.js';
 import { ROUTES } from '../config/paths.js';
 
 type Props = {
@@ -14,13 +14,13 @@ export default function ProductionModuleGate({ children, moduleLabel }: Props) {
   return (
     <div className="page-simple">
       <div className="card page-section" style={{ padding: 24 }}>
-        <h2 className="page-section__title">{moduleLabel ?? 'Module unavailable'}</h2>
-        <p className="empty-hint">{EMPTY_LIVE_MESSAGE}</p>
-        <p className="text-sm text-muted" style={{ marginTop: 8 }}>
-          This area is not connected to live CRM data in the production alpha yet.
+        <span className="page-kicker">Internal preview</span>
+        <h2 className="page-section__title" style={{ marginTop: 6 }}>{moduleLabel ?? 'Preview module'}</h2>
+        <p className="text-sm text-muted" style={{ marginTop: 10, maxWidth: 620 }}>
+          This workspace is intentionally withheld from the client-review navigation until its production data connection is complete.
         </p>
-        <Link to={ROUTES.dashboard} className="btn btn-secondary" style={{ marginTop: 16 }}>
-          Back to dashboard
+        <Link to={ROUTES.today} className="btn btn-primary" style={{ marginTop: 18 }}>
+          Return to Today
         </Link>
       </div>
     </div>
