@@ -67,7 +67,7 @@ export default function ProductionToday() {
       <header className="today-desk__header">
         <div>
           <p className="today-desk__kicker">{formatTodayLabel()}</p>
-          <h1 className="today-desk__title">${firstName}’s Today</h1>
+          <h1 className="today-desk__title">{firstName}’s Today</h1>
           <p className="today-desk__sub">
             Your assigned work, today’s floor, and the money that needs your attention.
             {isError ? ' Showing saved venue data while the server refreshes.' : ''}
