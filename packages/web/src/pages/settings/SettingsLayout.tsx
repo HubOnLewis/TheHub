@@ -68,10 +68,11 @@ export default function SettingsLayout() {
         modules: group.modules.filter(m => {
           if (isDeployedAlpha() && m.id === 'demo-controls') return false;
           if (isDeployedAlpha() && m.id === 'referrals') return false;
+          if (m.id === 'data-import' && role !== 'super_admin') return false;
           return true;
         }),
       })).filter(g => g.modules.length > 0),
-    [],
+    [role],
   );
 
   return (
