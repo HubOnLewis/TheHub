@@ -30,3 +30,19 @@ export function useVenueOpsTaskAction() {
     },
   });
 }
+
+export function useVenueOpsTaskAssignment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (body: {
+      taskId: string;
+      dealId: string;
+      assignee: { type: 'user' | 'agent' | 'unassigned'; id: string; name: string };
+      reason?: string;
+    }) => client.post('/venue-ops/tasks/assign', body).then(r => r.data),
+    onSuccess: async (_data, vars) => {
+      await qc.invalidateQueries({ queryKey: ['venue-ops'] });
+      await qc.invalidateQueries({ queryKey: ['deal', vars.dealId] });
+    },
+  });
+}
