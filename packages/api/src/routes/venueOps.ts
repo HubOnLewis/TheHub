@@ -38,7 +38,15 @@ router.post('/tasks/assign', validate(AssignmentSchema), async (req, res, next) 
   }
 });
 
-router.post('/tasks', validate(VenueOpsTaskActionSchema), async (req, res, next) => {
+const WorkActionSchema = z.object({
+  dealId: z.string().min(1),
+  taskId: z.string().min(1),
+  action: z.enum(['complete', 'snooze', 'start', 'block', 'request_approval', 'reopen']),
+  snoozeDays: z.number().int().min(1).max(90).optional(),
+  note: z.string().max(1000).optional(),
+});
+
+router.post('/tasks', validate(WorkActionSchema), async (req, res, next) => {
   try {
     const deal = await venueOpsService.applyTaskAction(getDB(), req.tenant, req.body);
     res.json(deal);

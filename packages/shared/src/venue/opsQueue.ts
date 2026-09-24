@@ -28,6 +28,7 @@ export const VENUE_OPS_KINDS = [
 
 export type VenueOpsKind = (typeof VENUE_OPS_KINDS)[number];
 export type VenueOpsPriority = 'high' | 'medium' | 'low';
+export type VenueOpsWorkStatus = 'open' | 'in_progress' | 'blocked' | 'waiting_approval' | 'done' | 'snoozed';
 export type VenueOpsAssigneeType = 'user' | 'agent' | 'unassigned';
 
 export type VenueOpsAssignee = {
@@ -55,6 +56,10 @@ export type VenueOpsTask = {
   balanceDue: number;
   playbookTaskId?: string;
   assignee: VenueOpsAssignee;
+  workStatus: VenueOpsWorkStatus;
+  handoffNote?: string;
+  statusUpdatedAt?: string;
+  statusUpdatedBy?: string;
 };
 
 export type VenueOpsAssignmentState = {
@@ -67,7 +72,7 @@ export type VenueOpsAssignmentState = {
 };
 
 export type VenueOpsActionState = {
-  status: 'done' | 'snoozed';
+  status: VenueOpsWorkStatus;
   at: string;
   by?: string;
   snoozeUntil?: string;
@@ -195,11 +200,11 @@ export function opsActionsFromMeta(
   for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
     if (!value || typeof value !== 'object') continue;
     const row = value as Record<string, unknown>;
-    if (row.status !== 'done' && row.status !== 'snoozed') continue;
+    if (!['open', 'in_progress', 'blocked', 'waiting_approval', 'done', 'snoozed'].includes(String(row.status))) continue;
     const at = typeof row.at === 'string' ? row.at : '';
     if (!at) continue;
     out[key] = {
-      status: row.status,
+      status: row.status as VenueOpsWorkStatus,
       at,
       by: typeof row.by === 'string' ? row.by : undefined,
       snoozeUntil: typeof row.snoozeUntil === 'string' ? row.snoozeUntil : undefined,
@@ -273,7 +278,7 @@ export function evaluateVenueOps(
     balanceDue,
   };
 
-  const push = (task: Omit<VenueOpsTask, 'assignee'>) => {
+  const push = (task: Omit<VenueOpsTask, 'assignee' | 'workStatus'>) => {
     if (isVenueOpsTaskSuppressed(task.id, actions, nowMs)) return;
     tasks.push(task);
   };
@@ -441,9 +446,13 @@ export function evaluateVenueOps(
 
   for (const task of tasks) {
     const manual = assignments[task.id];
+    const action = actions[task.id];
     task.assignee = manual
       ? { type: manual.type, id: manual.id, name: manual.name, reason: manual.reason, source: 'manual', assignedAt: manual.at, assignedBy: manual.by }
       : { ...defaultVenueOpsAssignee(task), source: 'policy' };
+    task.workStatus = action?.status ?? 'open';
+    task.statusUpdatedAt = action?.at;
+    task.statusUpdatedBy = action?.by;
   }
 
   return tasks.sort((a, b) => {

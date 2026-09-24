@@ -74,7 +74,7 @@ export class VenueOpsService {
   async applyTaskAction(
     db: Db,
     ctx: TenantContext,
-    input: { dealId: string; taskId: string; action: 'complete' | 'snooze'; snoozeDays?: number },
+    input: { dealId: string; taskId: string; action: 'complete' | 'snooze' | 'start' | 'block' | 'request_approval' | 'reopen'; snoozeDays?: number; note?: string },
   ) {
     const deal = await DealRepository.findById(db, ctx, input.dealId);
     if (!deal) throw new NotFoundError('Event');
@@ -96,7 +96,12 @@ export class VenueOpsService {
     const meta =
       fresh.importMeta && typeof fresh.importMeta === 'object' ? { ...fresh.importMeta } : {};
     const next = applyVenueOpsAction(meta, input.taskId, {
-      status: input.action === 'complete' ? 'done' : 'snoozed',
+      status: input.action === 'complete' ? 'done'
+        : input.action === 'snooze' ? 'snoozed'
+        : input.action === 'start' ? 'in_progress'
+        : input.action === 'block' ? 'blocked'
+        : input.action === 'request_approval' ? 'waiting_approval'
+        : 'open',
       at: now.toISOString(),
       by: ctx.userName,
       snoozeUntil:

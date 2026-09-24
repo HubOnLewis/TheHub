@@ -20,7 +20,7 @@ export function useVenueOpsQueue() {
 export function useVenueOpsTaskAction() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: { taskId: string; dealId: string; action: 'complete' | 'snooze'; snoozeDays?: number }) =>
+    mutationFn: (body: { taskId: string; dealId: string; action: 'complete' | 'snooze' | 'start' | 'block' | 'request_approval' | 'reopen'; snoozeDays?: number; note?: string }) =>
       client.post('/venue-ops/tasks', body).then(r => r.data),
     onSuccess: async (_data, vars) => {
       await qc.invalidateQueries({ queryKey: ['venue-ops'] });
