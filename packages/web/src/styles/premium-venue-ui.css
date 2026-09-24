@@ -1248,3 +1248,362 @@ button.ops-filter-chip[aria-pressed='true'] {
     display: none !important;
   }
 }
+
+
+/* ── Premium light command-center pass ──────────────────────
+   Light workspace + dark architectural sidebar. Presentation only. */
+:root:not([data-theme='dark']) .app-shell--hub-admin {
+  --hub-canvas: #f3efe7;
+  --hub-card: #fffdf9;
+  --hub-card-muted: #f7f2e9;
+  --hub-border: #d5ccbd;
+  --hub-border-soft: #e4dccf;
+  --hub-text: #191b18;
+  --hub-text-secondary: #655f56;
+  --hub-text-muted: #81796e;
+  --hub-ink: #15251f;
+  --hub-accent: #1d4637;
+  --hub-accent-soft: rgba(29, 70, 55, 0.09);
+  --hub-accent-border: rgba(29, 70, 55, 0.24);
+  --hub-gold: #ad8746;
+  --hub-gold-soft: rgba(173, 135, 70, 0.14);
+  --hub-row-hover: rgba(29, 70, 55, 0.055);
+  --hub-shadow: 0 1px 2px rgba(20, 32, 27, 0.04), 0 10px 28px rgba(20, 32, 27, 0.065);
+  --hub-shadow-md: 0 2px 5px rgba(20, 32, 27, 0.06), 0 18px 42px rgba(20, 32, 27, 0.09);
+  background:
+    radial-gradient(920px 360px at 32% -8%, rgba(173, 135, 70, 0.10), transparent 62%),
+    linear-gradient(180deg, #f6f2eb 0%, #f1ece3 100%);
+}
+
+/* Dark green becomes the visual anchor without making the workspace dark. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.025), transparent 24%),
+    #10271f;
+  border-right: 1px solid rgba(173, 135, 70, 0.30);
+  box-shadow: 12px 0 34px rgba(10, 28, 22, 0.10);
+  color: #f7f2e8;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand {
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.018);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand-copy strong {
+  color: #fffaf0;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand-copy span,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand-copy small {
+  color: rgba(247, 242, 232, 0.62);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__section {
+  border-bottom-color: rgba(255,255,255,0.055);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__section-label {
+  color: #cdbb98;
+  letter-spacing: 0.11em;
+  font-weight: 700;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__section-label:hover {
+  color: #f1dfb9;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item {
+  position: relative;
+  color: rgba(249, 246, 239, 0.78);
+  border: 1px solid transparent;
+  transition: background .16s ease, color .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item:hover {
+  color: #fffdf7;
+  background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.05);
+  transform: translateX(1px);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item--active {
+  color: #17382c !important;
+  background: linear-gradient(90deg, #f4ead9 0%, #fffaf0 100%) !important;
+  border-color: rgba(173, 135, 70, 0.38) !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.16), inset 3px 0 0 #ad8746;
+  font-weight: 750;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__badge {
+  background: #ad8746;
+  color: #10271f;
+  border: 1px solid rgba(255,255,255,0.28);
+  font-weight: 800;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__footer {
+  border-top: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.025);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__identity strong {
+  color: #fffaf0;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__identity span {
+  color: rgba(247,242,232,0.56);
+}
+
+/* Utility bar: crisp white plane over a dark sidebar. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav--utility,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav {
+  background: rgba(255, 253, 249, 0.97);
+  border-bottom: 1px solid #d7cebf;
+  box-shadow: 0 4px 18px rgba(16, 39, 31, 0.055);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__icon {
+  color: #2e342f;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__icon:hover {
+  background: #f1ece3;
+  color: #17382c;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__user {
+  background: #f7f2e9;
+  border: 1px solid #ddd3c4;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav__user-avatar {
+  background: linear-gradient(145deg, #c6a261, #9d7537) !important;
+  box-shadow: 0 2px 7px rgba(110, 78, 32, 0.24);
+}
+
+/* Shared premium surfaces. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .card,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .monthly-scorecard,
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-row-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-home__panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__floor,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money,
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-command-list,
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-command-detail,
+:root:not([data-theme='dark']) .app-shell--hub-admin .cal-shell,
+:root:not([data-theme='dark']) .app-shell--hub-admin .tasks-table-wrap {
+  background: #fffdf9 !important;
+  border-color: #ded5c8 !important;
+  box-shadow: var(--hub-shadow) !important;
+}
+
+/* Today becomes a venue command board instead of a plain list. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk {
+  gap: 22px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__header {
+  padding: 6px 2px 20px;
+  border-bottom: 1px solid #d6ccbd;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__kicker {
+  color: #9d7537;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__title {
+  color: #10271f;
+  text-shadow: 0 1px 0 rgba(255,255,255,.65);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__sub {
+  color: #5d5a53;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__floor,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head {
+  position: relative;
+  padding: 15px 18px 14px 22px;
+  background:
+    linear-gradient(180deg, #faf6ef 0%, #f4eee5 100%);
+  border-bottom: 1px solid #ddd4c7;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #1d4637, #ad8746);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head h2 {
+  color: #17382c;
+  letter-spacing: .055em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head > span {
+  background: #eee3cd;
+  color: #755726;
+  border: 1px solid rgba(173,135,70,.24);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row {
+  min-height: 68px;
+  border-bottom-color: #ece5da;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row:hover {
+  background: linear-gradient(90deg, rgba(29,70,55,.055), rgba(173,135,70,.035));
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-main strong {
+  color: #202520;
+  font-weight: 760;
+  letter-spacing: -.005em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-main span {
+  color: #736d64;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__amt {
+  color: #17382c;
+  font-size: 22px;
+}
+
+/* Buttons: forest primary, restrained secondary, brass focus. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-primary,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:first-child,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:first-child {
+  background: linear-gradient(180deg, #214d3c 0%, #17392d 100%) !important;
+  border-color: #17392d !important;
+  color: #fffdf7 !important;
+  box-shadow: 0 2px 7px rgba(23,57,45,.18), inset 0 1px 0 rgba(255,255,255,.10);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-primary:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:first-child:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:first-child:hover {
+  background: linear-gradient(180deg, #285844 0%, #1b4334 100%) !important;
+  border-color: #1b4334 !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-secondary,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:not(:first-child),
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:not(:first-child) {
+  background: #fffdf9;
+  border-color: #d7cebf;
+  color: #4c514c;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .btn-secondary:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__row-actions .btn:not(:first-child):hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-ops-row-actions .btn:not(:first-child):hover {
+  background: #f5efe6;
+  border-color: #b99a63;
+  color: #17382c;
+}
+
+/* Remove old purple SaaS residue from selected metrics and event surfaces. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card--selected {
+  background: linear-gradient(145deg, #214d3c 0%, #17392d 100%) !important;
+  border-color: #285844 !important;
+  color: #fffdf7 !important;
+  box-shadow: 0 6px 16px rgba(23,57,45,.18) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-intel-hero {
+  background: linear-gradient(135deg, #10271f 0%, #17382c 58%, #223f34 100%) !important;
+  border-color: rgba(173,135,70,.30) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .ops-intel-hero__glow {
+  background: radial-gradient(ellipse at 25% 15%, rgba(196,162,97,.28), transparent 58%) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-command-center {
+  --edc-accent: #1d4637;
+  --edc-accent-soft: rgba(29,70,55,.09);
+  --edc-accent-border: rgba(29,70,55,.24);
+  --edc-shadow-lg: 0 14px 34px rgba(16,39,31,.09), 0 2px 7px rgba(16,39,31,.05);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-hero {
+  background:
+    radial-gradient(420px 160px at 94% 0%, rgba(173,135,70,.13), transparent 66%),
+    linear-gradient(135deg, #fffdf9 0%, #f8f3eb 100%);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-hero__glow {
+  background: radial-gradient(circle, rgba(29,70,55,.10) 0%, transparent 70%);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .event-detail-hero__btn-primary {
+  box-shadow: 0 4px 14px rgba(23,57,45,.24);
+}
+
+/* Tables and form surfaces gain stronger hierarchy without becoming heavy. */
+:root:not([data-theme='dark']) .app-shell--hub-admin table.data-table th,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table th,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__head {
+  background: #f3ede4;
+  color: #5f5a52;
+  border-bottom-color: #d8cfc1;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin input,
+:root:not([data-theme='dark']) .app-shell--hub-admin select,
+:root:not([data-theme='dark']) .app-shell--hub-admin textarea {
+  border-color: #d3cabd;
+  background: #fffefa;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin input:focus,
+:root:not([data-theme='dark']) .app-shell--hub-admin select:focus,
+:root:not([data-theme='dark']) .app-shell--hub-admin textarea:focus {
+  outline: none;
+  border-color: #8e7444;
+  box-shadow: 0 0 0 3px rgba(173,135,70,.14);
+}
+
+/* Authenticated footer should close the workspace, not look like a second website. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact {
+  background: #10271f;
+  border-top: 1px solid rgba(173,135,70,.32);
+  color: rgba(255,250,240,.78);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact .hub-site-footer__inner {
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact .hub-site-footer__name,
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact a {
+  color: #e0c48c;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact .hub-site-footer__meta,
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact .hub-site-footer__copy {
+  color: rgba(255,250,240,.60);
+}
+
+@media (max-width: 900px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar {
+    box-shadow: 18px 0 42px rgba(7,24,18,.26);
+  }
+}
