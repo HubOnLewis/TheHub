@@ -15,6 +15,7 @@ import Companies     from './pages/Companies.js';
 import CompanyDetail from './pages/CompanyDetail.js';
 import MyWork        from './pages/MyWork.js';
 import FollowUps     from './pages/FollowUps.js';
+import LiveFollowUpsPage from './pages/live/LiveFollowUpsPage.js';
 import PipelinePressure from './pages/PipelinePressure.js';
 import ForecastReview from './pages/ForecastReview.js';
 import RepScorecards from './pages/RepScorecards.js';
@@ -307,14 +308,14 @@ function Shell() {
             <Route path={`${ROUTES.accounts}/:id`} element={<CompanyDetail />} />
             <Route path={`${ROUTES.companiesAlias}/:id`} element={<CompanyDetail />} />
             <Route path={ROUTES.myWork} element={resolveHubRouteElement(ROUTES.myWork, <MyWork />, 'My work')} />
-            <Route path={ROUTES.followUps} element={resolveHubRouteElement(ROUTES.followUps, <FollowUps />, HUB_LABELS.followUps)} />
+            <Route path={ROUTES.followUps} element={withLiveModuleBoundary('Follow-ups', <LiveFollowUpsPage />)} />
             <Route path={ROUTES.prospects} element={resolveHubRouteElement(ROUTES.prospects, <ProspectsPage />)} />
             <Route path={ROUTES.marketing} element={resolveHubRouteElement(ROUTES.marketing, <MarketingPage />, 'Marketing')} />
             <Route path={ROUTES.referrals} element={resolveHubRouteElement(ROUTES.referrals, <ReferralsPage />, 'Referrals')} />
             <Route path={ROUTES.monthlyScorecard} element={resolveHubRouteElement(ROUTES.monthlyScorecard, withLiveModuleBoundary('Reports', <MonthlyScorecardPage />))} />
             <Route path={ROUTES.contacts} element={<ContactsPage />} />
             <Route path={ROUTES.financial} element={<FinancialPaymentsPage />} />
-            <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
+            <Route path="*" element={<Navigate to={ROUTES.today} replace />} />
           </Routes>
         </HubAdminShell>
       ) : (
@@ -388,7 +389,7 @@ function Shell() {
             <Route path={ROUTES.marketingBlasts} element={<Navigate to={ROUTES.marketing} replace />} />
             <Route path={ROUTES.referrals} element={<ProductionModuleGate moduleLabel="Referrals"><ReferralsPage /></ProductionModuleGate>} />
             <Route path={ROUTES.monthlyScorecard} element={withLiveModuleBoundary('Reports', <MonthlyScorecardPage />)} />
-            <Route path="*" element={<Navigate to={ROUTES.dashboard} replace />} />
+            <Route path="*" element={<Navigate to={ROUTES.today} replace />} />
           </Routes>
         </main>
       </div>

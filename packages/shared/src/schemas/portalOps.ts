@@ -226,6 +226,14 @@ export const ExtendHoldSchema = z.object({
 });
 export type ExtendHoldPayload = z.infer<typeof ExtendHoldSchema>;
 
+export const VenueOpsTaskActionSchema = z.object({
+  taskId: z.string().min(1).max(200),
+  dealId: z.string().min(1).max(40),
+  action: z.enum(['complete', 'snooze']),
+  snoozeDays: z.number().int().min(1).max(30).optional(),
+});
+export type VenueOpsTaskActionPayload = z.infer<typeof VenueOpsTaskActionSchema>;
+
 export const GuestPortalDetailsSchema = z.object({
   guestCount: z.number().int().min(0).max(5000).optional(),
   layout: z.string().max(120).optional(),

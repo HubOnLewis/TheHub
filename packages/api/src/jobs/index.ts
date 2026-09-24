@@ -2,6 +2,7 @@ import type { Db } from 'mongodb';
 import cron from 'node-cron';
 import { agentService } from '../services/AgentService.js';
 import type { TenantContext } from '../tenancy/index.js';
+import { venueOpsService } from '../services/VenueOpsService.js';
 import { DealRepository } from '../repositories/DealRepository.js';
 import { InteractionRepository, type InteractionDoc } from '../repositories/InteractionRepository.js';
 
@@ -156,12 +157,28 @@ export async function runAgentSnapshotJob(db: Db): Promise<void> {
   }
 }
 
+export async function runVenueOpsSync(db: Db): Promise<void> {
+  const tenantIds = await db.collection('deals').distinct('tenantId');
+  const ids = (tenantIds.length ? tenantIds : ['hub-wichita']).map(String);
+  for (const tenantId of ids) {
+    try {
+      const created = await venueOpsService.syncFollowUps(db, jobTenant(tenantId));
+      if (created) console.log(`[Job] Venue ops follow-ups seeded for ${tenantId}: ${created}`);
+    } catch (err) {
+      console.error(`[Job] Venue ops sync failed for ${tenantId}:`, err);
+    }
+  }
+}
+
 export function registerJobs(db: Db): void {
   cron.schedule('0 * * * *', () => {
     void checkStaleLeads(db, 3);
   });
+  cron.schedule('20 * * * *', () => {
+    void runVenueOpsSync(db);
+  });
   cron.schedule('15 */4 * * *', () => {
     void runAgentSnapshotJob(db);
   });
-  console.log('[Jobs] Scheduler active — stale leads hourly, agent snapshot every 4 hours');
+  console.log('[Jobs] Scheduler active — stale leads hourly, venue ops hourly, agent snapshot every 4 hours');
 }

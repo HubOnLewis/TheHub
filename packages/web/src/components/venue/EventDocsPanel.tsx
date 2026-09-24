@@ -199,17 +199,29 @@ export default function EventDocsPanel({ model }: Props) {
                 openGuestPaymentSummary(paymentSummary);
                 return;
               }
-              if (a.kind === 'beo_guest') {
-                openGuestEventSheet({
-                  title: model.title,
-                  eventDateDisplay: model.eventDateDisplay,
-                  eventTimeDisplay: model.eventTimeDisplay,
-                  space: model.space,
-                  contact: model.contact,
-                  guests: model.guests,
-                  clientDetails: model.clientDetails,
-                  paymentSummary,
-                });
+              if (a.kind === 'beo_guest' || a.kind === 'beo') {
+                if (a.kind === 'beo_guest') {
+                  openGuestEventSheet({
+                    title: model.title,
+                    eventDateDisplay: model.eventDateDisplay,
+                    eventTimeDisplay: model.eventTimeDisplay,
+                    space: model.space,
+                    contact: model.contact,
+                    guests: model.guests,
+                    clientDetails: model.clientDetails,
+                    paymentSummary,
+                  });
+                } else {
+                  openVenueDocument(a.kind, model);
+                }
+                if (!model.isReferenceOnly && a.kind === 'beo') {
+                  void client.post(`/deals/${model.id}/beo/snapshot`).then(() => {
+                    void qc.invalidateQueries({ queryKey: ['deal', model.id] });
+                    setMsg('Staff BEO snapshot saved on this event.');
+                  }).catch(() => {
+                    setMsg('Document opened. Snapshot could not be saved.');
+                  });
+                }
                 return;
               }
               openVenueDocument(a.kind, model);

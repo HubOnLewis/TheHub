@@ -169,7 +169,6 @@ const PRIORITY_ORDER: Record<LiveTaskPriority, number> = { high: 0, medium: 1, l
 
 export function generateLiveTasks(rows: CrmEventRow[]): LiveTask[] {
   const tasks: LiveTask[] = [];
-  const staleContactDays = 14;
 
   for (const row of rows) {
     if (isLost(row) || isCompleted(row)) continue;
@@ -209,6 +208,7 @@ export function generateLiveTasks(rows: CrmEventRow[]): LiveTask[] {
 
     if (cat === 'lead' || cat === 'qualified') {
       const stale = daysSinceContact(row);
+      const staleContactDays = cat === 'lead' ? 1 : 14;
       if (stale == null || stale >= staleContactDays) {
         tasks.push({
           id: `stale-${row.id}`,

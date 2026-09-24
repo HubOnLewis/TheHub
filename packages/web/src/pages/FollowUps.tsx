@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { HUB_LABELS } from '@hub-crm/shared';
+import { isProductionCRM } from '../config/productionData.js';
+import LiveFollowUpsPage from './live/LiveFollowUpsPage.js';
 import DemoFlowNav from '../components/demo/DemoFlowNav.js';
 import OpsIntelShell from '../components/operations/intel/OpsIntelShell.js';
 import CommandPageFrame from '../components/operations/intel/CommandPageFrame.js';
@@ -13,6 +15,11 @@ import {
 import { ROUTES } from '../config/paths.js';
 
 export default function FollowUps() {
+  if (isProductionCRM()) return <LiveFollowUpsPage />;
+  return <FollowUpsDemo />;
+}
+
+function FollowUpsDemo() {
   const [filter, setFilter] = useState('all');
   const items = useMemo(() => getFollowUpIntelligence(), []);
   const rail = useMemo(

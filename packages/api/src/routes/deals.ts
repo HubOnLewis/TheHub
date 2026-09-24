@@ -196,6 +196,12 @@ router.post('/:id/hold/release', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+router.post('/:id/beo/snapshot', async (req, res, next) => {
+  try {
+    res.json(await playbookService.snapshotBeo(getDB(), req.tenant, req.params['id']!, req.tenant.userName));
+  } catch (err) { next(err); }
+});
+
 
 router.patch('/:id', validate(PatchDealSchema), async (req, res, next) => {
   try {
