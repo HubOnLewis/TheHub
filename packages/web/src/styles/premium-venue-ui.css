@@ -4069,3 +4069,629 @@ button.ops-filter-chip[aria-pressed='true'] {
   background: #071a14;
   border-top-color: rgba(211,177,111,.24);
 }
+
+
+/* ── Global theme contrast firewall ──────────────────────────
+   Final cascade layer: every staff page inherits a coherent foreground from
+   the surface it sits on. This intentionally overrides older page-specific
+   color residue from demo/premium generations. */
+
+/* Base foregrounds */
+.app-shell--hub-admin,
+.app-shell--hub-admin .crm-pv-shell__content,
+.app-shell--hub-admin .crm-pv-shell__main {
+  color: var(--hub-text) !important;
+}
+
+.app-shell--hub-admin :where(
+  .crm-events-workspace,
+  .hub-live-page,
+  .page-simple,
+  .command-page,
+  .hub-admin-settings,
+  .exec-page,
+  .audit-trail-page,
+  .event-command-center,
+  .ops-home,
+  .crm-events-panel,
+  .settings-shell
+) {
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin :where(
+  h1, h2, h3, h4, h5, h6,
+  .crm-page-header__title,
+  .hub-admin-page__title,
+  .page-title,
+  .page-section__title,
+  .crm-events-toolbar__meta,
+  .tasks-stat-pill strong,
+  .crm-home-next-pill strong,
+  .monthly-scorecard__value,
+  .event-detail-title
+) {
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin :where(
+  .crm-page-header__subtitle,
+  .hub-admin-page__subtitle,
+  .page-subtitle,
+  .text-muted,
+  .empty-hint,
+  .crm-events-table__sub,
+  .hub-live-link__sub,
+  .event-detail-subtitle,
+  .event-detail-hero__updated
+) {
+  color: var(--hub-text-secondary);
+}
+
+/* Light/card surfaces always carry dark-theme-appropriate foregrounds.
+   In dark mode the variables flip, so these remain valid everywhere. */
+.app-shell--hub-admin :where(
+  .card,
+  .crm-events-intro,
+  .crm-home-next-strip,
+  .crm-start-here,
+  .crm-metric-card,
+  .crm-events-panel,
+  .crm-events-toolbar,
+  .crm-events-table,
+  .crm-events-table__row,
+  .crm-events-table__head,
+  .tasks-stat-pill,
+  .tasks-table-wrap,
+  .hub-live-group,
+  .inbox-triage-card,
+  .inbox-command-list,
+  .inbox-command-detail,
+  .settings-nav,
+  .settings-panel,
+  .premium-data-card,
+  .premium-summary-tile,
+  .monthly-scorecard,
+  .exec-panel,
+  .command-panel,
+  .autopilot-panel,
+  .autopilot-approval,
+  .audit-trail-page__hero,
+  .exec-page__hero,
+  .event-detail-hero,
+  .event-detail-kpi,
+  .event-detail-pill,
+  .cal-shell,
+  .venue-cal
+) {
+  color: var(--hub-text);
+}
+
+.app-shell--hub-admin :where(
+  .crm-start-here strong,
+  .crm-start-here p,
+  .crm-home-next-strip strong,
+  .crm-home-next-strip span,
+  .crm-metric-card__value,
+  .crm-metric-card__label,
+  .crm-events-panel strong,
+  .crm-events-panel p,
+  .tasks-stat-pill__label,
+  .premium-summary-tile span,
+  .premium-summary-tile strong
+) {
+  color: inherit;
+}
+
+/* Specific light-theme regression visible on Events: this callout is a light
+   champagne card, so never let legacy dark-surface text rules make it white. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-start-here {
+  background:
+    linear-gradient(180deg, rgba(251,247,238,.98), rgba(244,236,222,.97)) !important;
+  border-color: rgba(173,135,70,.28) !important;
+  color: #203027 !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-start-here__kicker {
+  color: #7f6433 !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-start-here strong {
+  color: #17382c !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-start-here p {
+  color: #69635a !important;
+}
+
+/* Source/status banners */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-source-banner {
+  background: linear-gradient(90deg, #eef9f2, #f8f3e8) !important;
+  border-color: rgba(46,125,84,.20) !important;
+  color: #254a36 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-source-banner {
+  background: linear-gradient(90deg, rgba(49,109,79,.16), rgba(211,177,111,.08)) !important;
+  border-color: rgba(105,180,139,.18) !important;
+  color: #c7e4d3 !important;
+}
+
+/* Metric cards: selected card is dark green in light mode, so force its
+   descendants light. Unselected cards use the ordinary surface foreground. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card--selected,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card--selected * {
+  color: #fffaf0 !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card:not(.crm-metric-card--selected) {
+  color: #202720 !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-metric-card:not(.crm-metric-card--selected) .crm-metric-card__label {
+  color: #746e65 !important;
+}
+
+/* Dark architectural surfaces: always light foreground in both themes. */
+.app-shell--hub-admin :where(
+  .crm-sidebar,
+  .command-hero,
+  .autopilot-hero,
+  .ops-intel-hero,
+  .ops-home__do-now,
+  .hub-site-footer--compact
+) {
+  color: #fffaf0 !important;
+}
+
+.app-shell--hub-admin :where(
+  .command-hero,
+  .autopilot-hero,
+  .ops-intel-hero,
+  .ops-home__do-now,
+  .hub-site-footer--compact
+) :where(h1,h2,h3,h4,strong,.page-title,.ops-intel-hero__title) {
+  color: #fffaf0 !important;
+}
+
+.app-shell--hub-admin :where(
+  .command-hero,
+  .autopilot-hero,
+  .ops-intel-hero,
+  .ops-home__do-now,
+  .hub-site-footer--compact
+) :where(p,small,.page-subtitle,.ops-intel-hero__sub,.text-muted) {
+  color: rgba(255,250,240,.72) !important;
+}
+
+.app-shell--hub-admin :where(
+  .command-hero,
+  .autopilot-hero,
+  .ops-intel-hero
+) :where(.page-kicker,.autopilot-badge,.exec-page__badge,.ops-intel-stat__value) {
+  color: #e8cf98 !important;
+}
+
+/* Sidebar foreground firewall */
+.app-shell--hub-admin .crm-sidebar :where(
+  .crm-sidebar__item,
+  .crm-sidebar__section-label,
+  .crm-sidebar__identity,
+  .crm-sidebar__identity strong,
+  .crm-sidebar__identity span
+) {
+  text-shadow: none;
+}
+
+.app-shell--hub-admin .crm-sidebar__item:not(.crm-sidebar__item--active) {
+  color: rgba(255,250,240,.84) !important;
+}
+
+.app-shell--hub-admin .crm-sidebar__section-label {
+  color: #dbc18b !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item--active,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item--active * {
+  color: #17382c !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__item--active,
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__item--active * {
+  color: #fff7e6 !important;
+}
+
+/* Links on light surfaces should not inherit old purple/default anchors. */
+.app-shell--hub-admin .crm-pv-shell__content a:not(
+  .btn
+):not(
+  .crm-sidebar__item
+):not(
+  .venue-cal-chip
+):not(
+  .hub-site-footer__link
+) {
+  color: var(--hub-accent);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-pv-shell__content a:not(
+  .btn
+):not(
+  .crm-sidebar__item
+):not(
+  .venue-cal-chip
+):not(
+  .hub-site-footer__link
+) {
+  color: #355e4c;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-pv-shell__content a:not(
+  .btn
+):not(
+  .crm-sidebar__item
+):not(
+  .venue-cal-chip
+):not(
+  .hub-site-footer__link
+) {
+  color: #d9bd82;
+}
+
+/* Buttons */
+.app-shell--hub-admin .btn-primary,
+.app-shell--hub-admin .btn-primary * {
+  color: #fffaf0 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .btn-primary,
+[data-theme='dark'] .app-shell--hub-admin .btn-primary * {
+  color: #102018 !important;
+}
+
+.app-shell--hub-admin .btn-secondary,
+.app-shell--hub-admin .btn-ghost {
+  color: var(--hub-text) !important;
+}
+
+/* Inputs/selects */
+.app-shell--hub-admin :where(input,select,textarea) {
+  color: var(--hub-text) !important;
+}
+
+.app-shell--hub-admin :where(input,textarea)::placeholder {
+  color: var(--hub-text-muted) !important;
+  opacity: 1;
+}
+
+.app-shell--hub-admin select option {
+  color: var(--hub-text);
+  background: var(--hub-card);
+}
+
+/* Dark mode: normalize every major legacy light surface. */
+[data-theme='dark'] .app-shell--hub-admin :where(
+  .crm-events-intro,
+  .crm-home-next-strip,
+  .crm-start-here,
+  .crm-metric-card,
+  .crm-events-panel,
+  .crm-events-toolbar,
+  .crm-events-table__row,
+  .tasks-stat-pill,
+  .hub-live-group,
+  .inbox-triage-card,
+  .inbox-command-list,
+  .inbox-command-detail,
+  .settings-nav,
+  .settings-panel,
+  .premium-data-card,
+  .premium-summary-tile,
+  .monthly-scorecard,
+  .exec-panel,
+  .command-panel,
+  .autopilot-panel,
+  .autopilot-approval,
+  .event-detail-hero,
+  .event-detail-kpi,
+  .event-detail-pill,
+  .cal-shell,
+  .venue-cal
+) {
+  background:
+    linear-gradient(180deg, rgba(24,34,30,.985), rgba(14,22,19,.985)) !important;
+  border-color: rgba(232,220,194,.11) !important;
+  color: #eee9df !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin :where(
+  .crm-events-intro,
+  .crm-home-next-strip,
+  .crm-start-here,
+  .crm-metric-card,
+  .crm-events-panel,
+  .crm-events-toolbar,
+  .crm-events-table__row,
+  .tasks-stat-pill,
+  .hub-live-group,
+  .settings-panel,
+  .premium-data-card,
+  .premium-summary-tile,
+  .monthly-scorecard,
+  .exec-panel,
+  .command-panel,
+  .autopilot-panel,
+  .autopilot-approval,
+  .event-detail-hero,
+  .event-detail-kpi,
+  .event-detail-pill
+) :where(h1,h2,h3,h4,strong,.page-title,.page-section__title) {
+  color: #f4efe5 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin :where(
+  .crm-events-intro,
+  .crm-home-next-strip,
+  .crm-start-here,
+  .crm-metric-card,
+  .crm-events-panel,
+  .crm-events-toolbar,
+  .crm-events-table__row,
+  .tasks-stat-pill,
+  .hub-live-group,
+  .settings-panel,
+  .premium-data-card,
+  .premium-summary-tile,
+  .monthly-scorecard,
+  .exec-panel,
+  .command-panel,
+  .autopilot-panel,
+  .autopilot-approval,
+  .event-detail-hero,
+  .event-detail-kpi,
+  .event-detail-pill
+) :where(p,small,.text-muted,.empty-hint,.crm-events-table__sub) {
+  color: #aaa399 !important;
+}
+
+/* Tables */
+.app-shell--hub-admin :where(
+  .data-table,
+  .crm-events-table
+) {
+  color: var(--hub-text);
+}
+
+[data-theme='dark'] .app-shell--hub-admin :where(
+  .data-table thead th,
+  .crm-events-table__head
+) {
+  color: #aaa399 !important;
+  background: #17201c !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin :where(
+  .data-table tbody td,
+  .crm-events-table__row
+) {
+  color: #ebe6dd !important;
+}
+
+/* Status pills preserve semantic color while ensuring text contrast. */
+.app-shell--hub-admin .crm-status-pill,
+.app-shell--hub-admin .badge {
+  font-weight: 700;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-status-pill {
+  filter: saturate(.82) brightness(.92);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-status-pill,
+[data-theme='dark'] .app-shell--hub-admin .crm-status-pill * {
+  color: #f8f4ec !important;
+}
+
+/* Warning / success cards that intentionally stay light need explicit dark ink. */
+.app-shell--hub-admin :where(
+  .event-detail-balance-alert,
+  .data-import-status-card--ok,
+  .data-import-status-card--warn,
+  .data-import-details--warn
+) {
+  color: #3f3524 !important;
+}
+
+.app-shell--hub-admin :where(
+  .event-detail-balance-alert,
+  .data-import-status-card--ok,
+  .data-import-status-card--warn,
+  .data-import-details--warn
+) :where(h1,h2,h3,h4,strong,p,span,small) {
+  color: inherit !important;
+}
+
+/* Dark mode warning cards: retain semantic hue, but darken surface. */
+[data-theme='dark'] .app-shell--hub-admin .event-detail-balance-alert {
+  background: linear-gradient(90deg, rgba(124,78,20,.28), rgba(94,63,24,.22)) !important;
+  border-color: rgba(224,173,69,.28) !important;
+  color: #f2d59a !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .event-detail-balance-alert :where(
+  .event-detail-balance-alert__label,
+  .event-detail-balance-alert__amount
+) {
+  color: #f2d59a !important;
+}
+
+/* Event detail neutral pills cannot remain translucent white in dark mode. */
+[data-theme='dark'] .app-shell--hub-admin .event-detail-pill {
+  background: rgba(255,255,255,.045) !important;
+  border-color: rgba(232,220,194,.11) !important;
+  color: #eee9df !important;
+}
+
+/* Calendar foreground parity */
+[data-theme='dark'] .app-shell--hub-admin .venue-cal :where(
+  .venue-cal-toolbar__title,
+  .venue-cal-daycol__dt,
+  .venue-cal-summary__item strong
+) {
+  color: #f0ebe2 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal :where(
+  .venue-cal-daycol__wd,
+  .venue-cal-daycol__count,
+  .venue-cal-summary__item span,
+  .venue-cal-hour-label,
+  .venue-cal-lost-toggle
+) {
+  color: #9f998f !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-legend__item {
+  color: #d9d2c7 !important;
+  background: rgba(255,255,255,.045) !important;
+}
+
+/* Empty/error states */
+.app-shell--hub-admin :where(
+  .hub-live-empty,
+  .empty-state,
+  .live-empty
+) {
+  color: var(--hub-text-secondary);
+}
+
+.app-shell--hub-admin :where(
+  .hub-live-empty__title,
+  .empty-state h2,
+  .empty-state h3,
+  .live-empty h2,
+  .live-empty h3
+) {
+  color: var(--hub-text) !important;
+}
+
+/* Footer */
+.app-shell--hub-admin .hub-site-footer--compact,
+.app-shell--hub-admin .hub-site-footer--compact :where(strong,.hub-site-footer__name) {
+  color: #fff7e8 !important;
+}
+
+.app-shell--hub-admin .hub-site-footer--compact :where(
+  p,span,.hub-site-footer__meta,.hub-site-footer__copy
+) {
+  color: rgba(255,247,232,.68) !important;
+}
+
+.app-shell--hub-admin .hub-site-footer--compact a {
+  color: #e2c583 !important;
+}
+
+/* Utility topbar light/dark foreground */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav--utility {
+  color: #232a25 !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav--utility :where(
+  .crm-topnav__user-name,
+  .crm-topnav__icon
+) {
+  color: #2d332f !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav--utility {
+  color: #eee9df !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav--utility :where(
+  .crm-topnav__user-name,
+  .crm-topnav__icon
+) {
+  color: #eee9df !important;
+}
+
+/* Accessibility: keyboard focus remains visible on both palettes. */
+.app-shell--hub-admin :where(a,button,input,select,textarea):focus-visible {
+  outline: 2px solid var(--hub-gold) !important;
+  outline-offset: 2px;
+}
+
+
+/* ── Mobile shell invariant ─────────────────────────────────────────
+   Keep the navigation drawer out of document flow on review-day mobile.
+   Later light-theme sidebar polish intentionally owns visual treatment but
+   must never override the drawer positioning established by the shell. */
+@media (max-width: 900px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar,
+  [data-theme='dark'] .app-shell--hub-admin .crm-sidebar {
+    position: fixed;
+    top: 58px;
+    left: 0;
+    bottom: 0;
+    height: auto;
+    width: min(290px, 86vw);
+    transform: translateX(-105%);
+    z-index: 35;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar--open,
+  [data-theme='dark'] .app-shell--hub-admin .crm-sidebar--open {
+    transform: translateX(0);
+  }
+
+  .app-shell--hub-admin .crm-pv-shell--sidebar {
+    display: block;
+    min-height: 100dvh;
+  }
+
+  .app-shell--hub-admin .crm-pv-shell__main {
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  .app-shell--hub-admin .crm-topnav--utility {
+    width: 100%;
+    min-height: 58px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .app-shell--hub-admin .crm-topnav__utility-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .app-shell--hub-admin .crm-topnav__tools {
+    margin-left: auto;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .app-shell--hub-admin .crm-topnav__user {
+    padding: 3px;
+  }
+
+  .app-shell--hub-admin .crm-topnav__user-name {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav--utility .crm-topnav__icon[title='Sign out'] {
+    white-space: nowrap;
+    font-size: 12px;
+    padding-inline: 6px;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-shell--hub-admin .crm-topnav__utility-brand > div {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav__utility-logo {
+    max-height: 32px;
+  }
+}
