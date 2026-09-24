@@ -2178,3 +2178,187 @@ button.ops-filter-chip[aria-pressed='true'] {
     width: 100%;
   }
 }
+
+
+/* ── Sidebar gradient + glass refinement ─────────────────────
+   More visible tonal movement, brighter brand plate, restrained blur/glass. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar {
+  position: sticky;
+  background:
+    radial-gradient(320px 420px at 20% -5%, rgba(212, 187, 128, .18), transparent 68%),
+    radial-gradient(260px 360px at 100% 52%, rgba(31, 92, 70, .18), transparent 72%),
+    linear-gradient(180deg, #173f31 0%, #123328 34%, #0f291f 68%, #0a1e17 100%) !important;
+  border-right: 1px solid rgba(205, 182, 128, .34);
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,.025),
+    inset 0 1px 0 rgba(255,255,255,.035),
+    10px 0 28px rgba(5, 24, 17, .14),
+    24px 0 52px rgba(5, 24, 17, .08);
+}
+
+/* Soft glass bloom behind the navigation without reducing legibility. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.045) 0%, transparent 28%, transparent 72%, rgba(255,255,255,.02) 100%);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__nav,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* Brand becomes a luminous inset plate so the mark is readable at a glance. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand {
+  margin: 10px 10px 8px;
+  padding: 13px 13px 12px;
+  gap: 11px;
+  border: 1px solid rgba(232, 219, 190, .30);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.91) 0%, rgba(249,242,228,.86) 54%, rgba(229,215,184,.76) 100%);
+  backdrop-filter: blur(16px) saturate(1.08);
+  -webkit-backdrop-filter: blur(16px) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    inset 0 -1px 0 rgba(125,99,57,.08),
+    0 4px 10px rgba(3, 18, 12, .16),
+    0 12px 28px rgba(3, 18, 12, .18);
+}
+
+/* Make the image itself pop without modifying the logo asset. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__logo {
+  width: 50px;
+  filter:
+    brightness(1.13)
+    contrast(1.08)
+    saturate(1.08)
+    drop-shadow(0 2px 3px rgba(66, 49, 22, .20));
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand-copy strong {
+  color: #153328 !important;
+  text-shadow: 0 1px 0 rgba(255,255,255,.72);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand-copy span {
+  color: #53645b !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__brand-copy small {
+  color: #9a7337 !important;
+  font-weight: 700;
+}
+
+/* Navigation rows gain translucent layered states. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__section-label {
+  color: #d6c39c;
+  text-shadow: 0 1px 1px rgba(0,0,0,.18);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item {
+  color: rgba(252, 249, 241, .82);
+  background: linear-gradient(90deg, rgba(255,255,255,.018), rgba(255,255,255,.006));
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item:hover {
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.105), rgba(255,255,255,.045));
+  border-color: rgba(255,255,255,.07);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.04),
+    0 5px 12px rgba(0,0,0,.10);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__item--active {
+  background:
+    linear-gradient(90deg, rgba(255,249,236,.98), rgba(243,232,210,.94)) !important;
+  box-shadow:
+    inset 4px 0 0 #b68d49,
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 4px 10px rgba(0,0,0,.18),
+    0 10px 24px rgba(0,0,0,.13) !important;
+}
+
+/* Footer identity gets a darker glass dock. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar__footer {
+  margin: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  background: rgba(255,255,255,.035);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 8px 20px rgba(0,0,0,.10);
+}
+
+/* Main utility header gets a clearer frosted-glass treatment. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-topnav--utility {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.78), rgba(250,246,239,.88));
+  backdrop-filter: blur(22px) saturate(1.12);
+  -webkit-backdrop-filter: blur(22px) saturate(1.12);
+  border-bottom-color: rgba(188,175,156,.52);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.94),
+    0 1px 0 rgba(115,99,78,.08),
+    0 10px 28px rgba(14,33,26,.075);
+}
+
+/* Add soft atmospheric blur/shading behind the Today command surfaces. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk {
+  position: relative;
+  isolation: isolate;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: -24px -20px auto -20px;
+  height: 380px;
+  pointer-events: none;
+  background:
+    radial-gradient(420px 220px at 12% 20%, rgba(29,70,55,.08), transparent 72%),
+    radial-gradient(440px 210px at 88% 14%, rgba(173,135,70,.11), transparent 72%);
+  filter: blur(22px);
+  opacity: .95;
+}
+
+/* Glass-like action island in the Today hero. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__actions {
+  background: rgba(255,255,255,.56);
+  backdrop-filter: blur(14px) saturate(1.05);
+  -webkit-backdrop-filter: blur(14px) saturate(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 6px 18px rgba(16,39,31,.08);
+}
+
+/* A bit more layered separation on section headers and panels. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__section-head {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(242,234,222,.92));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__work,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__floor,
+:root:not([data-theme='dark']) .app-shell--hub-admin .today-desk__money {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 2px 4px rgba(14,33,26,.07),
+    0 16px 34px rgba(14,33,26,.11),
+    0 38px 70px rgba(14,33,26,.05) !important;
+}
