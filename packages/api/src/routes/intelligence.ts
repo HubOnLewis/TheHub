@@ -41,7 +41,7 @@ router.get('/revenue-leaks', async (req, res, next) => {
 router.get('/autopilot', async (req, res, next) => {
   try {
     const deals = await getDB().collection('deals').find({ ...scoped(req), status: { $nin: ['Lost', 'Delivered'] } }).sort({ updatedAt: 1 }).limit(500).toArray();
-    const recommendations = deals.filter(d => balance(d) > 0 || d.importMeta?.pvStatus === 'proposal_sent').slice(0, 50).map(d => ({ id: String(d._id), targetId: String(d._id), targetType: 'deal', title: balance(d) > 0 ? 'Review outstanding balance' : 'Follow up on proposal', reason: balance(d) > 0 ? 'Imported balance remains due' : 'Imported proposal is still open', status: 'recommendation', source: 'deterministic_mongo' }));
+    const recommendations = deals.filter(d => balance(d) > 0 || d.importMeta?.pvStatus === 'proposal_sent').slice(0, 50).map(d => ({ id: String(d._id), targetId: String(d._id), targetType: 'deal', eventTitle: d.title ?? null, eventDate: eventDate(d) || null, balanceDue: balance(d), amount: amount(d), title: balance(d) > 0 ? 'Review outstanding balance' : 'Follow up on proposal', reason: balance(d) > 0 ? 'Imported balance remains due' : 'Imported proposal is still open', status: 'recommendation', source: 'deterministic_mongo' }));
     res.json({ source: 'mongo', recommendations });
   } catch (err) { next(err); }
 });
