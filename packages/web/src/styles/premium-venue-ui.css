@@ -3581,3 +3581,491 @@ button.ops-filter-chip[aria-pressed='true'] {
     min-width: 0;
   }
 }
+
+
+/* ── Theme parity + contrast hardening ───────────────────────
+   Ensures premium surfaces remain legible in dark mode and on dark green surfaces. */
+
+/* Dark theme tokens */
+[data-theme='dark'] .app-shell--hub-admin {
+  --hub-canvas: #0b1210;
+  --hub-card: #121a17;
+  --hub-card-muted: #17201c;
+  --hub-border: rgba(232, 220, 194, .14);
+  --hub-border-soft: rgba(232, 220, 194, .09);
+  --hub-text: #f3efe6;
+  --hub-text-secondary: #c4beb2;
+  --hub-text-muted: #908a80;
+  --hub-accent: #d3b16f;
+  --hub-accent-soft: rgba(211,177,111,.12);
+  --hub-accent-border: rgba(211,177,111,.28);
+  --hub-gold: #d3b16f;
+  --hub-ink: #f3efe6;
+  --hub-row-hover: rgba(211,177,111,.065);
+  background:
+    radial-gradient(900px 360px at 10% -6%, rgba(211,177,111,.065), transparent 58%),
+    radial-gradient(760px 340px at 100% 0%, rgba(40,86,67,.08), transparent 55%),
+    linear-gradient(180deg, #0c1311 0%, #09100e 100%);
+}
+
+/* Dark sidebar: richer green, brighter labels, readable active item */
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar {
+  background:
+    radial-gradient(320px 420px at 20% -5%, rgba(214,188,127,.10), transparent 68%),
+    radial-gradient(260px 360px at 100% 52%, rgba(40,102,78,.13), transparent 72%),
+    linear-gradient(180deg, #14392d 0%, #102d24 38%, #0d241d 68%, #081913 100%) !important;
+  border-right-color: rgba(211,177,111,.24);
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,.018),
+    12px 0 28px rgba(0,0,0,.20),
+    24px 0 52px rgba(0,0,0,.10);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__brand {
+  border: 1px solid rgba(224,207,169,.20);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+  backdrop-filter: blur(16px) saturate(1.05);
+  -webkit-backdrop-filter: blur(16px) saturate(1.05);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 10px 24px rgba(0,0,0,.20);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__brand-copy strong {
+  color: #fff7e8 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__brand-copy span {
+  color: rgba(243,239,230,.72) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__brand-copy small,
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__section-label {
+  color: #d6bb82 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__item {
+  color: rgba(246,242,234,.82);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__item:hover {
+  color: #fffaf0;
+  background: rgba(255,255,255,.055);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__item--active {
+  color: #fff8e9 !important;
+  background:
+    linear-gradient(90deg, rgba(211,177,111,.20), rgba(255,255,255,.055)) !important;
+  border-color: rgba(211,177,111,.26) !important;
+  box-shadow:
+    inset 4px 0 0 #d3b16f,
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 6px 16px rgba(0,0,0,.16) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__badge {
+  background: #d3b16f;
+  color: #10271f;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__identity strong {
+  color: #fff8ec;
+}
+[data-theme='dark'] .app-shell--hub-admin .crm-sidebar__identity span {
+  color: rgba(243,239,230,.60);
+}
+
+/* Utility header */
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav--utility,
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav {
+  background:
+    linear-gradient(180deg, rgba(18,26,23,.92), rgba(13,20,18,.96));
+  border-bottom-color: rgba(232,220,194,.10);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 8px 24px rgba(0,0,0,.22);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__user {
+  background: rgba(255,255,255,.055);
+  border-color: rgba(232,220,194,.12);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__user-name,
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__icon {
+  color: #eee9df;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__icon:hover {
+  color: #f8e8bf;
+  background: rgba(255,255,255,.06);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__search {
+  color: #f0ece4;
+  border-color: rgba(232,220,194,.12);
+  background: rgba(255,255,255,.045);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.25);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .crm-topnav__search::placeholder {
+  color: #8f8a81;
+}
+
+/* Shared page headers and cards */
+[data-theme='dark'] .app-shell--hub-admin .hub-admin-page__header,
+[data-theme='dark'] .app-shell--hub-admin .page-header,
+[data-theme='dark'] .app-shell--hub-admin .card,
+[data-theme='dark'] .app-shell--hub-admin .crm-events-panel,
+[data-theme='dark'] .app-shell--hub-admin .settings-panel,
+[data-theme='dark'] .app-shell--hub-admin .ops-row-panel,
+[data-theme='dark'] .app-shell--hub-admin .hub-live-group,
+[data-theme='dark'] .app-shell--hub-admin .data-table-wrap,
+[data-theme='dark'] .app-shell--hub-admin .um-table-wrap,
+[data-theme='dark'] .app-shell--hub-admin .premium-data-card,
+[data-theme='dark'] .app-shell--hub-admin .inbox-triage-card {
+  background:
+    linear-gradient(180deg, rgba(24,34,30,.98), rgba(15,23,20,.98)) !important;
+  border-color: rgba(232,220,194,.11) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 12px 30px rgba(0,0,0,.20) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .hub-admin-page__title,
+[data-theme='dark'] .app-shell--hub-admin .page-title,
+[data-theme='dark'] .app-shell--hub-admin .hub-live-group__title,
+[data-theme='dark'] .app-shell--hub-admin .premium-data-card__head h2,
+[data-theme='dark'] .app-shell--hub-admin .autopilot-panel__head h2 {
+  color: #f4efe5 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .hub-admin-page__subtitle,
+[data-theme='dark'] .app-shell--hub-admin .page-subtitle,
+[data-theme='dark'] .app-shell--hub-admin .text-muted,
+[data-theme='dark'] .app-shell--hub-admin .premium-data-card__kicker,
+[data-theme='dark'] .app-shell--hub-admin .page-kicker {
+  color: #aaa399 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .hub-admin-stat-pill {
+  background: rgba(255,255,255,.045);
+  border-color: rgba(232,220,194,.12);
+  color: #ddd3c0;
+}
+
+/* Dark tables */
+[data-theme='dark'] .app-shell--hub-admin .data-table thead th,
+[data-theme='dark'] .app-shell--hub-admin .crm-events-table__head {
+  color: #aaa399 !important;
+  background:
+    linear-gradient(180deg, #18211e 0%, #121a17 100%) !important;
+  border-bottom-color: rgba(232,220,194,.10) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .data-table tbody tr,
+[data-theme='dark'] .app-shell--hub-admin .crm-events-table__row {
+  color: #ebe6dd;
+  border-color: rgba(232,220,194,.07);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .data-table tbody tr:nth-child(even) {
+  background: rgba(255,255,255,.018);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .data-table tbody tr:hover,
+[data-theme='dark'] .app-shell--hub-admin .crm-events-table__row:hover {
+  background: linear-gradient(90deg, rgba(211,177,111,.06), rgba(255,255,255,.025));
+  box-shadow: inset 3px 0 0 rgba(211,177,111,.46);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .premium-source-pill,
+[data-theme='dark'] .app-shell--hub-admin .um-status,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-legend__item {
+  background: rgba(255,255,255,.045);
+  border-color: rgba(232,220,194,.10);
+  color: #d8d0c4;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .premium-money-cell,
+[data-theme='dark'] .app-shell--hub-admin .today-desk__amt {
+  color: #e7d19f !important;
+}
+
+/* Forms */
+[data-theme='dark'] .app-shell--hub-admin input,
+[data-theme='dark'] .app-shell--hub-admin select,
+[data-theme='dark'] .app-shell--hub-admin textarea {
+  color: #eee9df;
+  background: #111916;
+  border-color: rgba(232,220,194,.13);
+}
+
+[data-theme='dark'] .app-shell--hub-admin input::placeholder,
+[data-theme='dark'] .app-shell--hub-admin textarea::placeholder {
+  color: #7e7a73;
+}
+
+/* Buttons */
+[data-theme='dark'] .app-shell--hub-admin .btn-primary {
+  color: #0e2018 !important;
+  background: linear-gradient(180deg, #dfc17d, #bc9650) !important;
+  border-color: #bc9650 !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .btn-secondary,
+[data-theme='dark'] .app-shell--hub-admin .btn-ghost {
+  color: #e9e4da;
+  background: rgba(255,255,255,.045);
+  border-color: rgba(232,220,194,.12);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .btn-secondary:hover,
+[data-theme='dark'] .app-shell--hub-admin .btn-ghost:hover {
+  color: #fff6df;
+  background: rgba(255,255,255,.075);
+  border-color: rgba(211,177,111,.28);
+}
+
+/* Explicit contrast on dark green premium surfaces in BOTH themes */
+.app-shell--hub-admin .command-hero,
+.app-shell--hub-admin .autopilot-hero,
+.app-shell--hub-admin .ops-intel-hero {
+  color: #fffaf0;
+}
+
+.app-shell--hub-admin .command-hero .page-title,
+.app-shell--hub-admin .command-hero .page-subtitle,
+.app-shell--hub-admin .autopilot-hero .page-title,
+.app-shell--hub-admin .autopilot-hero .page-subtitle,
+.app-shell--hub-admin .ops-intel-hero__title,
+.app-shell--hub-admin .ops-intel-hero__sub,
+.app-shell--hub-admin .ops-intel-hero p,
+.app-shell--hub-admin .ops-intel-hero span:not(.ops-intel-stat__value) {
+  color: #fffaf0 !important;
+}
+
+.app-shell--hub-admin .ops-intel-stat,
+.app-shell--hub-admin .autopilot-hero__summary {
+  color: #fffaf0;
+}
+
+.app-shell--hub-admin .ops-intel-stat__label,
+.app-shell--hub-admin .autopilot-hero__summary span,
+.app-shell--hub-admin .autopilot-hero__summary small {
+  color: rgba(255,250,240,.72) !important;
+}
+
+.app-shell--hub-admin .ops-intel-stat__value,
+.app-shell--hub-admin .autopilot-hero__summary strong {
+  color: #e6c985 !important;
+}
+
+/* Dark AI/recommendation surfaces */
+[data-theme='dark'] .app-shell--hub-admin .autopilot-panel,
+[data-theme='dark'] .app-shell--hub-admin .command-panel,
+[data-theme='dark'] .app-shell--hub-admin .autopilot-approval {
+  background:
+    linear-gradient(180deg, rgba(24,33,30,.98), rgba(15,23,20,.98)) !important;
+  border-color: rgba(232,220,194,.10) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .autopilot-panel__head {
+  background: linear-gradient(180deg, #1b2521, #131c19);
+  border-bottom-color: rgba(232,220,194,.09);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .autopilot-approval__title {
+  color: #f2eee5;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .autopilot-approval__proposed,
+[data-theme='dark'] .app-shell--hub-admin .autopilot-approval__why {
+  color: #b8b1a6;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .autopilot-approval__why span {
+  background: rgba(255,255,255,.035);
+  border-color: rgba(232,220,194,.08);
+  color: #aaa399;
+}
+
+/* Today parity */
+[data-theme='dark'] .app-shell--hub-admin .today-desk__header,
+[data-theme='dark'] .app-shell--hub-admin .today-desk__work,
+[data-theme='dark'] .app-shell--hub-admin .today-desk__floor,
+[data-theme='dark'] .app-shell--hub-admin .today-desk__money {
+  background:
+    linear-gradient(180deg, rgba(24,34,30,.98), rgba(14,22,19,.98)) !important;
+  border-color: rgba(232,220,194,.11) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .today-desk__section-head {
+  background: linear-gradient(180deg, #1a2420, #121a17);
+  border-bottom-color: rgba(232,220,194,.09);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .today-desk__section-head h2,
+[data-theme='dark'] .app-shell--hub-admin .today-desk__row-main strong {
+  color: #f2eee5;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .today-desk__row-main span,
+[data-theme='dark'] .app-shell--hub-admin .today-desk__sub {
+  color: #a9a298;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .today-desk__row {
+  background: rgba(255,255,255,.012);
+  border-bottom-color: rgba(232,220,194,.065);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .today-desk__row:nth-child(even) {
+  background: rgba(255,255,255,.022);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .today-desk__row:hover {
+  background: linear-gradient(90deg, rgba(211,177,111,.055), rgba(255,255,255,.025));
+}
+
+/* Dark calendar */
+[data-theme='dark'] .app-shell--hub-admin .venue-cal {
+  background: linear-gradient(180deg, #121a17, #0d1412);
+  border-color: rgba(232,220,194,.11);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.02),
+    0 18px 44px rgba(0,0,0,.24);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-toolbar,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-summary,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-legend,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol__head,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-week__corner {
+  background: linear-gradient(180deg, #19231f, #121a17);
+  border-color: rgba(232,220,194,.09);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-toolbar__title,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol__dt,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-summary__item strong {
+  color: #eee9df;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol__wd,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol__count,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-summary__item span,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-hour-label {
+  color: #928d84;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-week,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-day__timeline,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol {
+  background: #0f1714;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol--today {
+  background:
+    linear-gradient(180deg, rgba(42,83,65,.22), rgba(18,35,28,.18)) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol--today .venue-cal-daycol__head {
+  background: linear-gradient(180deg, #1d332a, #16261f);
+  box-shadow: inset 0 3px 0 #d3b16f;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-daycol--today .venue-cal-daycol__dt {
+  color: #f2eee5;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-hour-slot {
+  border-top-color: rgba(232,220,194,.055);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-space-select,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-lost-toggle,
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-toolbar .btn-ghost {
+  color: #e9e4da;
+  background: #141d1a;
+  border-color: rgba(232,220,194,.11);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-mode {
+  background: #0d1512;
+  border-color: rgba(232,220,194,.11);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-mode__btn {
+  color: #a9a298;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .venue-cal-mode__btn.is-active {
+  color: #0d2018;
+  background: linear-gradient(180deg, #dfc17d, #bc9650);
+}
+
+/* Settings */
+[data-theme='dark'] .app-shell--hub-admin .settings-nav,
+[data-theme='dark'] .app-shell--hub-admin .settings-panel {
+  background:
+    linear-gradient(180deg, rgba(24,34,30,.98), rgba(14,22,19,.98)) !important;
+  border-color: rgba(232,220,194,.10) !important;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .settings-nav-group {
+  border-bottom-color: rgba(232,220,194,.07);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .settings-nav-group__label,
+[data-theme='dark'] .app-shell--hub-admin .settings-nav-group__toggle {
+  color: #d0b475;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .settings-nav a {
+  color: #bbb4a9;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .settings-nav a:hover {
+  color: #f4efe5;
+  background: rgba(255,255,255,.04);
+}
+
+[data-theme='dark'] .app-shell--hub-admin .settings-nav a.active {
+  color: #fff4dc;
+  background: rgba(211,177,111,.09);
+  box-shadow: inset 3px 0 0 #d3b16f;
+}
+
+/* Executive / audit / generic panels */
+[data-theme='dark'] .app-shell--hub-admin .exec-page__hero,
+[data-theme='dark'] .app-shell--hub-admin .audit-trail-page__hero,
+[data-theme='dark'] .app-shell--hub-admin .exec-panel,
+[data-theme='dark'] .app-shell--hub-admin .command-region,
+[data-theme='dark'] .app-shell--hub-admin .premium-summary-tile,
+[data-theme='dark'] .app-shell--hub-admin .hub-live-empty,
+[data-theme='dark'] .app-shell--hub-admin .empty-state {
+  background:
+    linear-gradient(180deg, rgba(24,34,30,.98), rgba(14,22,19,.98)) !important;
+  border-color: rgba(232,220,194,.10) !important;
+  color: #ebe6dd;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .exec-page__title,
+[data-theme='dark'] .app-shell--hub-admin .audit-trail-page__hero h1,
+[data-theme='dark'] .app-shell--hub-admin .premium-summary-tile strong {
+  color: #f4efe5;
+}
+
+[data-theme='dark'] .app-shell--hub-admin .premium-summary-tile span,
+[data-theme='dark'] .app-shell--hub-admin .exec-page__subtitle {
+  color: #aaa399;
+}
+
+/* Footer */
+[data-theme='dark'] .app-shell--hub-admin .hub-site-footer--compact {
+  background: #071a14;
+  border-top-color: rgba(211,177,111,.24);
+}
