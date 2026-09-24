@@ -1,0 +1,54 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, staging]
+  push:
+    branches: [main, staging]
+
+concurrency:
+  group: hub-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Build shared
+        run: npm run build --workspace=packages/shared
+
+      - name: Shared tests
+        run: npm run uxcheck --workspace=packages/shared
+
+      - name: Shared typecheck
+        run: npm run typecheck --workspace=packages/shared
+
+      - name: API tests
+        run: npm run test --workspace=packages/api
+
+      - name: API typecheck
+        run: npm run typecheck --workspace=packages/api
+
+      - name: Web tests
+        run: npm run uxcheck --workspace=packages/web
+
+      - name: Web typecheck
+        run: npm run typecheck --workspace=packages/web
+
+      - name: Production web build
+        run: npm run build --workspace=packages/web
