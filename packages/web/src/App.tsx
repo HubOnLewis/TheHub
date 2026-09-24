@@ -313,6 +313,12 @@ function Shell() {
             <Route path={ROUTES.marketing} element={resolveHubRouteElement(ROUTES.marketing, <MarketingPage />, 'Marketing')} />
             <Route path={ROUTES.referrals} element={resolveHubRouteElement(ROUTES.referrals, <ReferralsPage />, 'Referrals')} />
             <Route path={ROUTES.monthlyScorecard} element={resolveHubRouteElement(ROUTES.monthlyScorecard, withLiveModuleBoundary('Reports', <MonthlyScorecardPage />))} />
+            <Route path={ROUTES.pipeline} element={resolveHubRouteElement(ROUTES.pipeline, <PipelinePressure />)} />
+            <Route path={ROUTES.insights} element={resolveHubRouteElement(ROUTES.insights, <ForecastReview />)} />
+            <Route path={ROUTES.repScorecards} element={resolveHubRouteElement(ROUTES.repScorecards, <RepScorecards />)} />
+            <Route path={ROUTES.weeklyCadence} element={resolveHubRouteElement(ROUTES.weeklyCadence, <WeeklyCadence />)} />
+            <Route path={ROUTES.accountCoverage} element={resolveHubRouteElement(ROUTES.accountCoverage, <AccountCoverage />)} />
+            <Route path={ROUTES.accountExpansion} element={resolveHubRouteElement(ROUTES.accountExpansion, <AccountExpansion />)} />
             <Route path={ROUTES.contacts} element={<ContactsPage />} />
             <Route path={ROUTES.financial} element={<FinancialPaymentsPage />} />
             <Route path="*" element={<Navigate to={ROUTES.today} replace />} />
