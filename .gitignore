@@ -25,6 +25,10 @@ import/**/*.xlsx
 import/**/*.pdf
 packages/web/src/data/hubRefreshEvents.local.ts
 
+# Local production/import data — never commit
+data/backups/
+import/**/*.csv
+
 # Build artifacts and temp output
 mnt/
 
