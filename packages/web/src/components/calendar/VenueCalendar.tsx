@@ -142,6 +142,23 @@ export default function VenueCalendar({ rows, hideLostDefault = true }: Props) {
 
   const dayBlocks = blocksForDate(filteredBlocks, mode === 'day' ? dayKey : '');
 
+  const visibleViewBlocks = useMemo(() => {
+    if (mode === 'day') return blocksForDate(filteredBlocks, dayKey);
+    const visibleKeys = new Set(weekKeys);
+    return filteredBlocks.filter(block => visibleKeys.has(block.dateKey));
+  }, [mode, filteredBlocks, dayKey, weekKeys]);
+
+  const viewSummary = useMemo(() => {
+    const holds = visibleViewBlocks.filter(block => block.occupancy === 'hold').length;
+    const booked = visibleViewBlocks.filter(block => block.occupancy === 'booked').length;
+    const outstanding = visibleViewBlocks.reduce((sum, block) => sum + Math.max(0, block.balanceDue || 0), 0);
+    const hardConflicts = conflicts.filter(conflict => {
+      if (conflict.severity !== 'hard') return false;
+      return visibleViewBlocks.some(block => block.id === conflict.eventA.id || block.id === conflict.eventB.id);
+    }).length;
+    return { holds, booked, outstanding, hardConflicts };
+  }, [visibleViewBlocks, conflicts]);
+
   return (
     <div className="venue-cal">
       <header className="venue-cal-toolbar">
@@ -209,6 +226,29 @@ export default function VenueCalendar({ rows, hideLostDefault = true }: Props) {
           </div>
         </div>
       </header>
+
+      <div className="venue-cal-summary" aria-label="Calendar summary">
+        <div className="venue-cal-summary__item venue-cal-summary__item--events">
+          <span>Events</span>
+          <strong>{visibleViewBlocks.length}</strong>
+        </div>
+        <div className="venue-cal-summary__item venue-cal-summary__item--booked">
+          <span>Booked</span>
+          <strong>{viewSummary.booked}</strong>
+        </div>
+        <div className="venue-cal-summary__item venue-cal-summary__item--holds">
+          <span>Holds</span>
+          <strong>{viewSummary.holds}</strong>
+        </div>
+        <div className="venue-cal-summary__item venue-cal-summary__item--money">
+          <span>Outstanding</span>
+          <strong>{formatCurrency(viewSummary.outstanding)}</strong>
+        </div>
+        <div className={`venue-cal-summary__item venue-cal-summary__item--conflicts${viewSummary.hardConflicts > 0 ? ' has-alert' : ''}`}>
+          <span>Conflicts</span>
+          <strong>{viewSummary.hardConflicts}</strong>
+        </div>
+      </div>
 
       <ConflictBanner conflicts={conflicts} />
 
