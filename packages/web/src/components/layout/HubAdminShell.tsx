@@ -2,7 +2,7 @@ import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import BrandLogo from '../BrandLogo.js';
 import { BRAND } from '../../branding/tokens.js';
-import { getHubTopNavItems } from '../../config/productionAlphaNav.js';
+import { getHubNavSections } from '../../config/productionAlphaNav.js';
 import { useVenueOpsQueue } from '../../hooks/useVenueOps.js';
 import { useAppStore } from '../../store/index.js';
 import HubThemeToggle from './HubThemeToggle.js';
@@ -23,11 +23,15 @@ function userInitials(name?: string | null, email?: string | null): string {
   return source.slice(0, 2).toUpperCase();
 }
 
-function navClass(active: boolean): string {
-  return `crm-topnav__link${active ? ' crm-topnav__link--active' : ''}`;
+function itemClass(active: boolean): string {
+  return `crm-sidebar__item${active ? ' crm-sidebar__item--active' : ''}`;
 }
 
-/** Four-screen venue desk: Today · Calendar · Events · Settings */
+/**
+ * Full Hub venue workspace.
+ * Daily work stays first; lower-frequency product areas live in grouped,
+ * collapsible navigation rather than disappearing from the platform.
+ */
 export default function HubAdminShell({
   children,
   mobileNavOpen,
@@ -39,64 +43,76 @@ export default function HubAdminShell({
   const displayName = user?.name?.trim() || user?.email?.split('@')[0] || 'User';
   const { data: opsQueue } = useVenueOpsQueue();
 
-  const items = getHubTopNavItems({
+  const sections = getHubNavSections({
     tasksBadge: opsQueue?.summary?.total || undefined,
     role: user?.role,
   });
 
   return (
-    <div className="crm-pv-shell">
-      <header className="crm-topnav crm-topnav--light" aria-label="Venue navigation">
-        <button
-          type="button"
-          className="crm-topnav__menu-btn"
-          aria-label="Open navigation"
-          aria-expanded={mobileNavOpen}
-          onClick={() => setMobileNavOpen(v => !v)}
-        >
-          ☰
-        </button>
-        <div className="crm-topnav__brand">
-          <BrandLogo size="md" className="crm-topnav__logo" />
-          <div className="crm-topnav__venue">
-            <span className="crm-topnav__venue-name">{BRAND.venueName}</span>
-            <span className="crm-topnav__venue-sub">{BRAND.productSubtitle}</span>
-            <span className="crm-topnav__venue-loc">{BRAND.venueLocation}</span>
+    <div className="crm-pv-shell crm-pv-shell--sidebar">
+      <aside
+        className={`crm-sidebar${mobileNavOpen ? ' crm-sidebar--open' : ''}`}
+        aria-label="Hub workspace navigation"
+      >
+        <div className="crm-sidebar__brand">
+          <BrandLogo size="md" className="crm-sidebar__logo" />
+          <div className="crm-sidebar__brand-copy">
+            <strong>{BRAND.venueName}</strong>
+            <span>{BRAND.productSubtitle}</span>
+            <small>{BRAND.venueLocation}</small>
           </div>
         </div>
-        <nav className={`crm-topnav__links${mobileNavOpen ? ' crm-topnav__links--open' : ''}`}>
-          {items.map(item => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                navClass(item.match ? item.match(pathname) : isActive)
-              }
-              onClick={() => setMobileNavOpen(false)}
-            >
-              {item.label}
-              {item.badge != null && item.badge > 0 ? (
-                <span className="crm-topnav__badge">{item.badge > 99 ? '99+' : item.badge}</span>
-              ) : null}
-            </NavLink>
-          ))}
+
+        <nav className="crm-sidebar__nav">
+          {sections.map(section => {
+            const sectionActive = section.items.some(item =>
+              item.match ? item.match(pathname) : pathname === item.to || pathname.startsWith(`${item.to}/`),
+            );
+            return (
+              <details
+                key={section.id}
+                className="crm-sidebar__section"
+                open={section.defaultOpen || sectionActive}
+              >
+                <summary className="crm-sidebar__section-label">
+                  <span>{section.label}</span>
+                  <span aria-hidden>⌄</span>
+                </summary>
+                <div className="crm-sidebar__section-items">
+                  {section.items.map(item => (
+                    <NavLink
+                      key={item.to}
+                      to={item.to}
+                      className={({ isActive }) =>
+                        itemClass(item.match ? item.match(pathname) : isActive)
+                      }
+                      onClick={() => setMobileNavOpen(false)}
+                    >
+                      <span>{item.label}</span>
+                      {item.badge != null && item.badge > 0 ? (
+                        <span className="crm-sidebar__badge">{item.badge > 99 ? '99+' : item.badge}</span>
+                      ) : null}
+                    </NavLink>
+                  ))}
+                </div>
+              </details>
+            );
+          })}
         </nav>
-        <div className="crm-topnav__search-wrap">
-          <GlobalSearch />
-        </div>
-        <div className="crm-topnav__tools">
-          <HubThemeToggle />
-          <div className="crm-topnav__user" title={user?.email ?? undefined}>
+
+        <div className="crm-sidebar__footer">
+          <div className="crm-sidebar__identity">
             <span className="crm-topnav__user-avatar" aria-hidden>
               {userInitials(user?.name, user?.email)}
             </span>
-            <span className="crm-topnav__user-name">{displayName}</span>
+            <div>
+              <strong>{displayName}</strong>
+              <span>{user?.role === 'super_admin' ? 'Owner / Admin' : 'Venue staff'}</span>
+            </div>
           </div>
-          <button type="button" className="crm-topnav__icon" onClick={onLogout} title="Sign out">
-            Sign out
-          </button>
         </div>
-      </header>
+      </aside>
+
       {mobileNavOpen ? (
         <button
           type="button"
@@ -105,8 +121,48 @@ export default function HubAdminShell({
           onClick={() => setMobileNavOpen(false)}
         />
       ) : null}
-      <main className="crm-pv-shell__content">{children}</main>
-      <HubSiteFooter compact />
+
+      <div className="crm-pv-shell__main">
+        <header className="crm-topnav crm-topnav--utility" aria-label="Hub utility navigation">
+          <button
+            type="button"
+            className="crm-topnav__menu-btn"
+            aria-label="Open navigation"
+            aria-expanded={mobileNavOpen}
+            onClick={() => setMobileNavOpen(v => !v)}
+          >
+            ☰
+          </button>
+
+          <div className="crm-topnav__utility-brand">
+            <BrandLogo size="sm" className="crm-topnav__utility-logo" />
+            <div>
+              <strong>{BRAND.venueName}</strong>
+              <span>{BRAND.productSubtitle}</span>
+            </div>
+          </div>
+
+          <div className="crm-topnav__search-wrap crm-topnav__search-wrap--utility">
+            <GlobalSearch />
+          </div>
+
+          <div className="crm-topnav__tools">
+            <HubThemeToggle />
+            <div className="crm-topnav__user" title={user?.email ?? undefined}>
+              <span className="crm-topnav__user-avatar" aria-hidden>
+                {userInitials(user?.name, user?.email)}
+              </span>
+              <span className="crm-topnav__user-name">{displayName}</span>
+            </div>
+            <button type="button" className="crm-topnav__icon" onClick={onLogout} title="Sign out">
+              Sign out
+            </button>
+          </div>
+        </header>
+
+        <main className="crm-pv-shell__content">{children}</main>
+        <HubSiteFooter compact />
+      </div>
     </div>
   );
 }

@@ -28,6 +28,12 @@ export const HUB_ADMIN_PATH_PREFIXES: readonly string[] = [
   ROUTES.contacts,
   ROUTES.financial,
   ROUTES.automationImpact,
+  ROUTES.pipeline,
+  ROUTES.insights,
+  ROUTES.repScorecards,
+  ROUTES.weeklyCadence,
+  ROUTES.accountCoverage,
+  ROUTES.accountExpansion,
 ];
 const DETAIL_PATTERNS = [
   /^\/opportunities\/[^/]+/,
