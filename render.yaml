@@ -52,6 +52,7 @@ services:
     runtime: node
     region: oregon
     plan: starter
+    autoDeployTrigger: checksPass
 
     rootDir: .
 
@@ -132,6 +133,7 @@ services:
   - type: web
     name: The-Hub
     runtime: static
+    autoDeployTrigger: checksPass
     rootDir: .
 
     buildCommand: npm install --include=dev && node scripts/render-prepare-web-build.mjs
