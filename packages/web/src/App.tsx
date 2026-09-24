@@ -170,6 +170,15 @@ function Shell() {
     setMobileNavOpen(false);
   }, [pathname]);
 
+  // Route changes should behave like full page navigation: start the newly
+  // selected workspace at its top instead of inheriting the previous page's
+  // scroll position. Keep query-string-only changes (filters/modals) intact.
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [pathname]);
+
   return (
     <div
       className={`app-shell${sidebarCollapsed ? ' sidebar-collapsed' : ''}${mobileNavOpen ? ' mobile-nav-open' : ''}${isDashboard ? ' app-shell--dashboard' : ''}${hubShell ? ' app-shell--hub-admin app-shell--crm-topnav' : ''}`}
