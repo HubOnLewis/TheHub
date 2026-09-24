@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import BrandLogo from './BrandLogo.js';
 
 const STATUS_LINES = [
-  'Loading event pipeline',
-  'Checking today’s operations',
-  'Preparing Autopilot',
-  'Syncing venue intelligence',
+  'Checking today’s work',
+  'Loading the calendar',
+  'Opening your events',
+  'Almost ready',
 ] as const;
 
 const ROTATE_MS = 2200;
@@ -22,7 +22,7 @@ type Props = {
 export default function BrandLoader({
   exiting = false,
   variant = 'fullscreen',
-  message = 'Preparing venue operations…',
+  message = 'Opening The Hub…',
   showStatusRotation = true,
 }: Props) {
   const [lineIdx, setLineIdx] = useState(0);

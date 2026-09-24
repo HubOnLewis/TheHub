@@ -33,7 +33,6 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
   const [requesting, setRequesting] = useState(false);
 
   const bridgeReady = Boolean(status?.localNode?.bridge === 'outbound_jobs');
-  const nodeConnected = Boolean(status?.localNode?.connected);
   const canRequest = bridgeReady;
   const inFlight = job && (job.status === 'queued' || job.status === 'claimed' || job.status === 'running');
 
@@ -73,13 +72,13 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
   const resultText = job?.status === 'completed' ? formatResult(job) : null;
   const statusLabel =
     job?.status === 'queued'
-      ? 'Queued — waiting for Hub PC'
+      ? 'Working…'
       : job?.status === 'claimed' || job?.status === 'running'
-        ? 'Analyzing on Hub PC…'
+        ? 'Working…'
         : job?.status === 'completed'
-          ? 'Result ready (advisory only)'
+          ? 'Suggestion ready'
           : job?.status === 'failed'
-            ? 'Analysis failed'
+            ? 'Could not finish'
             : null;
 
   return (
@@ -87,13 +86,10 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
       <header className="event-detail-section__header">
         <span className="event-detail-section__accent" aria-hidden />
         <div className="event-detail-section__heading">
-          <h2 className="event-detail-section__title">Local AI assist</h2>
+          <h2 className="event-detail-section__title">AI Assist</h2>
           <p className="event-detail-section__subtitle">
-            {nodeConnected
-              ? 'Hub PC connected · Event Operations runs asynchronously — nothing sends or mutates CRM'
-              : bridgeReady
-                ? 'Waiting for Hub PC companion heartbeat'
-                : 'Connect the onsite Hub PC companion for event readiness analysis'}
+            Optional suggestions for this event. Does not change bookings or payments.
+            {!canRequest ? ' Available when the venue assistant is connected (see Settings).' : ''}
           </p>
         </div>
       </header>
@@ -105,7 +101,7 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
             disabled={!canRequest || requesting || Boolean(inFlight)}
             onClick={() => void requestAnalysis()}
           >
-            {requesting || inFlight ? 'Analyzing…' : 'Event ops briefing'}
+            {requesting || inFlight ? 'Working…' : 'Get suggestions'}
           </button>
         </div>
         {statusLabel ? (
@@ -124,25 +120,25 @@ export default function EventAiAssist({ model, onSaveNote }: Props) {
                 className="btn btn-ghost btn-sm"
                 onClick={() => void navigator.clipboard?.writeText(resultText)}
               >
-                Copy result
+                Copy
               </button>
               {onSaveNote ? (
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
-                  onClick={() => void onSaveNote('Local AI event briefing', resultText)}
+                  onClick={() => void onSaveNote('AI Assist note', resultText)}
                 >
-                  Save briefing note
+                  Save as note
                 </button>
               ) : null}
             </div>
             <p className="text-muted text-sm" style={{ marginTop: 8 }}>
-              Advisory only. Does not modify the event, payments, or send messages.
+              Advisory only — review before acting.
             </p>
           </>
         ) : (
           <p className="text-muted text-sm" style={{ marginTop: 8 }}>
-            Queues Event Operations on the venue Hub PC. Keep using CRM while it runs.
+            Use this when you want a second look at prep or follow-up.
           </p>
         )}
       </div>

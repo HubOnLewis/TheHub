@@ -217,14 +217,14 @@ export function getPaymentStatus(
   balanceDue: number | null,
 ): string {
   if (grandTotal == null || grandTotal <= 0) {
-    if (amountPaid != null && amountPaid > 0) return 'Partial payment recorded';
-    return 'No total captured';
+    if (amountPaid != null && amountPaid > 0) return 'Payment recorded';
+    return 'No total yet';
   }
   const paid = amountPaid ?? 0;
   const balance = balanceDue ?? Math.max(0, grandTotal - paid);
   if (balance <= 0 && paid >= grandTotal) return 'Paid in full';
   if (balance > 0 && paid > 0) return 'Balance due';
-  if (paid > 0) return 'Deposit or partial payment recorded';
+  if (paid > 0) return 'Deposit recorded';
   return 'No payment recorded';
 }
 
@@ -232,66 +232,60 @@ export function getEventNextSteps(stage: EventPipelineStage): string[] {
   switch (stage) {
     case 'lead':
       return [
-        'Confirm event details with the client',
-        'Capture contact email and phone',
-        'Confirm guest count and space needs',
-        'Move to Qualified when intake is complete',
+        'Reply to the guest',
+        'Confirm date, guests, and room',
+        'Start the proposal when ready',
       ];
     case 'qualified':
       return [
-        'Prepare proposal or package pricing',
-        'Confirm menu and service level',
-        'Schedule follow-up with decision maker',
+        'Send or prepare the proposal',
+        'Confirm pricing and package',
+        'Ask for the deposit when they are ready',
       ];
     case 'proposal_sent':
       return [
-        'Follow up on proposal status',
-        'Confirm deposit requirement and due date',
-        'Update proposal if scope changed',
+        'Follow up on the proposal',
+        'Record the deposit when it arrives',
+        'Mark booked after the deposit is in',
       ];
     case 'confirmed':
       return [
         'Confirm final guest count',
-        'Verify balance due and payment schedule',
-        'Prepare event execution notes for the team',
+        'Prepare the staff BEO',
+        'Collect any remaining balance',
       ];
     case 'balance_due':
       return [
-        'Collect remaining balance',
-        'Confirm payment deadline with client',
-        'Review contract and payment status',
+        'Record the remaining balance',
+        'Confirm the payment deadline with the guest',
       ];
     case 'completed':
-      return [
-        'Review final payment and closeout',
-        'Capture post-event notes',
-        'Archive or close the record',
-      ];
+      return ['Review final payment', 'Add any closeout notes'];
     case 'lost':
-      return ['Document reason for loss', 'Schedule re-engagement if appropriate'];
+      return ['Note why it did not book'];
     default:
-      return ['Review event record and next actions'];
+      return ['Review the event and choose the next step'];
   }
 }
 
 function primaryActionForStage(stage: EventPipelineStage): string {
   switch (stage) {
     case 'lead':
-      return 'Qualify Event';
+      return 'Reply';
     case 'qualified':
-      return 'Prepare Proposal';
+      return 'Send proposal';
     case 'proposal_sent':
-      return 'Follow Up';
+      return 'Follow up';
     case 'confirmed':
-      return 'Review Event Plan';
+      return 'Open event plan';
     case 'balance_due':
-      return 'Collect Balance';
+      return 'Collect balance';
     case 'completed':
-      return 'Review Record';
+      return 'Review';
     case 'lost':
-      return 'Review Record';
+      return 'Review';
     default:
-      return 'Review Event';
+      return 'Open event';
   }
 }
 
@@ -323,11 +317,11 @@ export function getStatusQuickActions(
   const next = CRM_NEXT_STATUS[stage];
   if (next && next !== crmStatus) {
     const labels: Partial<Record<EventPipelineStage, string>> = {
-      lead: 'Move to Qualified',
-      qualified: 'Mark Proposal Sent',
-      proposal_sent: 'Mark Confirmed (deposit secured)',
-      confirmed: 'Mark Balance Due',
-      balance_due: 'Mark Event Completed',
+      lead: 'Ready for proposal',
+      qualified: 'Mark proposal sent',
+      proposal_sent: 'Deposit paid — mark booked',
+      confirmed: 'Event is coming up',
+      balance_due: 'Mark event done',
     };
     actions.push({
       label: labels[stage] ?? `Advance to ${next}`,

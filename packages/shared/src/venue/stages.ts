@@ -21,34 +21,66 @@ export type VenueStage = (typeof VENUE_STAGES)[number];
 
 export const VENUE_STAGE_LABELS: Record<VenueStage, string> = {
   inquiry: 'Inquiry',
-  qualified: 'Qualified',
-  proposal: 'Proposal sent',
-  deposit: 'Deposit due',
-  confirmed: 'Confirmed',
-  prep: 'Event prep',
-  completed: 'Completed',
+  qualified: 'Inquiry',
+  proposal: 'Proposal',
+  deposit: 'Deposit',
+  confirmed: 'Booked',
+  prep: 'Event day',
+  completed: 'Complete',
   lost: 'Lost',
 };
 
+/** Staff-facing desk pipeline (maps onto internal VenueStage). */
+export const DESK_PIPELINE_STEPS = [
+  'inquiry',
+  'proposal',
+  'deposit',
+  'booked',
+  'event_day',
+  'complete',
+] as const;
+
+export type DeskPipelineStep = (typeof DESK_PIPELINE_STEPS)[number];
+
+export const DESK_PIPELINE_LABELS: Record<DeskPipelineStep, string> = {
+  inquiry: 'Inquiry',
+  proposal: 'Proposal',
+  deposit: 'Deposit',
+  booked: 'Booked',
+  event_day: 'Event day',
+  complete: 'Complete',
+};
+
+export function deskStepFromVenueStage(stage: VenueStage): DeskPipelineStep | 'lost' {
+  if (stage === 'lost') return 'lost';
+  if (stage === 'inquiry' || stage === 'qualified') return 'inquiry';
+  if (stage === 'proposal') return 'proposal';
+  if (stage === 'deposit') return 'deposit';
+  if (stage === 'confirmed') return 'booked';
+  if (stage === 'prep') return 'event_day';
+  if (stage === 'completed') return 'complete';
+  return 'inquiry';
+}
+
 export const VENUE_STAGE_DESCRIPTIONS: Record<VenueStage, string> = {
-  inquiry: 'New lead — capture details and respond quickly',
-  qualified: 'Fit confirmed — ready to price and propose',
-  proposal: 'Proposal out — follow up for decision and deposit',
-  deposit: 'Deposit requested or partially paid',
-  confirmed: 'Booked — deposit secured, date held',
-  prep: 'Ops prep — BEO, staffing, access, final details',
-  completed: 'Event complete — closeout and reviews',
+  inquiry: 'New request — reply and hold the date',
+  qualified: 'Fit confirmed — send the proposal',
+  proposal: 'Proposal out — follow up for a deposit',
+  deposit: 'Waiting on deposit',
+  confirmed: 'Booked — deposit secured',
+  prep: 'Event is coming up — finish the plan',
+  completed: 'Event finished',
   lost: 'Did not book',
 };
 
 /** Primary CTA for coordinators by stage */
 export const VENUE_STAGE_PRIMARY_CTA: Record<VenueStage, string> = {
-  inquiry: 'Qualify inquiry',
+  inquiry: 'Reply to inquiry',
   qualified: 'Send proposal',
-  proposal: 'Request deposit',
-  deposit: 'Mark confirmed',
-  confirmed: 'Start event prep',
-  prep: 'Mark completed',
+  proposal: 'Ask for deposit',
+  deposit: 'Mark as booked',
+  confirmed: 'Open event plan',
+  prep: 'Mark event done',
   completed: 'Review closeout',
   lost: 'Review record',
 };

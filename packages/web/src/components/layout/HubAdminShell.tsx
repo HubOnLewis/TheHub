@@ -2,23 +2,12 @@ import type { Dispatch, ReactNode, SetStateAction } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import BrandLogo from '../BrandLogo.js';
 import { BRAND } from '../../branding/tokens.js';
-import { ROUTES } from '../../config/paths.js';
-import { PV_INBOX_MESSAGES, PV_TASKS } from '../../data/perfectVenueSeed.js';
-import { isProductionCRM } from '../../config/productionData.js';
 import { getHubTopNavItems } from '../../config/productionAlphaNav.js';
-import { useLiveCrmEvents } from '../../hooks/useLiveCrmEvents.js';
-import { generateInboxActivity, generateLiveTasks } from '../../lib/liveEventHelpers.js';
+import { useVenueOpsQueue } from '../../hooks/useVenueOps.js';
 import { useAppStore } from '../../store/index.js';
 import HubThemeToggle from './HubThemeToggle.js';
 import GlobalSearch from '../venue/GlobalSearch.js';
 import HubSiteFooter from '../HubSiteFooter.js';
-
-type NavItem = {
-  to: string;
-  label: string;
-  badge?: number;
-  match?: (pathname: string) => boolean;
-};
 
 type Props = {
   children: ReactNode;
@@ -26,14 +15,6 @@ type Props = {
   setMobileNavOpen: Dispatch<SetStateAction<boolean>>;
   onLogout: () => void;
 };
-
-function unreadInbox(): number {
-  return PV_INBOX_MESSAGES.filter(m => m.unread).length;
-}
-
-function openTasks(): number {
-  return PV_TASKS.length;
-}
 
 function userInitials(name?: string | null, email?: string | null): string {
   const source = name?.trim() || email?.trim() || '?';
@@ -46,31 +27,26 @@ function navClass(active: boolean): string {
   return `crm-topnav__link${active ? ' crm-topnav__link--active' : ''}`;
 }
 
-/** Perfect Venue–style client shell: compact top nav + light workspace. */
+/** Four-screen venue desk: Today · Calendar · Events · Settings */
 export default function HubAdminShell({
   children,
   mobileNavOpen,
   setMobileNavOpen,
-  onLogout: _onLogout,
+  onLogout,
 }: Props) {
   const { pathname } = useLocation();
   const user = useAppStore(s => s.user);
-  const hideBadges = isProductionCRM();
   const displayName = user?.name?.trim() || user?.email?.split('@')[0] || 'User';
-  const { rows: liveRows } = useLiveCrmEvents();
+  const { data: opsQueue } = useVenueOpsQueue();
 
   const items = getHubTopNavItems({
-    inboxBadge: hideBadges
-      ? generateInboxActivity(liveRows).length || undefined
-      : unreadInbox(),
-    tasksBadge: hideBadges
-      ? generateLiveTasks(liveRows).length || undefined
-      : openTasks(),
+    tasksBadge: opsQueue?.summary?.total || undefined,
+    role: user?.role,
   });
 
   return (
     <div className="crm-pv-shell">
-      <header className="crm-topnav crm-topnav--light" aria-label="CRM navigation">
+      <header className="crm-topnav crm-topnav--light" aria-label="Venue navigation">
         <button
           type="button"
           className="crm-topnav__menu-btn"
@@ -116,6 +92,9 @@ export default function HubAdminShell({
             </span>
             <span className="crm-topnav__user-name">{displayName}</span>
           </div>
+          <button type="button" className="crm-topnav__icon" onClick={onLogout} title="Sign out">
+            Sign out
+          </button>
         </div>
       </header>
       {mobileNavOpen ? (

@@ -15,8 +15,8 @@ export type OutboundEmail = {
 
 export type EmailSendResult = {
   ok: boolean;
-  provider: 'stub';
-  status: 'stubbed';
+  provider: 'stub' | 'smtp';
+  status: 'stubbed' | 'sent' | 'failed';
   messageId: string;
   at: string;
   to: string;

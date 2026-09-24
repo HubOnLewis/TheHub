@@ -1,9 +1,12 @@
 /**
- * Production alpha navigation — only expose client-ready modules in the top nav.
+ * Production alpha navigation — four-screen venue desk.
+ * Today · Calendar · Events · Settings
+ *
+ * Hannah (admin/staff): only the desk; advanced routes redirect to Today.
+ * Jason (super_admin): desk nav, but advanced routes stay reachable.
  */
 
 import { ROUTES } from './paths.js';
-import { isProductionCRM } from './productionData.js';
 
 export type HubTopNavItem = {
   to: string;
@@ -11,6 +14,8 @@ export type HubTopNavItem = {
   badge?: number;
   match?: (pathname: string) => boolean;
 };
+
+export type DeskRole = string | null | undefined;
 
 export function isHubHomePath(pathname: string): boolean {
   return (
@@ -26,14 +31,34 @@ function isHubSettingsPath(pathname: string): boolean {
   return pathname === ROUTES.settings || pathname.startsWith(`${ROUTES.settings}/`);
 }
 
-/** Routes that redirect to Home in production alpha (internal / unwired modules only). */
-export const PRODUCTION_ALPHA_REDIRECT_ROUTES: readonly string[] = [
-  ROUTES.today,
+function isHubEventsPath(pathname: string): boolean {
+  return (
+    pathname === ROUTES.opportunities ||
+    pathname === ROUTES.dealsAlias ||
+    pathname.startsWith(`${ROUTES.opportunities}/`) ||
+    pathname.startsWith(`${ROUTES.dealsAlias}/`)
+  );
+}
+
+export function isSuperAdminRole(role: DeskRole): boolean {
+  return role === 'super_admin';
+}
+
+/** Duplicate work queues — always fold into Today for every staff role. */
+export const DESK_QUEUE_REDIRECT_ROUTES: readonly string[] = [
+  ROUTES.dashboard,
+  ROUTES.tasks,
+  ROUTES.followUps,
+  ROUTES.inbox,
+  ROUTES.leads,
+];
+
+/** Advanced modules — hidden from Hannah; Jason/admin may keep them. */
+export const DESK_ADVANCED_REDIRECT_ROUTES: readonly string[] = [
   ROUTES.autopilot,
   ROUTES.revenueLeaks,
   ROUTES.automationImpact,
   ROUTES.myWork,
-  ROUTES.followUps,
   ROUTES.audit,
   ROUTES.marketing,
   ROUTES.marketingBlasts,
@@ -44,48 +69,57 @@ export const PRODUCTION_ALPHA_REDIRECT_ROUTES: readonly string[] = [
   ROUTES.weeklyCadence,
   ROUTES.accountCoverage,
   ROUTES.accountExpansion,
+  ROUTES.ownerBriefing,
+  ROUTES.monthlyScorecard,
+  ROUTES.prospects,
+  ROUTES.accounts,
+  ROUTES.companiesAlias,
+  ROUTES.contacts,
+  ROUTES.financial,
+  ROUTES.admin,
+  ROUTES.userManagement,
   `${ROUTES.settings}/express-book`,
 ];
 
-export function isProductionAlphaRedirectPath(routePath: string): boolean {
-  if (!isProductionCRM()) return false;
-  if (isHubHomePath(routePath) || isHubSettingsPath(routePath)) return false;
-  if (
-    routePath === ROUTES.inbox ||
-    routePath === ROUTES.calendar ||
-    routePath === ROUTES.tasks ||
-    routePath === ROUTES.ownerBriefing ||
-    routePath === ROUTES.monthlyScorecard ||
-    routePath === ROUTES.leads ||
-    routePath.startsWith(`${ROUTES.leads}/`)
-  ) {
-    return false;
+/** @deprecated use DESK_QUEUE + DESK_ADVANCED */
+export const PRODUCTION_ALPHA_REDIRECT_ROUTES: readonly string[] = [
+  ...DESK_QUEUE_REDIRECT_ROUTES,
+  ...DESK_ADVANCED_REDIRECT_ROUTES,
+];
+
+export function isProductionAlphaRedirectPath(routePath: string, role?: DeskRole): boolean {
+  if (isHubEventsPath(routePath) || isHubSettingsPath(routePath)) return false;
+  if (routePath === ROUTES.today || routePath === ROUTES.calendar) return false;
+  if (routePath.startsWith(`${ROUTES.leads}/`)) return false;
+
+  if (DESK_QUEUE_REDIRECT_ROUTES.some(r => routePath === r || routePath.startsWith(`${r}/`))) {
+    return true;
   }
-  if (routePath === ROUTES.admin || routePath.startsWith(`${ROUTES.admin}/`)) return false;
-  if (routePath === ROUTES.userManagement || routePath.startsWith(`${ROUTES.userManagement}/`)) {
-    return false;
-  }
-  return PRODUCTION_ALPHA_REDIRECT_ROUTES.some(
+
+  // Jason keeps admin, briefing, reports, accounts — Hannah does not.
+  if (isSuperAdminRole(role)) return false;
+
+  return DESK_ADVANCED_REDIRECT_ROUTES.some(
     r => routePath === r || routePath.startsWith(`${r}/`),
   );
 }
 
-const FULL_HUB_TOP_NAV: HubTopNavItem[] = [
+export function productionAlphaRedirectTarget(_routePath: string): string {
+  return ROUTES.today;
+}
+
+const DESK_TOP_NAV: HubTopNavItem[] = [
   {
-    to: ROUTES.dashboard,
-    label: 'Home',
-    match: isHubHomePath,
+    to: ROUTES.today,
+    label: 'Today',
+    match: p => p === ROUTES.today || p === ROUTES.dashboard,
   },
-  {
-    to: ROUTES.leads,
-    label: 'Leads',
-    match: p => p === ROUTES.leads || p.startsWith(`${ROUTES.leads}/`),
-  },
-  { to: ROUTES.inbox, label: 'Activity' },
   { to: ROUTES.calendar, label: 'Calendar' },
-  { to: ROUTES.tasks, label: 'Tasks' },
-  { to: ROUTES.ownerBriefing, label: 'Briefing' },
-  { to: ROUTES.monthlyScorecard, label: 'Reports' },
+  {
+    to: ROUTES.opportunities,
+    label: 'Events',
+    match: isHubEventsPath,
+  },
   {
     to: ROUTES.settings,
     label: 'Settings',
@@ -93,19 +127,14 @@ const FULL_HUB_TOP_NAV: HubTopNavItem[] = [
   },
 ];
 
-const ALPHA_HUB_TOP_NAV: HubTopNavItem[] = FULL_HUB_TOP_NAV;
-
 export function getHubTopNavItems(opts?: {
   inboxBadge?: number;
   tasksBadge?: number;
+  role?: DeskRole;
 }): HubTopNavItem[] {
-  const nav = isProductionCRM() ? ALPHA_HUB_TOP_NAV : FULL_HUB_TOP_NAV;
-
-  return nav.map(item => {
-    if (item.to === ROUTES.inbox && opts?.inboxBadge != null && opts.inboxBadge > 0) {
-      return { ...item, badge: opts.inboxBadge };
-    }
-    if (item.to === ROUTES.tasks && opts?.tasksBadge != null && opts.tasksBadge > 0) {
+  void opts?.role;
+  return DESK_TOP_NAV.map(item => {
+    if (item.to === ROUTES.today && opts?.tasksBadge != null && opts.tasksBadge > 0) {
       return { ...item, badge: opts.tasksBadge };
     }
     return item;
@@ -113,14 +142,9 @@ export function getHubTopNavItems(opts?: {
 }
 
 export const CRM_TOPNAV_PATHS: readonly string[] = [
-  ROUTES.dashboard,
-  ROUTES.leads,
+  ROUTES.today,
+  ROUTES.calendar,
   ROUTES.opportunities,
   ROUTES.dealsAlias,
-  ROUTES.inbox,
-  ROUTES.calendar,
-  ROUTES.tasks,
-  ROUTES.ownerBriefing,
-  ROUTES.monthlyScorecard,
   ROUTES.settings,
 ];

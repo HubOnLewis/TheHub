@@ -1,18 +1,10 @@
 import {
-  VENUE_STAGE_LABELS,
+  DESK_PIPELINE_LABELS,
+  DESK_PIPELINE_STEPS,
+  deskStepFromVenueStage,
   type VenueStage,
 } from '@hub-crm/shared';
 import type { EventPipelineStage } from '../../lib/eventDetail.js';
-
-const STEPS: VenueStage[] = [
-  'inquiry',
-  'qualified',
-  'proposal',
-  'deposit',
-  'confirmed',
-  'prep',
-  'completed',
-];
 
 export function pipelineToVenueStage(stage: EventPipelineStage): VenueStage {
   switch (stage) {
@@ -40,25 +32,26 @@ type Props = {
 };
 
 export default function VenueStageStepper({ pipelineStage }: Props) {
-  const current = pipelineToVenueStage(pipelineStage);
+  const venue = pipelineToVenueStage(pipelineStage);
+  const current = deskStepFromVenueStage(venue);
   if (current === 'lost') {
     return (
       <div className="venue-stage-stepper venue-stage-stepper--lost" role="status">
-        This booking is marked lost.
+        This booking did not go forward.
       </div>
     );
   }
 
-  const idx = STEPS.indexOf(current);
+  const idx = DESK_PIPELINE_STEPS.indexOf(current);
 
   return (
-    <ol className="venue-stage-stepper" aria-label="Booking pipeline">
-      {STEPS.map((step, i) => {
+    <ol className="venue-stage-stepper" aria-label="Booking steps">
+      {DESK_PIPELINE_STEPS.map((step, i) => {
         const state = i < idx ? 'done' : i === idx ? 'current' : 'upcoming';
         return (
           <li key={step} className={`venue-stage-stepper__item is-${state}`}>
             <span className="venue-stage-stepper__dot" aria-hidden />
-            <span className="venue-stage-stepper__label">{VENUE_STAGE_LABELS[step]}</span>
+            <span className="venue-stage-stepper__label">{DESK_PIPELINE_LABELS[step]}</span>
           </li>
         );
       })}
