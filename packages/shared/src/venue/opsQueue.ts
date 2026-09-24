@@ -28,13 +28,16 @@ export const VENUE_OPS_KINDS = [
 
 export type VenueOpsKind = (typeof VENUE_OPS_KINDS)[number];
 export type VenueOpsPriority = 'high' | 'medium' | 'low';
-export type VenueOpsAssigneeType = 'user' | 'agent';
+export type VenueOpsAssigneeType = 'user' | 'agent' | 'unassigned';
 
 export type VenueOpsAssignee = {
   type: VenueOpsAssigneeType;
   id: string;
   name: string;
   reason: string;
+  source?: 'policy' | 'manual';
+  assignedAt?: string;
+  assignedBy?: string;
 };
 
 export type VenueOpsTask = {
@@ -52,6 +55,15 @@ export type VenueOpsTask = {
   balanceDue: number;
   playbookTaskId?: string;
   assignee: VenueOpsAssignee;
+};
+
+export type VenueOpsAssignmentState = {
+  type: VenueOpsAssigneeType;
+  id: string;
+  name: string;
+  reason: string;
+  at: string;
+  by: string;
 };
 
 export type VenueOpsActionState = {
@@ -148,6 +160,32 @@ function dueLabelFromIso(iso: string | null, fallback: string): string {
   return `In ${days} days`;
 }
 
+export function opsAssignmentsFromMeta(
+  meta: Record<string, unknown> | null | undefined,
+): Record<string, VenueOpsAssignmentState> {
+  const raw = meta && typeof meta === 'object' ? meta.opsAssignments : null;
+  if (!raw || typeof raw !== 'object') return {};
+  const out: Record<string, VenueOpsAssignmentState> = {};
+  for (const [key, value] of Object.entries(raw as Record<string, unknown>)) {
+    if (!value || typeof value !== 'object') continue;
+    const row = value as Record<string, unknown>;
+    const type = row.type;
+    if (type !== 'user' && type !== 'agent' && type !== 'unassigned') continue;
+    if (typeof row.id !== 'string' || typeof row.name !== 'string' || typeof row.at !== 'string' || typeof row.by !== 'string') continue;
+    out[key] = { type, id: row.id, name: row.name, reason: typeof row.reason === 'string' ? row.reason : 'Manually assigned', at: row.at, by: row.by };
+  }
+  return out;
+}
+
+export function applyVenueOpsAssignment(
+  meta: Record<string, unknown>,
+  taskId: string,
+  assignment: VenueOpsAssignmentState,
+): Record<string, unknown> {
+  const current = opsAssignmentsFromMeta(meta);
+  return { ...meta, opsAssignments: { ...current, [taskId]: assignment } };
+}
+
 export function opsActionsFromMeta(
   meta: Record<string, unknown> | null | undefined,
 ): Record<string, VenueOpsActionState> {
@@ -218,6 +256,7 @@ export function evaluateVenueOps(
   const contact = String(deal.contact || 'Guest');
   const { value, balanceDue } = money(meta, deal.amount);
   const actions = opsActionsFromMeta(meta);
+  const assignments = opsAssignmentsFromMeta(meta);
   const life = resolveHoldLifecycle(deal, nowMs);
   const untilEvent = daysUntilEvent(meta, nowMs);
   const details = clientDetailsFromImportMeta(meta);
@@ -401,7 +440,10 @@ export function evaluateVenueOps(
   }
 
   for (const task of tasks) {
-    task.assignee = defaultVenueOpsAssignee(task);
+    const manual = assignments[task.id];
+    task.assignee = manual
+      ? { type: manual.type, id: manual.id, name: manual.name, reason: manual.reason, source: 'manual', assignedAt: manual.at, assignedBy: manual.by }
+      : { ...defaultVenueOpsAssignee(task), source: 'policy' };
   }
 
   return tasks.sort((a, b) => {
