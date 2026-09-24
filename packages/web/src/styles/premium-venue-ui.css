@@ -2183,7 +2183,12 @@ button.ops-filter-chip[aria-pressed='true'] {
 /* ── Sidebar gradient + glass refinement ─────────────────────
    More visible tonal movement, brighter brand plate, restrained blur/glass. */
 :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar {
-  position: sticky;
+  /* position intentionally not set here — the base rule (position: sticky on
+     desktop) and the @media (max-width: 900px) rule (position: fixed for the
+     slide-in drawer) already cover it. Restating `sticky` here has higher
+     specificity than that mobile media query and was silently overriding the
+     drawer fix in light mode, pushing all page content below the sidebar's
+     full expanded height instead of showing it as an overlay drawer. */
   background:
     radial-gradient(320px 420px at 20% -5%, rgba(212, 187, 128, .18), transparent 68%),
     radial-gradient(260px 360px at 100% 52%, rgba(31, 92, 70, .18), transparent 72%),
