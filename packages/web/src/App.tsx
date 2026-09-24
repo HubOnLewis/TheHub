@@ -62,6 +62,7 @@ import MarketingPage from './pages/MarketingPage.js';
 import ReferralsPage from './pages/ReferralsPage.js';
 import MonthlyScorecardPage from './pages/MonthlyScorecardPage.js';
 import ProductionToday from './pages/ProductionToday.js';
+import TeamToday from './pages/TeamToday.js';
 import ProductionRevenueLeaks from './pages/ProductionRevenueLeaks.js';
 import ProductionAutopilot from './pages/ProductionAutopilot.js';
 import ProductionAuditTrail from './pages/ProductionAuditTrail.js';
@@ -292,6 +293,7 @@ function Shell() {
           <Routes>
             <Route path={ROUTES.dashboard} element={resolveHubRouteElement(ROUTES.dashboard, withLiveModuleBoundary('Home', <Dashboard />))} />
             <Route path={ROUTES.today} element={<ProductionToday />} />
+            <Route path={ROUTES.teamToday} element={<TeamToday />} />
             <Route path={ROUTES.ownerBriefing} element={resolveHubRouteElement(ROUTES.ownerBriefing, withLiveModuleBoundary('Owner briefing', <OwnerBriefing />))} />
             <Route path={ROUTES.revenueLeaks} element={<ProductionRevenueLeaks />} />
             <Route path={ROUTES.automationImpact} element={resolveHubRouteElement(ROUTES.automationImpact, <AutomationImpact />, 'Automation impact')} />
