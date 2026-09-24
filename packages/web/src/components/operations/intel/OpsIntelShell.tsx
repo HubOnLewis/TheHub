@@ -7,12 +7,16 @@ type Props = {
   eyebrow?: string;
   title: string;
   subtitle: string;
+  /** Provenance line under the subtitle. Defaults to the legacy PV-import
+   * label for pages that still use it; live-data pages should pass their
+   * own accurate source string instead of inheriting that default. */
+  source?: string;
   stats?: Stat[];
   actions?: ReactNode;
   children?: ReactNode;
 };
 
-export default function OpsIntelShell({ eyebrow = 'Venue operations', title, subtitle, stats, actions, children }: Props) {
+export default function OpsIntelShell({ eyebrow = 'Venue operations', title, subtitle, source, stats, actions, children }: Props) {
   return (
     <header className="ops-intel-hero">
       <div className="ops-intel-hero__glow" aria-hidden />
@@ -21,7 +25,7 @@ export default function OpsIntelShell({ eyebrow = 'Venue operations', title, sub
           <span className="ops-intel-hero__eyebrow">{eyebrow}</span>
           <h1 className="page-title ops-intel-hero__title">{title}</h1>
           <p className="page-subtitle ops-intel-hero__sub">{subtitle}</p>
-          <p className="ops-intel-hero__source">{OPS_DATA_SOURCE}</p>
+          <p className="ops-intel-hero__source">{source ?? OPS_DATA_SOURCE}</p>
         </div>
         {actions ? <div className="ops-intel-hero__actions">{actions}</div> : null}
       </div>
