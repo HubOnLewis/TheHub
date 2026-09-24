@@ -4619,3 +4619,79 @@ button.ops-filter-chip[aria-pressed='true'] {
   outline: 2px solid var(--hub-gold) !important;
   outline-offset: 2px;
 }
+
+
+/* ── Mobile shell invariant ─────────────────────────────────────────
+   Keep the navigation drawer out of document flow on review-day mobile.
+   Later light-theme sidebar polish intentionally owns visual treatment but
+   must never override the drawer positioning established by the shell. */
+@media (max-width: 900px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar,
+  [data-theme='dark'] .app-shell--hub-admin .crm-sidebar {
+    position: fixed;
+    top: 58px;
+    left: 0;
+    bottom: 0;
+    height: auto;
+    width: min(290px, 86vw);
+    transform: translateX(-105%);
+    z-index: 35;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .crm-sidebar--open,
+  [data-theme='dark'] .app-shell--hub-admin .crm-sidebar--open {
+    transform: translateX(0);
+  }
+
+  .app-shell--hub-admin .crm-pv-shell--sidebar {
+    display: block;
+    min-height: 100dvh;
+  }
+
+  .app-shell--hub-admin .crm-pv-shell__main {
+    width: 100%;
+    min-height: 100dvh;
+  }
+
+  .app-shell--hub-admin .crm-topnav--utility {
+    width: 100%;
+    min-height: 58px;
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  .app-shell--hub-admin .crm-topnav__utility-brand {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .app-shell--hub-admin .crm-topnav__tools {
+    margin-left: auto;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .app-shell--hub-admin .crm-topnav__user {
+    padding: 3px;
+  }
+
+  .app-shell--hub-admin .crm-topnav__user-name {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav--utility .crm-topnav__icon[title='Sign out'] {
+    white-space: nowrap;
+    font-size: 12px;
+    padding-inline: 6px;
+  }
+}
+
+@media (max-width: 430px) {
+  .app-shell--hub-admin .crm-topnav__utility-brand > div {
+    display: none;
+  }
+
+  .app-shell--hub-admin .crm-topnav__utility-logo {
+    max-height: 32px;
+  }
+}
