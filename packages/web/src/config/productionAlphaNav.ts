@@ -60,8 +60,19 @@ export const DESK_QUEUE_REDIRECT_ROUTES: readonly string[] = [ROUTES.dashboard];
 export const DESK_ADVANCED_REDIRECT_ROUTES: readonly string[] = [];
 export const PRODUCTION_ALPHA_REDIRECT_ROUTES: readonly string[] = [ROUTES.dashboard];
 
-export function isProductionAlphaRedirectPath(routePath: string, _role?: DeskRole): boolean {
-  return routePath === ROUTES.dashboard;
+/**
+ * Owner/admin-only tooling — same set flagged `superAdminOnly` in
+ * getHubNavSections below. The sidebar already hides these from Hannah;
+ * this is what stops her from reaching them directly by URL.
+ */
+const SUPER_ADMIN_ONLY_ROUTES: readonly string[] = [ROUTES.admin, ROUTES.userManagement];
+
+export function isProductionAlphaRedirectPath(routePath: string, role?: DeskRole): boolean {
+  if (routePath === ROUTES.dashboard) return true;
+  if (!isSuperAdminRole(role) && SUPER_ADMIN_ONLY_ROUTES.some(r => prefixMatch(r)(routePath))) {
+    return true;
+  }
+  return false;
 }
 
 export function productionAlphaRedirectTarget(_routePath: string): string {

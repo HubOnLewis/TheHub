@@ -880,6 +880,24 @@ button.ops-filter-chip[aria-pressed='true'] {
   background: rgba(20, 26, 34, 0.96);
 }
 
+/*
+ * The old flat top nav (.crm-topnav--light) had a matching contrast fix for
+ * .crm-topnav__icon (theme toggle, sign out) elsewhere in this stack. The
+ * utility bar above renamed that class to .crm-topnav--utility without a
+ * matching override, so the icon buttons fell back to a light-on-dark color
+ * meant for a dark bar and became unreadable against this light background.
+ */
+.app-shell--hub-admin .crm-topnav--utility .crm-topnav__icon {
+  color: var(--hub-text-secondary);
+  border: 1px solid transparent;
+}
+
+.app-shell--hub-admin .crm-topnav--utility .crm-topnav__icon:hover {
+  background: var(--hub-card-muted);
+  border-color: var(--hub-border);
+  color: var(--hub-accent);
+}
+
 .app-shell--hub-admin .crm-topnav__utility-brand {
   display: none;
   align-items: center;
@@ -1203,6 +1221,25 @@ button.ops-filter-chip[aria-pressed='true'] {
 
   .app-shell--hub-admin .crm-pv-shell__main {
     min-height: calc(100vh - 58px);
+    max-width: 100vw;
+    overflow-x: hidden !important;
+  }
+
+  /*
+   * .crm-pv-shell__workspace switches from a grid (which gave the content
+   * column a minmax(0, 1fr) width ceiling) to block layout on mobile, so a
+   * wide child (e.g. the Settings team-access table) could otherwise force
+   * the whole page to scroll horizontally instead of just that content
+   * scrolling internally. Contain it here instead of trimming the table.
+   *
+   * The earlier "Scroll safety" rule (this file, ~line 552) sets a blanket
+   * `overflow: visible !important` on this same element to keep vertical
+   * scroll from locking. `!important` + `overflow-x` here only overrides
+   * the horizontal axis of that rule, so vertical behavior is untouched.
+   */
+  .app-shell--hub-admin .crm-pv-shell__content {
+    max-width: 100vw;
+    overflow-x: auto !important;
   }
 }
 
