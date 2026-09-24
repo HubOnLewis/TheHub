@@ -1,0 +1,101 @@
+# render.staging.yaml — isolated Hub staging environment
+#
+# One-time Render setup:
+# 1. Create a workspace Environment Group named hub-crm-staging-secrets.
+# 2. Add MONGODB_URI using the Hub Atlas connection string.
+# 3. Create a new Blueprint from this file.
+#
+# Safety:
+# - Staging always uses DB_NAME=hub_crm_staging.
+# - No production custom domains.
+# - AI is off.
+# - Email/SMS/payment integrations are not configured.
+# - Production DB hub_crm is never referenced here.
+
+services:
+  - type: web
+    name: The-Hub-Staging-Api
+    runtime: node
+    region: oregon
+    plan: free
+    branch: staging
+    autoDeployTrigger: checksPass
+    rootDir: .
+
+    buildCommand: >-
+      npm install --include=dev
+      && npm run build --workspace=packages/shared
+      && npm run build --workspace=packages/api
+
+    startCommand: npm run start --workspace=packages/api
+    healthCheckPath: /health
+
+    envVars:
+      - fromGroup: hub-crm-staging-secrets
+
+      - key: NODE_ENV
+        value: production
+      - key: DB_NAME
+        value: hub_crm_staging
+      - key: JWT_SECRET
+        generateValue: true
+      - key: HUB_PRODUCT_MODE
+        value: venue
+      - key: AI_PROVIDER
+        value: none
+      - key: AI_MODE
+        value: off
+
+      - key: HUB_WEB_SERVICE_NAME
+        value: The-Hub-Staging
+      - key: RENDER_ONRENDER_ROOT
+        value: onrender.com
+      - key: CORS_ORIGINS
+        value: https://the-hub-staging.onrender.com
+
+      - key: SUPER_ADMIN_EMAILS
+        value: jason@hubonlewis.com,hannah@hubonlewis.com,jaden@hubonlewis.com
+      - key: ATTACHMENT_STORAGE_DRIVER
+        value: local
+
+      - key: HUB_AGENT_TENANT_ID
+        value: hub-wichita
+      - key: HUB_AGENT_ENTITY
+        value: Hub
+      - key: HUB_AGENT_LOCATION
+        value: On Lewis
+
+  - type: web
+    name: The-Hub-Staging
+    runtime: static
+    branch: staging
+    autoDeployTrigger: checksPass
+    rootDir: .
+
+    buildCommand: npm install --include=dev && node scripts/render-prepare-web-build.mjs
+    staticPublishPath: packages/web/dist
+
+    envVars:
+      - key: VITE_API_URL
+        value: https://the-hub-staging-api.onrender.com/api
+
+      - key: VITE_FEATURE_BOOKINGS
+        value: "false"
+      - key: VITE_FEATURE_FULFILLMENT
+        value: "false"
+      - key: VITE_FEATURE_CLOSEOUT
+        value: "false"
+      - key: VITE_FEATURE_BUILDS
+        value: "false"
+      - key: VITE_FEATURE_LEGACY_IMPORTS_UI
+        value: "false"
+
+      - key: VITE_AI_PROVIDER
+        value: "local"
+      - key: VITE_AI_MODE
+        value: "draft_only"
+
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
