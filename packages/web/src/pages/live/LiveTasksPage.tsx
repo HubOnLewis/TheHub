@@ -165,17 +165,41 @@ export default function LiveTasksPage() {
                       t.balanceDue > 0 ? <MoneyCell amount={t.balanceDue} /> : '—',
                   },
                   {
-                    key: 'open',
+                    key: 'actions',
                     header: '',
                     className: 'crm-events-table__col--actions',
                     render: t => (
-                      <button
-                        type="button"
-                        className="btn btn-ghost btn-sm"
-                        onClick={() => navigate(t.href)}
-                      >
-                        Open
-                      </button>
+                      <div className="venue-ops-row-actions">
+                        {t.kind && t.dealId ? (
+                          <>
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              disabled={action.isPending}
+                              onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId!, action: 'complete' })}
+                            >
+                              Done
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-ghost btn-sm"
+                              disabled={action.isPending}
+                              onClick={() =>
+                                action.mutate({ taskId: t.id, dealId: t.dealId!, action: 'snooze', snoozeDays: 2 })
+                              }
+                            >
+                              Later
+                            </button>
+                          </>
+                        ) : null}
+                        <button
+                          type="button"
+                          className="btn btn-ghost btn-sm"
+                          onClick={() => navigate(t.href)}
+                        >
+                          Open
+                        </button>
+                      </div>
                     ),
                   },
                 ]}
