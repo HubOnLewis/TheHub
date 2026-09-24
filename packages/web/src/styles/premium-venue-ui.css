@@ -2362,3 +2362,521 @@ button.ops-filter-chip[aria-pressed='true'] {
     0 16px 34px rgba(14,33,26,.11),
     0 38px 70px rgba(14,33,26,.05) !important;
 }
+
+
+/* ── Premium venue calendar ─────────────────────────────────
+   Calendar becomes a first-class operating surface rather than a raw grid. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-page {
+  position: relative;
+  isolation: isolate;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-page::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 44px -12px auto -12px;
+  height: 420px;
+  pointer-events: none;
+  background:
+    radial-gradient(460px 220px at 10% 8%, rgba(29,70,55,.07), transparent 72%),
+    radial-gradient(560px 240px at 92% 0%, rgba(173,135,70,.09), transparent 74%);
+  filter: blur(24px);
+}
+
+/* Page title area */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-page .hub-admin-page__header {
+  align-items: center;
+  padding: 2px 0 8px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-page .hub-admin-page__title {
+  color: #10271f;
+  font-size: clamp(28px, 3vw, 36px);
+  letter-spacing: -.02em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-page .hub-admin-page__subtitle {
+  max-width: 62ch;
+  line-height: 1.45;
+}
+
+/* Outer calendar frame */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(180,168,150,.76);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(248,243,235,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 3px 6px rgba(14,33,26,.06),
+    0 18px 42px rgba(14,33,26,.09),
+    0 40px 72px rgba(14,33,26,.04);
+}
+
+/* Toolbar becomes an elevated control deck. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar {
+  position: relative;
+  z-index: 4;
+  min-height: 64px;
+  padding: 12px 14px;
+  gap: 14px;
+  border-bottom: 1px solid rgba(183,171,153,.62);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.82), rgba(247,241,232,.90));
+  backdrop-filter: blur(18px) saturate(1.08);
+  -webkit-backdrop-filter: blur(18px) saturate(1.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 5px 16px rgba(16,39,31,.055);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar__left,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar__right {
+  gap: 8px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar__title {
+  color: #17382c;
+  font-weight: 800;
+  font-size: 18px;
+  letter-spacing: -.015em;
+  margin-left: 5px;
+}
+
+/* Navigation controls */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar .btn-ghost {
+  min-width: 34px;
+  height: 34px;
+  border: 1px solid rgba(191,179,161,.72);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(247,242,234,.96));
+  color: #374239;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.94),
+    0 2px 6px rgba(16,39,31,.045);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar .btn-ghost:hover {
+  border-color: rgba(173,135,70,.55);
+  color: #17382c;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 5px 12px rgba(16,39,31,.07);
+}
+
+/* Filter controls */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-lost-toggle {
+  min-height: 34px;
+  padding: 0 10px;
+  gap: 7px;
+  border: 1px solid rgba(192,180,162,.62);
+  border-radius: 10px;
+  background: rgba(255,255,255,.58);
+  color: #615d55;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.76);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-space-select {
+  height: 34px;
+  min-width: 130px;
+  border-radius: 10px;
+  border-color: rgba(192,180,162,.72);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(247,242,234,.96));
+  color: #2e382f;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.92),
+    0 2px 5px rgba(16,39,31,.035);
+}
+
+/* Proper segmented Week / Day control. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-mode {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid rgba(190,178,160,.70);
+  border-radius: 11px;
+  background: rgba(235,228,218,.72);
+  box-shadow:
+    inset 0 1px 2px rgba(60,52,42,.045),
+    0 1px 0 rgba(255,255,255,.78);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-mode__btn {
+  min-width: 56px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #736d64;
+  font-weight: 700;
+  transition: .15s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-mode__btn.is-active {
+  color: #fffdf7;
+  background: linear-gradient(180deg, #214d3c, #17392d);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.13),
+    0 3px 8px rgba(23,57,45,.18);
+}
+
+/* Operational summary rail */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  border-bottom: 1px solid rgba(190,178,160,.58);
+  background:
+    linear-gradient(180deg, rgba(248,244,237,.94), rgba(242,236,227,.88));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.70),
+    0 3px 10px rgba(16,39,31,.025);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 7px;
+  min-height: 46px;
+  padding: 9px 12px;
+  border-right: 1px solid rgba(193,182,166,.48);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item:last-child {
+  border-right: 0;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 0;
+  height: 2px;
+  border-radius: 2px;
+  opacity: .72;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--events::before { background: #6f7d74; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--booked::before { background: #1d5a45; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--holds::before { background: #b68a41; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--money::before { background: #a9632e; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--conflicts::before { background: #817a70; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--conflicts.has-alert::before { background: #a93632; }
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item span {
+  color: #817b72;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item strong {
+  color: #203329;
+  font-family: var(--hub-display);
+  font-size: 18px;
+  letter-spacing: .01em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item--conflicts.has-alert strong {
+  color: #9b302d;
+}
+
+/* Day header band */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-week__corner,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol__head {
+  min-height: 66px;
+  background:
+    linear-gradient(180deg, #faf7f1 0%, #f0eae1 100%);
+  border-bottom-color: rgba(190,178,160,.56);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol__head {
+  position: relative;
+  transition: background .15s ease, box-shadow .15s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol__head:hover {
+  background:
+    linear-gradient(180deg, #fffdf9 0%, #f3ede4 100%);
+  box-shadow: inset 0 -2px 0 rgba(173,135,70,.35);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol__wd {
+  color: #746f67;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol__dt {
+  color: #202a23;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol__count {
+  color: #999187;
+  font-size: 10px;
+}
+
+/* Today is Hub green + brass, not lavender. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol--today {
+  background:
+    linear-gradient(180deg, rgba(226,237,231,.62), rgba(244,248,245,.45)) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol--today .venue-cal-daycol__head {
+  background:
+    linear-gradient(180deg, rgba(229,239,233,.97), rgba(217,231,223,.94));
+  box-shadow:
+    inset 0 3px 0 #ad8746,
+    inset 0 -1px 0 rgba(29,70,55,.12);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol--today .venue-cal-daycol__wd {
+  color: #6f5428;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol--today .venue-cal-daycol__dt {
+  color: #143b2d;
+}
+
+/* Weekend columns get a subtle warm shift. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol:first-of-type,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol:last-child {
+  background-color: rgba(247,242,234,.52);
+}
+
+/* Grid becomes softer and easier to scan. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-week,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-day__timeline {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.86), rgba(249,246,240,.80));
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-daycol,
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-week__gutter {
+  border-right-color: rgba(205,196,184,.48);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-hour-slot {
+  border-top-color: rgba(210,202,191,.46);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-hour-slot:nth-child(even) {
+  background: rgba(247,243,237,.25);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-hour-label {
+  color: #999187;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Premium semantic event cards */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 11px;
+  padding: 8px 9px 8px 11px;
+  color: #fffdf8;
+  text-decoration: none;
+  background:
+    linear-gradient(180deg, #2d6651 0%, #1d4e3c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 4px 8px rgba(20,50,39,.16),
+    0 10px 20px rgba(20,50,39,.13);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: rgba(255,255,255,.55);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip:hover {
+  z-index: 3;
+  transform: translateY(-2px);
+  filter: saturate(1.04) brightness(1.02);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 7px 13px rgba(20,50,39,.20),
+    0 15px 28px rgba(20,50,39,.15);
+}
+
+/* Holds = brass */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip--hold {
+  background:
+    linear-gradient(180deg, #b8893d 0%, #8e6328 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.17),
+    0 5px 10px rgba(115,80,32,.18),
+    0 12px 22px rgba(115,80,32,.13);
+}
+
+/* Booked = deep green */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip--booked {
+  background:
+    linear-gradient(180deg, #245c47 0%, #173e30 100%);
+}
+
+/* Balance due overlays a copper accent rail, but does not obliterate status color. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip--balance::before {
+  background: #d48745;
+  width: 4px;
+}
+
+/* Conflict always wins visually. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip--conflict {
+  background:
+    linear-gradient(180deg, #a8403c 0%, #7d2927 100%) !important;
+  border-color: rgba(255,225,222,.34);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.14),
+    0 5px 10px rgba(126,41,39,.22),
+    0 14px 26px rgba(126,41,39,.18);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip__time {
+  display: block;
+  color: rgba(255,255,255,.88);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip__title {
+  display: block;
+  margin-top: 2px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.22;
+  text-shadow: 0 1px 1px rgba(0,0,0,.12);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-chip__meta {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255,255,255,.76);
+  font-size: 10px;
+  line-height: 1.25;
+}
+
+/* Conflict banner */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-conflict-banner {
+  margin: 12px 14px 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(169,54,50,.26);
+  border-radius: 11px;
+  background:
+    linear-gradient(180deg, rgba(255,245,243,.96), rgba(250,232,229,.94));
+  color: #7e2f2b;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.76),
+    0 5px 12px rgba(126,41,39,.07);
+}
+
+/* Legend becomes a proper status tray. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-legend {
+  min-height: 48px;
+  padding: 8px 14px;
+  gap: 8px;
+  border-top: 1px solid rgba(190,178,160,.58);
+  background:
+    linear-gradient(180deg, rgba(248,244,237,.92), rgba(240,234,225,.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid rgba(193,182,166,.54);
+  border-radius: 999px;
+  background: rgba(255,255,255,.56);
+  color: #625e57;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.78);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.64);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-dot--ok { background: #245c47; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-dot--balance { background: #b66d34; }
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-dot--conflict { background: #a8403c; }
+
+/* Day view agenda refinement */
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-day__list {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(247,242,234,.97)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 10px 24px rgba(16,39,31,.075) !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-agenda li {
+  border-bottom-color: rgba(207,198,186,.58);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-agenda a:hover {
+  background: rgba(29,70,55,.055);
+}
+
+@media (max-width: 1050px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item:nth-child(3) {
+    border-right: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar__left,
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-toolbar__right {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .venue-cal-summary__item:nth-child(2n) {
+    border-right: 0;
+  }
+}
