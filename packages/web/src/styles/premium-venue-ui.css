@@ -2880,3 +2880,704 @@ button.ops-filter-chip[aria-pressed='true'] {
     border-right: 0;
   }
 }
+
+
+/* ── Platform-wide premium sweep ─────────────────────────────
+   Unifies weaker secondary/admin pages with the premium venue shell. */
+
+/* Shared page introductions: make every module feel intentional. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-page__header,
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-header {
+  position: relative;
+  margin-bottom: 18px;
+  padding: 20px 22px;
+  border: 1px solid rgba(187,174,156,.68);
+  border-radius: 16px;
+  background:
+    radial-gradient(360px 120px at 94% 0%, rgba(173,135,70,.10), transparent 70%),
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(248,243,235,.95));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 3px 6px rgba(14,33,26,.05),
+    0 14px 30px rgba(14,33,26,.07);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-page__header::before,
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-header::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 16px;
+  bottom: 16px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #1d4637, #ad8746);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-page__title,
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-title {
+  color: #10271f;
+  font-family: var(--hub-display);
+  letter-spacing: .005em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-page__subtitle,
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-subtitle {
+  color: #666057;
+  line-height: 1.5;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-kicker {
+  color: #9a7337;
+  font-weight: 800;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+/* Live module header pills become useful visual summaries. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-live-header-actions,
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-page__header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-stat-pill {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.96), rgba(242,235,224,.96));
+  border-color: rgba(184,170,150,.66);
+  color: #365144;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.93),
+    0 3px 8px rgba(16,39,31,.05);
+}
+
+/* Strong common table treatment used by Tasks, Inbox, Follow-ups, Contacts, Financial, Users. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .data-table-wrap,
+:root:not([data-theme='dark']) .app-shell--hub-admin .um-table-wrap,
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-live-group {
+  overflow: hidden;
+  border: 1px solid rgba(183,171,153,.68);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(249,245,238,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 3px 6px rgba(14,33,26,.05),
+    0 16px 34px rgba(14,33,26,.075);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .data-table thead th,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__head {
+  background:
+    linear-gradient(180deg, #f7f2ea 0%, #eee7dd 100%) !important;
+  color: #69635b !important;
+  border-bottom: 1px solid rgba(183,171,153,.70) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.84);
+  font-weight: 800;
+  letter-spacing: .065em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .data-table tbody tr,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__row {
+  transition: background .14s ease, box-shadow .14s ease, transform .14s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .data-table tbody tr:nth-child(even) {
+  background: rgba(248,244,237,.48);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .data-table tbody tr:hover,
+:root:not([data-theme='dark']) .app-shell--hub-admin .crm-events-table__row:hover {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(90deg, rgba(29,70,55,.065), rgba(255,255,255,.92));
+  box-shadow:
+    inset 3px 0 0 rgba(173,135,70,.62),
+    0 6px 14px rgba(16,39,31,.055);
+}
+
+/* Live Tasks / Follow-ups: priority groups become real work queues. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-live-groups {
+  gap: 20px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-live-group {
+  padding: 0;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-live-group__title {
+  margin: 0;
+  padding: 14px 18px;
+  color: #17382c;
+  font-family: var(--hub-display);
+  font-size: 17px;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+  background:
+    linear-gradient(180deg, #faf7f1, #f1eae0);
+  border-bottom: 1px solid rgba(188,176,158,.62);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.88);
+}
+
+/* Attention/agent rail */
+:root:not([data-theme='dark']) .app-shell--hub-admin .attention-rail,
+:root:not([data-theme='dark']) .app-shell--hub-admin .attention-rail__item {
+  border-color: rgba(189,177,160,.64);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .attention-rail {
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.94), rgba(245,239,229,.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.94),
+    0 10px 24px rgba(16,39,31,.065);
+}
+
+/* Inbox triage cards get a polished operations-dashboard hierarchy. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-triage-grid {
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-triage-card {
+  position: relative;
+  overflow: hidden;
+  min-height: 132px;
+  padding: 17px 18px;
+  border: 1px solid rgba(186,173,154,.68);
+  border-radius: 15px;
+  background:
+    radial-gradient(180px 100px at 100% 0%, rgba(173,135,70,.11), transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(247,241,232,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 4px 9px rgba(16,39,31,.055),
+    0 14px 28px rgba(16,39,31,.065);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-triage-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 16px;
+  right: 16px;
+  height: 3px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #1d4637, #ad8746);
+  opacity: .82;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-triage-card strong {
+  color: #15382b;
+  font-size: 32px;
+  line-height: 1;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .inbox-triage-card em {
+  color: #777066;
+  font-style: normal;
+  line-height: 1.35;
+}
+
+/* Simple data pages (Contacts / Financial / gated modules) */
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-simple {
+  padding-top: 24px;
+  padding-bottom: 42px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-simple > .list-card,
+:root:not([data-theme='dark']) .app-shell--hub-admin .page-simple > .page-section {
+  border-color: rgba(184,172,155,.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 14px 30px rgba(16,39,31,.075);
+}
+
+/* AI / Autopilot surfaces */
+:root:not([data-theme='dark']) .app-shell--hub-admin .command-hero,
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 18px;
+  border: 1px solid rgba(173,135,70,.28);
+  border-radius: 18px;
+  background:
+    radial-gradient(420px 190px at 84% -10%, rgba(212,187,128,.24), transparent 68%),
+    linear-gradient(135deg, #10291f 0%, #173c2e 54%, #214b3a 100%);
+  color: #fffaf0;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 5px 10px rgba(9,31,22,.16),
+    0 22px 42px rgba(9,31,22,.14);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .command-hero .page-title,
+:root:not([data-theme='dark']) .app-shell--hub-admin .command-hero .page-subtitle,
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero .page-title,
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero .page-subtitle {
+  color: #fffaf0;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-badge,
+:root:not([data-theme='dark']) .app-shell--hub-admin .audit-trail-page__badge,
+:root:not([data-theme='dark']) .app-shell--hub-admin .exec-page__badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(232,205,151,.13);
+  border: 1px solid rgba(232,205,151,.28);
+  color: #e7cb96;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .command-panel {
+  border-color: rgba(183,171,153,.68);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #fffefa, #f8f3eb);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 16px 34px rgba(16,39,31,.075);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-approval {
+  margin: 0 0 10px;
+  padding: 14px 16px;
+  border: 1px solid rgba(190,178,160,.58);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.90), rgba(247,242,234,.88));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 4px 10px rgba(16,39,31,.045);
+}
+
+/* Revenue / executive panels */
+:root:not([data-theme='dark']) .app-shell--hub-admin .exec-page__hero,
+:root:not([data-theme='dark']) .app-shell--hub-admin .audit-trail-page__hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 18px;
+  padding: 22px 24px;
+  border: 1px solid rgba(180,165,143,.72);
+  border-radius: 17px;
+  background:
+    radial-gradient(420px 160px at 90% 0%, rgba(173,135,70,.14), transparent 70%),
+    linear-gradient(180deg, #fffefa, #f7f1e7);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 3px 6px rgba(16,39,31,.05),
+    0 18px 34px rgba(16,39,31,.075);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .exec-panel,
+:root:not([data-theme='dark']) .app-shell--hub-admin .command-region {
+  border: 1px solid rgba(184,172,155,.66);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(247,242,234,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.95),
+    0 12px 26px rgba(16,39,31,.07);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .exec-hero-kpi {
+  border-color: rgba(173,135,70,.26);
+  background: rgba(255,255,255,.58);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 4px 10px rgba(16,39,31,.045);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .exec-balance,
+:root:not([data-theme='dark']) .app-shell--hub-admin .exec-stale-list li {
+  border-radius: 11px;
+  border: 1px solid rgba(191,180,163,.56);
+  background: rgba(255,255,255,.62);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72);
+}
+
+/* Audit history */
+:root:not([data-theme='dark']) .app-shell--hub-admin .audit-event-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .audit-event-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(202,193,180,.54);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .audit-event-list li:nth-child(even) {
+  background: rgba(247,243,236,.52);
+}
+
+/* Settings gets a true premium split-panel layout. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-settings > .hub-admin-page__header {
+  margin: 0 24px 18px !important;
+  padding: 20px 22px !important;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-shell {
+  gap: 16px;
+  padding: 0 24px 36px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav {
+  overflow: hidden;
+  border: 1px solid rgba(183,171,153,.68);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.97), rgba(244,238,229,.97));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.97),
+    0 12px 26px rgba(16,39,31,.07);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav-group {
+  padding: 11px 10px;
+  border-bottom: 1px solid rgba(201,191,177,.50);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav-group__label,
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav-group__toggle {
+  color: #94713a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav a {
+  border-radius: 9px;
+  color: #5b625d;
+  transition: background .14s ease, color .14s ease, box-shadow .14s ease;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav a:hover {
+  color: #17382c;
+  background: rgba(29,70,55,.06);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-nav a.active {
+  color: #17382c;
+  background:
+    linear-gradient(90deg, rgba(235,225,204,.96), rgba(250,246,237,.96));
+  box-shadow:
+    inset 3px 0 0 #ad8746,
+    0 3px 8px rgba(16,39,31,.05);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .settings-panel {
+  border: 1px solid rgba(183,171,153,.68) !important;
+  border-radius: 15px !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,243,235,.97)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.98),
+    0 16px 34px rgba(16,39,31,.075) !important;
+}
+
+/* User management */
+:root:not([data-theme='dark']) .app-shell--hub-admin .user-mgmt-page {
+  padding-bottom: 32px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .um-toolbar {
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 1px solid rgba(185,173,155,.62);
+  border-radius: 12px;
+  background: rgba(255,255,255,.58);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.78);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .um-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(186,173,155,.54);
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .um-status--active {
+  color: #1d5a45;
+  background: rgba(52,128,94,.09);
+  border-color: rgba(52,128,94,.22);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .um-status--disabled {
+  color: #8c4a43;
+  background: rgba(160,72,64,.08);
+  border-color: rgba(160,72,64,.20);
+}
+
+/* Generic empty states should still feel finished. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-live-empty,
+:root:not([data-theme='dark']) .app-shell--hub-admin .empty-state {
+  border-style: solid;
+  border-color: rgba(187,175,158,.58);
+  background:
+    radial-gradient(220px 100px at 50% 0%, rgba(173,135,70,.08), transparent 72%),
+    linear-gradient(180deg, #fffdf9, #f7f2ea);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.94),
+    0 10px 22px rgba(16,39,31,.055);
+}
+
+/* Authenticated footer should be a quiet endpoint, not a competing page. */
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact .hub-site-footer__inner {
+  min-height: 92px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .hub-site-footer--compact .hub-site-footer__mark {
+  width: 54px;
+  height: auto;
+}
+
+@media (max-width: 900px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-page__header,
+  :root:not([data-theme='dark']) .app-shell--hub-admin .page-header {
+    padding: 17px 16px;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .settings-shell {
+    padding: 0 16px 28px;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .hub-admin-settings > .hub-admin-page__header {
+    margin: 0 16px 14px !important;
+  }
+}
+
+
+/* ── Targeted premium data/AI page upgrades ───────────────── */
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 18px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-tile {
+  position: relative;
+  overflow: hidden;
+  min-height: 92px;
+  padding: 15px 16px;
+  border: 1px solid rgba(185,173,155,.66);
+  border-radius: 14px;
+  background:
+    radial-gradient(180px 90px at 100% 0%, rgba(173,135,70,.09), transparent 72%),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(246,240,231,.96));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 5px 12px rgba(16,39,31,.05),
+    0 14px 28px rgba(16,39,31,.055);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-tile::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #1d4637, #ad8746);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-tile span {
+  display: block;
+  color: #7c756b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-tile strong {
+  display: block;
+  margin-top: 7px;
+  color: #17382c;
+  font-family: var(--hub-display);
+  font-size: 28px;
+  line-height: 1;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-tile--money strong {
+  color: #7a5828;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-data-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-data-card__head {
+  min-height: 64px;
+  padding: 14px 16px 13px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid rgba(185,173,155,.62);
+  background:
+    linear-gradient(180deg, rgba(252,249,244,.98), rgba(241,234,224,.96));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.92);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-data-card__head h2 {
+  margin: 2px 0 0;
+  color: #17382c;
+  font-family: var(--hub-display);
+  font-size: 19px;
+  letter-spacing: .025em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-data-card__kicker {
+  color: #9a7337;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-source-pill {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(173,135,70,.22);
+  background: rgba(173,135,70,.09);
+  color: #775a2b;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .premium-money-cell {
+  color: #17382c;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+/* AI Agents top summary */
+:root:not([data-theme='dark']) .app-shell--hub-admin .command-hero__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 24px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary {
+  min-width: 210px;
+  padding: 16px 18px;
+  border: 1px solid rgba(233,211,169,.24);
+  border-radius: 14px;
+  background: rgba(255,255,255,.065);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.065),
+    0 12px 26px rgba(4,20,14,.14);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary span,
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary small {
+  display: block;
+  color: rgba(255,250,240,.68);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary span {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary strong {
+  display: block;
+  margin: 5px 0 3px;
+  color: #e7cb96;
+  font-family: var(--hub-display);
+  font-size: 34px;
+  line-height: 1;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary small {
+  font-size: 10px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-panel__head {
+  min-height: 68px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(188,176,158,.58);
+  background: linear-gradient(180deg, #faf7f1, #f0e9df);
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-panel__head h2 {
+  margin: 2px 0 0;
+  color: #17382c;
+  font-family: var(--hub-display);
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: .035em;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-approval__why {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+:root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-approval__why span {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(29,70,55,.055);
+  border: 1px solid rgba(29,70,55,.10);
+  color: #5d675f;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  :root:not([data-theme='dark']) .app-shell--hub-admin .premium-summary-strip {
+    grid-template-columns: 1fr;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .command-hero__inner {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  :root:not([data-theme='dark']) .app-shell--hub-admin .autopilot-hero__summary {
+    min-width: 0;
+  }
+}
