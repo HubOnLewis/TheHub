@@ -5,4 +5,4 @@ export * from './playbooks.js';
 export * from './clientDetails.js';
 export * from './paymentSummary.js';
 export * from './publicAvailability.js';
-
+export * from './holds.js';

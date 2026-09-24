@@ -221,6 +221,11 @@ export const PatchGuestTimelineStepSchema = z.object({
 });
 export type PatchGuestTimelineStepPayload = z.infer<typeof PatchGuestTimelineStepSchema>;
 
+export const ExtendHoldSchema = z.object({
+  days: z.number().int().min(1).max(30).optional(),
+});
+export type ExtendHoldPayload = z.infer<typeof ExtendHoldSchema>;
+
 export const GuestPortalDetailsSchema = z.object({
   guestCount: z.number().int().min(0).max(5000).optional(),
   layout: z.string().max(120).optional(),

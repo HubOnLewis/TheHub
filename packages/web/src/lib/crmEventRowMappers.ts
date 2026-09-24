@@ -2,7 +2,7 @@
  * Row mappers for CRM event sources — isolated to avoid circular imports.
  */
 
-import { dealStatusForDisplay } from '@hub-crm/shared';
+import { dealStatusForDisplay, occupancySignalFromDeal, pickSpaceFromRecord } from '@hub-crm/shared';
 import { opportunityDetailPath } from '../config/paths.js';
 import { daysSince, formatRelativeDate } from '../config/productionData.js';
 import { getFullPvEvents } from '../data/pvDataLayer.js';
@@ -10,7 +10,6 @@ import { pvStatusDisplay, type PvEventStatus, type PvSeedEvent } from '../data/p
 import type { PfParsedEvent } from '../data/pfEventsTypes.js';
 import type { HubRefreshEvent } from '../data/hubRefreshTypes.js';
 import type { CrmEventRow } from './crmEvents.js';
-import { pickSpaceFromRecord } from '@hub-crm/shared';
 
 function formatEventDate(iso: string | null | undefined, fallback = ''): string {
   if (!iso) return fallback;
@@ -179,6 +178,14 @@ export function mapDealToCrmRow(deal: Record<string, unknown>): CrmEventRow {
     (importMeta?.lastContactedIso as string) ?? (deal.lastTouchedAt as string) ?? updatedAt;
   const owner = String(deal.assignedTo ?? importMeta?.owner ?? deal.ownerUserId ?? '—');
   const time = startTime && endTime ? `${startTime} - ${endTime}` : startTime || endTime || '';
+  const signal = occupancySignalFromDeal({
+    status,
+    importMeta,
+  });
+  const occupancy =
+    signal?.block === 'booked' || signal?.block === 'hold' || signal?.block === 'closed'
+      ? signal.block
+      : undefined;
 
   return {
     id,
@@ -204,6 +211,8 @@ export function mapDealToCrmRow(deal: Record<string, unknown>): CrmEventRow {
       ? `${formatRelativeDate(createdAt)} · ${relativeLabel(createdAt)}`
       : '—',
     owner,
+    occupancy,
+    holdExpiresAt: typeof importMeta?.holdExpiresAt === 'string' ? importMeta.holdExpiresAt : null,
     ownerUserId: deal.ownerUserId ? String(deal.ownerUserId) : undefined,
     href: opportunityDetailPath(id),
     source: 'api',

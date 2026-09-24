@@ -1,6 +1,13 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { VENUE_EVENT_TYPES, VENUE_SPACES, type PublicDayStatus } from '@hub-crm/shared';
+import {
+  VENUE_EVENT_TYPES,
+  VENUE_SPACES,
+  dayHasOpenSlot,
+  timesForPublicSlot,
+  type PublicAvailabilityDay,
+  type PublicOccupancySlot,
+} from '@hub-crm/shared';
 import BrandLogo from '../components/BrandLogo.js';
 import HubSiteFooter from '../components/HubSiteFooter.js';
 import { BRAND } from '../branding/tokens.js';
@@ -14,11 +21,21 @@ import {
   type BookFieldErrors,
   type BookInquiryFields,
 } from '../lib/bookInquiry.js';
-import { buildMonthCells, monthLabel, statusLabel } from '../lib/publicAvailabilityCalendar.js';
+import {
+  WEEKDAY_LETTERS,
+  WEEKDAY_NAMES,
+  buildMonthCells,
+  dayAriaLabel,
+  formatBookDate,
+  formatClock,
+  monthLabel,
+  normalizePublicDay,
+  preferredSlot,
+  statusLabel,
+} from '../lib/publicAvailabilityCalendar.js';
 
 const BOOKING_SPACES = VENUE_SPACES.filter(s => s !== 'TBD');
 const BOOK_TITLE = 'Request your date · HuB on Lewis';
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 type InquiryOk = {
   received?: boolean;
@@ -53,7 +70,8 @@ export default function BookPage() {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [monthIndex, setMonthIndex] = useState(now.getMonth());
-  const [days, setDays] = useState<Record<string, PublicDayStatus>>({});
+  const [days, setDays] = useState<Record<string, PublicAvailabilityDay>>({});
+  const [requestedSlot, setRequestedSlot] = useState<PublicOccupancySlot | ''>('');
   const [calendarError, setCalendarError] = useState('');
   const [calendarLoading, setCalendarLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState('');
@@ -101,15 +119,15 @@ export default function BookPage() {
       try {
         const res = await fetch(url);
         const text = await res.text();
-        let body: { days?: Array<{ date: string; status: PublicDayStatus }>; error?: string } = {};
+        let body: { days?: Array<PublicAvailabilityDay>; error?: string } = {};
         try {
           body = text ? (JSON.parse(text) as typeof body) : {};
         } catch {
           throw new Error('Availability service is temporarily unavailable. Please try again shortly.');
         }
         if (!res.ok) throw new Error(body.error || 'Could not load availability.');
-        const map: Record<string, PublicDayStatus> = {};
-        for (const day of body.days ?? []) map[day.date] = day.status;
+        const map: Record<string, PublicAvailabilityDay> = {};
+        for (const day of body.days ?? []) map[day.date] = normalizePublicDay(day);
         if (!cancelled) setDays(map);
       } catch (err) {
         if (!cancelled) setCalendarError(err instanceof Error ? err.message : 'Could not load availability.');
@@ -127,6 +145,29 @@ export default function BookPage() {
     const next = new Date(Date.UTC(year, monthIndex + delta, 1));
     setYear(next.getUTCFullYear());
     setMonthIndex(next.getUTCMonth());
+  };
+
+  const emptyDay = (date: string): PublicAvailabilityDay => ({
+    date,
+    status: 'available',
+    morning: 'available',
+    evening: 'available',
+  });
+
+  const applySlot = (slot: PublicOccupancySlot) => {
+    setRequestedSlot(slot);
+    const times = timesForPublicSlot(slot);
+    setStartTime(times.startTime);
+    setEndTime(times.endTime);
+  };
+
+  const pickDate = (date: string) => {
+    setSelectedDate(date);
+    setAvailabilityChanged(false);
+    setError('');
+    const slot = preferredSlot(days[date] ?? emptyDay(date));
+    if (slot) applySlot(slot);
+    else setRequestedSlot('');
   };
 
   const fields = (): BookInquiryFields => ({
@@ -184,9 +225,9 @@ export default function BookPage() {
         const { url: refreshUrl } = publicDaysUrl(bounds.startDate, bounds.endDate);
         if (refreshUrl) {
           const refresh = await fetch(refreshUrl);
-          const refreshed = (await refresh.json()) as { days?: Array<{ date: string; status: PublicDayStatus }> };
-          const map: Record<string, PublicDayStatus> = {};
-          for (const day of refreshed.days ?? []) map[day.date] = day.status;
+          const refreshed = (await refresh.json()) as { days?: Array<PublicAvailabilityDay> };
+          const map: Record<string, PublicAvailabilityDay> = {};
+          for (const day of refreshed.days ?? []) map[day.date] = normalizePublicDay(day);
           setDays(map);
         }
         return;
@@ -238,8 +279,8 @@ export default function BookPage() {
             <p className="book-page__eyebrow">Request received</p>
             <h1>Your date request has been received.</h1>
             <p className="book-page__lede">
-              {result.requestedDate ? `We have ${result.requestedDate} on our inquiry list.` : ''} This is not a
-              booking and nothing is reserved or charged. Our team will review your event details and follow up.
+              {result.requestedDate ? `We have placed a 7-day hold on ${result.requestedDate}.` : 'We have placed a 7-day hold on that date.'}{' '}
+              This is not a confirmed booking and nothing is charged. Our team will review your event details and follow up.
             </p>
           </div>
         ) : (
@@ -247,17 +288,17 @@ export default function BookPage() {
             <p className="book-page__eyebrow">Check availability</p>
             <h1>Request your date</h1>
             <p className="book-page__lede">
-              See which days are open, then tell us about your gathering. Submitting a request does not book the
-              venue.
+              Green days are open. Split days have a morning or evening still free. Submitting a request does not
+              book the venue.
             </p>
 
             <section className="avail-cal" aria-label="Venue availability calendar">
               <div className="avail-cal__toolbar">
-                <button type="button" className="btn btn-secondary" onClick={() => shiftMonth(-1)}>
+                <button type="button" className="btn btn-secondary avail-cal__nav" onClick={() => shiftMonth(-1)}>
                   Previous
                 </button>
                 <h2>{monthLabel(year, monthIndex)}</h2>
-                <button type="button" className="btn btn-secondary" onClick={() => shiftMonth(1)}>
+                <button type="button" className="btn btn-secondary avail-cal__nav" onClick={() => shiftMonth(1)}>
                   Next
                 </button>
               </div>
@@ -268,8 +309,10 @@ export default function BookPage() {
                 </p>
               ) : null}
               <div className="avail-cal__weekdays">
-                {WEEKDAYS.map(day => (
-                  <span key={day}>{day}</span>
+                {WEEKDAY_LETTERS.map((day, idx) => (
+                  <span key={`${day}-${idx}`} title={WEEKDAY_NAMES[idx]}>
+                    {day}
+                  </span>
                 ))}
               </div>
               <div className="avail-cal__grid">
@@ -277,51 +320,113 @@ export default function BookPage() {
                   if (!cell.date || !cell.inMonth) {
                     return <span key={`e-${idx}`} className="avail-cal__cell avail-cal__cell--empty" />;
                   }
-                  const status = days[cell.date] ?? 'available';
+                  const day = days[cell.date] ?? emptyDay(cell.date);
                   const past = cell.date < todayIso;
-                  const selectable = status === 'available' && !past;
+                  const selectable = dayHasOpenSlot(day) && !past;
                   const selected = selectedDate === cell.date;
                   return (
                     <button
                       key={cell.date}
                       type="button"
-                      className={`avail-cal__cell avail-cal__cell--${status}${selected ? ' is-selected' : ''}${past ? ' is-past' : ''}`}
+                      className={`avail-cal__cell avail-cal__cell--${day.status}${selected ? ' is-selected' : ''}${past ? ' is-past' : ''}`}
                       disabled={!selectable}
-                      onClick={() => {
-                        setSelectedDate(cell.date!);
-                        setAvailabilityChanged(false);
-                        setError('');
-                      }}
-                      aria-label={`${cell.date}, ${statusLabel(status)}${selectable ? ', select this date' : ', unavailable'}`}
+                      onClick={() => pickDate(cell.date!)}
+                      aria-label={dayAriaLabel(cell.date, day, past, selectable)}
+                      aria-pressed={selected}
                     >
                       <span className="avail-cal__num">{Number(cell.date.slice(8))}</span>
-                      <span className="avail-cal__state">{past ? 'Past' : statusLabel(status)}</span>
+                      <span className="avail-cal__slots" aria-hidden="true">
+                        <span className={`avail-cal__pip avail-cal__pip--${past ? 'past' : day.morning}`} title={`Morning ${statusLabel(day.morning)}`} />
+                        <span className={`avail-cal__pip avail-cal__pip--${past ? 'past' : day.evening}`} title={`Evening ${statusLabel(day.evening)}`} />
+                      </span>
                     </button>
                   );
                 })}
               </div>
               <ul className="avail-cal__legend">
                 <li>
-                  <span className="avail-cal__swatch avail-cal__cell--available" /> Available — request this date
+                  <span className="avail-cal__swatch avail-cal__cell--available" /> Open all day
                 </li>
                 <li>
-                  <span className="avail-cal__swatch avail-cal__cell--hold" /> On hold — not offered for new requests
+                  <span className="avail-cal__swatch avail-cal__cell--partial" /> Morning or evening still open
                 </li>
                 <li>
-                  <span className="avail-cal__swatch avail-cal__cell--booked" /> Booked — unavailable
+                  <span className="avail-cal__swatch avail-cal__cell--hold" /> Hold
                 </li>
                 <li>
-                  <span className="avail-cal__swatch avail-cal__cell--closed" /> Closed — not offered
+                  <span className="avail-cal__swatch avail-cal__cell--booked" /> Booked all day
+                </li>
+                <li>
+                  <span className="avail-cal__swatch avail-cal__cell--closed" /> Closed
                 </li>
               </ul>
+              <p className="avail-cal__caption">
+                Each square has two marks: morning (left) and evening (right). Split at 3:00 PM.
+              </p>
             </section>
 
             {selectedDate ? (
               <form className="book-page__form avail-form" noValidate onSubmit={e => void handleSubmit(e)}>
-                <h2>Guided event inquiry</h2>
+                <h2>Tell us about your gathering</h2>
                 <p className="book-page__lede">
-                  Requested date: <strong>{selectedDate}</strong>. We will re-check availability when you submit.
+                  {formatBookDate(selectedDate)}
+                  {requestedSlot === 'morning'
+                    ? ' · morning'
+                    : requestedSlot === 'evening'
+                      ? ' · evening'
+                      : requestedSlot === 'allDay'
+                        ? ' · full day'
+                        : ''}
+                  . We re-check the calendar when you submit. This is a request, not a booking.
                 </p>
+                {(() => {
+                  const selected = days[selectedDate] ?? emptyDay(selectedDate);
+                  const morningOpen = selected.morning === 'available';
+                  const eveningOpen = selected.evening === 'available';
+                  const bothOpen = morningOpen && eveningOpen;
+                  return (
+                    <fieldset className="avail-slots">
+                      <legend>When do you want the space?</legend>
+                      <div className="avail-slots__grid">
+                        <button
+                          type="button"
+                          className={`avail-slots__btn${requestedSlot === 'morning' ? ' is-selected' : ''}`}
+                          disabled={!morningOpen}
+                          onClick={() => applySlot('morning')}
+                        >
+                          <strong>Morning</strong>
+                          <span>9 AM – 2 PM</span>
+                          <em>{morningOpen ? 'Open' : 'Unavailable'}</em>
+                        </button>
+                        <button
+                          type="button"
+                          className={`avail-slots__btn${requestedSlot === 'evening' ? ' is-selected' : ''}`}
+                          disabled={!eveningOpen}
+                          onClick={() => applySlot('evening')}
+                        >
+                          <strong>Evening</strong>
+                          <span>5 PM – 10 PM</span>
+                          <em>{eveningOpen ? 'Open' : 'Unavailable'}</em>
+                        </button>
+                        {bothOpen ? (
+                          <button
+                            type="button"
+                            className={`avail-slots__btn avail-slots__btn--wide${requestedSlot === 'allDay' ? ' is-selected' : ''}`}
+                            onClick={() => applySlot('allDay')}
+                          >
+                            <strong>Full day</strong>
+                            <span>9 AM – 10 PM</span>
+                            <em>Both windows</em>
+                          </button>
+                        ) : null}
+                      </div>
+                      <p className="avail-cal__caption">
+                        Requested hours: {formatClock(startTime)} – {formatClock(endTime)}. Need a different window?
+                        Add it in additional details.
+                      </p>
+                    </fieldset>
+                  );
+                })()}
                 <div className="book-page__grid">
                   <div className="form-group">
                     <label className="form-label" htmlFor="book-type">
@@ -356,32 +461,6 @@ export default function BookPage() {
                       onChange={e => setGuests(e.target.value)}
                     />
                     {fieldErr('guests')}
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="book-start">
-                      Start time
-                    </label>
-                    <input
-                      id="book-start"
-                      type="time"
-                      className="form-input"
-                      value={startTime}
-                      onChange={e => setStartTime(e.target.value)}
-                    />
-                    {fieldErr('startTime')}
-                  </div>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="book-end">
-                      End time
-                    </label>
-                    <input
-                      id="book-end"
-                      type="time"
-                      className="form-input"
-                      value={endTime}
-                      onChange={e => setEndTime(e.target.value)}
-                    />
-                    {fieldErr('endTime')}
                   </div>
                   <div className="form-group">
                     <label className="form-label" htmlFor="book-space">

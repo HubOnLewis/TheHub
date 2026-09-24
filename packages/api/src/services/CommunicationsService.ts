@@ -337,6 +337,38 @@ export class CommunicationsService {
     });
     return buildInboxTriage({ threads, proposals, events });
   }
+
+  async recordSystemEmail(
+    db: Db,
+    ctx: TenantContext,
+    deal: DealDoc & { _id: string },
+    input: {
+      to: string;
+      subject: string;
+      body: string;
+      templateKey?: string;
+      deliveryStatus: string;
+      providerMessageId?: string;
+    },
+  ) {
+    const doc = buildOutboundInteractionDoc({
+      tenantId: deal.tenantId ?? ctx.tenantId,
+      companyId: companyIdForDeal(deal),
+      companyName: deal.company || deal.contact || 'Inquiry',
+      eventId: String(deal._id),
+      body: input.body,
+      summary: input.subject,
+      channel: 'email',
+      role: 'coordinator',
+      direction: 'outbound',
+      actorId: ctx.userId,
+      actorName: ctx.userName || 'Hub system',
+      deliveryStatus: input.deliveryStatus,
+      templateKey: input.templateKey,
+      providerMessageId: input.providerMessageId,
+    });
+    return InteractionRepository.insertOne(db, ctx, doc);
+  }
 }
 
 export const communicationsService = new CommunicationsService();

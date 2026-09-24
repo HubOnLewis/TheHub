@@ -4,6 +4,7 @@ import {
   detectSpaceConflicts,
   findHardConflictsForProposal,
   isAssignedSpace,
+  occupancyFromImportMeta,
   requiredSpaceError,
   spacesHardConflict,
   timesOverlap,
@@ -71,6 +72,26 @@ test('proposal finder blocks overlapping assigned space', () => {
     slots: [slot({ id: 'existing', space: 'Main Hall' })],
   });
   assert.equal(hits.length, 1);
+});
+
+test('expired inquiry hold is not occupancy', () => {
+  const slot = occupancyFromImportMeta(
+    {
+      id: 'hold-1',
+      title: 'Inquiry hold',
+      status: 'Draft',
+      importMeta: {
+        pvStatus: 'lead',
+        eventDateIso: '2026-09-12',
+        space: 'Main Hall',
+        startTime: '17:00',
+        endTime: '22:00',
+        holdExpiresAt: '2026-09-01T00:00:00.000Z',
+      },
+    },
+    Date.parse('2026-09-21T12:00:00.000Z'),
+  );
+  assert.equal(slot, null);
 });
 
 test('required space rejects TBD for dated events', () => {

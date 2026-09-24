@@ -23,7 +23,7 @@ import { NotFoundError, ValidationError, ConflictError } from '../errors/index.j
 import { eventBus } from '../jobs/index.js';
 import { dealPressureService } from './DealPressureService.js';
 import { knownEventTypeFromCreate, playbookService } from './PlaybookService.js';
-import { playbookFromImportMeta } from '@hub-crm/shared';
+import { playbookFromImportMeta, holdActionPatch } from '@hub-crm/shared';
 import { forecastConfidenceService } from './ForecastConfidenceService.js';
 import { buildMarginService } from './BuildMarginService.js';
 import { getAiRuntimeConfig } from '../config/ai.js';
@@ -746,6 +746,20 @@ export class DealService {
     }
 
     return deal;
+  }
+
+  async extendHold(db: Db, ctx: TenantContext, id: string, days?: number) {
+    const deal = await DealRepository.findById(db, ctx, id);
+    if (!deal) throw new NotFoundError('Event');
+    const patch = holdActionPatch('extend', this.metaOf(deal), { days });
+    return this.update(db, ctx, id, { importMeta: patch });
+  }
+
+  async releaseHold(db: Db, ctx: TenantContext, id: string) {
+    const deal = await DealRepository.findById(db, ctx, id);
+    if (!deal) throw new NotFoundError('Event');
+    const patch = holdActionPatch('release', this.metaOf(deal));
+    return this.update(db, ctx, id, { importMeta: patch });
   }
 
   async remove(db: Db, ctx: TenantContext, id: string) {

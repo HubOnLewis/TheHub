@@ -71,14 +71,15 @@ function EventChip({
   return (
     <Link
       to={block.href}
-      className={`venue-cal-chip${hasConflict ? ' venue-cal-chip--conflict' : ''}${block.balanceDue > 0 ? ' venue-cal-chip--balance' : ''}`}
-      title={`${block.title}\n${block.contact}\n${block.space}\n${formatMinutes(block.startMin)} – ${formatMinutes(block.endMin)}`}
+      className={`venue-cal-chip${hasConflict ? ' venue-cal-chip--conflict' : ''}${block.balanceDue > 0 ? ' venue-cal-chip--balance' : ''}${block.occupancy === 'hold' ? ' venue-cal-chip--hold' : ''}${block.occupancy === 'booked' ? ' venue-cal-chip--booked' : ''}`}
+      title={`${block.title}\n${block.contact}\n${block.space}\n${formatMinutes(block.startMin)} – ${formatMinutes(block.endMin)}${block.occupancy === 'hold' ? '\nHold' : block.occupancy === 'booked' ? '\nBooked' : ''}`}
     >
       <span className="venue-cal-chip__time">
         {formatMinutes(block.startMin)}
       </span>
       <span className="venue-cal-chip__title">{block.title}</span>
       <span className="venue-cal-chip__meta">
+        {block.occupancy === 'hold' ? 'Hold · ' : block.occupancy === 'booked' ? 'Booked · ' : ''}
         {block.space}
         {block.balanceDue > 0 ? ` · ${formatCurrency(block.balanceDue)} due` : ''}
       </span>
@@ -178,7 +179,7 @@ export default function VenueCalendar({ rows, hideLostDefault = true }: Props) {
         <div className="venue-cal-toolbar__right">
           <label className="venue-cal-lost-toggle">
             <input type="checkbox" checked={hideLost} onChange={e => setHideLost(e.target.checked)} />
-            Hide Lost
+            Hide cancelled
           </label>
           <select
             className="venue-cal-space-select"
@@ -319,7 +320,7 @@ export default function VenueCalendar({ rows, hideLostDefault = true }: Props) {
 
       <footer className="venue-cal-legend">
         <span className="venue-cal-legend__item">
-          <i className="venue-cal-dot venue-cal-dot--ok" /> Scheduled
+          <i className="venue-cal-dot venue-cal-dot--ok" /> Booked
         </span>
         <span className="venue-cal-legend__item">
           <i className="venue-cal-dot venue-cal-dot--balance" /> Balance due

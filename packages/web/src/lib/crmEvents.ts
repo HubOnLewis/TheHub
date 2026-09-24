@@ -44,6 +44,8 @@ export interface CrmEventRow {
   createdAt: string | null;
   createdDisplay: string;
   owner: string;
+  occupancy?: 'hold' | 'booked' | 'closed';
+  holdExpiresAt?: string | null;
   ownerUserId?: string;
   href: string;
   source: 'api' | 'import';

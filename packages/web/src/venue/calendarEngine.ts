@@ -32,6 +32,7 @@ export type CalendarBlock = {
   allDay: boolean;
   guests: number;
   owner: string;
+  occupancy?: 'hold' | 'booked' | 'closed';
   row: CrmEventRow;
 };
 
@@ -102,6 +103,7 @@ export function rowsToCalendarBlocks(rows: CrmEventRow[]): CalendarBlock[] {
   for (const row of rows) {
     const d = getEventDate(row);
     if (!d) continue;
+    if (row.source === 'api' && !row.occupancy) continue;
     const dateKey = toDateKey(d);
     const { startMin, endMin, allDay } = parseEventTimeRange(row.eventTime);
     blocks.push({
@@ -119,6 +121,7 @@ export function rowsToCalendarBlocks(rows: CrmEventRow[]): CalendarBlock[] {
       allDay,
       guests: row.guests,
       owner: row.owner,
+      occupancy: row.occupancy,
       row,
     });
   }

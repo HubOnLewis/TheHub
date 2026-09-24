@@ -77,6 +77,8 @@ export type EventDetailViewModel = {
   isReferenceOnly: boolean;
   clientDetails: ClientDetails;
   playbook: AppliedPlaybook | null;
+  holdExpiresAt: string | null;
+  holdReleasedAt: string | null;
 };
 
 export type EventDetailEditForm = {
@@ -642,6 +644,8 @@ export function mapDealToEventDetailViewModel(
     noteSections,
     clientDetails,
     playbook,
+    holdExpiresAt: typeof meta?.holdExpiresAt === 'string' ? meta.holdExpiresAt : null,
+    holdReleasedAt: typeof meta?.holdReleasedAt === 'string' && meta.holdReleasedAt ? meta.holdReleasedAt : null,
   };
 }
 
