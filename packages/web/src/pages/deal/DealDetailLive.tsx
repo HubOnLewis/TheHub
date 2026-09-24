@@ -111,7 +111,12 @@ export function EventDetailLivePage({ dealId }: { dealId: string }) {
 }
 
 function DealDetailRecordFallback({ dealId }: { dealId: string }) {
-  const { data: lead, isLoading: leadLoading } = useLead(dealId);
+  const { data: lead, isLoading: leadLoading, isError: leadError } = useLead(dealId);
+  const referenceModel = mapReferenceEventToEventDetailViewModel(dealId);
+
+  if (referenceModel) {
+    return <DealDetailImported dealId={dealId} />;
+  }
 
   if (leadLoading) {
     return (
@@ -121,12 +126,16 @@ function DealDetailRecordFallback({ dealId }: { dealId: string }) {
     );
   }
 
-  if (lead) {
-    return <Navigate to={leadDetailPath(dealId)} replace />;
-  }
+  const leadHasIdentity =
+    lead &&
+    typeof lead === 'object' &&
+    (Boolean((lead as { _id?: unknown })._id) ||
+      Boolean((lead as { id?: unknown }).id) ||
+      Boolean((lead as { contact?: unknown }).contact) ||
+      Boolean((lead as { company?: unknown }).company));
 
-  if (mapReferenceEventToEventDetailViewModel(dealId)) {
-    return <DealDetailImported dealId={dealId} />;
+  if (!leadError && leadHasIdentity) {
+    return <Navigate to={leadDetailPath(dealId)} replace />;
   }
 
   return (

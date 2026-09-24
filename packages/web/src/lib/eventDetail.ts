@@ -4,7 +4,7 @@
 
 import { barPackageLabel, clientDetailsFromImportMeta, dealStatusForDisplay, formatCurrency, playbookFromImportMeta } from '@hub-crm/shared';
 import type { AppliedPlaybook, ClientDetails, DealStatus, PatchDealPayload } from '@hub-crm/shared';
-import { pvStatusDisplay, type PvEventStatus } from '../data/perfectVenueSeed.js';
+import { PV_PIPELINE_EVENTS, pvStatusDisplay, type PvEventStatus, type PvSeedEvent } from '../data/perfectVenueSeed.js';
 import { daysSince, formatRelativeDate } from '../config/productionData.js';
 import type { HubRefreshEvent } from '../data/hubRefreshTypes.js';
 import type { InteractionRow } from '../hooks/useInteractions.js';
@@ -684,6 +684,35 @@ function pvFullEventToPseudoDeal(e: PvFullEvent): Record<string, unknown> {
   };
 }
 
+function pvSeedEventToPseudoDeal(e: PvSeedEvent): Record<string, unknown> {
+  return {
+    _id: e.id,
+    title: e.title,
+    company: e.client,
+    contact: e.client,
+    amount: e.value || 0,
+    assignedTo: '',
+    notes: '',
+    status: 'Draft',
+    importMeta: {
+      pvStatus: e.pvStatus,
+      eventDateIso: e.eventDate,
+      startTime: e.eventTime?.split('–')[0]?.trim() || e.eventTime?.split('-')[0]?.trim() || '',
+      endTime: e.eventTime?.includes('–')
+        ? e.eventTime.split('–')[1]?.trim()
+        : e.eventTime?.includes('-')
+          ? e.eventTime.split('-').slice(1).join('-').trim()
+          : '',
+      guests: e.guests,
+      space: e.spaces?.join(', ') || '',
+      grandTotal: e.value,
+      amountPaid: e.depositPaid ?? 0,
+      balanceDue: e.balanceDue ?? Math.max(0, (e.value || 0) - (e.depositPaid ?? 0)),
+      eventType: e.eventType,
+    },
+  };
+}
+
 /** Reference/import-only events — same layout as API deals, read-only. */
 export function mapReferenceEventToEventDetailViewModel(dealId: string): EventDetailViewModel | null {
   const hubRefresh = getHubRefreshEventById(dealId);
@@ -698,6 +727,15 @@ export function mapReferenceEventToEventDetailViewModel(dealId: string): EventDe
   const pv = getFullPvEventById(dealId);
   if (pv) {
     return mapDealToEventDetailViewModel(pvFullEventToPseudoDeal(pv), null, [], {
+      canPatch: false,
+      sourceLabel: 'Reference event record',
+      isReferenceOnly: true,
+    });
+  }
+
+  const seed = PV_PIPELINE_EVENTS.find(e => e.id === dealId);
+  if (seed) {
+    return mapDealToEventDetailViewModel(pvSeedEventToPseudoDeal(seed), null, [], {
       canPatch: false,
       sourceLabel: 'Reference event record',
       isReferenceOnly: true,
