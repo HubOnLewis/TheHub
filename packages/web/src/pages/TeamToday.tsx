@@ -42,6 +42,7 @@ export default function TeamToday() {
                     <strong>{t.title}</strong><span>{t.dueLabel} · {t.contact} · {t.assignee.reason}</span>
                   </Link>
                   <div className="today-desk__row-actions">
+                    <span className="today-desk__chip">{t.workStatus.replace('_', ' ')}</span>
                     <span className="today-desk__chip">{t.priority}</span>
                     <select
                       className="input"
@@ -65,7 +66,13 @@ export default function TeamToday() {
                       <option value="jason">Jason</option>
                       <option value="unassigned">Unassigned</option>
                     </select>
-                    {group.type === 'user' ? <button type="button" className="btn btn-primary btn-sm" disabled={action.isPending}
+                    {t.workStatus === 'open' ? <button type="button" className="btn btn-secondary btn-sm" disabled={action.isPending}
+                      onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId, action: 'start' })}>Start</button> : null}
+                    {t.workStatus !== 'waiting_approval' && group.type === 'agent' ? <button type="button" className="btn btn-secondary btn-sm" disabled={action.isPending}
+                      onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId, action: 'request_approval' })}>Ready for approval</button> : null}
+                    {t.workStatus !== 'blocked' ? <button type="button" className="btn btn-ghost btn-sm" disabled={action.isPending}
+                      onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId, action: 'block' })}>Block</button> : null}
+                    {group.type === 'user' || t.workStatus === 'waiting_approval' ? <button type="button" className="btn btn-primary btn-sm" disabled={action.isPending}
                       onClick={() => action.mutate({ taskId: t.id, dealId: t.dealId, action: 'complete' })}>Done</button> : null}
                   </div>
                 </li>
