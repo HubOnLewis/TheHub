@@ -45,14 +45,16 @@ export const PRODUCTION_HIDDEN_MAIN_NAV = new Set([
 ]);
 
 /** Routes that should show an honest empty gate instead of demo intel. */
-/** Demo-only intel surfaces — not live venue ops. Calendar/inbox/tasks/briefing are live. */
+/**
+ * Demo-only intel surfaces — not live venue ops. Calendar/inbox/tasks/briefing
+ * are live, as are My Work, Pipeline, Forecast (/insights), and Automation
+ * Impact — all rewired to live ops-queue/event/agent data. Marketing and
+ * Referrals stay gated: neither has server-backed persistence yet (drafts
+ * and referral clicks live only in client-side stores).
+ */
 export const PRODUCTION_GATED_ROUTE_PREFIXES = [
   '/revenue-leaks',
-  '/automation-impact',
   '/autopilot',
-  '/my-work',
-  '/pipeline-pressure',
-  '/forecast-review',
   '/rep-scorecards',
   '/weekly-cadence',
   '/account-coverage',

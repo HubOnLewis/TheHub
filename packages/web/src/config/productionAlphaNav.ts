@@ -110,6 +110,8 @@ export function getHubNavSections(opts?: {
       defaultOpen: true,
       items: [
         { to: ROUTES.autopilot, label: 'AI Agents', match: prefixMatch(ROUTES.autopilot) },
+        { to: ROUTES.myWork, label: 'My Work', match: prefixMatch(ROUTES.myWork) },
+        { to: ROUTES.automationImpact, label: 'Automation Impact', match: prefixMatch(ROUTES.automationImpact) },
       ],
     },
     {
@@ -127,6 +129,8 @@ export function getHubNavSections(opts?: {
       items: [
         { to: ROUTES.ownerBriefing, label: 'Owner Briefing', match: prefixMatch(ROUTES.ownerBriefing) },
         { to: ROUTES.monthlyScorecard, label: 'Reports', match: prefixMatch(ROUTES.monthlyScorecard) },
+        { to: ROUTES.pipeline, label: 'Pipeline', match: prefixMatch(ROUTES.pipeline) },
+        { to: ROUTES.insights, label: 'Forecast & Readiness', match: prefixMatch(ROUTES.insights) },
         { to: ROUTES.revenueLeaks, label: 'Revenue Leaks', match: prefixMatch(ROUTES.revenueLeaks) },
       ],
     },
