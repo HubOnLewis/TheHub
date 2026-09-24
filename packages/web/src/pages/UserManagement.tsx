@@ -146,7 +146,7 @@ function UserManagementLive({ embedded = false }: { embedded?: boolean }) {
         </div>
       )}
       <p className="text-sm text-muted" style={{ marginBottom: 16 }}>
-        Live users from MongoDB. Create and edit users in Admin workspace.
+        Team members with Hub access. Contact your system administrator to add users or change roles.
       </p>
       <div className="um-table-wrap card">
         {isLoading ? (

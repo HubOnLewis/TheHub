@@ -376,9 +376,17 @@ function DataImportQualityPanel() {
 
 export function SettingsBody({ moduleId }: { moduleId: string }) {
   const userName = useAppStore(s => s.user?.name ?? 'Coordinator');
+  const userRole = useAppStore(s => s.user?.role);
 
   switch (moduleId) {
     case 'data-import':
+      if (userRole !== 'super_admin') {
+        return (
+          <div className="settings-deep">
+            <p className="settings-lede">Data imports are managed by your system administrator.</p>
+          </div>
+        );
+      }
       return <DataImportQualityPanel />;
 
     case 'demo-controls':

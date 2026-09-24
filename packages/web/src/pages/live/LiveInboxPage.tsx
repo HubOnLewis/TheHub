@@ -56,24 +56,24 @@ export default function LiveInboxPage() {
           <h1 className="hub-admin-page__title">Inbox</h1>
           <p className="hub-admin-page__subtitle">
             Event-linked triage — unanswered portal messages, unsigned proposals, unpaid deposits.
-            Same objects as the guest portal. Email send is stubbed until hubonlewis.com is connected.
+            Linked to the same events as the guest portal. Outbound email is not connected yet, so nothing is sent from here.
           </p>
         </div>
       </header>
 
       {triage ? (
         <div className="inbox-triage-grid">
-          <button type="button" className="inbox-triage-card" onClick={() => triage.unansweredMessages[0] && go(triage.unansweredMessages[0].eventId)}>
+          <button type="button" className="inbox-triage-card" disabled={triage.unansweredMessages.length === 0} onClick={() => triage.unansweredMessages[0] && go(triage.unansweredMessages[0].eventId)}>
             <span>Unanswered messages</span>
             <strong>{triage.unansweredMessages.length}</strong>
             <em>{triage.unansweredMessages[0]?.preview ?? 'All threads have a staff reply'}</em>
           </button>
-          <button type="button" className="inbox-triage-card" onClick={() => triage.unsignedProposals[0] && go(triage.unsignedProposals[0].eventId)}>
+          <button type="button" className="inbox-triage-card" disabled={triage.unsignedProposals.length === 0} onClick={() => triage.unsignedProposals[0] && go(triage.unsignedProposals[0].eventId)}>
             <span>Unsigned proposals</span>
             <strong>{triage.unsignedProposals.length}</strong>
             <em>{triage.unsignedProposals[0] ? `${triage.unsignedProposals[0].eventTitle} v${triage.unsignedProposals[0].version}` : 'No proposals waiting'}</em>
           </button>
-          <button type="button" className="inbox-triage-card" onClick={() => triage.unpaidDeposits[0] && go(triage.unpaidDeposits[0].eventId)}>
+          <button type="button" className="inbox-triage-card" disabled={triage.unpaidDeposits.length === 0} onClick={() => triage.unpaidDeposits[0] && go(triage.unpaidDeposits[0].eventId)}>
             <span>Unpaid deposits</span>
             <strong>{triage.unpaidDeposits.length}</strong>
             <em>{triage.unpaidDeposits[0]?.eventTitle ?? 'No deposits outstanding'}</em>
@@ -81,7 +81,7 @@ export default function LiveInboxPage() {
           <div className="inbox-triage-card">
             <span>Outbox</span>
             <strong>{(triage.drafts?.length ?? 0) + (triage.scheduled?.length ?? 0)}</strong>
-            <em>Drafts + scheduled — provider stub, nothing sends</em>
+            <em>Drafts + scheduled — held here, email sending not connected yet</em>
           </div>
         </div>
       ) : null}
