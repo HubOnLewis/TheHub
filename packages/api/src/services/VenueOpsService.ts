@@ -1,6 +1,7 @@
 import type { Db } from 'mongodb';
 import {
   applyVenueOpsAction,
+  applyVenueOpsAssignment,
   evaluateVenueOps,
   isFollowUpKind,
   summarizeVenueOps,
@@ -48,6 +49,26 @@ export class VenueOpsService {
       summary: summarizeVenueOps(tasks),
       asOf: new Date(nowMs).toISOString(),
     };
+  }
+
+  async assignTask(
+    db: Db,
+    ctx: TenantContext,
+    input: { dealId: string; taskId: string; assignee: { type: 'user' | 'agent' | 'unassigned'; id: string; name: string }; reason?: string },
+  ) {
+    const deal = await DealRepository.findById(db, ctx, input.dealId);
+    if (!deal) throw new NotFoundError('Event');
+    if (!input.taskId.includes(input.dealId)) throw new ValidationError('Task does not belong to this event');
+    const meta = deal.importMeta && typeof deal.importMeta === 'object' ? { ...deal.importMeta } : {};
+    const next = applyVenueOpsAssignment(meta, input.taskId, {
+      ...input.assignee,
+      reason: input.reason?.trim() || 'Manually assigned',
+      at: new Date().toISOString(),
+      by: ctx.userName,
+    });
+    const updated = await DealRepository.updateOne(db, ctx, input.dealId, { importMeta: next } as never);
+    if (!updated) throw new NotFoundError('Event');
+    return updated;
   }
 
   async applyTaskAction(
