@@ -4695,3 +4695,55 @@ button.ops-filter-chip[aria-pressed='true'] {
     max-height: 32px;
   }
 }
+
+
+/* ── Review-day shell alignment polish ─────────────────────────────
+   Keep page chrome aligned to the workspace column and remove the visually
+   disconnected footer gutter seen on Calendar and other full-platform pages. */
+@media (min-width: 901px) {
+  .app-shell--hub-admin .crm-pv-shell__content {
+    padding-top: 18px;
+  }
+
+  .app-shell--hub-admin .hub-live-page {
+    width: 100%;
+    max-width: none;
+    padding-inline: 24px;
+  }
+
+  .app-shell--hub-admin .venue-cal-page .hub-admin-page__header {
+    min-height: 58px;
+    padding: 8px 0 12px !important;
+    margin-bottom: 10px;
+  }
+
+  .app-shell--hub-admin .venue-cal-page .hub-admin-page__title {
+    margin: 0;
+    line-height: 1.08;
+  }
+
+  .app-shell--hub-admin .hub-site-footer--compact {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-shell--hub-admin .crm-pv-shell__content {
+    padding-top: 12px;
+  }
+
+  .app-shell--hub-admin .hub-live-page {
+    padding-inline: 16px;
+  }
+
+  .app-shell--hub-admin .hub-admin-page__header {
+    align-items: flex-start;
+  }
+
+  .app-shell--hub-admin .hub-admin-page__header-actions {
+    width: 100%;
+    justify-content: flex-start !important;
+  }
+}
