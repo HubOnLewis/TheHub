@@ -28,6 +28,14 @@ export const VENUE_OPS_KINDS = [
 
 export type VenueOpsKind = (typeof VENUE_OPS_KINDS)[number];
 export type VenueOpsPriority = 'high' | 'medium' | 'low';
+export type VenueOpsAssigneeType = 'user' | 'agent';
+
+export type VenueOpsAssignee = {
+  type: VenueOpsAssigneeType;
+  id: string;
+  name: string;
+  reason: string;
+};
 
 export type VenueOpsTask = {
   id: string;
@@ -43,6 +51,7 @@ export type VenueOpsTask = {
   value: number;
   balanceDue: number;
   playbookTaskId?: string;
+  assignee: VenueOpsAssignee;
 };
 
 export type VenueOpsActionState = {
@@ -76,6 +85,18 @@ const FOLLOW_UP_KINDS: ReadonlySet<VenueOpsKind> = new Set([
   'deposit_due',
   'balance_due',
 ]);
+
+export function defaultVenueOpsAssignee(task: Pick<VenueOpsTask, 'kind' | 'priority' | 'balanceDue'>): VenueOpsAssignee {
+  // Routine coordination belongs to Hannah; deterministic drafting/analysis can
+  // be handled by Lewis. Jason receives only owner-level payment exceptions.
+  if ((task.kind === 'balance_due' || task.kind === 'deposit_due') && task.priority === 'high' && task.balanceDue >= 2500) {
+    return { type: 'user', id: 'jason', name: 'Jason', reason: 'High-value payment escalation' };
+  }
+  if (task.kind === 'stale_inquiry' || task.kind === 'proposal_followup') {
+    return { type: 'agent', id: 'lewis', name: 'Lewis', reason: 'Draft and triage routine follow-up' };
+  }
+  return { type: 'user', id: 'hannah', name: 'Hannah', reason: 'Venue coordination owner' };
+}
 
 function isoDateOnly(value: unknown): string | null {
   if (typeof value !== 'string') return null;
@@ -213,7 +234,7 @@ export function evaluateVenueOps(
     balanceDue,
   };
 
-  const push = (task: VenueOpsTask) => {
+  const push = (task: Omit<VenueOpsTask, 'assignee'>) => {
     if (isVenueOpsTaskSuppressed(task.id, actions, nowMs)) return;
     tasks.push(task);
   };
@@ -377,6 +398,10 @@ export function evaluateVenueOps(
       dueAt: null,
       dueLabel: untilEvent === 0 ? 'Today' : untilEvent === 1 ? 'Tomorrow' : `In ${untilEvent} days`,
     });
+  }
+
+  for (const task of tasks) {
+    task.assignee = defaultVenueOpsAssignee(task);
   }
 
   return tasks.sort((a, b) => {
