@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/api/src/server.js",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/**/*.test.ts"
+    "test": "tsx --test src/**/*.test.ts",
+    "prestart": "node ../../scripts/render-bootstrap-staging.mjs"
   },
   "dependencies": {
     "@hub-crm/shared": "*",
