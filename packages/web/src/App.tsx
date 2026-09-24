@@ -303,8 +303,8 @@ function Shell() {
             <Route path={ROUTES.userManagement} element={resolveHubRouteElement(ROUTES.userManagement, <UserManagement />)} />
             <Route path={ROUTES.audit} element={<ProductionAuditTrail />} />
             <Route path={ROUTES.admin} element={resolveHubRouteElement(ROUTES.admin, <Admin />)} />
-            <Route path={ROUTES.accounts} element={resolveHubRouteElement(ROUTES.accounts, <Companies />, HUB_LABELS.accounts)} />
-            <Route path={ROUTES.companiesAlias} element={resolveHubRouteElement(ROUTES.companiesAlias, <Companies />, HUB_LABELS.accounts)} />
+            <Route path={ROUTES.accounts} element={resolveHubRouteElement(ROUTES.accounts, <Companies />)} />
+            <Route path={ROUTES.companiesAlias} element={resolveHubRouteElement(ROUTES.companiesAlias, <Companies />)} />
             <Route path={`${ROUTES.accounts}/:id`} element={<CompanyDetail />} />
             <Route path={`${ROUTES.companiesAlias}/:id`} element={<CompanyDetail />} />
             <Route path={ROUTES.myWork} element={resolveHubRouteElement(ROUTES.myWork, <MyWork />, 'My work')} />

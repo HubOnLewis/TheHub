@@ -34,7 +34,7 @@ export default function Companies() {
           <OpsIntelShell
             eyebrow="Relationship intelligence"
             title={HUB_LABELS.accounts}
-            subtitle="234 real accounts from Perfect Venue — VIP repeats, balances, and expansion windows."
+            subtitle={`${counts.all} imported Perfect Venue relationships — VIP repeats, balances, and expansion windows.`}
             stats={[
               { label: 'Relationships', value: String(counts.all), hint: 'PV accounts' },
               { label: 'VIP / repeat', value: String(counts.vip), hint: '3+ events or series' },
@@ -79,7 +79,7 @@ export default function Companies() {
               },
             ]}
             onSelect={id => setFilter(id as AccountFilterId)}
-            aiHint="Elevate Mentoring and similar repeat accounts surface in VIP — not flat spreadsheet rows."
+            aiHint="Repeat relationships surface in VIP and balance-risk views instead of a flat spreadsheet."
           />
         }
         railSections={rail}
