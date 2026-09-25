@@ -1,0 +1,7 @@
+{
+  "apiBaseUrl": "https://api.hubonlewis.com/api",
+  "agentToken": "PASTE_THE_SAME_HUB_AGENT_READ_TOKEN_CONFIGURED_ON_RENDER",
+  "nodeId": "hub-on-lewis-ai-01",
+  "ollamaBaseUrl": "http://127.0.0.1:11434",
+  "model": "gpt-oss:20b"
+}
